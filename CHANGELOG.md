@@ -12,6 +12,9 @@ We follow a lightweight **Keep a Changelog** format until a first tagged release
 
 - **Developer resource readiness:** add a public research/evidence ledger for Claude OSS, GitHub Copilot and AWS Activate with strict caveats and no implied application or award. [PR #26](https://github.com/rf24kja/24GO.top/pull/26). No benefits have been applied for or received through this PR.
 
+
+- **#27 — Public developer onboarding:** improved static landing with accurate hosted-vs-local feature status, a copyable no-key SDK setup, direct contributor entry points and basic share metadata. This changes only the public static marketing page, not the hosted publishing backend. [PR #27](https://github.com/rf24kja/24GO.top/pull/27).
+
 ## 2026-10-25 — From idea to working development prototype
 
 ### Initial repository and documentation
