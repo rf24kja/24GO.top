@@ -9,7 +9,7 @@ We follow a lightweight **Keep a Changelog** format until a first tagged release
 - Introduce a static Engineering Notes section and RSS feed, starting with **Why we built a Draft Lab before opening public writes**, explaining verifiable PR evidence, safeguards, and remaining public-write security gates. The article is original project documentation, not a real user publication.
 - Link editorial content from the homepage and public development timeline; add automated internal-link/content/RSS tests. Deployment of the new article needs a separate GitHub Pages and HTTPS check after merge.
 - Record founder's confirmation that `https://www.24go.top/` opened successfully on 26 October 2026 without claiming independent apex-domain or all-subpage checks. See [Deployment Status](docs/DEPLOYMENT_STATUS.md).
-- **PR:** to be linked when the engineering-notes PR is created. Rollback: revert that static-content PR; no product backend or DNS affected.
+- **Evidence:** [PR #32](https://github.com/rf24kja/24GO.top/pull/32), including code review and CI. Rollback: revert that static-content PR; no product backend or DNS affected.
 
 ## 2026-10-26 — CI security and maintenance
 
