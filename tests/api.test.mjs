@@ -61,3 +61,16 @@ test('never reflects raw user HTML into page and rejects invalid pagination',asy
   assert.equal((await fetch(base+'/api/posts?limit=-1')).status,400);
   assert.equal((await fetch(base+'/api/posts?limit=1.5')).status,400);
 });
+
+
+test('adds secure default headers to rendered pages and API responses',async t=>{
+  const {base}=await fixture(t);
+  const page=await fetch(base+'/en/');
+  assert.equal(page.status,200);
+  assert.match(page.headers.get('content-security-policy')||'',/frame-ancestors 'none'/);
+  assert.match(page.headers.get('content-security-policy')||'',/script-src 'self'/);
+  assert.equal(page.headers.get('x-frame-options'),'DENY');
+  assert.match(page.headers.get('permissions-policy')||'',/microphone=\(\)/);
+  const api=await fetch(base+'/api/health');
+  assert.equal(api.headers.get('x-content-type-options'),'nosniff');
+});
