@@ -64,7 +64,7 @@ export function hasDraftContent(draft) {
 // A narrowly scoped import for files exported by Draft Lab. It deliberately
 // refuses arbitrary Markdown and preserves the original body as plain text.
 export const MAX_DRAFT_FILE_BYTES = 65536;
-const EXPORT_FOOTER = '\n---\nUnpublished draft · Generated in the 24GOTOP static Draft Lab.';
+const EXPORT_FOOTER = '\n\n---\nUnpublished draft · Generated in the 24GOTOP static Draft Lab.';
 
 export function parseDraftFile(text) {
   if (typeof text !== 'string' || text.length > MAX_DRAFT_FILE_BYTES) {
