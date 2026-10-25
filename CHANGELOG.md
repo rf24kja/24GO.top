@@ -4,6 +4,13 @@ This is the human-readable **history of verified changes**. Actual GitHub commit
 
 We follow a lightweight **Keep a Changelog** format until a first tagged release. These are development milestones, not npm release versions or proof that the community is in production.
 
+## 2026-10-26 — Reopening saved article drafts
+
+- **PR #35:** Draft Lab now accepts its own previously exported Markdown files, letting an author download → leave → reopen → edit → download again without a registration, upload, autosave or production write API. [PR #35](https://github.com/rf24kja/24GO.top/pull/35).
+- Validate the original file structure, locale/category, safe source URL and a 64 KiB size cap; confirm before replacing unsaved text. Test compatibility with all eight locales, multilingual content, CRLF/BOM, malformed metadata and HTML-like body text.
+- **Evidence:** GitHub Actions CI attached to PR #35. Real-browser import and independent returning-author testing remain **unverified**, tracked in [Returning Author Pilot](docs/RETURNING_AUTHOR_PILOT.md).
+- **Rollback:** revert PR #35; no database migration, secret, DNS or hosted backend changes.
+
 ## 2026-10-26 — Navigable public website
 
 - Give the GitHub Pages landing a real responsive header with visible links to Draft Lab, engineering articles, the development history and GitHub; keyboard skip link, focus outline and mobile wrapping.

@@ -59,3 +59,45 @@ export function hasDraftContent(draft) {
     draft?.title?.trim() || draft?.body?.trim() || draft?.source?.trim()
   );
 }
+
+
+// A narrowly scoped import for files exported by Draft Lab. It deliberately
+// refuses arbitrary Markdown and preserves the original body as plain text.
+export const MAX_DRAFT_FILE_BYTES = 65536;
+const EXPORT_FOOTER = '\n\n---\nUnpublished draft · Generated in the 24GOTOP static Draft Lab.';
+
+export function parseDraftFile(text) {
+  if (typeof text !== 'string' || text.length > MAX_DRAFT_FILE_BYTES) {
+    throw new TypeError('Unsupported draft file');
+  }
+  const normalized = text.replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n').replace(/\n$/, '');
+  if (!normalized.endsWith(EXPORT_FOOTER)) {
+    throw new TypeError('Not a 24GOTOP Draft Lab export');
+  }
+  const payload = normalized.slice(0, -EXPORT_FOOTER.length);
+  const titleEnd = payload.indexOf('\n\n');
+  if (titleEnd < 3 || !payload.startsWith('# ')) {
+    throw new TypeError('Invalid draft title');
+  }
+  const title = payload.slice(2, titleEnd);
+  const afterTitle = payload.slice(titleEnd + 2);
+  const metadataEnd = afterTitle.indexOf('\n\n');
+  if (metadataEnd < 0) throw new TypeError('Invalid draft metadata');
+  const lines = afterTitle.slice(0, metadataEnd).split('\n');
+  if (lines.length !== 2 && lines.length !== 3
+      || !lines[0].startsWith('Language: ')
+      || !lines[1].startsWith('Category: ')
+      || lines.length === 3 && !lines[2].startsWith('Original source: ')) {
+    throw new TypeError('Invalid draft metadata');
+  }
+  const draft = {
+    title,
+    locale: lines[0].slice('Language: '.length),
+    category: lines[1].slice('Category: '.length),
+    source: lines.length === 3 ? lines[2].slice('Original source: '.length) : '',
+    body: afterTitle.slice(metadataEnd + 2)
+  };
+  const invalid = validateDraft(draft);
+  if (invalid) throw new TypeError(invalid);
+  return draft;
+}

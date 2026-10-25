@@ -1,6 +1,6 @@
 'use strict';
 
-import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent } from './draft-lab-logic.js';
+import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, parseDraftFile, MAX_DRAFT_FILE_BYTES } from './draft-lab-logic.js';
 
 // Browser-only UX research prototype: no network, browser persistence or analytics.
 const field = id => document.getElementById(id);
@@ -49,6 +49,41 @@ function readyToExport() {
   else source.focus();
   return false;
 }
+
+
+field('importDraft').addEventListener('click', () => {
+  field('importDraftFile').click();
+});
+
+field('importDraftFile').addEventListener('change', async event => {
+  const input = event.currentTarget;
+  const file = input.files?.[0];
+  if (!file) return;
+  try {
+    if (!file.name.toLowerCase().endsWith('.md') || file.size > MAX_DRAFT_FILE_BYTES) {
+      throw new TypeError('Unsupported file');
+    }
+    // Reading a user-selected local file does not make a network request.
+    const reopened = parseDraftFile(await file.text());
+    if (hasDraftContent(currentDraft())
+      && !window.confirm('Opening this file replaces your current unsaved draft. Download it first if needed. Continue?')) {
+      message('Import cancelled. Your current draft was kept.');
+      return;
+    }
+    title.value = reopened.title;
+    body.value = reopened.body;
+    locale.value = reopened.locale;
+    category.value = reopened.category;
+    source.value = reopened.source;
+    preview();
+    message('Markdown draft opened locally. Nothing was uploaded. Export again to keep changes.');
+  } catch {
+    message('Could not open this file. Choose a valid 24GOTOP Draft Lab .md export (64 KB maximum).', true);
+  } finally {
+    // Permit re-opening the same file after editing it.
+    input.value = '';
+  }
+});
 
 field('downloadDraft').addEventListener('click', () => {
   if (!readyToExport()) return;

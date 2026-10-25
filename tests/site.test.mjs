@@ -52,7 +52,7 @@ test('draft lab is discoverable, labeled experimental, and provides accessible f
     assert.ok(draftHtml.includes('for="' + id + '"'), 'missing accessible label: ' + id);
     assert.ok(draftHtml.includes('id="' + id + '"'), 'missing input: ' + id);
   }
-  assert.match(draftHtml, /does not publish, upload, automatically save or send your text/);
+  assert.match(draftHtml, /does not publish, upload or automatically save your writing/);
   assert.match(draftHtml, /No backend/);
   assert.match(draftHtml, /role="status"/);
   assert.match(draftCss, /@media\(max-width:860px\)/);
@@ -94,4 +94,19 @@ test('public landing exposes meaningful 320px navigation and visible keyboard fo
   assert.match(html, /header nav\{order:3;width:100%/);
   assert.match(html, /@media\(prefers-reduced-motion:reduce\)/);
   assert.doesNotMatch(html, /nav a\{display:none\}|display:none[^}]*nav/i);
+});
+
+
+test('saved Markdown can be reopened through an explicit browser-only action',()=>{
+  const logic=readFileSync(fileURLToPath(new URL('../site/draft-lab-logic.js',import.meta.url)),'utf8');
+  assert.match(draftHtml, /id="importDraft"[^>]*type="button"/);
+  assert.match(draftHtml, /id="importDraftFile"[^>]*type="file"[^>]*accept="\.md,text\/markdown"/);
+  assert.match(draftHtml, /Opening or refreshing|Closing or refreshing/);
+  assert.match(draftJs, /parseDraftFile\(await file\.text\(\)\)/);
+  assert.match(draftJs, /file\.size > MAX_DRAFT_FILE_BYTES/);
+  assert.match(draftJs, /window\.confirm\('Opening this file replaces your current unsaved draft/);
+  assert.match(draftJs, /input\.value = ''/);
+  assert.match(logic, /export function parseDraftFile/);
+  assert.doesNotMatch(draftJs, /\bfetch\s*\(|XMLHttpRequest|sendBeacon|localStorage|sessionStorage|innerHTML/);
+  assert.doesNotMatch(draftHtml,/PUBLISH_API_KEY|sb_secret_/);
 });

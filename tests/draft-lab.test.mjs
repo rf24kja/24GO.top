@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { LOCALES, CATEGORIES, safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent } from '../site/draft-lab-logic.js';
+import { LOCALES, CATEGORIES, safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, parseDraftFile, MAX_DRAFT_FILE_BYTES } from '../site/draft-lab-logic.js';
 
 const valid = {
   title:'Making a secure publishing API',
@@ -75,4 +75,56 @@ test('download shares exactly the same validated source as clipboard',()=>{
   assert.match(output,/Unpublished draft/);
   assert.ok(output.endsWith('24GOTOP static Draft Lab.'));
   assert.throws(()=>formatDraft({...valid,body:'short'}),/Write between/);
+});
+
+
+test('previously exported Markdown survives export → reopen without data loss', () => {
+  for (const locale of LOCALES) {
+    for (const category of CATEGORIES) {
+      const original = { ...valid, locale, category,
+        title: 'Writing secure articles · 試験 ทดสอบ тест',
+        body: 'A long reproducible text in several scripts.\n\nSecond paragraph: <script>alert(1)</script> plain text.' };
+      const exported = formatDraft(original);
+      const reopened = parseDraftFile(exported);
+      assert.deepEqual(reopened, original);
+      assert.equal(formatDraft(reopened), exported);
+    }
+  }
+});
+
+test('reopen old drafts without a source URL and handle UTF-8 BOM/Windows line endings', () => {
+  const old = { ...valid, source: '' };
+  assert.deepEqual(parseDraftFile(formatDraft(old)), old);
+  const windows = '\uFEFF' + formatDraft(valid).replace(/\n/g, '\r\n') + '\r\n';
+  assert.deepEqual(parseDraftFile(windows), valid);
+});
+
+test('saved article paragraphs that resemble metadata or end markers are preserved', () => {
+  const original = { ...valid,
+    body: 'Article body with embedded markers.\n\nLanguage: ru\nCategory: models\n\n---\nUnpublished draft · Generated in the 24GOTOP static Draft Lab.\n\nActual ending.' };
+  const imported = parseDraftFile(formatDraft(original));
+  assert.deepEqual(imported, original);
+});
+
+test('reject arbitrary Markdown, malformed metadata, oversized files and dangerous URLs', () => {
+  for (const value of [
+    '# Arbitrary article\n\nThis is not our export',
+    formatDraft(valid).replace('Language: en', 'Language: unknown'),
+    formatDraft(valid).replace('Category: guides', 'Category: malware'),
+    formatDraft(valid).replace('https://example.org/research', 'javascript:alert(1)'),
+    formatDraft(valid).replace('Unpublished draft · Generated in the 24GOTOP static Draft Lab.', 'Unknown producer'),
+    formatDraft(valid).replace('Language: en', 'Language: en\nAuthor: admin'),
+    'x'.repeat(MAX_DRAFT_FILE_BYTES + 1)
+  ]) {
+    assert.throws(() => parseDraftFile(value), TypeError);
+  }
+  assert.throws(() => parseDraftFile(null), TypeError);
+  assert.equal(MAX_DRAFT_FILE_BYTES, 65536);
+});
+
+test('importer keeps HTML-like content literal and does not sanitize away the author text', () => {
+  const text = '<img src=x onerror="alert(1)"> is a literal example of a risky HTML fragment.\nIt must never execute.';
+  const original = { ...valid, body: text };
+  const imported = parseDraftFile(formatDraft(original));
+  assert.equal(imported.body, text);
 });
