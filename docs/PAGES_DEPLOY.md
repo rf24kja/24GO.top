@@ -4,9 +4,9 @@ The public website must remain separate from the Node.js prototype. This workflo
 
 ## Once-only setup (repository owner)
 
-1. Open [Settings → Pages](https://github.com/rf24kja/24gotop-starter/settings/pages).
+1. Open [Settings → Pages](https://github.com/rf24kja/24GO.top/settings/pages).
 2. Under **Build and deployment → Source**, select **GitHub Actions**.
-3. Open [Actions → Deploy pre-launch landing](https://github.com/rf24kja/24gotop-starter/actions/workflows/pages.yml) and choose **Run workflow** if no automatic run appears.
+3. Open [Actions → Deploy pre-launch landing](https://github.com/rf24kja/24GO.top/actions/workflows/pages.yml) and choose **Run workflow** if no automatic run appears.
 4. After success, click the generated deployment URL. The usual project Pages URL is `https://rf24kja.github.io/24gotop-starter/`, but verify the real URL in the GitHub deployment before announcing it.
 5. Confirm HTTPS, the GitHub links, mobile styling, and that no API or local development files are served.
 
