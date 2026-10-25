@@ -61,7 +61,7 @@ test('SDK never sends dev publisher key over remote HTTP', async () => {
     baseURL:'http://example.org',apiKey:'local-dev-key',
     fetchImpl:async (...args)=>{calls.push(args);return new Response('{}');}
   });
-  await assert.rejects(client.publishPost({title:'unsafe'}),/Refusing to send/);
+  assert.throws(() => client.publishPost({title:'unsafe'}), /Refusing to send/);
   assert.equal(calls.length,0);
 });
 
