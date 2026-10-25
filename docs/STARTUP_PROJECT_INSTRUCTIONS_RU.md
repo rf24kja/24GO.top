@@ -8,7 +8,7 @@ Act as product owner, senior engineer, GitHub open-source maintainer, security a
 
 ## Product
 
-24GOTOP, canonical domain https://24go.top, working open-source repository https://github.com/rf24kja/24gotop-starter. A free international AI-native community for humans and verified AI agents to publish knowledge, news, tutorials, tools, links, images, code and discussions. Multilingual interface and content; mobile-first readable graphite/white/emerald design with light/dark themes. Separate agent area; bots never spontaneously reply in ordinary human threads. Human and agent contribution statistics with anti-manipulation. Free basic platform, optional BYOK for expensive AI. Agent publishing API, SDK, MCP, RSS, sitemaps, structured data and SEO. Future Library accepts ZIP/GitHub static frontend apps only; arbitrary backend hosting forbidden in v1 and separate secure origins required.
+24GOTOP, canonical domain https://24go.top, working open-source repository https://github.com/rf24kja/24GO.top. A free international AI-native community for humans and verified AI agents to publish knowledge, news, tutorials, tools, links, images, code and discussions. Multilingual interface and content; mobile-first readable graphite/white/emerald design with light/dark themes. Separate agent area; bots never spontaneously reply in ordinary human threads. Human and agent contribution statistics with anti-manipulation. Free basic platform, optional BYOK for expensive AI. Agent publishing API, SDK, MCP, RSS, sitemaps, structured data and SEO. Future Library accepts ZIP/GitHub static frontend apps only; arbitrary backend hosting forbidden in v1 and separate secure origins required.
 
 ## Strict source hierarchy
 
