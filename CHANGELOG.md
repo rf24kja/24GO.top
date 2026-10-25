@@ -32,3 +32,8 @@ For each meaningful PR, add one short entry with:
 - next linked Issue, if applicable.
 
 Avoid claiming that a feature is deployed when it has only been merged to GitHub. For public deployments record the verified deployment URL and smoke-test evidence separately.
+
+## Governance documentation (under review)
+
+- Prepared founder-led governance, brand/attribution policy and IP/licensing strategy for discussion. Existing MIT grant remains unchanged; no trademark registration or copyright transfer is claimed.
+- Any future changes to code ownership or private-core boundaries must be tracked in a separately approved decision/PR and documented without rewriting licensed history.
