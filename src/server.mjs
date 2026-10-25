@@ -1,6 +1,7 @@
 import http from 'node:http';
 import { randomUUID, timingSafeEqual } from 'node:crypto';
-import { readFileSync, existsSync, mkdirSync, writeFileSync, renameSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
+import { createPostStore } from './post-store.mjs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -50,18 +51,6 @@ function validate(raw) {
   }
   return {id:randomUUID(),title:title.trim(),body:body.trim(),locale,category,sourceUrl:safeUrl,tags:[...new Set(tags)],authorType,publishedAt:new Date().toISOString()};
 }
-function load(path) {
-  if(!existsSync(path)) return [];
-  const value=JSON.parse(readFileSync(path,'utf8'));
-  if(!Array.isArray(value)) throw new Error('Invalid data store');
-  return value;
-}
-function save(path,value) {
-  mkdirSync(dirname(path),{recursive:true});
-  const temp=path+'.'+process.pid+'.tmp';
-  writeFileSync(temp,JSON.stringify(value,null,2),{mode:0o600});
-  renameSync(temp,path);
-}
 function origin(raw) {
   if(!raw) return '';
   try {const u=new URL(raw);if(u.protocol==='https:'||['localhost','127.0.0.1'].includes(u.hostname))return u.origin;}
@@ -71,10 +60,15 @@ function origin(raw) {
 function asset(path) { return readFileSync(join(root,'public',path)); }
 
 export function createApp(config={}) {
-  const dbPath=config.dbPath??join(root,'data','posts.json');
   const apiKey=config.apiKey??process.env.PUBLISH_API_KEY??'';
   const site=origin(config.siteURL??process.env.SITE_URL??'');
-  let posts=load(dbPath);
+  const store=config.store??createPostStore({
+    mode:config.storeMode??process.env.POST_STORE??'local',
+    dbPath:config.dbPath??join(root,'data','posts.json'),
+    supabaseUrl:config.supabaseUrl??process.env.SUPABASE_URL,
+    publishableKey:config.publishableKey??process.env.SUPABASE_PUBLISHABLE_KEY,
+    fetchImpl:config.fetchImpl
+  });
   return http.createServer(async (req,res)=>{
     try {
       const url=new URL(req.url??'/','http://localhost');
@@ -88,21 +82,20 @@ export function createApp(config={}) {
         if(category&&!categories.includes(category)) throw new ApiError(400,'Invalid category');
         if(!/^\d{1,3}$/.test(limitRaw)||Number(limitRaw)<1) throw new ApiError(400,'Invalid limit');
         const limit=Math.min(50,Number(limitRaw));
-        return send(res,200,{posts:posts.filter(p=>p.locale===locale&&(!category||p.category===category)).slice(0,limit)});
+        return send(res,200,{posts:await store.list({locale,category,limit})});
       }
       if(req.method==='GET'&&/^\/api\/posts\/[a-f0-9-]{36}$/.test(path)) {
-        const post=posts.find(p=>p.id===path.split('/')[3]);
+        const post=await store.get(path.split('/')[3]);
         if(!post) throw new ApiError(404,'Post not found');
         return send(res,200,post);
       }
       if(req.method==='POST'&&path==='/api/posts') {
+        if(store.mode!=='local') throw new ApiError(503,'Publishing disabled in read-only mode');
         if(!apiKey) throw new ApiError(503,'Publishing disabled');
         const auth=req.headers.authorization??'';
         if(!auth.startsWith('Bearer ')||!validSecret(auth.slice(7),apiKey)) throw new ApiError(401,'Unauthorized');
         const post=validate(await bodyJSON(req));
-        const next=[post,...posts];
-        save(dbPath,next);
-        posts=next;
+        await store.create(post);
         return send(res,201,{post});
       }
       if(req.method==='GET'&&path==='/robots.txt') {
@@ -116,7 +109,8 @@ export function createApp(config={}) {
         const locale=path.split('/')[2].slice(0,2);
         if(!locales.includes(locale)) throw new ApiError(404,'Unknown feed');
         const base=site||'http://localhost:3000';
-        const items=posts.filter(p=>p.locale===locale).slice(0,30).map(p=>'<item><title>'+xmlEscape(p.title)+'</title><description>'+xmlEscape(p.body.slice(0,400))+'</description><guid isPermaLink="false">'+p.id+'</guid><pubDate>'+new Date(p.publishedAt).toUTCString()+'</pubDate><link>'+xmlEscape(base+'/'+locale+'/?post='+p.id)+'</link></item>').join('');
+        const feedPosts=await store.list({locale,limit:30});
+        const items=feedPosts.map(p=>'<item><title>'+xmlEscape(p.title)+'</title><description>'+xmlEscape(p.body.slice(0,400))+'</description><guid isPermaLink="false">'+p.id+'</guid><pubDate>'+new Date(p.publishedAt).toUTCString()+'</pubDate><link>'+xmlEscape(base+'/'+locale+'/?post='+p.id)+'</link></item>').join('');
         return send(res,200,'<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>24GOTOP ('+locale+')</title><link>'+xmlEscape(base+'/'+locale+'/')+'</link><description>Open AI knowledge network</description>'+items+'</channel></rss>','application/rss+xml; charset=utf-8');
       }
       if(req.method==='GET'&&path==='/app.js') return send(res,200,asset('app.js'),'text/javascript; charset=utf-8',{'cache-control':'public, max-age=300'});
@@ -130,7 +124,7 @@ export function createApp(config={}) {
       }
       throw new ApiError(404,'Not found');
     } catch(error) {
-      const status=error instanceof ApiError?error.status:500;
+      const status=(error instanceof ApiError || error?.status===503)?error.status:500;
       if(status===500) console.error('Request failed:',error);
       if(!res.headersSent) send(res,status,{error:status===500?'Internal server error':error.message});
       else res.end();

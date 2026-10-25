@@ -48,7 +48,8 @@ Never commit .env or reveal API keys. Do not expose this publishing prototype pu
 
 ## Project structure
 
-- src/server.mjs — development API and temporary JSON persistence.
+- src/server.mjs — development API (local JSON by default).
+- src/post-store.mjs — experimental optional anonymous Supabase read-only feed adapter.
 - public/ — responsive multilingual reader with text-only safe DOM insertion.
 - packages/sdk/ — experimental JS client library.
 - tests/ — API and security-focused checks.
@@ -57,6 +58,10 @@ Never commit .env or reveal API keys. Do not expose this publishing prototype pu
 - compose.yaml — loopback-only Docker example.
 - API.md — current endpoints and development constraints.
 - openapi/openapi.json — machine-readable OpenAPI 3.1 contract for API client generators (development-only).
+
+## Experimental Supabase read-only mode
+
+An opt-in **read-only** adapter can now query public published posts from a disposable Supabase database using a publishable key and Row Level Security. It cannot create posts; local JSON remains the default. See [read-only integration guide](docs/SUPABASE_READONLY.md). No Supabase database has been connected or deployed for you.
 
 ## Security and production readiness
 
