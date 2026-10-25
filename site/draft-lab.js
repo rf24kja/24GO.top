@@ -1,6 +1,6 @@
 'use strict';
 
-// Static UX research prototype. Deliberately no fetch, localStorage, cookies,
+// Static UX research prototype. No network calls, browser persistence,
 // analytics or background requests. Text never leaves this page.
 const field = id => document.getElementById(id);
 const title = field('postTitle');
