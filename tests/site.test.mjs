@@ -41,3 +41,28 @@ test('public landing promotes a working no-key developer demo and does not inven
   assert.match(html, /https:\/\/24go\.top\//);
   assert.doesNotMatch(html, /sb_secret_|PUBLISH_API_KEY|npm install -g.*token/i);
 });
+
+const draftHtml = readFileSync(fileURLToPath(new URL('../site/draft-lab.html', import.meta.url)), 'utf8');
+const draftJs = readFileSync(fileURLToPath(new URL('../site/draft-lab.js', import.meta.url)), 'utf8');
+const draftCss = readFileSync(fileURLToPath(new URL('../site/draft-lab.css', import.meta.url)), 'utf8');
+
+test('draft lab is discoverable, labeled experimental, and provides accessible form controls', () => {
+  assert.match(html, /href="\.\/draft-lab\.html"/);
+  for (const id of ['postTitle','postBody','postLocale','postCategory','postSource']) {
+    assert.ok(draftHtml.includes('for="' + id + '"'), 'missing accessible label: ' + id);
+    assert.ok(draftHtml.includes('id="' + id + '"'), 'missing input: ' + id);
+  }
+  assert.match(draftHtml, /does not publish, upload, save or send content/);
+  assert.match(draftHtml, /No backend/);
+  assert.match(draftHtml, /role="status"/);
+  assert.match(draftCss, /@media\(max-width:860px\)/);
+});
+
+test('draft lab never submits, stores, or executes user-created HTML', () => {
+  assert.doesNotMatch(draftJs, /\bfetch\s*\(|localStorage|sessionStorage|XMLHttpRequest|sendBeacon|innerHTML/);
+  assert.match(draftJs, /\.textContent/);
+  assert.match(draftJs, /navigator\.clipboard\?\.writeText/);
+  assert.match(draftJs, /preventDefault\(\)/);
+  assert.doesNotMatch(draftHtml, /<form[^>]+action=/);
+  assert.doesNotMatch(draftHtml, /PUBLISH_API_KEY|sb_secret_/);
+});

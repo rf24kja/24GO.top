@@ -11,6 +11,11 @@ The milestones below are **planned directions**, not claims that the hosted plat
 - [x] Optional Supabase GET-only adapter
 - [ ] Verify complete old Hermes Project Pack v8.1 against current code
 
+## UX research (static-only experiment)
+
+- [x] Copy-only Draft Lab in the **public repository** as an unlaunched writing UX concept; requires static Pages deployment for website availability
+- [ ] Conduct voluntary usability testing and record observable issues; no real accounts or publication claimed
+
 ## P0 — safe community MVP
 
 - [ ] Authenticated accounts and profile ownership

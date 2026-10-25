@@ -51,3 +51,8 @@ Create DEC-009 and onward only for decisions that materially affect product arch
 **Alternatives:** (A) public open developer ecosystem plus separately private production core, preferred for further review; (B) new source-available restricted modules (not OSI open source); (C) fully OSS product with separate branding and founder-led governance. See [IP and Licensing Strategy](IP_AND_LICENSING.md).
 
 **Next decision:** decide whether/which code moves to a new private clean-history repo, evaluate legal rights and downstream OSS program trade-offs, prepare contributor rights policy if needed. **Review when:** founder approves an explicit licensing structure after IP review. No production or license migration authorized by this entry alone.
+
+## DEC-010 — Explore author UX before deploying public writes
+**Status: PUBLIC UX EXPERIMENT ONLY; PRODUCT DECISION REQUIRES REAL FEEDBACK.** Provide a static Draft Lab that lets voluntary visitors type, preview and copy a plain-text technical draft without user accounts, persistence, external calls or publication. Preserve explicit notices of temporary browser-only behavior. See [PR #28](https://github.com/rf24kja/24GO.top/pull/28), [experiment](DRAFT_LAB_RESEARCH.md), and [publishing RFC #21](https://github.com/rf24kja/24GO.top/issues/21).
+
+**Alternatives:** publish the prototype against shared local development credentials (unsafe), or block UX research until full Auth (slower feedback). **Trade-off:** the copy-only concept can test friction but cannot validate actual retention or network publication. **Review when:** five real voluntary testers have tried the UX and serious accessibility blockers are identified. **Rollback:** revert PR #28; production backend remains unaffected.
