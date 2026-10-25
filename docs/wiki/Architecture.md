@@ -27,6 +27,10 @@ Source directories: [src/](https://github.com/rf24kja/24GO.top/tree/main/src), [
 - Static-only Library for ZIP/GitHub HTML/CSS/JS builds; **no arbitrary backends in v1**.
 - Modest anti-spam, privacy protection, platform security and abuse reporting.
 
+## Accessibility work in progress
+
+The development reader has an improved keyboard focus style, visible small-screen navigation and screen-reader feed loading announcements. The reproducible [QA checklist](https://github.com/rf24kja/24GO.top/blob/main/docs/ACCESSIBILITY_QA.md) explains pending manual 320px and assistive-technology tests. **Do not claim full accessibility compliance based only on code checks.**
+
 ## Security boundary
 
 Shared local publisher key + JSON file is **not a production architecture**. Before any public publishing, require verified user identity, owner-scoped writes, moderated content, rate limiting, migration/backups, auditing and privacy design. See [Security Gates](https://github.com/rf24kja/24GO.top/blob/main/docs/SECURITY_GATES.md).
