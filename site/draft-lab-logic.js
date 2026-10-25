@@ -70,7 +70,7 @@ export function parseDraftFile(text) {
   if (typeof text !== 'string' || text.length > MAX_DRAFT_FILE_BYTES) {
     throw new TypeError('Unsupported draft file');
   }
-  const normalized = text.replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n');
+  const normalized = text.replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n').replace(/\n$/, '');
   if (!normalized.endsWith(EXPORT_FOOTER)) {
     throw new TypeError('Not a 24GOTOP Draft Lab export');
   }
