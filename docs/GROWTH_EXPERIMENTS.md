@@ -50,6 +50,15 @@
 - **Target (not an outcome):** two actionable external feedback responses or one independent reproducible issue; no automated traffic or artificial comments.
 - **Decision:** revisit the editorial format only after real feedback is recorded; do not fill the feed with generic machine-written announcements.
 
+### EXP-006 — Returning author: local Markdown reopen
+
+- **Hypothesis:** people will return to finish a technical draft if they can export it and reopen that same document later, without losing text or creating an account.
+- **Workflow:** Write → Preview → Download .md → Leave → Reopen saved .md → Edit → Download again.
+- **Prototype:** `site/draft-lab.html`, source-only UX; no hosted storage, accounts, analytics or network publishing. Only Draft Lab exports are accepted.
+- **Study:** five opt-in volunteers across different devices, using [Returning Author Pilot](RETURNING_AUTHOR_PILOT.md).
+- **Target, not a result:** ≥4/5 complete a second-session import, edit and export without assistance, while understanding files remain on their own devices.
+- **Evidence status:** not measured. Do not count visits, downloads or synthetic sessions as real retention.
+
 ## Funnel and metrics — instrument later, never invent values
 
 | Metric | Collection source | Current verified value |
