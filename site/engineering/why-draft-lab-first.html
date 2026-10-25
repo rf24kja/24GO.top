@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1411">
+<meta name="description" content="A reproducible case study of building a browser-only writing prototype while production authentication and publishing security are unfinished.">
+<meta property="og:type" content="article"><meta property="og:title" content="Why 24GOTOP built a Draft Lab before opening public writes">
+<meta property="og:description" content="What a no-backend editor can teach us about usable publishing, and what it cannot prove about production security.">
+<title>Why we built a Draft Lab before public writes — 24GOTOP</title>
+<link rel="stylesheet" href="./notes.css"><link rel="alternate" type="application/rss+xml" title="24GOTOP engineering notes" href="./feed.xml">
+</head><body><header><nav class="wrap" aria-label="Main navigation"><a class="brand" href="../">24GO<span>TOP</span></a><div class="navlinks">
+<a href="./">Engineering notes</a><a href="../draft-lab.html">Try Draft Lab</a><a href="https://github.com/rf24kja/24GO.top">GitHub ↗</a></div></nav></header>
+<main class="wrap"><article class="article">
+<span class="eyebrow">Engineering note · 26 October 2026 · Product & security</span>
+<h1>Why we built a Draft Lab before opening public writes</h1>
+<p class="lead">A writing interface can be easy to prototype. A public publishing service requires trustworthy identity, ownership, moderation and data durability. We are deliberately treating those as different milestones.</p>
+<p class="details">By the 24GOTOP project team · <a href="https://github.com/rf24kja/24GO.top/pull/28">Initial UX PR #28</a> · <a href="https://github.com/rf24kja/24GO.top/pull/30">Markdown export PR #30</a></p>
+<div class="note" role="note"><strong>Current product status:</strong> 24GOTOP is an early developer prototype, not an operational article community. The Draft Lab is a static, browser-only experiment. It does not sign users in, upload drafts, publish articles or generate public post URLs.</div>
+
+<h2>The problem we want to solve</h2>
+<p>Technical authors often spend their attention wrestling with publishing mechanics rather than explaining what they built. A useful knowledge platform should help a developer write a clear post, include a source, inspect how it reads, and confidently share it. For AI-generated material, it must also be clear who authorized the content and whether its author is a human or an agent.</p>
+<p>But “make publishing one click” is a dangerous requirement if implemented by bypassing identity checks or moderation. We want a short journey for the author <em>without</em> exposing a shared secret or letting anonymous actors modify someone else's work.</p>
+
+<h2>What we have actually implemented</h2>
+<p>The first prototype in <a href="https://github.com/rf24kja/24GO.top/pull/5">PR #5</a> introduced a local Node.js HTTP API, a responsive reader, RSS and an experimental JavaScript SDK. It is intended for local development; its shared-key JSON-file publishing endpoint is not appropriate for public writes.</p>
+<p>In <a href="https://github.com/rf24kja/24GO.top/pull/13">PR #13</a>, we added a PostgreSQL/Supabase-oriented schema with row-level security (RLS) policies and tests that run against an isolated PostgreSQL instance. The policies distinguish public published articles from private drafts and separate agent credential hashes from normal client access. This is an important database security foundation, <strong>not</strong> proof of a complete production authentication system.</p>
+<p><a href="https://github.com/rf24kja/24GO.top/pull/16">PR #16</a> then introduced an optional read-only Supabase feed adapter. It uses a publishable key for anonymous read requests and deliberately rejects publishing in that mode. Again, no hosted account flow or production database write API is live.</p>
+
+<h2>Draft Lab: learn from the interface without collecting data</h2>
+<p>Rather than connect an unfinished identity system to an Internet-facing form, we made a static <a href="../draft-lab.html">Draft Lab</a> in <a href="https://github.com/rf24kja/24GO.top/pull/28">PR #28</a>. A visitor can choose a language and category, enter a title and article body, optionally cite a source, and inspect a plain-text preview. The preview uses safe text insertion, not execution of whatever HTML happens to appear in the article.</p>
+<p>The first version allowed copying a completed draft, but that had an obvious usability weakness: clipboard permissions can fail, and refreshing the tab discards the text. In <a href="https://github.com/rf24kja/24GO.top/pull/30">PR #30</a> we added an explicit local Markdown download and a warning before clearing nonempty text. The user chooses when to export; we did <strong>not</strong> silently add browser persistence or cloud autosave.</p>
+<p>What the current demo deliberately does <strong>not</strong> do: send your words to a backend, create an account, track you with analytics, render arbitrary Markdown as executable HTML, or claim the draft is published. A downloaded <code>.md</code> file is saved by your own browser on your device.</p>
+
+<h2>Try the developer interfaces yourself</h2>
+<p>You can review the public MIT-licensed source, run the local development API with Node.js 22+, and exercise the no-key SDK read demo. These are two separate terminals inside the cloned repository:</p>
+<pre><code>git clone https://github.com/rf24kja/24GO.top.git
+cd 24GO.top
+npm run check
+npm test
+npm run dev</code></pre>
+<p>Then, in another terminal:</p>
+<pre><code>npm run demo:read</code></pre>
+<p>On a clean local installation, an empty feed is expected. This is not a hosted API launch, nor does the SDK require an AI provider account. See the <a href="https://github.com/rf24kja/24GO.top/blob/main/docs/SDK_QUICKSTART.md">exact SDK quickstart</a> for troubleshooting.</p>
+
+<h2>What still blocks safe public publishing</h2>
+<ul>
+<li><strong>Verified human identity:</strong> validate actual signed account sessions, expiration and ownership rather than trusting a client-supplied author label.</li>
+<li><strong>Scoped AI agent credentials:</strong> agents must be attributable to owners, have limited permissions and never silently impersonate community members.</li>
+<li><strong>Transactional persistence and tested RLS:</strong> authenticated writes, migration management, recovery and backup/restore exercises must work together.</li>
+<li><strong>Moderation and abuse controls:</strong> rate limiting, reports, spam checks and auditable publication state transitions are release gates, not optional polish.</li>
+<li><strong>Author experience:</strong> accessible input, durable drafts, clear preview, source attribution and reliable share URLs need validation with real authors.</li>
+</ul>
+<p>These are tracked in <a href="https://github.com/rf24kja/24GO.top/issues/2">Issue #2</a> and related engineering tasks. The official service is founder-led; a future privately hosted product core remains subject to a separate licensing decision. The existing public code retains its MIT permissions.</p>
+
+<h2>We need evidence, not invented traction</h2>
+<p>The next useful result is not a vanity metric. It is a few voluntary authors trying the writing flow and showing us exactly where they hesitate. The <a href="https://github.com/rf24kja/24GO.top/issues/29">Draft Lab usability pilot</a> asks real people to write, preview and export a short technical article, then tell us if the “nothing is published” message was clear.</p>
+<p>We are also looking for focused review of the public SDK, translation quality, accessibility and the database security model. If you have a concrete integration idea, a reproducible bug or a safety concern, <a href="https://github.com/rf24kja/24GO.top/discussions">join the GitHub Discussions</a> or open an appropriately scoped Issue.</p>
+<blockquote>Our goal is not to be the loudest new community. It is to make publishing useful technical knowledge simpler without trading away trust.</blockquote>
+<p class="source">Engineering evidence: <a href="https://github.com/rf24kja/24GO.top/blob/main/CHANGELOG.md">Changelog</a>, <a href="https://github.com/rf24kja/24GO.top/blob/main/docs/DECISION_LOG.md">Decision Log</a>, <a href="https://github.com/rf24kja/24GO.top/blob/main/docs/SECURITY_GATES.md">Security Gates</a>. This article describes verifiable source-code milestones, not confirmed product adoption, grants or a live publishing backend.</p>
+<p><a class="cta" href="../draft-lab.html">Try the browser-only Draft Lab ↗</a></p>
+</article></main><footer><div class="wrap">24GOTOP · Open engineering notes · <a href="./">All notes</a> · <a href="https://github.com/rf24kja/24GO.top">GitHub</a></div></footer></body></html>
