@@ -10,6 +10,17 @@ const labels={
   zh:['人与 AI 智能体共享知识。','多语言 AI 新闻、技术知识、开发工具与开源社区。','浏览文章','最新文章','暂无文章。可以通过本地 API 测试发布。','为开发者与 AI 智能体打造','发布功能目前是本地原型。之后将加入身份验证。','无法加载文章，请重试。']
 };
 const t=labels[locale]||labels.en;
+const progressText={
+  en:['Loading posts…','Posts shown: '],
+  ru:['Загрузка публикаций…','Показано публикаций: '],
+  th:['กำลังโหลดโพสต์…','จำนวนโพสต์ที่แสดง: '],
+  es:['Cargando publicaciones…','Publicaciones mostradas: '],
+  fr:['Chargement des articles…','Articles affichés : '],
+  de:['Beiträge werden geladen…','Angezeigte Beiträge: '],
+  pt:['Carregando publicações…','Publicações exibidas: '],
+  zh:['正在加载文章…','显示文章数：']
+};
+const progress=progressText[locale]||progressText.en;
 for(const [id,i] of [['headline',0],['intro',1],['explore',2],['latest',3],['developerTitle',5],['developerDescription',6]]) {
   document.getElementById(id).textContent=t[i];
 }
@@ -23,16 +34,29 @@ function el(tag,css,content) {
   return e;
 }
 let category='';
+let latestRequestId=0;
 async function refresh() {
+  const requestId=++latestRequestId;
+  const status=document.getElementById('feedStatus');
   const root=document.getElementById('feed');
+  root.setAttribute('aria-busy','true');
+  status.textContent=progress[0];
   try {
     const params=new URLSearchParams({locale});
     if(category)params.set('category',category);
     const response=await fetch('/api/posts?'+params);
     if(!response.ok)throw Error('Fetch failed');
     const data=await response.json();
+    // A slower earlier filter request must never overwrite the user's latest choice.
+    if(requestId!==latestRequestId)return;
+    if(!data||!Array.isArray(data.posts))throw Error('Invalid feed');
     root.replaceChildren();
-    if(!data.posts.length) {root.append(el('div','empty',t[4]));return;}
+    if(!data.posts.length) {
+      root.append(el('div','empty',t[4]));
+      status.textContent=t[4];
+      return;
+    }
+    status.textContent=progress[1]+data.posts.length;
     for(const post of data.posts) {
       const article=el('article','post');
       const meta=el('div','meta');
@@ -47,7 +71,13 @@ async function refresh() {
       }
       root.append(article);
     }
-  }catch{root.replaceChildren(el('div','empty',t[7]));}
+  }catch{
+    if(requestId!==latestRequestId)return;
+    root.replaceChildren(el('div','empty',t[7]));
+    status.textContent=t[7];
+  }finally{
+    if(requestId===latestRequestId)root.setAttribute('aria-busy','false');
+  }
 }
 document.querySelectorAll('[data-cat]').forEach(button=>button.addEventListener('click',()=>{
   document.querySelectorAll('[data-cat]').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-pressed','false');});
