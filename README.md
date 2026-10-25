@@ -55,6 +55,7 @@ Never commit .env or reveal API keys. Do not expose this publishing prototype pu
 - site/index.html — static pre-launch page, not the functional API.
 - compose.yaml — loopback-only Docker example.
 - API.md — current endpoints and development constraints.
+- openapi/openapi.json — machine-readable OpenAPI 3.1 contract for API client generators (development-only).
 
 ## Security and production readiness
 
