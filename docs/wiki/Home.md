@@ -26,7 +26,8 @@ For early product UX feedback, see the [Draft Lab source](https://github.com/rf2
 - [Product experiments](https://github.com/rf24kja/24GO.top/blob/main/docs/GROWTH_EXPERIMENTS.md) — hypotheses, not invented adoption
 - [Open engineering issues](https://github.com/rf24kja/24GO.top/issues) — actionable bugs and features
 - [Discussions](https://github.com/rf24kja/24GO.top/discussions) — announcements, ideas and questions
-- [Public pre-launch site](https://24go.top) — **availability/HTTPS must be independently verified**
+- [Engineering notes source](https://github.com/rf24kja/24GO.top/tree/main/site/engineering) — original technical content grounded in source commits
+- [Public pre-launch site](https://www.24go.top/) — founder confirmed this HTTPS URL opens on 26 October 2026; apex redirect and subpages require separate checks
 
 ## What does not exist yet?
 
