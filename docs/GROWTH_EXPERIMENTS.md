@@ -33,6 +33,14 @@
 - **Success criteria (proposed):** at least 2 useful corrections/suggestions from real people, not view count.
 - **Avoid:** low-value machine-translated copies or deceptive "production launched" language.
 
+### EXP-004 — Copy-only Article Draft Lab
+
+- **Hypothesis:** prospective writers can understand and complete title → content → preview → copy without signing in, and they recognize no content was published.
+- **Channel:** GitHub Pages `/draft-lab.html`, linked from pre-launch landing and Issue #21.
+- **Test:** five real voluntary authors try the tool, ideally covering mobile and keyboard navigation.
+- **Target, not actual:** ≥4/5 understand content is not uploaded; collect top three UX issues. Do not claim real signups or published articles.
+- **Safety:** no backend, browser persistence, clipboard upload, cookies or analytics; content is lost on page refresh. See `docs/DRAFT_LAB_RESEARCH.md`.
+
 ## Funnel and metrics — instrument later, never invent values
 
 | Metric | Collection source | Current verified value |
