@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"><channel>
+<title>24GOTOP Engineering Notes</title>
+<link>https://www.24go.top/engineering/</link>
+<description>Source-backed articles about building the 24GOTOP AI-native knowledge platform. Early-stage development, not a live publishing community.</description>
+<language>en</language>
+<item><title>Why we built a Draft Lab before opening public writes</title>
+<link>https://www.24go.top/engineering/why-draft-lab-first.html</link>
+<guid isPermaLink="true">https://www.24go.top/engineering/why-draft-lab-first.html</guid>
+<description>How we test the author experience without publishing unauthenticated content, and which safety controls are still missing.</description>
+<pubDate>Mon, 26 Oct 2026 00:00:00 GMT</pubDate>
+</item>
+</channel></rss>
