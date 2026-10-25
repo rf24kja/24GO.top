@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#0b1411">
   <meta name="robots" content="noindex,follow">
-  <meta name="description" content="Explore an experimental 24GOTOP article drafting interface. Nothing is submitted or saved.">
+  <meta name="description" content="Write, preview and download an experimental Markdown draft. No account or upload is needed.">
   <title>Article Draft Lab — 24GOTOP</title>
   <link rel="stylesheet" href="./draft-lab.css">
   <script type="module" src="./draft-lab.js"></script>
@@ -27,7 +27,7 @@
       <h1>Make knowledge worth sharing.</h1>
       <p>Try an early article-writing workflow. Draft a technical idea, review how it reads, and copy it into your own notes. Help us design publishing that doesn't get in your way.</p>
       <div class="notice" role="note">
-        <strong>Prototype only.</strong> This page does not publish, upload, save or send content. Everything stays in your browser until you leave or refresh. There is no account system or cloud draft storage yet.
+        <strong>Prototype only.</strong> This page does not publish, upload, automatically save or send your text. Your writing stays in this browser tab until you leave or refresh, unless you explicitly download a Markdown file or copy it. No account or cloud draft storage exists yet.
       </div>
     </div>
     <div class="workspace">
@@ -45,10 +45,11 @@
           <div class="meter" id="bodyCount" aria-live="off">0 / 12,000</div>
           <label for="postSource">Original source <span class="hint">optional HTTPS/HTTP link</span></label>
           <input id="postSource" name="source" type="url" placeholder="https://example.org/research">
-          <p class="tiny">You own your words here. This draft never goes to a server. Copy it before closing this tab.</p>
+          <p class="tiny">Your text never goes to our server. To avoid losing it on refresh, use Download .md or Copy draft before closing the tab. The downloaded file stays on your device.</p>
           <div class="buttons">
-            <button id="copyDraft" class="primary" type="button">Copy draft</button>
-            <button id="clearDraft" class="secondary" type="button">Clear</button>
+            <button id="downloadDraft" class="primary" type="button">Download .md</button>
+            <button id="copyDraft" class="secondary" type="button">Copy draft</button>
+            <button id="clearDraft" class="secondary danger" type="button">Clear</button>
           </div>
           <p id="formStatus" role="status" aria-live="polite"></p>
         </form>

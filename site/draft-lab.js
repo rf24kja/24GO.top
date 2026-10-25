@@ -1,6 +1,6 @@
 'use strict';
 
-import { safeSourceUrl, validateDraft, formatDraft } from './draft-lab-logic.js';
+import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent } from './draft-lab-logic.js';
 
 // Browser-only UX research prototype: no network, browser persistence or analytics.
 const field = id => document.getElementById(id);
@@ -40,15 +40,35 @@ for (const control of [title,body,locale,category,source]) {
   control.addEventListener('change', preview);
 }
 
-field('copyDraft').addEventListener('click', async () => {
+function readyToExport() {
   const invalid = validateDraft(currentDraft());
-  if (invalid) {
-    message(invalid, true);
-    if (title.value.trim().length < 5) title.focus();
-    else if (body.value.trim().length < 20) body.focus();
-    else source.focus();
-    return;
-  }
+  if (!invalid) return true;
+  message(invalid, true);
+  if (title.value.trim().length < 5) title.focus();
+  else if (body.value.trim().length < 20) body.focus();
+  else source.focus();
+  return false;
+}
+
+field('downloadDraft').addEventListener('click', () => {
+  if (!readyToExport()) return;
+  // Only the direct click initiates a local browser download. No upload or API.
+  const draft = currentDraft();
+  const blob = new Blob([formatDraft(draft)], { type:'text/markdown;charset=utf-8' });
+  const blobUrl = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = blobUrl;
+  anchor.download = draftFilename(draft);
+  document.body.append(anchor);
+  anchor.click();
+  anchor.remove();
+  // The browser may still be using the Blob immediately after the click.
+  setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+  message('Download requested: ' + anchor.download + '. Nothing was published or uploaded.');
+});
+
+field('copyDraft').addEventListener('click', async () => {
+  if (!readyToExport()) return;
   if (!navigator.clipboard?.writeText) {
     message('Clipboard unavailable. Select and copy your text manually.', true);
     return;
@@ -62,6 +82,11 @@ field('copyDraft').addEventListener('click', async () => {
 });
 
 field('clearDraft').addEventListener('click', () => {
+  if (hasDraftContent(currentDraft())
+    && !window.confirm('This will discard the current draft in this tab. Download or copy it first if you want to keep it. Clear anyway?')) {
+    message('Draft kept. Nothing was erased.');
+    return;
+  }
   title.value = '';
   body.value = '';
   source.value = '';
