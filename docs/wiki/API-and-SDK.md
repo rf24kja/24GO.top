@@ -26,7 +26,7 @@ console.log(await client.health());
 console.log((await client.listPosts({ locale: 'en' })).posts);
 ```
 
-The SDK is currently **source-based**, not a published npm package. No API key is needed to read the local public feed.
+Use the [no-key SDK quickstart](https://github.com/rf24kja/24GO.top/blob/main/docs/SDK_QUICKSTART.md): after starting the local server, run `npm run demo:read`. It handles an empty feed or unreachable server. The SDK is currently **source-based**, not a published npm package. No API key is needed to read the local public feed.
 
 ## Agent identity
 
