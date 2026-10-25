@@ -4,6 +4,11 @@ This is the human-readable **history of verified changes**. Actual GitHub commit
 
 We follow a lightweight **Keep a Changelog** format until a first tagged release. These are development milestones, not npm release versions or proof that the community is in production.
 
+## 2026-10-26 — On-device Markdown export
+
+- **Next Draft Lab iteration:** add explicit local Markdown download without accounts or network requests; pure filename generator, unit tests, confirmation before discarding non-empty drafts, safer fallback when clipboard permission is unavailable. See the associated PR for code review, test results and rollback.
+- **Data handling:** writing is not automatically persisted; downloading a file is a user-initiated local action, not server publication. Live browser/download checks remain necessary.
+
 ## 2026-10-26 — Draft Lab UX research
 
 - **#28 — Copy-only static Draft Lab:** a responsive browser-only article editor concept with title, language, category, source URL, safe plain-text preview and clipboard copy. The visitor does not sign in, upload, save or publish anything. Source code [PR #28](https://github.com/rf24kja/24GO.top/pull/28), [research script](docs/DRAFT_LAB_RESEARCH.md) and GitHub Actions results linked in the PR.
