@@ -32,3 +32,12 @@ test('public journey page references actual merged PRs and discloses prototype l
   assert.match(progress, /not launched/i);
   assert.doesNotMatch(progress, /PUBLISH_API_KEY|sb_secret_|service_role/);
 });
+
+test('public landing promotes a working no-key developer demo and does not invent launch', () => {
+  assert.match(html, /npm run demo:read/);
+  assert.match(html, /docs\/SDK_QUICKSTART\.md/);
+  assert.match(html, /No cloud account|no cloud account/i);
+  assert.match(html, /Hosted public publishing is not live/);
+  assert.match(html, /https:\/\/24go\.top\//);
+  assert.doesNotMatch(html, /sb_secret_|PUBLISH_API_KEY|npm install -g.*token/i);
+});
