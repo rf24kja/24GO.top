@@ -4,6 +4,11 @@ This is the human-readable **history of verified changes**. Actual GitHub commit
 
 We follow a lightweight **Keep a Changelog** format until a first tagged release. These are development milestones, not npm release versions or proof that the community is in production.
 
+## 2026-10-26 — CI security and maintenance
+
+- **PR #31:** replace deprecated GitHub Actions runtime versions with maintained checkout/setup-node v7 across tests, PostgreSQL checks and static Pages. Disable checkout credential persistence; keep Node.js 22 application tests and existing least-privilege workflow permissions. [PR #31](https://github.com/rf24kja/24GO.top/pull/31).
+- **Verification:** GitHub Actions CI and PostgreSQL checks must pass before merging. GitHub Pages deployment requires separate post-merge confirmation.
+
 ## 2026-10-26 — On-device Markdown export
 
 - **Next Draft Lab iteration:** add explicit local Markdown download without accounts or network requests; pure filename generator, unit tests, confirmation before discarding non-empty drafts, safer fallback when clipboard permission is unavailable. [Merged-source review PR #30](https://github.com/rf24kja/24GO.top/pull/30) includes the code, CI record and rollback.
