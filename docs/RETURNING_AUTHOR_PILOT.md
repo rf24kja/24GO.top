@@ -1,0 +1,51 @@
+# Returning-author pilot: save → leave → reopen → improve
+
+**Status:** PROPOSAL / voluntary research. The Draft Lab feature is an experimental static-only UI; no real participant results have been collected or verified by this document.
+
+## User problem
+
+A prospective author may write a technical article over several sessions. A browser-only demo that loses everything on refresh is not a compelling repeat-visit experience. A browser download without import still forces users to edit outside the product. The smallest reversible test is allowing our **own exported Markdown files** to be reopened in Draft Lab.
+
+## Implemented behavior in this code
+
+1. Start an original article in `/draft-lab.html`.
+2. Choose **Download .md**, which writes a local file using the browser's download feature.
+3. Leave or refresh the page: nothing is autosaved and the in-memory draft is lost.
+4. Return later and choose **Open saved .md**. Select a file previously downloaded from Draft Lab.
+5. After parsing and validating its content **locally**, the editor fills title, language, category, source and body.
+6. Continue writing and download again to keep new changes.
+
+Existing drafts are not silently overwritten: the user is asked to confirm replacement, and cancellation preserves text. Invalid/oversized input is rejected with a non-sensitive error.
+
+The implementation accepts **only our structured export format**, not arbitrary Markdown. There is no login, tracking, storage service or publishing API. No affiliation with an AI provider or paid offering is implied.
+
+## Privacy/security rules
+
+- File selection is explicit. Local `File.text()` is used; no uploads or external requests are introduced.
+- Maximum accepted file size: 64 KiB (65,536 bytes), and Markdown content must match our earlier export grammar.
+- Imported text is inserted with `value` and shown with `textContent`; never passed to an HTML renderer or evaluated as JavaScript.
+- Unsafe source schemes and embedded URL credentials are rejected by the shared validation.
+- Browser download location/permission depends on visitor settings; always check that the file actually exists before closing a tab.
+- This is **not** encryption or secure backup. Anyone with access to the downloaded file may read it. Do not include private keys or confidential content.
+
+## Proposed real volunteer study
+
+**Do not invent successful sessions, retention percentages or screenshots.**
+
+Invite five opt-in authors to:
+
+- Write a 300–800-character technical note, including an optional source.
+- Download the file and verify it exists.
+- Close the browser tab, return on another session/device where practical, and reopen the same file.
+- Edit one paragraph and download the new version.
+- Explain whether they trust the workflow and what would bring them back.
+
+**Targets, not observed values:** five completed return sessions; at least four can successfully reopen, edit and export without guidance; gather three actionable problems. Track drop-offs separately for Windows/Android/iOS and keyboard-only use. If two testers are blocked at import or file permissions, revise UX before adding more features.
+
+## Success decision
+
+A positive prototype result supports researching secure, authenticated server-side drafts **after** the founder resolves the public/private core boundary and P0 security gates. It does not prove product-market fit, DAU/MAU, paid conversion, or readiness to open public writes.
+
+## Test & rollback
+
+Node CI covers round-tripping every locale/category, previously exported files, CRLF/BOM, malicious URL data, oversized files and metadata tampering. Manual real-browser file picker, download, focus and screen-reader tests remain necessary. Revert the dedicated Import PR to remove this functionality; no database or production data migration is involved.
