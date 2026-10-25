@@ -4,6 +4,13 @@ This is the human-readable **history of verified changes**. Actual GitHub commit
 
 We follow a lightweight **Keep a Changelog** format until a first tagged release. These are development milestones, not npm release versions or proof that the community is in production.
 
+## 2026-10-26 — Reader accessibility and feed correctness
+
+- Preserve mobile Discover/GitHub navigation instead of hiding links under 600px; strengthen keyboard focus indicators and reduced-motion handling.
+- Give the local prototype a named feed region, separate screen-reader status messages and accurate `aria-busy` states. Ignore stale API results after switching categories and handle malformed upstream responses safely.
+- Add simulated-DOM behavioral regression tests for overlapping requests, errors and empty feeds, plus a manual keyboard/screen-reader test protocol. **Independent assistive-technology and real-device QA remains open** in [Issue #7](https://github.com/rf24kja/24GO.top/issues/7).
+- PR: linked in the corresponding accessibility PR. Rollback: revert static UI changes; no production database or backend migration.
+
 ## 2026-10-26 — First source-backed technical article
 
 - Introduce a static Engineering Notes section and RSS feed, starting with **Why we built a Draft Lab before opening public writes**, explaining verifiable PR evidence, safeguards, and remaining public-write security gates. The article is original project documentation, not a real user publication.
