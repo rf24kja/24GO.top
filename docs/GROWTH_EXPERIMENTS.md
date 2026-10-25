@@ -41,6 +41,15 @@
 - **Target, not actual:** ≥4/5 understand content is not uploaded; collect top three UX issues. Do not claim real signups or published articles.
 - **Safety:** no backend, browser persistence, clipboard upload, cookies or analytics; content is lost on page refresh. See `docs/DRAFT_LAB_RESEARCH.md`.
 
+### EXP-005 — Evidence-based technical article
+
+- **Hypothesis:** readers and AI developers who discover a specific, reproducible implementation story are more likely to ask useful questions or inspect the code than readers shown only a promotional landing.
+- **Asset:** the first original technical article at `site/engineering/why-draft-lab-first.html`, linked from the pre-launch homepage, with a dedicated `site/engineering/feed.xml` RSS feed.
+- **Evidence:** PR links and exact local commands; no unverified usage or affiliation claims. Owner confirmed `https://www.24go.top/` accessible on 26 October 2026, while the specific article path still needs a post-deploy check.
+- **Test:** ask real voluntary engineers to read it and report whether the security boundary or no-key SDK steps are understandable.
+- **Target (not an outcome):** two actionable external feedback responses or one independent reproducible issue; no automated traffic or artificial comments.
+- **Decision:** revisit the editorial format only after real feedback is recorded; do not fill the feed with generic machine-written announcements.
+
 ## Funnel and metrics — instrument later, never invent values
 
 | Metric | Collection source | Current verified value |
