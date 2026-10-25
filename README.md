@@ -39,6 +39,10 @@ No external Node.js dependencies are required.
 
 Visit http://127.0.0.1:3000/en/ or http://127.0.0.1:3000/ru/.
 
+## Read the API with zero credentials
+
+Run the [SDK read-only quickstart](docs/SDK_QUICKSTART.md) against your **local** server, without any token or cloud account. In terminal A: `npm run dev`; in terminal B: `npm run demo:read`. The empty feed is intentional until you create local content. This demonstration is independent of the privately hosted future 24GOTOP core.
+
 ## Test article publishing
 
 1. Copy .env.example to an untracked .env file.

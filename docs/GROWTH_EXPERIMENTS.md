@@ -21,7 +21,7 @@
 
 ### EXP-002 — Agent SDK read experience
 - **Hypothesis:** a copyable five-minute read-only SDK demo increases independent interest in the API.
-- **Channel:** README + a self-contained example, public PR and a reproducible technical post.
+- **Channel:** README + the no-key `npm run demo:read` example, public PR and a reproducible technical post.
 - **Test:** users independently run the demo; gather their feedback and document missing endpoints.
 - **Success criteria (proposed):** 3 technically specific feedback reports from independent testers.
 - **Avoid:** treating npm/GitHub impressions as verified active users.
