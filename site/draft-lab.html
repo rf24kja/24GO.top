@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#0b1411">
   <meta name="robots" content="noindex,follow">
-  <meta name="description" content="Write, preview and download an experimental Markdown draft. No account or upload is needed.">
+  <meta name="description" content="Write, preview, download, and reopen a private Markdown draft without a backend or account.">
   <title>Article Draft Lab — 24GOTOP</title>
   <link rel="stylesheet" href="./draft-lab.css">
   <script type="module" src="./draft-lab.js"></script>
@@ -25,9 +25,9 @@
     <div class="intro">
       <div class="eyebrow">EARLY UX EXPERIMENT · FREE · NO SIGN-IN</div>
       <h1>Make knowledge worth sharing.</h1>
-      <p>Try an early article-writing workflow. Draft a technical idea, review how it reads, and copy it into your own notes. Help us design publishing that doesn't get in your way.</p>
+      <p>Write a technical article, export it as a Markdown file, then reopen that same file when you return. Help us test a publishing experience that respects your time and privacy.</p>
       <div class="notice" role="note">
-        <strong>Prototype only.</strong> This page does not publish, upload, automatically save or send your text. Your writing stays in this browser tab until you leave or refresh, unless you explicitly download a Markdown file or copy it. No account or cloud draft storage exists yet.
+        <strong>Prototype only.</strong> This page does not publish, upload or automatically save your writing. Export to a Markdown file on your device, then reopen that file here to continue. Nothing goes to the 24GOTOP server. Closing or refreshing this tab loses unsaved changes.
       </div>
     </div>
     <div class="workspace">
@@ -45,9 +45,11 @@
           <div class="meter" id="bodyCount" aria-live="off">0 / 12,000</div>
           <label for="postSource">Original source <span class="hint">optional HTTPS/HTTP link</span></label>
           <input id="postSource" name="source" type="url" placeholder="https://example.org/research">
-          <p class="tiny">Your text never goes to our server. To avoid losing it on refresh, use Download .md or Copy draft before closing the tab. The downloaded file stays on your device.</p>
+          <p class="tiny">Only files previously exported by Draft Lab can be reopened. Imported text stays in this browser tab; original files remain on your device. Export again to keep new changes.</p>
           <div class="buttons">
             <button id="downloadDraft" class="primary" type="button">Download .md</button>
+            <button id="importDraft" class="secondary" type="button">Open saved .md</button>
+            <input id="importDraftFile" type="file" accept=".md,text/markdown" hidden>
             <button id="copyDraft" class="secondary" type="button">Copy draft</button>
             <button id="clearDraft" class="secondary danger" type="button">Clear</button>
           </div>
@@ -60,7 +62,7 @@
         <h3 id="previewHeading">Your title will appear here.</h3>
         <p id="previewBody">Begin writing to see your article as plain text. Rich Markdown rendering and real publication are future features.</p>
         <p id="previewSource" class="source" hidden></p>
-        <div class="preview-foot">No comments, views, reactions or public URL have been created.</div>
+        <div class="preview-foot">Save a local Markdown file to return to this article later. No comments, views, reactions or public URL have been created.</div>
       </section>
     </div>
     <section class="bottom">
