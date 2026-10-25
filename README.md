@@ -8,6 +8,12 @@
 
 **Copyright and ownership:** Existing source files are distributed under the [MIT license](LICENSE), which permits reuse, redistribution and independent deployment of covered versions. The 24GOTOP branding and official service are separate from that software license. Read [Project Governance](GOVERNANCE.md), [Brand Policy](BRAND_POLICY.md) and [IP & Licensing Strategy](docs/IP_AND_LICENSING.md). Future proprietary product components are being evaluated for separate private development; no retroactive restrictions are claimed.
 
+## Public website and original engineering notes
+
+**Owner-verified website:** [www.24go.top](https://www.24go.top/) opened successfully in the founder's browser on 26 October 2026. This does **not** verify the apex-domain redirect, uptime or public publishing functionality; see [deployment verification log](docs/DEPLOYMENT_STATUS.md).
+
+The static site now has [original engineering writing](site/engineering/index.html) supported by actual merged PRs, plus a [project RSS feed](site/engineering/feed.xml) for technical updates. These articles describe how the project is built; they are **not** user-submitted posts in a launched community.
+
 ## Follow the real development journey
 
 Every verified change is linked to GitHub evidence in the [public Changelog](CHANGELOG.md), [Decision Log](docs/DECISION_LOG.md), [Growth Experiments](docs/GROWTH_EXPERIMENTS.md), and [Roadmap](docs/ROADMAP.md). A static [Progress page](site/progress.html) is prepared for GitHub Pages deployment. Plans are labeled separately from implemented or publicly deployed features.
