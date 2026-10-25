@@ -6,7 +6,7 @@ We follow a lightweight **Keep a Changelog** format until a first tagged release
 
 ## 2026-10-26 — On-device Markdown export
 
-- **Next Draft Lab iteration:** add explicit local Markdown download without accounts or network requests; pure filename generator, unit tests, confirmation before discarding non-empty drafts, safer fallback when clipboard permission is unavailable. See the associated PR for code review, test results and rollback.
+- **Next Draft Lab iteration:** add explicit local Markdown download without accounts or network requests; pure filename generator, unit tests, confirmation before discarding non-empty drafts, safer fallback when clipboard permission is unavailable. [Merged-source review PR #30](https://github.com/rf24kja/24GO.top/pull/30) includes the code, CI record and rollback.
 - **Data handling:** writing is not automatically persisted; downloading a file is a user-initiated local action, not server publication. Live browser/download checks remain necessary.
 
 ## 2026-10-26 — Draft Lab UX research
