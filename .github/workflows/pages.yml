@@ -1,0 +1,44 @@
+name: Deploy pre-launch landing
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "github-pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout published branch
+        uses: actions/checkout@v4
+      - name: Validate static-only artifact
+        run: |
+          test -f site/index.html
+          test ! -e site/.env
+          test ! -e site/src
+          test ! -e site/packages
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Upload ONLY the static site
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: site/
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
