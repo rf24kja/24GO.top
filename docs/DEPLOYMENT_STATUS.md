@@ -25,3 +25,7 @@
 Close only with evidence that the intended canonical host is configured, DNS checks pass, HTTPS works, GitHub Pages deployment is successful, and primary prelaunch pages have been smoke-tested. A single successful `www` page view is strong progress but **not** proof of the entire deployment chain.
 
 No DNS, Namecheap or GitHub Pages settings were changed in this log.
+
+## Pending public navigation smoke test
+
+After the public navigation PR is merged and Pages deployment completes, separately confirm `www.24go.top` home has visible, keyboard-focusable links to Draft Lab, Engineering Notes, Progress and GitHub on mobile. This is an **unverified browser check** until recorded by a human; source-level tests alone do not establish working deployed pages.

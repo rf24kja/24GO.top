@@ -81,3 +81,17 @@ test('Draft Lab provides private Markdown export and loss-prevention controls',(
   assert.doesNotMatch(draftJs,/\bfetch\s*\(|localStorage|sessionStorage|XMLHttpRequest|sendBeacon|innerHTML/);
   assert.doesNotMatch(draftHtml,/PUBLISH_API_KEY|sb_secret_/);
 });
+
+
+test('public landing exposes meaningful 320px navigation and visible keyboard focus',()=>{
+  assert.match(html, /<a class="skip" href="#main-content">Skip to main content<\/a>/);
+  assert.match(html, /<main id="main-content" tabindex="-1">/);
+  assert.match(html, /<nav aria-label="Main navigation">/);
+  for(const target of ['./draft-lab.html','./engineering/','./progress.html','https://github.com/rf24kja/24GO.top']){
+    assert.ok(html.includes('href="'+target+'"'),'Missing visible navigation: '+target);
+  }
+  assert.match(html, /:focus-visible\{outline:3px solid #68ebb0/);
+  assert.match(html, /header nav\{order:3;width:100%/);
+  assert.match(html, /@media\(prefers-reduced-motion:reduce\)/);
+  assert.doesNotMatch(html, /nav a\{display:none\}|display:none[^}]*nav/i);
+});

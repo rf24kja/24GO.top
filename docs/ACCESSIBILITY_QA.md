@@ -40,3 +40,15 @@ Add results to [Issue #7](https://github.com/rf24kja/24GO.top/issues/7), includi
 ## Rollback
 
 Revert the corresponding accessibility PR to restore prior markup/styling/reader behavior. This change does not alter the database, public GitHub Pages deployment or any production write path.
+
+## Public GitHub Pages landing — manual QA after deployment
+
+The **public** `site/index.html` now has a separate navigation header; do not confuse it with the development-only `public/index.html` reader. Automated HTML/CSS tests verify the links and focus rules, but the following checks need a person with a real browser:
+
+1. Open `https://www.24go.top/` after the new Pages deployment and press Tab. The skip-to-content link should become visible; Enter should focus the main content.
+2. Tab through **Write a draft**, **Articles**, **Development**, **GitHub**. Check visible focus and that each link resolves.
+3. At 320px and 390px, 200% zoom, and with larger text settings, verify the nav wraps to accessible rows with no horizontal clipping.
+4. Switch to a mobile screen reader and review landmark/nav announcements, link names, and focus order.
+5. Verify that opening a draft does not send content to the server and does not incorrectly imply public posting.
+
+If these fail, record a reproducible Issue with device/browser and no private content. **Passing CI is not proof that the live site is accessible.**
