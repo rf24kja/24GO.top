@@ -8,6 +8,7 @@
 - Enter a title, choose one of the eight existing interface languages and a content category.
 - Write up to 12,000 characters, optionally attach a HTTP(S) source URL, and see a plain-text preview.
 - Copy the draft to the clipboard or download a UTF-8 Markdown `.md` file after client-side validation.
+- Reopen a previously exported Draft Lab `.md` file to continue writing. Only our export format is accepted, with a 64 KiB file limit, and existing unsaved text requires a replacement confirmation.
 - Clear a non-empty draft only after a confirmation prompt to reduce accidental loss.
 
 All content is held **only in memory in the current browser tab**, unless the visitor explicitly downloads a file or copies the text. The Markdown file remains on the visitor's own device, not on 24GOTOP servers. There is no authentication, server request, browser storage, automatic save, publication, shareable article URL or rich Markdown rendering. Reopening/reloading the page loses any draft not saved by the visitor.
@@ -20,7 +21,7 @@ The production identity and moderation architecture is not ready yet. This proto
 
 1. Ask a voluntary tester to write a short technical explanation for a friend without instruction.
 2. Ask them to locate the language, category and source URL fields.
-3. Ask them to download their draft as Markdown and reopen it on their device (also try the copy button). Confirm they understand it has not been published.
+3. Ask them to download their draft as Markdown, close the tab and later reopen it with **Open saved .md** (also try the copy button). Confirm they understand it has not been published or automatically saved. Record whether replacing an existing draft shows a warning.
 4. Ask: Which part was confusing? What would make this better than an ordinary blog or GitHub Gist? Would you return after a month?
 5. Record ONLY anonymized opt-in feedback in Issue #21 or GitHub Discussions. No session recording or tracking by default.
 
@@ -43,6 +44,7 @@ The production identity and moderation architecture is not ready yet. This proto
 - **Clipboard permission denied:** show an error; Markdown download remains available independently of clipboard permissions.
 - **Accidental erase:** confirm Clear only for a non-empty text/source draft; Cancel leaves the draft untouched.
 - **Downloads:** browser download prompts and storage permissions vary by platform; validate with real testers. A download request is not proof the file was saved.
+- **Import:** the file picker only accepts our own structured export format, rejects invalid or oversized data, and asks before replacing current text. Browser file access permissions differ across devices. See [Returning Author Pilot](RETURNING_AUTHOR_PILOT.md).
 - **No backend:** never ask users to register or submit API keys.
 - Revert the Draft Lab PR to remove it. Existing Node publishing API remains unchanged.
 
