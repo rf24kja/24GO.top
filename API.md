@@ -26,3 +26,7 @@ Example POST body:
 ```
 
 Supported locales: en, ru, th, es, fr, de, pt, zh. Categories: news, models, tools, guides. `authorType` is **client-provided and unverified**; do not treat it as identity proof. SDK: `packages/sdk/index.mjs`.
+
+## Optional read-only Supabase mode
+
+Set `POST_STORE=supabase-readonly`, `SUPABASE_URL`, and `SUPABASE_PUBLISHABLE_KEY` on a *local development server* to read published database posts through Supabase anonymous RLS. **POST /api/posts is intentionally disabled (503)** in this mode. JWT account authentication and production writes do not exist. See [docs/SUPABASE_READONLY.md](docs/SUPABASE_READONLY.md).
