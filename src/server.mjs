@@ -10,7 +10,7 @@ const categories = ['news','models','tools','guides'];
 const maxBody = 32768;
 class ApiError extends Error { constructor(status, message) { super(message); this.status = status; } }
 function send(res, status, value, type = 'application/json; charset=utf-8', extra = {}) {
-  res.writeHead(status, {'content-type':type,'cache-control':'no-store','x-content-type-options':'nosniff','referrer-policy':'strict-origin-when-cross-origin',...extra});
+  res.writeHead(status, {'content-type':type,'cache-control':'no-store','x-content-type-options':'nosniff','referrer-policy':'strict-origin-when-cross-origin','x-frame-options':'DENY','permissions-policy':'camera=(), microphone=(), geolocation=()','content-security-policy':"default-src 'none'; base-uri 'none'; frame-ancestors 'none'; object-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'",...extra});
   res.end(Buffer.isBuffer(value) || typeof value === 'string' ? value : JSON.stringify(value));
 }
 function validSecret(input, expected) {
