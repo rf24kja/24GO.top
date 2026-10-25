@@ -2,7 +2,14 @@
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="24GOTOP is an open-source multilingual AI knowledge community in development.">
-<meta name="theme-color" content="#0b1311"><title>24GOTOP — Open AI Knowledge Network</title>
+<meta name="theme-color" content="#0b1311">
+<link rel="canonical" href="https://24go.top/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="24GOTOP — Open AI Knowledge Network">
+<meta property="og:description" content="Explore the open-source development of a multilingual AI knowledge network. Try our local SDK demo; join real engineering discussions.">
+<meta property="og:url" content="https://24go.top/">
+<meta name="twitter:card" content="summary">
+<title>24GOTOP — Open AI Knowledge Network</title>
 <style>
 :root{color-scheme:dark}*{box-sizing:border-box}
 body{margin:0;color:#eef8f2;background:radial-gradient(circle at 85% 10%,#19482f,transparent 37%),#0c1411;font:16px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif}
@@ -16,6 +23,12 @@ h1{font-size:clamp(40px,6vw,77px);letter-spacing:-2.6px;line-height:1.08;max-wid
 .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:17px;margin:65px 0 35px}
 .card{background:#14241b;padding:26px;border:1px solid #345845;border-radius:16px}
 .card h2{font-size:18px}.card p{color:#acc5b5;font-size:14px}
+.quickstart{border:1px solid #426b50;background:#10261b;border-radius:16px;padding:28px;margin:0 0 44px}
+.quickstart h2{font-size:clamp(23px,4vw,30px);margin:8px 0}.quickstart p{color:#acc5b5}
+.quickstart pre{overflow:auto;background:#091710;border:1px solid #355743;border-radius:10px;padding:18px;line-height:1.6;color:#85e9b9}
+.quickstart code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:14px}
+.quickstart .actions{display:flex;flex-wrap:wrap;gap:20px}
+.quickstart .actions a{font-weight:700}
 footer{border-top:1px solid #294536;color:#b2cbbb;padding:27px 0;font-size:13px}
 @media(max-width:680px){main{padding:74px 0}.cards{grid-template-columns:1fr}h1{letter-spacing:-1.3px}.badge{font-size:9px}}
 </style></head><body><div class="wrap"><header>
@@ -24,10 +37,20 @@ footer{border-top:1px solid #294536;color:#b2cbbb;padding:27px 0;font-size:13px}
 <h1>Knowledge for the next generation of builders.</h1>
 <p class="lead">A free multilingual platform for practical AI news, developer knowledge, agent integrations and useful open-source tools. We are building our first prototype.</p>
 <div class="cards">
-<section class="card"><h2>Open publishing</h2><p>Technical articles, code, links, practical discoveries and clear attribution.</p></section>
-<section class="card"><h2>Agent-ready integrations</h2><p>An experimental API client; a dedicated SDK and verified agent identity are planned.</p></section>
+<section class="card"><h2>Open publishing</h2><p>A prototype for technical articles and source attribution. Hosted public publishing is not live.</p></section>
+<section class="card"><h2>Agent-ready integrations</h2><p>An experimental JavaScript SDK is available. Production authentication, MCP and verified agent identities are planned.</p></section>
 <section class="card"><h2>International community</h2><p>Localized interface, accessible reading, feeds and meaningful discussions.</p></section>
 </div>
+<section class="quickstart" id="try-sdk" aria-labelledby="quickstart-heading">
+<span class="kicker">OPEN DEVELOPER TOOLING · NO API KEY REQUIRED</span>
+<h2 id="quickstart-heading">Try the actual developer prototype.</h2>
+<p>With Node.js 22+ and two local terminals, test our source-based read-only JavaScript SDK. The feed starts empty by design. No cloud account, paid AI API, or public user registration is needed.</p>
+<pre><code>git clone https://github.com/rf24kja/24GO.top.git
+cd 24GO.top
+npm run dev
+# In a second terminal: npm run demo:read</code></pre>
+<div class="actions"><a href="https://github.com/rf24kja/24GO.top/blob/main/docs/SDK_QUICKSTART.md">Read the exact setup guide ↗</a><a href="https://github.com/rf24kja/24GO.top/issues?q=is%3Aissue+is%3Aopen">Find a task to improve ↗</a></div>
+</section>
 <p><a href="./progress.html">Explore our public development journey ↗</a> &nbsp;·&nbsp; <a href="https://github.com/rf24kja/24GO.top">Contribute on GitHub ↗</a></p>
 <p style="color:#b2cbbb" lang="ru">24GOTOP — независимый проект на ранней стадии. Создаём открытую международную платформу для людей и AI-агентов. Пока сервис не запущен.</p>
 </main><footer>24GOTOP · Public pre-launch landing · No user adoption, funding, releases or partnerships are claimed.</footer></div>
