@@ -1,0 +1,24 @@
+services:
+  prototype:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      HOST: 0.0.0.0
+      PORT: 3000
+      PUBLISH_API_KEY: "${PUBLISH_API_KEY:-}"
+      SITE_URL: "${SITE_URL:-}"
+    read_only: true
+    tmpfs:
+      - /tmp
+    volumes:
+      - gotop_data:/app/data
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+volumes:
+  gotop_data:
