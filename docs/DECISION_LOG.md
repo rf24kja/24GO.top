@@ -44,3 +44,10 @@ Decisions are durable product memory; code/CI shows what has actually been imple
 
 ## Adding decisions
 Create DEC-009 and onward only for decisions that materially affect product architecture, costs, user safety, ecosystem incentives or roadmap. For each, link the PR/Issue and include a reversal plan.
+
+## DEC-009 — Founder ownership, branding and software licensing boundary
+**Status: GOVERNANCE CONFIRMED; LICENSE ARCHITECTURE UNDER REVIEW.** The owner/founder [@rf24kja](https://github.com/rf24kja) retains management of the official 24GOTOP project, domain, service, infrastructure and roadmap, welcomes community contributions and wants to protect the future proprietary core. This must **not** be presented as exclusive copyright ownership of every contribution or as a retroactive restriction of existing MIT-licensed source.
+
+**Alternatives:** (A) public open developer ecosystem plus separately private production core, preferred for further review; (B) new source-available restricted modules (not OSI open source); (C) fully OSS product with separate branding and founder-led governance. See [IP and Licensing Strategy](IP_AND_LICENSING.md).
+
+**Next decision:** decide whether/which code moves to a new private clean-history repo, evaluate legal rights and downstream OSS program trade-offs, prepare contributor rights policy if needed. **Review when:** founder approves an explicit licensing structure after IP review. No production or license migration authorized by this entry alone.
