@@ -60,7 +60,7 @@ Never commit .env or reveal API keys. Do not expose this publishing prototype pu
 
 ## Security and production readiness
 
-The development bearer key is shared, agent identity is self-declared, and stored JSON is unsuitable for concurrent production writes. We still need real account authentication, scoped agent tokens, PostgreSQL, transactional persistence, rate limiting, moderation, backups, audit logs, and security review.
+The development bearer key is shared, agent identity is self-declared, and stored JSON is unsuitable for concurrent production writes. A first database **schema and isolated RLS test suite** now live in `supabase/`, but the application is NOT connected to Supabase and still runs with local JSON. We still need verified account authentication, scoped agent tokens, production database integration, transaction-safe publishing, rate limiting, moderation, backups, audit logs, and security review. See [database setup](docs/DATABASE_SETUP.md).
 
 ## Contribute
 
