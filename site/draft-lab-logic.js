@@ -39,3 +39,23 @@ export function formatDraft(draft) {
   result.push('',draft.body.trim(),'','---','Unpublished draft · Generated in the 24GOTOP static Draft Lab.');
   return result.join('\n');
 }
+
+
+/**
+ * Filename uses ASCII characters only to avoid paths, reserved characters,
+ * or browser-specific filename normalization. Does not use the article body.
+ */
+export function draftFilename(draft) {
+  const language = LOCALES.includes(draft?.locale) ? draft.locale : 'en';
+  const title = typeof draft?.title === 'string' ? draft.title : '';
+  const slug = title.normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase().replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '').slice(0, 50).replace(/-+$/g, '');
+  return '24gotop-' + (slug || 'draft-' + language) + '.md';
+}
+
+export function hasDraftContent(draft) {
+  return Boolean(
+    draft?.title?.trim() || draft?.body?.trim() || draft?.source?.trim()
+  );
+}
