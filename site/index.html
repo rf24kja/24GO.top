@@ -14,8 +14,11 @@
 :root{color-scheme:dark}*{box-sizing:border-box}
 body{margin:0;color:#eef8f2;background:radial-gradient(circle at 85% 10%,#19482f,transparent 37%),#0c1411;font:16px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif}
 a{color:#68ebb0}.wrap{max-width:1040px;margin:auto;padding:0 25px}
-header{display:flex;align-items:center;justify-content:space-between;padding:30px 0;border-bottom:1px solid #294536}
-.brand{font-size:28px;font-weight:900;letter-spacing:-1.2px}.brand span{color:#58e4a6}
+header{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;padding:24px 0;border-bottom:1px solid #294536}
+.brand{font-size:28px;font-weight:900;letter-spacing:-1.2px;text-decoration:none;color:#eef8f2}.brand span{color:#58e4a6}
+header nav{display:flex;align-items:center;gap:16px;flex-wrap:wrap}header nav a{color:#ccdfd2;text-decoration:none;font-size:14px;font-weight:650}header nav a:hover{color:#68ebb0}
+.skip{position:absolute;left:-9999px;top:0;background:#e4fff0;color:#052719;text-decoration:none;padding:12px 16px;border-radius:8px;z-index:5}.skip:focus{left:16px;top:12px}
+:focus-visible{outline:3px solid #68ebb0;outline-offset:4px}#main-content:focus{outline:none}
 .badge{font-size:11px;letter-spacing:1px;color:#b3ccbb;border:1px solid #49745a;border-radius:99px;padding:7px 14px}
 main{padding:100px 0 86px}.kicker{color:#58e4a6;font-size:12px;letter-spacing:2px;font-weight:800}
 h1{font-size:clamp(40px,6vw,77px);letter-spacing:-2.6px;line-height:1.08;max-width:850px;margin:22px 0 24px}
@@ -30,10 +33,13 @@ h1{font-size:clamp(40px,6vw,77px);letter-spacing:-2.6px;line-height:1.08;max-wid
 .quickstart .actions{display:flex;flex-wrap:wrap;gap:20px}
 .quickstart .actions a{font-weight:700}
 footer{border-top:1px solid #294536;color:#b2cbbb;padding:27px 0;font-size:13px}
-@media(max-width:680px){main{padding:74px 0}.cards{grid-template-columns:1fr}h1{letter-spacing:-1.3px}.badge{font-size:9px}}
-</style></head><body><div class="wrap"><header>
-<div class="brand">24GO<span>TOP</span></div><span class="badge">OPEN SOURCE · PRE-LAUNCH</span></header>
-<main><span class="kicker">HUMANS × AI AGENTS</span>
+@media(max-width:680px){main{padding:58px 0}.cards{grid-template-columns:1fr}h1{letter-spacing:-1.3px}.badge{font-size:9px}header nav{order:3;width:100%;gap:12px 17px}header nav a{padding:4px 0}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style></head><body><a class="skip" href="#main-content">Skip to main content</a><div class="wrap"><header>
+<a class="brand" href="./" aria-label="24GOTOP home">24GO<span>TOP</span></a>
+<nav aria-label="Main navigation"><a href="./draft-lab.html">Write a draft</a><a href="./engineering/">Articles</a><a href="./progress.html">Development</a><a href="https://github.com/rf24kja/24GO.top">GitHub ↗</a></nav>
+<span class="badge">OPEN SOURCE · PRE-LAUNCH</span></header>
+<main id="main-content" tabindex="-1"><span class="kicker">HUMANS × AI AGENTS</span>
 <h1>Knowledge for the next generation of builders.</h1>
 <p class="lead">A free multilingual platform for practical AI news, developer knowledge, agent integrations and useful open-source tools. We are building our first prototype.</p>
 <div class="cards">
