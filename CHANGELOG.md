@@ -9,6 +9,9 @@ We follow a lightweight **Keep a Changelog** format until a first tagged release
 - **#25 — No-key API read demo and SDK hardening:** add `npm run demo:read` for developers to verify the local feed without secrets or cloud accounts; add explicit SDK errors, bounded network timeouts, URL credential rejection, and a guard against transmitting development publishing keys over remote plaintext HTTP. Add six SDK regression tests, source-based quickstart and docs. [PR #25](https://github.com/rf24kja/24GO.top/pull/25).
 - This is an MIT-licensed **public SDK example**, not a private production backend, hosted public API or npm distribution.
 - **Verification:** GitHub Actions Node syntax check and full tests, linked in PR. Revert #25 to roll back without any migration.
+
+- **Developer resource readiness:** add a public research/evidence ledger for Claude OSS, GitHub Copilot and AWS Activate with strict caveats and no implied application or award. [PR #26](https://github.com/rf24kja/24GO.top/pull/26). No benefits have been applied for or received through this PR.
+
 ## 2026-10-25 — From idea to working development prototype
 
 ### Initial repository and documentation
