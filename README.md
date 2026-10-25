@@ -41,7 +41,7 @@ Visit http://127.0.0.1:3000/en/ or http://127.0.0.1:3000/ru/.
 
 ## Try the browser-only publishing UX experiment
 
-The public [Draft Lab](site/draft-lab.html) demonstrates a minimal first-author experience: title, language, category, plain-text preview, source link and **copy-only** draft. Nothing is submitted, uploaded, saved or published. It is deliberately separate from the production Auth/backend roadmap. See [research protocol](docs/DRAFT_LAB_RESEARCH.md) and [feedback RFC](https://github.com/rf24kja/24GO.top/issues/21).
+The public [Draft Lab](site/draft-lab.html) demonstrates a minimal first-author experience: title, language, category, plain-text preview, source link and **copy or local Markdown download**. Nothing is submitted, uploaded, automatically saved or published; downloaded files stay on the visitor's device. It is deliberately separate from the production Auth/backend roadmap. See [research protocol](docs/DRAFT_LAB_RESEARCH.md) and [feedback RFC](https://github.com/rf24kja/24GO.top/issues/21).
 
 ## Read the API with zero credentials
 
