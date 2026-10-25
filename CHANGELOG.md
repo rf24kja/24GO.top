@@ -4,6 +4,12 @@ This is the human-readable **history of verified changes**. Actual GitHub commit
 
 We follow a lightweight **Keep a Changelog** format until a first tagged release. These are development milestones, not npm release versions or proof that the community is in production.
 
+## 2026-10-26 — Navigable public website
+
+- Give the GitHub Pages landing a real responsive header with visible links to Draft Lab, engineering articles, the development history and GitHub; keyboard skip link, focus outline and mobile wrapping.
+- Add regression checks for navigation destinations and source-level keyboard/motion CSS. User device verification remains pending; no claim of certified accessibility or live deployment.
+- Evidence: [PR #34](https://github.com/rf24kja/24GO.top/pull/34). Rollback by reverting the static landing change; production API/DB unaffected.
+
 ## 2026-10-26 — Reader accessibility and feed correctness
 
 - Preserve mobile Discover/GitHub navigation instead of hiding links under 600px; strengthen keyboard focus indicators and reduced-motion handling.
