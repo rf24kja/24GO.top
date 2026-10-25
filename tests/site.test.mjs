@@ -52,7 +52,7 @@ test('draft lab is discoverable, labeled experimental, and provides accessible f
     assert.ok(draftHtml.includes('for="' + id + '"'), 'missing accessible label: ' + id);
     assert.ok(draftHtml.includes('id="' + id + '"'), 'missing input: ' + id);
   }
-  assert.match(draftHtml, /does not publish, upload, save or send content/);
+  assert.match(draftHtml, /does not publish, upload, automatically save or send your text/);
   assert.match(draftHtml, /No backend/);
   assert.match(draftHtml, /role="status"/);
   assert.match(draftCss, /@media\(max-width:860px\)/);
@@ -65,4 +65,19 @@ test('draft lab never submits, stores, or executes user-created HTML', () => {
   assert.match(draftJs, /preventDefault\(\)/);
   assert.doesNotMatch(draftHtml, /<form[^>]+action=/);
   assert.doesNotMatch(draftHtml, /PUBLISH_API_KEY|sb_secret_/);
+});
+
+
+test('Draft Lab provides private Markdown export and loss-prevention controls',()=>{
+  const logic=readFileSync(fileURLToPath(new URL('../site/draft-lab-logic.js',import.meta.url)),'utf8');
+  assert.match(draftHtml,/id="downloadDraft"/);
+  assert.match(draftHtml,/Download \.md/);
+  assert.match(draftJs,/new Blob\(\[formatDraft\(draft\)\]/);
+  assert.match(draftJs,/URL\.createObjectURL/);
+  assert.match(draftJs,/URL\.revokeObjectURL/);
+  assert.match(draftJs,/anchor\.download = draftFilename\(draft\)/);
+  assert.match(draftJs,/window\.confirm\(/);
+  assert.match(logic,/export function draftFilename/);
+  assert.doesNotMatch(draftJs,/\bfetch\s*\(|localStorage|sessionStorage|XMLHttpRequest|sendBeacon|innerHTML/);
+  assert.doesNotMatch(draftHtml,/PUBLISH_API_KEY|sb_secret_/);
 });
