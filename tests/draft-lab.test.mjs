@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { LOCALES, CATEGORIES, safeSourceUrl, validateDraft, formatDraft } from '../site/draft-lab-logic.js';
+import { LOCALES, CATEGORIES, safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent } from '../site/draft-lab-logic.js';
 
 const valid = {
   title:'Making a secure publishing API',
@@ -50,4 +50,29 @@ test('draft output preserves input literally, without HTML execution',()=>{
   const output=formatDraft({...valid,body:raw});
   assert.ok(output.includes(raw),'source should remain literal text for copying');
   assert.throws(()=>formatDraft({...valid,source:'javascript:alert(1)'}),TypeError);
+});
+
+
+test('on-device export uses safe predictable Markdown filenames',()=>{
+  assert.equal(draftFilename(valid),'24gotop-making-a-secure-publishing-api.md');
+  assert.equal(draftFilename({...valid,title:'../../../../..\\test<script>',locale:'ru'}),'24gotop-test-script.md');
+  assert.equal(draftFilename({...valid,title:'Тестовая статья',locale:'ru'}),'24gotop-draft-ru.md');
+  const name=draftFilename({...valid,title:'A'.repeat(160)});
+  assert.ok(name.length <= 62);
+  assert.match(name,/^24gotop-[a-z0-9-]+\.md$/);
+});
+
+test('clear confirmation is only needed when user actually wrote something',()=>{
+  assert.equal(hasDraftContent({title:'',body:'',source:''}),false);
+  assert.equal(hasDraftContent({title:' ',body:'\n',source:''}),false);
+  assert.equal(hasDraftContent({title:'Draft',body:'',source:''}),true);
+  assert.equal(hasDraftContent({title:'',body:'text',source:''}),true);
+  assert.equal(hasDraftContent({title:'',body:'',source:'https://example.org'}),true);
+});
+
+test('download shares exactly the same validated source as clipboard',()=>{
+  const output=formatDraft(valid);
+  assert.match(output,/Unpublished draft/);
+  assert.ok(output.endsWith('24GOTOP static Draft Lab.'));
+  assert.throws(()=>formatDraft({...valid,body:'short'}),/Write between/);
 });
