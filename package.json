@@ -1,0 +1,16 @@
+{
+  "name": "24gotop-starter",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "node src/server.mjs",
+    "start": "node src/server.mjs",
+    "test": "node --test",
+    "check": "node --check src/server.mjs && node --check public/app.js && node --check packages/sdk/index.mjs"
+  },
+  "license": "MIT"
+}
