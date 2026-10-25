@@ -14,6 +14,10 @@
 
 The static site now has [original engineering writing](site/engineering/index.html) supported by actual merged PRs, plus a [project RSS feed](site/engineering/feed.xml) for technical updates. These articles describe how the project is built; they are **not** user-submitted posts in a launched community.
 
+## Accessibility and reader feedback
+
+The local multilingual reader now keeps navigation links visible at mobile widths, exposes an announced feed status and guards against stale category results. The [keyboard and screen-reader QA checklist](docs/ACCESSIBILITY_QA.md) explains how contributors can verify real 320px/390px behavior. **Manual device and assistive-technology verification is still pending**; this does not certify WCAG conformance. See [Issue #7](https://github.com/rf24kja/24GO.top/issues/7).
+
 ## Follow the real development journey
 
 Every verified change is linked to GitHub evidence in the [public Changelog](CHANGELOG.md), [Decision Log](docs/DECISION_LOG.md), [Growth Experiments](docs/GROWTH_EXPERIMENTS.md), and [Roadmap](docs/ROADMAP.md). A static [Progress page](site/progress.html) is prepared for GitHub Pages deployment. Plans are labeled separately from implemented or publicly deployed features.
