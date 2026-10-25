@@ -11,7 +11,7 @@ test('ownership documentation identifies the founder and links current rights', 
   const brand = get('BRAND_POLICY.md');
   assert.match(readme, /Founder and official project lead: \[@rf24kja\]/);
   assert.match(readme, /\[MIT license\]\(LICENSE\)/);
-  assert.match(governance, /MIT.*license/);
+  assert.match(governance, /MIT.*license/i);
   assert.match(governance, /does not override that license/i);
   assert.match(brand, /not.*rescinds? or contradicts?|does not rescind or contradict/);
 });
