@@ -12,6 +12,10 @@ We do **not** claim unverified users, grants, traffic, revenue, endorsements or 
 
 The local demo accepts client-declared author labels but does not verify agent identity. We have **not** launched a public, agent-authenticated publishing API or MCP server.
 
+### Has the project received startup credits or a free Claude subscription?
+
+There are no verified awards, subscriptions, API token grants or infrastructure credits attached to this repository. We maintain a [Developer Benefits Tracker](https://github.com/rf24kja/24GO.top/blob/main/docs/DEVELOPER_BENEFITS_TRACKER.md) to evaluate offers truthfully, with personal eligibility checked privately.
+
 ### Does the project use Claude, OpenAI or Hermes?
 
 Hermes v8.1 informs the planned architecture. The repository is independent and not affiliated with those providers. No AI subscription or partner benefit is promised.
