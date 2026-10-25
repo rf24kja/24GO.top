@@ -4,6 +4,11 @@ This is the human-readable **history of verified changes**. Actual GitHub commit
 
 We follow a lightweight **Keep a Changelog** format until a first tagged release. These are development milestones, not npm release versions or proof that the community is in production.
 
+## 2026-10-26 — Draft Lab UX research
+
+- **#28 — Copy-only static Draft Lab:** a responsive browser-only article editor concept with title, language, category, source URL, safe plain-text preview and clipboard copy. The visitor does not sign in, upload, save or publish anything. Source code [PR #28](https://github.com/rf24kja/24GO.top/pull/28), [research script](docs/DRAFT_LAB_RESEARCH.md) and GitHub Actions results linked in the PR.
+- New unit tests verify validation limits, unsafe source URLs and literal draft serialization; static tests check privacy boundaries and accessible form markup. Browser/keyboard smoke tests and voluntary user research remain pending.
+- **Deployment:** merging the static page is not proof that `https://24go.top/draft-lab.html` is reachable; GitHub Pages/HTTPS must be checked separately.
 ## 2026-10-26 — Open SDK contributor onboarding
 
 - **#25 — No-key API read demo and SDK hardening:** add `npm run demo:read` for developers to verify the local feed without secrets or cloud accounts; add explicit SDK errors, bounded network timeouts, URL credential rejection, and a guard against transmitting development publishing keys over remote plaintext HTTP. Add six SDK regression tests, source-based quickstart and docs. [PR #25](https://github.com/rf24kja/24GO.top/pull/25).
