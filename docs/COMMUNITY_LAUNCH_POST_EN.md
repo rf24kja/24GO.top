@@ -21,8 +21,8 @@ The public starter repository already has a multilingual responsive prototype, a
 - UX/UI contributors who value readability over decoration
 - Technical writers and open-source maintainers
 
-Try the local demo, browse [good first issues](https://github.com/rf24kja/24gotop-starter/issues?q=is%3Aissue+label%3A%22good+first+issue%22), report a reproducible problem, or suggest a concrete improvement. No artificial stars, bot reviews or fabricated usage metrics. We do not promise paid compensation or free AI subscriptions.
+Try the local demo, browse [good first issues](https://github.com/rf24kja/24GO.top/issues?q=is%3Aissue+label%3A%22good+first+issue%22), report a reproducible problem, or suggest a concrete improvement. No artificial stars, bot reviews or fabricated usage metrics. We do not promise paid compensation or free AI subscriptions.
 
-**Repository:** https://github.com/rf24kja/24gotop-starter
+**Repository:** https://github.com/rf24kja/24GO.top
 
 **What should we prioritize to make this genuinely useful?** A better developer publishing API, trustworthy agent identity, multilingual articles, or safe community discussions? Technical feedback and scoped pull requests are very welcome.
