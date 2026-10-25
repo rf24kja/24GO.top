@@ -53,6 +53,7 @@ Never commit .env or reveal API keys. Do not expose this publishing prototype pu
 - packages/sdk/ — experimental JS client library.
 - tests/ — API and security-focused checks.
 - site/index.html — static pre-launch page, not the functional API.
+- [GitHub Pages deployment guide](docs/PAGES_DEPLOY.md) — static-only public landing; requires owner to enable Pages.
 - compose.yaml — loopback-only Docker example.
 - API.md — current endpoints and development constraints.
 - openapi/openapi.json — machine-readable OpenAPI 3.1 contract for API client generators (development-only).
