@@ -8,7 +8,7 @@
 
 **Public** `rf24kja/24GO.top`: MIT-covered starter code already published; openly maintained SDKs, API/OpenAPI specifications, developer examples, MCP integrations, documentation, contributor-facing security contracts, accessibility and static prelaunch UX prototypes.
 
-**Private future repository (not yet provisioned):** newly authored, separable hosted backend, operator/admin workflows, production-specific moderation logic, private migrations and infrastructure implementation. A private repository alone is not proof of exclusive IP rights; provenance and third-party dependencies must be reviewed.
+**Private hosted-core repository (founder-confirmed, access-controlled):** newly authored, separable hosted backend, operator/admin workflows, production-specific moderation logic, private migrations and infrastructure implementation. A private repository alone is not proof of exclusive IP rights; provenance and third-party dependencies must be reviewed.
 
 ## Strict data and source boundary
 
@@ -24,8 +24,8 @@ A project URL or project reference is **not an API credential**, but avoid unnec
 
 ## Secure staging integration gates
 
-1. Provision a **new**, founder-owned private GitHub repository with restricted collaborator and GitHub App access. Do not repurpose unrelated private repositories or create a public repo by mistake.
-2. Bootstrap it using clean, independently authored files; document provenance/licensing and dependencies. Do not simply copy the public starter or its complete Git history and label it proprietary.
+1. Maintain the existing **founder-confirmed private** hosted-core repository, verify restricted collaborator and GitHub App access, branch protections and repository visibility. Do not change the visibility or overwrite historical work.
+2. Preserve the private repository's existing source and Git history; audit provenance/licensing and dependencies before using code in the official hosted product. Do not copy the public MIT starter or its complete Git history and label it exclusively proprietary.
 3. Backend must verify a Supabase Auth access token on the server and forward **the end user's verified token** when accessing RLS-protected draft rows. Never use a browser-delivered service-role key or trust a client-provided `author_id`.
 4. Private draft Data API access, if selected, may expose only the separately audited `app_content` schema; **never expose `app_private`**. Check Data API configuration, grants, per-row policies and PostgREST behavior before enabling any endpoint.
 5. Bind the initial backend to loopback and stage-only Supabase. Keep mutations explicitly disabled until verified dual-account tests and a backup/restore procedure are in place. No public write cutover.
@@ -37,11 +37,11 @@ A project URL or project reference is **not an API credential**, but avoid unnec
 - Isolated staging PostgreSQL has four application tables with RLS and FORCE RLS enabled. At inspection, Security Advisor returned zero lints.
 - The staging Auth database had **zero user accounts at inspection**, so cross-account JWT end-to-end tests have **not** run.
 - The public local Node demo is **not** an authenticated production publishing backend.
-- The separate private hosted-core repository is **not yet created or integrated**, and this documentation PR must not be presented as proof that it exists.
+- The founder has confirmed and the GitHub connector has verified an **existing private hosted-core repository** with code, tests and CI. It has not been deployed or proven end-to-end with real Supabase Auth users. Private source remains separate from public MIT code.
 - The presence of five staging migrations is not a verified backup/restore or a promise of production readiness.
 
 ## Safeguards and rollback
 
 This document records a decision and release requirements only. It does not change GitHub repository visibility, the MIT LICENSE, staging schema, API key settings, production DNS or public write permissions. Roll back its wording through a reviewed docs PR. Any future backend cutover needs an independent staged verification and rollback plan.
 
-**Open actions:** GitHub private repository creation, access hardening, private-source review, real staging integration tests, restore drill and external release review. [Issue #24](https://github.com/rf24kja/24GO.top/issues/24) stays open until completed with evidence.
+**Open actions:** private repository access hardening and branch controls, provenance review, real staging JWT/RLS integration tests, backup/restore drill and external release review. [Issue #24](https://github.com/rf24kja/24GO.top/issues/24) stays open until completed with evidence.
