@@ -9,6 +9,7 @@ const read = relative => readFileSync(join(root, relative), 'utf8');
 const home = read('index.html');
 const index = read('engineering/index.html');
 const article = read('engineering/why-draft-lab-first.html');
+const previewNote = read('engineering/markdown-preview-safety.html');
 const feed = read('engineering/feed.xml');
 const progress = read('progress.html');
 
@@ -21,7 +22,7 @@ test('home and development timeline link to verifiable engineering notes', () =>
 });
 
 test('all relative navigation links in engineering collection resolve to packaged static artifacts', () => {
-  for (const path of ['engineering/index.html','engineering/why-draft-lab-first.html']) {
+  for (const path of ['engineering/index.html','engineering/why-draft-lab-first.html','engineering/markdown-preview-safety.html']) {
     const url = new URL('../site/' + path, import.meta.url);
     const html = read(path);
     for (const [, value] of html.matchAll(/\bhref="([^"]+)"/g)) {
@@ -53,9 +54,21 @@ test('static RSS lists actual article with explicit source URL and valid publica
   assert.match(feed, /<title>24GOTOP Engineering Notes<\/title>/);
   assert.match(feed, /https:\/\/www\.24go\.top\/engineering\/why-draft-lab-first\.html/);
   assert.match(feed, /<pubDate>Mon, 26 Oct 2026 00:00:00 GMT<\/pubDate>/);
-  assert.equal((feed.match(/<item>/g) || []).length, 1);
+  assert.equal((feed.match(/<item>/g) || []).length, 2);
+  assert.match(feed, /https:\/\/www\.24go\.top\/engineering\/markdown-preview-safety\.html/);
+  assert.match(index, /Preview Markdown without executing author HTML/);
   assert.match(index, /Why we built a Draft Lab before opening public writes/);
   assert.doesNotMatch(feed, /<script|&(?!(?:amp|lt|gt|quot|apos);)/i);
+});
+
+
+test('new safety article is tied to merged source and avoids production claims', () => {
+  assert.match(previewNote, /<h1>Preview Markdown without executing author HTML<\/h1>/);
+  assert.match(previewNote, /https:\/\/github\.com\/rf24kja\/24GO\.top\/pull\/40/);
+  assert.match(previewNote, /textContent/);
+  assert.match(previewNote, /browser-only experiment/);
+  assert.match(previewNote, /screen-reader/);
+  assert.doesNotMatch(previewNote, /<script\b|<iframe\b|PUBLISH_API_KEY|sb_secret_|service_role/i);
 });
 
 test('owner confirmation stays separate from independent DNS, TLS and public API assertions', () => {
