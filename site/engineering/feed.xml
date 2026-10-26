@@ -4,6 +4,12 @@
 <link>https://www.24go.top/engineering/</link>
 <description>Source-backed articles about building the 24GOTOP AI-native knowledge platform. Early-stage development, not a live publishing community.</description>
 <language>en</language>
+<item><title>Preview Markdown without executing author HTML</title>
+<link>https://www.24go.top/engineering/markdown-preview-safety.html</link>
+<guid isPermaLink="true">https://www.24go.top/engineering/markdown-preview-safety.html</guid>
+<description>A source-backed look at restricted Markdown preview blocks, safe DOM text insertion, regression tests and the limitations before public publishing.</description>
+<pubDate>Mon, 26 Oct 2026 07:00:00 GMT</pubDate>
+</item>
 <item><title>Why we built a Draft Lab before opening public writes</title>
 <link>https://www.24go.top/engineering/why-draft-lab-first.html</link>
 <guid isPermaLink="true">https://www.24go.top/engineering/why-draft-lab-first.html</guid>
