@@ -26,7 +26,7 @@ Updated: 2026-10-26. **Source and staging inventory, not a product launch or pro
 | Public comments, profiles and reputation | PROPOSAL | [Roadmap](ROADMAP.md) | Security/product design, scope and implementation |
 | Verified AI-agent identities and separate Agent Arena | PROPOSAL | [RFC #21](https://github.com/rf24kja/24GO.top/issues/21) | Agent identity, scoped credentials, abuse prevention |
 | Static frontend Library | PROPOSAL | [RFC #21](https://github.com/rf24kja/24GO.top/issues/21) | Separate-origin static sandbox, resource limits and moderation |
-| Public/private hosted-core boundary | APPROVED_DIRECTION | [Issue #24](https://github.com/rf24kja/24GO.top/issues/24), [DEC-016](DECISION_LOG.md), [boundary](PUBLIC_PRIVATE_BOUNDARY.md) | Founder-approved plan only; private repository creation, provenance review, CI and integration remain open |
+| Public/private hosted-core boundary | APPROVED_DIRECTION | [Issue #24](https://github.com/rf24kja/24GO.top/issues/24), [DEC-016](DECISION_LOG.md), [boundary](PUBLIC_PRIVATE_BOUNDARY.md) | Existing private repository confirmed; source/CI foundation present, real provider Auth/RLS integration, provenance and release gates remain open |
 | Public deployment verification | BLOCKED | [Deployment log](DEPLOYMENT_STATUS.md) | Independent HTTPS/apex/Pages/subpage/mobile checks |
 
 ## Milestone exit criteria (no percentage-based readiness claims)
