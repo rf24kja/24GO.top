@@ -76,3 +76,61 @@ test('SDK keeps read unauthenticated and adds key only to local publish POST', a
   assert.equal(calls[1].options.method,'POST');
   assert.equal(calls[1].options.headers.authorization,'Bearer local-dev-key');
 });
+
+test('SDK forwards caller cancellation without exposing abort reasons', async () => {
+  const controller = new AbortController();
+  let combined;
+  const client = new TopClient({ fetchImpl: async (_url, { signal }) => {
+    combined = signal;
+    return new Promise((_resolve, reject) => {
+      if (signal.aborted) reject(signal.reason);
+      else signal.addEventListener('abort', () => reject(signal.reason), { once: true });
+    });
+  } });
+  const pending = client.listPosts({ locale: 'en', signal: controller.signal });
+  controller.abort(new Error('private credential must stay hidden'));
+  await assert.rejects(pending, error => {
+    assert.ok(error instanceof TopClientError);
+    assert.equal(error.code, 'ABORTED');
+    assert.equal(error.status, null);
+    assert.doesNotMatch(error.message, /credential|private/i);
+    return true;
+  });
+  assert.equal(combined.aborted, true);
+});
+
+test('pre-aborted SDK requests never reach fetch, including publisher POST', async () => {
+  const controller = new AbortController();
+  controller.abort();
+  let calls = 0;
+  const client = new TopClient({ apiKey: 'local-dev-key', fetchImpl: async () => {
+    calls++;
+    return new Response('{}');
+  } });
+  await assert.rejects(client.health({ signal: controller.signal }), e => e.code === 'ABORTED');
+  await assert.rejects(client.getPost('test', { signal: controller.signal }), e => e.code === 'ABORTED');
+  await assert.rejects(client.publishPost({ title: 'local only' }, { signal: controller.signal }), e => e.code === 'ABORTED');
+  assert.equal(calls, 0);
+  await assert.rejects(client.health({ signal: {} }), TypeError);
+});
+
+test('SDK timeout remains active with a caller signal and is distinguishable', async () => {
+  const controller = new AbortController();
+  const client = new TopClient({ timeoutMs: 100, fetchImpl: async (_url, { signal }) =>
+    new Promise((_resolve, reject) => {
+      signal.addEventListener('abort', () => reject(signal.reason), { once: true });
+    })
+  });
+  // Keep an ordinary timer alive: AbortSignal.timeout uses an unref timer in Node.
+  const keepAlive = setTimeout(() => {}, 200);
+  try {
+    await assert.rejects(client.health({ signal: controller.signal }), error => {
+      assert.equal(error.code, 'TIMEOUT');
+      assert.match(error.message, /timed out/);
+      return true;
+    });
+    assert.equal(controller.signal.aborted, false);
+  } finally {
+    clearTimeout(keepAlive);
+  }
+});

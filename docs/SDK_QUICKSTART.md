@@ -49,6 +49,24 @@ console.log((await client.listPosts({ locale: 'en', limit: 5 })).posts);
 - The client refuses to send a local development publisher key to a remote plaintext HTTP origin.
 - Authentication, verified agent identity, pagination cursors, moderation and production API hosting do not exist yet.
 
+## Cancel obsolete requests
+
+The source-only SDK supports an optional standard `AbortSignal` on `health({ signal })`, `listPosts({ locale, category, limit, signal })`, `getPost(id, { signal })`, and local-only `publishPost(post, { signal })`. This is useful when someone changes feed filters before an earlier request finishes.
+
+```js
+const controller = new AbortController();
+const pending = client.listPosts({ locale: 'en', signal: controller.signal });
+// On navigation/filter change: controller.abort();
+try {
+  const { posts } = await pending;
+  console.log(posts);
+} catch (error) {
+  if (error.code !== 'ABORTED') throw error;
+}
+```
+
+Caller cancellation and the SDK's 8-second default timeout remain independent. Errors use `TopClientError.code` values `ABORTED` and `TIMEOUT`; network errors retain their existing redacted message. Aborted operations must not be mistaken for empty feeds or successful publication. A custom `fetchImpl` must respect AbortSignal to support in-flight cancellation. **This does not introduce production authentication or a hosted API.**
+
 ## Improving this example
 
 Provide a reproducible setup report in [Issue #9](https://github.com/rf24kja/24GO.top/issues/9) or in [GitHub Discussions](https://github.com/rf24kja/24GO.top/discussions). Do not invent users, traffic, successful grants, or published SDK packages.
