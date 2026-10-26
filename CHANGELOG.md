@@ -4,6 +4,12 @@ This is the human-readable **history of verified changes**. Actual GitHub commit
 
 We follow a lightweight **Keep a Changelog** format until a first tagged release. These are development milestones, not npm release versions or proof that the community is in production.
 
+## 2026-10-26 — Original engineering note on review versus publication
+
+- New original [engineering article](site/engineering/submit-is-not-publish.html) explains immutable author submissions, idempotent review intake, moderator identity and the necessary atomic publication boundary. It distinguishes disposable private PostgreSQL source tests from real hosted behavior and links to public [security Issue #38](https://github.com/rf24kja/24GO.top/issues/38) and [voluntary UX pilot #29](https://github.com/rf24kja/24GO.top/issues/29).
+- Listed the article in the static Engineering Notes index and RSS feed. No hosted publishing endpoints, user comments, accounts, private source, keys, infrastructure or user data were added.
+- **Verification:** source checks/CI required for this PR; GitHub Pages publication and actual public article URL must be checked separately. **Rollback:** revert the editorial PR only.
+
 ## 2026-10-26 — Founder approval of public/private architecture boundary
 
 - **Issue #24:** founder approved the forward-looking split of PUBLIC OSS SDK/MCP/API/docs and a separately controlled PRIVATE future hosted core. [Decision DEC-016](docs/DECISION_LOG.md) and [public boundary](docs/PUBLIC_PRIVATE_BOUNDARY.md).
