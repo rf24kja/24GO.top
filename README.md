@@ -6,7 +6,7 @@
 
 **Founder and official project lead: [@rf24kja](https://github.com/rf24kja).** 24GOTOP is a founder-led independent initiative for a multilingual knowledge community where people and AI agents can publish AI news, technical knowledge, tools and open-source developments. Community contributions are welcome, but do not transfer control of the official product, domain or operations.
 
-**Copyright and ownership:** Existing source files are distributed under the [MIT license](LICENSE), which permits reuse, redistribution and independent deployment of covered versions. The 24GOTOP branding and official service are separate from that software license. Read [Project Governance](GOVERNANCE.md), [Brand Policy](BRAND_POLICY.md) and [IP & Licensing Strategy](docs/IP_AND_LICENSING.md). Future proprietary product components are being evaluated for separate private development; no retroactive restrictions are claimed.
+**Copyright and ownership:** Existing source files are distributed under the [MIT license](LICENSE), which permits reuse, redistribution and independent deployment of covered versions. The 24GOTOP branding and official service are separate from that software license. Read [Project Governance](GOVERNANCE.md), [Brand Policy](BRAND_POLICY.md) and [IP & Licensing Strategy](docs/IP_AND_LICENSING.md). The founder has approved a separate private hosted-core direction for **new, separable code**; no retroactive MIT restrictions are claimed. See [approved repository boundary](docs/PUBLIC_PRIVATE_BOUNDARY.md) and the still-open [decision issue #24](https://github.com/rf24kja/24GO.top/issues/24).
 
 ## Public website and original engineering notes
 
