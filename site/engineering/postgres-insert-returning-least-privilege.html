@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1411">
+<meta name="description" content="A practical PostgreSQL 17 least-privilege testing lesson: why INSERT with column grants may succeed, while INSERT RETURNING requires SELECT rights, and why broadening permissions to fix a test is a mistake.">
+<meta property="og:type" content="article"><meta property="og:title" content="INSERT succeeds, RETURNING fails: PostgreSQL least privilege in practice">
+<meta property="og:description" content="How a permission error in a disposable PostgreSQL CI test helped preserve a truly insert-only role.">
+<title>INSERT succeeds, RETURNING fails — 24GOTOP</title>
+<link rel="canonical" href="https://www.24go.top/engineering/postgres-insert-returning-least-privilege.html">
+<link rel="stylesheet" href="./notes.css"><link rel="alternate" type="application/rss+xml" title="24GOTOP engineering notes" href="./feed.xml">
+</head><body><header><nav class="wrap" aria-label="Main navigation"><a class="brand" href="../">24GO<span>TOP</span></a><div class="navlinks"><a href="./">Engineering notes</a><a href="../progress.html">Development timeline</a><a href="https://github.com/rf24kja/24GO.top/issues/38">Security tests ↗</a></div></nav></header>
+<main class="wrap"><article class="article">
+<span class="eyebrow">Engineering note · 26 October 2026 · PostgreSQL security</span>
+<h1>INSERT succeeds, RETURNING fails: a least-privilege lesson</h1>
+<p class="lead">A database test can fail for the right reason. When we exercised a tightly scoped insert-only role in disposable PostgreSQL 17 CI, a convenient <code>RETURNING</code> clause requested a permission the role was deliberately designed not to have.</p>
+<p class="details">24GOTOP engineering · <a href="https://www.postgresql.org/docs/17/sql-insert.html">Official PostgreSQL 17 INSERT reference</a> · <a href="https://github.com/rf24kja/24GO.top/issues/38">Public security test plan #38</a></p>
+<div class="note" role="note"><strong>Scope:</strong> this is a general reproducible PostgreSQL permission lesson, inspired by a disposable CI test while designing a private, unreleased article-storage candidate. It is <strong>not</strong> evidence that 24GOTOP public article publishing or moderator identity checks are live. No private database SQL, credentials or provider records are published here.</div>
+
+<h2>One SQL statement, two different privileges</h2>
+<p>PostgreSQL supports grants scoped to particular columns. If a role may insert an article body but must not read back other database rows, blanket <code>GRANT INSERT, SELECT ON table</code> is unnecessarily powerful.</p>
+<p>The difference becomes visible in an intentionally simplified example. Assume a dedicated, unprivileged role has only the column grant shown below and no general read permission:</p>
+<pre><code>GRANT INSERT (body) ON example_notes TO example_writer;
+
+-- Write-only attempt:
+INSERT INTO example_notes (body) VALUES ('A test note');
+
+-- Different access requirement:
+INSERT INTO example_notes (body) VALUES ('Another note')
+RETURNING id;</code></pre>
+<p>The second statement asks PostgreSQL to return <code>id</code> from the affected row. That requires <code>SELECT</code> permission on the referenced column in addition to the relevant INSERT permission. Depending on row-level security configuration, a SELECT policy may also be necessary. PostgreSQL's <a href="https://www.postgresql.org/docs/17/sql-insert.html">INSERT documentation</a> explicitly distinguishes these permissions.</p>
+
+<h2>The tempting fix is often the wrong fix</h2>
+<p>Granting broad SELECT merely to make a test assertion pass would change the application's security model. The role is meant to write, not inspect the table. A test demanding more authority than the feature requires is a test-design problem, not necessarily an application defect.</p>
+<p>In our disposable test, we removed <code>RETURNING</code> and checked the INSERT command's row count. An independent, privileged CI fixture then inspected the saved row and compared it with the intended immutable source. We did not give the write-only role the ability to read the published-body table.</p>
+<p>That separation does not make a role magically secure. It still requires role membership checks, a non-bypassable RLS policy, constraints, a controlled connection, and realistic failure tests.</p>
+
+<h2>Test effective privileges, not just grants that look right</h2>
+<p>Another useful PostgreSQL distinction: table-wide <code>INSERT</code> and per-column INSERT rights are not interchangeable in catalog probes. A column-limited role may have permission to write <code>body</code> without passing a table-wide privilege check.</p>
+<pre><code>SELECT has_table_privilege(
+  'example_writer', 'example_notes', 'INSERT');
+
+SELECT has_column_privilege(
+  'example_writer', 'example_notes', 'body', 'INSERT');</code></pre>
+<p>Tests should check the effective permission needed by the SQL statement, explicitly assert that forbidden columns remain inaccessible, and try negative operations as a non-superuser. In addition, RLS with <code>FORCE ROW LEVEL SECURITY</code> is valuable defense in depth but does not replace grants or identity verification.</p>
+
+<h2>A practical review checklist</h2>
+<ol>
+<li>Write down whether the runtime role is supposed to read, create, update or delete each field.</li>
+<li>Check effective table- and column-level privileges; include prohibited operations and role membership.</li>
+<li>Exercise real SQL as an isolated non-superuser, including <code>INSERT ... RETURNING</code> and duplicate-key failures where relevant.</li>
+<li>When a test fails, inspect the exact denied privilege before expanding production grants.</li>
+<li>Keep privileged verification fixtures and untrusted runtime requests separate; neither a DBA simulation nor a mocked JWT proves real user authorization.</li>
+<li>Do not expose a public article API until moderator identity, atomic state transitions, safe rendering, takedowns and backups have been validated end to end.</li>
+</ol>
+
+<h2>Try the public project and review the assumptions</h2>
+<p>The <a href="https://github.com/rf24kja/24GO.top">24GOTOP open-source repository</a> contains a local, early-stage publishing prototype, an experimental SDK and a browser-only Draft Lab. Its CI and docs are reviewable, but it is <strong>not a launched community with public user publishing or comment threads</strong>.</p>
+<p>We welcome precise corrections and reproducible cases in <a href="https://github.com/rf24kja/24GO.top/issues/38">security test plan #38</a>. A valuable follow-up would be a small public test showing how column-level grants, an RLS SELECT policy and an INSERT RETURNING clause interact without ever granting broad table read.</p>
+<blockquote>A failed permission check can be the proof that your security boundary is working.</blockquote>
+<p class="source">References: <a href="https://www.postgresql.org/docs/17/sql-insert.html">PostgreSQL 17 INSERT — required privileges</a>, <a href="./submit-is-not-publish.html">Submit for review is not publish</a> and the <a href="https://github.com/rf24kja/24GO.top/blob/main/docs/ROADMAP.md">24GOTOP roadmap</a>. Static source publication does not establish that the article is reachable on the live domain; deployment is verified separately.</p>
+<p><a class="cta" href="https://github.com/rf24kja/24GO.top/issues/38">Suggest a security regression test ↗</a></p>
+</article></main><footer><div class="wrap">24GOTOP · Original engineering notes · <a href="./">All notes</a> · <a href="https://github.com/rf24kja/24GO.top">GitHub</a></div></footer></body></html>
