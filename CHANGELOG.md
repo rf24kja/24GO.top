@@ -4,6 +4,12 @@ This is the human-readable **history of verified changes**. Actual GitHub commit
 
 We follow a lightweight **Keep a Changelog** format until a first tagged release. These are development milestones, not npm release versions or proof that the community is in production.
 
+## 2026-10-26 — Least-privilege PostgreSQL INSERT/RETURNING engineering note
+
+- New original [PostgreSQL privilege engineering note](site/engineering/postgres-insert-returning-least-privilege.html) demonstrates a real disposable-CI lesson: an INSERT-only role must not receive broader SELECT permissions simply because a test tried INSERT RETURNING. Explains per-column privilege probes, separation of synthetic DBA fixtures from runtime identity, and the limitations before public publishing; references official PostgreSQL 17 documentation.
+- Added the article to the static Engineering Notes index and RSS and extended source tests. No private SQL, credentials, hosted moderation, actual published user articles, or site deployment was introduced.
+- **Verification:** public CI required, live Pages/article URL verified separately. **Rollback:** revert this editorial PR.
+
 ## 2026-10-26 — Original engineering note on review versus publication
 
 - New original [engineering article](site/engineering/submit-is-not-publish.html) explains immutable author submissions, idempotent review intake, moderator identity and the necessary atomic publication boundary. It distinguishes disposable private PostgreSQL source tests from real hosted behavior and links to public [security Issue #38](https://github.com/rf24kja/24GO.top/issues/38) and [voluntary UX pilot #29](https://github.com/rf24kja/24GO.top/issues/29).
