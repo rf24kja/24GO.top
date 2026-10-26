@@ -107,7 +107,7 @@ test('beforeunload warns for new or changed writing, not for unchanged reopened 
   let leaving = app.beforeUnload();
   assert.equal(leaving.prevented,true);
   assert.equal(leaving.returnValue,'');
-  assert.match(app.elements.draftSafety.textContent,/No draft content yet|never automatically saves/i);
+  assert.match(app.elements.draftSafety.textContent,/Check your exported/);
   app.elements.postTitle.value = '';
   app.elements.postBody.value = '';
   assert.equal(app.beforeUnload().prevented,false);
