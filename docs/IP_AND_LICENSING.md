@@ -20,9 +20,9 @@
 
 Do not promise that nobody can fork or self-host already MIT-licensed code; that would be inaccurate.
 
-## Possible future licensing / architecture models
+## Licensing and architecture models — model A approved, alternatives retained for comparison
 
-### Model A: Open developer ecosystem + private product core (recommended for evaluation)
+### Model A: Open developer ecosystem + private product core (founder-approved direction)
 
 - Continue public Issues, Discussions, Wiki, API contracts and genuinely open SDK/MCP/examples under a recognized OSS license.
 - Develop proprietary production infrastructure, admin workflows, private services, product-specific moderation workflows and sensitive configuration in a **separate private repository with independently managed secrets and clean provenance**.
