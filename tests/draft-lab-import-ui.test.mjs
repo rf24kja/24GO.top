@@ -9,7 +9,8 @@ import {
 } from '../site/draft-lab-logic.js';
 
 const source = readFileSync(fileURLToPath(new URL('../site/draft-lab.js', import.meta.url)), 'utf8')
-  .replace(/^import .* from '.\/draft-lab-logic\.js';\n/m, '');
+  .replace(/^import .* from '.\/draft-lab-logic\.js';\n/m, '')
+  .replace(/^import .* from '.\/draft-lab-preview\.js';\n/m, '');
 
 const sample = {
   title:'Return and improve the documentation', locale:'ru', category:'tools',
@@ -40,7 +41,8 @@ function build() {
   runInNewContext(source, {
     document, window, navigator:{}, URL, Blob, setTimeout,
     safeSourceUrl,validateDraft,formatDraft,draftFilename,hasDraftContent,
-    parseDraftFile,MAX_DRAFT_FILE_BYTES
+    parseDraftFile,MAX_DRAFT_FILE_BYTES,
+    renderMarkdownPreview(container, text) { container.textContent = text; }
   },{timeout:1000});
   return {
     elements,
