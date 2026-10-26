@@ -10,8 +10,9 @@
 - Copy the draft to the clipboard or download a UTF-8 Markdown `.md` file after client-side validation.
 - Reopen a previously exported Draft Lab `.md` file to continue writing. Only our export format is accepted, with a 64 KiB file limit, and existing unsaved text requires a replacement confirmation.
 - Clear a non-empty draft only after a confirmation prompt to reduce accidental loss.
+- When navigating away, request the browser's standard confirmation if the current tab contains new or edited writing not identical to the last explicitly reopened file. An imported file with no edits does not trigger a warning. Some browsers may ignore the request; do not rely on it instead of exporting.
 
-All content is held **only in memory in the current browser tab**, unless the visitor explicitly downloads a file or copies the text. The Markdown file remains on the visitor's own device, not on 24GOTOP servers. There is no authentication, server request, browser storage, automatic save, publication, shareable article URL or full Markdown rendering. The restricted block preview is an author-side experiment; the exported Markdown source is unchanged. Reopening/reloading the page loses any draft not saved by the visitor.
+All content is held **only in memory in the current browser tab**, unless the visitor explicitly downloads a file or copies the text. The Markdown file remains on the visitor's own device, not on 24GOTOP servers. There is no authentication, server request, browser storage, automatic save, publication, shareable article URL or full Markdown rendering. The restricted block preview is an author-side experiment; the exported Markdown source is unchanged. Reopening/reloading the page loses any draft not saved by the visitor. The browser may show an exit warning for new or modified writing, but it cannot guarantee prevention of data loss.
 
 ## Why this is the right stage
 
@@ -40,7 +41,7 @@ The production identity and moderation architecture is not ready yet. This proto
 
 ## Risks and rollback
 
-- **Data loss on refresh:** explicit notice; export to local `.md` or copy before leaving. No automatic persistence or upload promised.
+- **Data loss on refresh:** explicit notice and a best-effort `beforeunload` confirmation only for new/modified writing compared with an explicitly reopened local file. Browser/platform may suppress prompts or show generic wording; exporting to a local `.md` remains necessary. Copy and download requests are not treated as verified persistent saves.
 - **Clipboard permission denied:** show an error; Markdown download remains available independently of clipboard permissions.
 - **Accidental erase:** confirm Clear only for a non-empty text/source draft; Cancel leaves the draft untouched.
 - **Downloads:** browser download prompts and storage permissions vary by platform; validate with real testers. A download request is not proof the file was saved.
