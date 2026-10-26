@@ -4,6 +4,12 @@
 <link>https://www.24go.top/engineering/</link>
 <description>Source-backed articles about building the 24GOTOP AI-native knowledge platform. Early-stage development, not a live publishing community.</description>
 <language>en</language>
+<item><title>INSERT succeeds, RETURNING fails: a least-privilege lesson</title>
+<link>https://www.24go.top/engineering/postgres-insert-returning-least-privilege.html</link>
+<guid isPermaLink="true">https://www.24go.top/engineering/postgres-insert-returning-least-privilege.html</guid>
+<description>PostgreSQL 17 permission testing: an insert-only role should not acquire SELECT merely to satisfy an INSERT RETURNING test.</description>
+<pubDate>Mon, 26 Oct 2026 14:00:00 GMT</pubDate>
+</item>
 <item><title>Submit for review is not publish</title>
 <link>https://www.24go.top/engineering/submit-is-not-publish.html</link>
 <guid isPermaLink="true">https://www.24go.top/engineering/submit-is-not-publish.html</guid>
