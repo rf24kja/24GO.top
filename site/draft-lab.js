@@ -1,6 +1,6 @@
 'use strict';
 
-import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, parseDraftFile, MAX_DRAFT_FILE_BYTES } from './draft-lab-logic.js';
+import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, parseDraftFile, MAX_DRAFT_FILE_BYTES } from './draft-lab-logic.js';
 import { renderMarkdownPreview } from './draft-lab-preview.js';
 
 // Browser-only UX research prototype: no network, browser persistence or analytics.
@@ -12,6 +12,9 @@ const category = field('postCategory');
 const source = field('postSource');
 const status = field('formStatus');
 const headings = { guides:'Guides', tools:'Tools', news:'News', models:'Models' };
+// A file selected by the user provides an authoritative in-tab baseline only.
+// Download requests and clipboard copy never silently change this baseline.
+let reopenedFileBaseline = null;
 
 function currentDraft() {
   return { title:title.value, body:body.value, locale:locale.value,
@@ -21,6 +24,18 @@ function currentDraft() {
 function message(text, isError = false) {
   status.textContent = text;
   status.dataset.error = String(isError);
+}
+
+function updateSafetyNotice() {
+  const note = field('draftSafety');
+  const draft = currentDraft();
+  if (!hasDraftContent(draft)) {
+    note.textContent = 'No draft content yet. Draft Lab never automatically saves your work.';
+  } else if (hasUnexportedChanges(draft, reopenedFileBaseline)) {
+    note.textContent = 'Changes in this tab are not automatically saved. Check your exported .md file before leaving.';
+  } else {
+    note.textContent = 'Reopened file is unchanged. Any new edits must be exported again.';
+  }
 }
 
 function preview() {
@@ -34,6 +49,7 @@ function preview() {
   const node = field('previewSource');
   node.hidden = !link;
   node.textContent = link ? 'Source: ' + link : '';
+  updateSafetyNotice();
 }
 
 for (const control of [title,body,locale,category,source]) {
@@ -76,6 +92,7 @@ field('importDraftFile').addEventListener('change', async event => {
     locale.value = reopened.locale;
     category.value = reopened.category;
     source.value = reopened.source;
+    reopenedFileBaseline = { ...reopened };
     preview();
     message('Markdown draft opened locally. Nothing was uploaded. Export again to keep changes.');
   } catch {
@@ -128,9 +145,18 @@ field('clearDraft').addEventListener('click', () => {
   source.value = '';
   locale.value = 'en';
   category.value = 'guides';
+  reopenedFileBaseline = null;
   preview();
   message('Draft cleared from this browser tab.');
   title.focus();
+});
+
+// Browsers decide whether to show their generic unload confirmation.
+ // Never suppress the guard just because a download was requested.
+window.addEventListener('beforeunload', event => {
+  if (!hasUnexportedChanges(currentDraft(), reopenedFileBaseline)) return;
+  event.preventDefault();
+  event.returnValue = '';
 });
 
 field('draftForm').addEventListener('submit', event => event.preventDefault());
