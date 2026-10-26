@@ -22,6 +22,8 @@ test('rights review does not silently relicense the original source', () => {
   assert.match(license, /^MIT License/);
   assert.match(license, /Permission is hereby granted, free of charge/);
   assert.match(strategy, /Changing the license later does \*\*not automatically undo rights/);
-  assert.match(strategy, /The founder has \*\*not yet approved\*\* changing the root MIT license/);
+  assert.match(strategy, /The founder has \*\*not approved any change to the root MIT license/);
   assert.match(strategy, /private product core/);
+  assert.match(strategy, /founder has approved \*\*Model A\*\*/);
+  assert.match(get('docs/PUBLIC_PRIVATE_BOUNDARY.md'), /does \*\*not\*\* remove MIT rights/);
 });
