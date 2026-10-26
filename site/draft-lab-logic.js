@@ -54,6 +54,16 @@ export function draftFilename(draft) {
   return '24gotop-' + (slug || 'draft-' + language) + '.md';
 }
 
+/** Compare the current tab to the last explicitly reopened local file.
+ * A download click/clipboard copy is never proof the browser saved a file.
+ */
+export function hasUnexportedChanges(draft, reopenedFile = null) {
+  if (!hasDraftContent(draft)) return false;
+  if (!reopenedFile) return true;
+  return ['title', 'body', 'locale', 'category', 'source']
+    .some(key => draft?.[key] !== reopenedFile?.[key]);
+}
+
 export function hasDraftContent(draft) {
   return Boolean(
     draft?.title?.trim() || draft?.body?.trim() || draft?.source?.trim()
