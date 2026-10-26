@@ -4,6 +4,12 @@ This is the human-readable **history of verified changes**. Actual GitHub commit
 
 We follow a lightweight **Keep a Changelog** format until a first tagged release. These are development milestones, not npm release versions or proof that the community is in production.
 
+## 2026-10-26 — Founder approval of public/private architecture boundary
+
+- **Issue #24:** founder approved the forward-looking split of PUBLIC OSS SDK/MCP/API/docs and a separately controlled PRIVATE future hosted core. [Decision DEC-016](docs/DECISION_LOG.md) and [public boundary](docs/PUBLIC_PRIVATE_BOUNDARY.md).
+- **Verification boundary:** this docs change does not create a private repository, connect the server, grant credentials, change MIT rights, or constitute legal/security approval. A private repo bootstrap and staging integration remain outstanding.
+- **Rollback:** revert the docs PR if the architecture direction changes; existing MIT license and grants remain as they were.
+
 ## 2026-10-26 — Browser-only draft loss protection
 
 - **PR #42:** request the browser's standard leaving-page confirmation only when the user has new writing or has changed an explicitly reopened local Markdown file. Exact imported-file content does not warn; Clear resets the baseline.

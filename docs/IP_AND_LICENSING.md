@@ -20,9 +20,9 @@
 
 Do not promise that nobody can fork or self-host already MIT-licensed code; that would be inaccurate.
 
-## Possible future licensing / architecture models
+## Licensing and architecture models — model A approved, alternatives retained for comparison
 
-### Model A: Open developer ecosystem + private product core (recommended for evaluation)
+### Model A: Open developer ecosystem + private product core (founder-approved direction)
 
 - Continue public Issues, Discussions, Wiki, API contracts and genuinely open SDK/MCP/examples under a recognized OSS license.
 - Develop proprietary production infrastructure, admin workflows, private services, product-specific moderation workflows and sensitive configuration in a **separate private repository with independently managed secrets and clean provenance**.
@@ -56,9 +56,13 @@ Do not promise that nobody can fork or self-host already MIT-licensed code; that
 5. For new community contributions, decide whether an optional CLA with broad relicensing rights is justified. GitHub's repository license model already addresses most normal inbound contributions; a CLA is not proof of exclusive ownership.
 6. Maintain a change log, contributor credit and evidence of original authorship. Do not represent the entire repository as solely owned by one person when copyright ownership has not been verified.
 
-## Decision pending
+## Founder-approved direction — 2026-10-26
 
-The founder has **not yet approved** changing the root MIT license or moving current published code to a different licensing regime. Until then the existing LICENSE remains in place, contributors must not be misled, and future product-level proprietary code should not be publicly released by default.
+The founder has approved **Model A** as the intended architecture for new development: a public MIT OSS developer ecosystem plus a **separate private official hosted core**. This does not approve a new license for existing code, assign contributor copyrights, grant any automatic trademark protection, or constitute legal clearance. Before introducing new proprietary backend code, verify source provenance and licensing; private git visibility is a distribution choice, not a retroactive copyright transfer. See [public/private boundary](PUBLIC_PRIVATE_BOUNDARY.md) and [Issue #24](https://github.com/rf24kja/24GO.top/issues/24).
+
+## Legal/provenance items still open
+
+The founder has **not approved any change to the root MIT license or retroactive movement/relicensing of already published code**. Until then the existing LICENSE remains in place, contributors must not be misled, and future product-level proprietary code should not be publicly released by default.
 
 ## References
 
