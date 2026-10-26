@@ -6,12 +6,12 @@
 
 - Open `https://24go.top/draft-lab.html` **if** GitHub Pages and the custom domain have been successfully deployed.
 - Enter a title, choose one of the eight existing interface languages and a content category.
-- Write up to 12,000 characters, optionally attach a HTTP(S) source URL, and see a plain-text preview.
+- Write up to 12,000 characters, optionally attach an HTTP(S) source URL, and see a **restricted Markdown block preview** (headings, lists, quotes, fenced code, horizontal rules and paragraphs). All author text is rendered using DOM text nodes: raw HTML, Markdown links and inline formatting are shown literally, not interpreted.
 - Copy the draft to the clipboard or download a UTF-8 Markdown `.md` file after client-side validation.
 - Reopen a previously exported Draft Lab `.md` file to continue writing. Only our export format is accepted, with a 64 KiB file limit, and existing unsaved text requires a replacement confirmation.
 - Clear a non-empty draft only after a confirmation prompt to reduce accidental loss.
 
-All content is held **only in memory in the current browser tab**, unless the visitor explicitly downloads a file or copies the text. The Markdown file remains on the visitor's own device, not on 24GOTOP servers. There is no authentication, server request, browser storage, automatic save, publication, shareable article URL or rich Markdown rendering. Reopening/reloading the page loses any draft not saved by the visitor.
+All content is held **only in memory in the current browser tab**, unless the visitor explicitly downloads a file or copies the text. The Markdown file remains on the visitor's own device, not on 24GOTOP servers. There is no authentication, server request, browser storage, automatic save, publication, shareable article URL or full Markdown rendering. The restricted block preview is an author-side experiment; the exported Markdown source is unchanged. Reopening/reloading the page loses any draft not saved by the visitor.
 
 ## Why this is the right stage
 
@@ -35,7 +35,7 @@ The production identity and moderation architecture is not ready yet. This proto
 ## Engineering verification
 
 - Node `--check` validation for the Draft Lab JS.
-- CI tests assert no network calls, browser storage, or unsafe HTML interpolation in the static client.
+- CI tests assert no network calls, browser storage, or unsafe HTML interpolation in the static client. The preview module has tests for code fences, accessible heading hierarchy, lists and literal treatment of HTML/script-like payloads.
 - Live accessibility checks (keyboard, screen reader, mobile 320px) and HTTPS page smoke-test remain **manual pending tasks**, not automatically certified by unit tests.
 
 ## Risks and rollback

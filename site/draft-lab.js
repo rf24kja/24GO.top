@@ -1,6 +1,7 @@
 'use strict';
 
 import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, parseDraftFile, MAX_DRAFT_FILE_BYTES } from './draft-lab-logic.js';
+import { renderMarkdownPreview } from './draft-lab-preview.js';
 
 // Browser-only UX research prototype: no network, browser persistence or analytics.
 const field = id => document.getElementById(id);
@@ -25,7 +26,7 @@ function message(text, isError = false) {
 function preview() {
   // textContent prevents user HTML or Markdown from executing.
   field('previewHeading').textContent = title.value.trim() || 'Your title will appear here.';
-  field('previewBody').textContent = body.value.trim() || 'Begin writing to see your article as plain text. Rich Markdown rendering and real publication are future features.';
+  renderMarkdownPreview(field('previewBody'), body.value.trim() || 'Begin writing to see your article preview.');
   field('previewLocale').textContent = locale.value.toUpperCase();
   field('previewCategory').textContent = headings[category.value] || 'Guides';
   field('bodyCount').textContent = body.value.length.toLocaleString('en-US') + ' / 12,000';

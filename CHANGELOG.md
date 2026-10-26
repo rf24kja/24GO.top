@@ -4,6 +4,13 @@ This is the human-readable **history of verified changes**. Actual GitHub commit
 
 We follow a lightweight **Keep a Changelog** format until a first tagged release. These are development milestones, not npm release versions or proof that the community is in production.
 
+## 2026-10-26 — DOM-safe limited Markdown preview in Draft Lab
+
+- **PR #40:** render author-entered headings, paragraphs, ordered/unordered lists, quotes, rules and fenced code as structured HTML elements using fixed tag names and `textContent` only. Raw HTML, Markdown links and inline markup deliberately remain literal text.
+- Keep the copy/download/reopen format and browser-only privacy boundary unchanged; no backend, account, network upload or autosave.
+- Add parser and malicious-markup regression tests, responsive code formatting, research notes and contributor-facing readiness status.
+- **Verification:** PR #40 GitHub Actions source tests and syntax checks; real 320px, keyboard and screen-reader use remain unverified until volunteer test results. **Rollback:** revert PR #40; no database or deployment changes.
+
 ## 2026-10-26 — Cancellable public JavaScript SDK requests
 
 - Support caller-provided `AbortSignal` for SDK health, list, read and local-only publish methods, while retaining independent timeouts and redirect blocking. Caller cancellation does not send pre-aborted requests; errors distinguish `ABORTED` and `TIMEOUT` without exposing abort reasons.
