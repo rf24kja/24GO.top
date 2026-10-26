@@ -4,6 +4,12 @@ This is the human-readable **history of verified changes**. Actual GitHub commit
 
 We follow a lightweight **Keep a Changelog** format until a first tagged release. These are development milestones, not npm release versions or proof that the community is in production.
 
+## 2026-10-26 — Original engineering note on safe Markdown preview
+
+- **PR #41:** add an original, source-backed engineering article describing the restricted Markdown preview threat model, implementation in PR #40, regression tests and limits. Index it in the static Engineering Notes section and RSS.
+- **Scope:** technical documentation only; no proof of live article URL, registered users, traffic or publishing backend.
+- **Verification:** GitHub Actions source tests on PR #41; live RSS/Pages HTTPS and browser accessibility checks still need independent confirmation. **Rollback:** revert the editorial PR without changing the private database or API.
+
 ## 2026-10-26 — DOM-safe limited Markdown preview in Draft Lab
 
 - **PR #40:** render author-entered headings, paragraphs, ordered/unordered lists, quotes, rules and fenced code as structured HTML elements using fixed tag names and `textContent` only. Raw HTML, Markdown links and inline markup deliberately remain literal text.
