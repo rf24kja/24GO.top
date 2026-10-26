@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { LOCALES, CATEGORIES, safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, parseDraftFile, MAX_DRAFT_FILE_BYTES } from '../site/draft-lab-logic.js';
+import { LOCALES, CATEGORIES, safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, parseDraftFile, MAX_DRAFT_FILE_BYTES } from '../site/draft-lab-logic.js';
 
 const valid = {
   title:'Making a secure publishing API',
@@ -127,4 +127,14 @@ test('importer keeps HTML-like content literal and does not sanitize away the au
   const original = { ...valid, body: text };
   const imported = parseDraftFile(formatDraft(original));
   assert.equal(imported.body, text);
+});
+
+test('exit warning compares only current tab to a reopened-file baseline', () => {
+  const knownFile = { ...valid };
+  assert.equal(hasUnexportedChanges(valid), true, 'new writing has no saved file baseline');
+  assert.equal(hasUnexportedChanges(valid, knownFile), false);
+  assert.equal(hasUnexportedChanges({...valid,body:valid.body+'\nMore work'}, knownFile), true);
+  assert.equal(hasUnexportedChanges({...valid,source:'https://example.org/other'},knownFile),true);
+  assert.equal(hasUnexportedChanges({...valid,locale:'ru'},knownFile),true);
+  assert.equal(hasUnexportedChanges({...valid,title:'',body:'',source:''}),false);
 });
