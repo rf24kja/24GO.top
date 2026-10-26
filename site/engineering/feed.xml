@@ -4,6 +4,12 @@
 <link>https://www.24go.top/engineering/</link>
 <description>Source-backed articles about building the 24GOTOP AI-native knowledge platform. Early-stage development, not a live publishing community.</description>
 <language>en</language>
+<item><title>Submit for review is not publish</title>
+<link>https://www.24go.top/engineering/submit-is-not-publish.html</link>
+<guid isPermaLink="true">https://www.24go.top/engineering/submit-is-not-publish.html</guid>
+<description>Why review snapshots, idempotent moderation handoff and authenticated moderator decisions must be separate from public release; code is prelaunch and production remains blocked.</description>
+<pubDate>Mon, 26 Oct 2026 12:00:00 GMT</pubDate>
+</item>
 <item><title>Preview Markdown without executing author HTML</title>
 <link>https://www.24go.top/engineering/markdown-preview-safety.html</link>
 <guid isPermaLink="true">https://www.24go.top/engineering/markdown-preview-safety.html</guid>
