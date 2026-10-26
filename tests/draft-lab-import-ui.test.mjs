@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { runInNewContext } from 'node:vm';
 import {
   safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent,
-  parseDraftFile, MAX_DRAFT_FILE_BYTES
+  parseDraftFile, MAX_DRAFT_FILE_BYTES, hasUnexportedChanges
 } from '../site/draft-lab-logic.js';
 
 const source = readFileSync(fileURLToPath(new URL('../site/draft-lab.js', import.meta.url)), 'utf8')
@@ -22,7 +22,7 @@ function build() {
   const ids = [
     'postTitle','postBody','postLocale','postCategory','postSource','formStatus',
     'previewHeading','previewBody','previewLocale','previewCategory','bodyCount',
-    'previewSource','downloadDraft','copyDraft','clearDraft','importDraft','importDraftFile','draftForm'
+    'previewSource','draftSafety','downloadDraft','copyDraft','clearDraft','importDraft','importDraftFile','draftForm'
   ];
   const elements = Object.fromEntries(ids.map(id => {
     const el = {
@@ -36,17 +36,22 @@ function build() {
   elements.postLocale.value='en';
   elements.postCategory.value='guides';
   let confirm = true;
-  const window = {confirm(){return confirm;}};
+  const window = {listeners:{}, confirm(){return confirm;}, addEventListener(type, callback){this.listeners[type]=callback;}};
   const document = {getElementById(id){return elements[id];}};
   runInNewContext(source, {
     document, window, navigator:{}, URL, Blob, setTimeout,
     safeSourceUrl,validateDraft,formatDraft,draftFilename,hasDraftContent,
-    parseDraftFile,MAX_DRAFT_FILE_BYTES,
+    parseDraftFile,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,
     renderMarkdownPreview(container, text) { container.textContent = text; }
   },{timeout:1000});
   return {
     elements,
     setConfirm(value){confirm=value;},
+    beforeUnload() {
+      const event = {prevented:false, returnValue:undefined, preventDefault(){this.prevented=true;}};
+      window.listeners.beforeunload(event);
+      return event;
+    },
     async import(content, filename='24gotop-saved.md', size=Buffer.byteLength(content,'utf8')) {
       const input=elements.importDraftFile;
       input.files=[{name:filename,size,async text(){return content;}}];
@@ -90,4 +95,44 @@ test('malformed and oversized inputs are refused before overwriting',async()=>{
   await app.import(formatDraft(sample),'24gotop-saved.md',MAX_DRAFT_FILE_BYTES+1);
   assert.equal(app.elements.postTitle.value,'Keep this article');
   assert.match(app.elements.formStatus.textContent,/64 KB maximum/);
+});
+
+test('beforeunload warns for new or changed writing, not for unchanged reopened files', async () => {
+  const app = build();
+  assert.equal(app.beforeUnload().prevented,false);
+  app.elements.postTitle.value = 'A new unsaved draft';
+  app.elements.postBody.value = 'Long enough original technical writing from the user.';
+  let leaving = app.beforeUnload();
+  assert.equal(leaving.prevented,true);
+  assert.equal(leaving.returnValue,'');
+  assert.match(app.elements.draftSafety.textContent,/No draft content yet|never automatically saves/i);
+  app.elements.postTitle.value = '';
+  app.elements.postBody.value = '';
+  assert.equal(app.beforeUnload().prevented,false);
+  await app.import(formatDraft(sample));
+  assert.equal(app.beforeUnload().prevented,false, 'local file already exists');
+  app.elements.postBody.value += '\nNew edits not in that file';
+  leaving = app.beforeUnload();
+  assert.equal(leaving.prevented,true);
+});
+
+test('cancelled import and failed import never clear new-draft exit protection', async () => {
+  const app = build();
+  app.elements.postTitle.value = 'Keep an unsaved draft';
+  app.elements.postBody.value = 'This working draft should remain protected on navigation.';
+  app.setConfirm(false);
+  await app.import(formatDraft(sample));
+  assert.equal(app.beforeUnload().prevented,true);
+  await app.import('Unrecognized Markdown file');
+  assert.equal(app.beforeUnload().prevented,true);
+});
+
+test('an explicit Clear reset turns off the warning after user confirmation', () => {
+  const app = build();
+  app.elements.postTitle.value = 'A new unsaved draft';
+  app.elements.postBody.value = 'A reproducible article with meaningful unsaved content.';
+  app.setConfirm(true);
+  app.elements.clearDraft.listeners.click();
+  assert.equal(app.beforeUnload().prevented,false);
+  assert.match(app.elements.draftSafety.textContent,/No draft content yet/);
 });
