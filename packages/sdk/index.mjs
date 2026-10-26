@@ -4,10 +4,11 @@
  * Never ship development publishing keys to browsers or third-party websites.
  */
 export class TopClientError extends Error {
-  constructor(message, status = null) {
+  constructor(message, status = null, code = null) {
     super(message);
     this.name = 'TopClientError';
     this.status = status;
+    this.code = code;
   }
 }
 
@@ -42,21 +43,41 @@ export class TopClient {
   }
 
   async request(path, options = {}) {
+    const callerSignal = options.signal;
+    if (callerSignal != null && !(callerSignal instanceof AbortSignal)) {
+      throw new TypeError('signal must be an AbortSignal');
+    }
+    // A cancelled operation must not initiate a network request, especially
+    // when the caller supplies a development-only publishing credential.
+    if (callerSignal?.aborted) {
+      throw new TopClientError('24GOTOP API request cancelled', null, 'ABORTED');
+    }
+    const timeoutSignal = AbortSignal.timeout(this.timeoutMs);
+    const signal = callerSignal
+      ? AbortSignal.any([callerSignal, timeoutSignal])
+      : timeoutSignal;
+    const safeFailure = () => {
+      // Never propagate AbortSignal.reason: callers may put secrets in it.
+      if (callerSignal?.aborted) return new TopClientError('24GOTOP API request cancelled', null, 'ABORTED');
+      if (timeoutSignal.aborted) return new TopClientError('24GOTOP API request timed out', null, 'TIMEOUT');
+      return new TopClientError('24GOTOP API network request failed or timed out');
+    };
     let response;
     try {
       response = await this.fetchImpl(this.baseURL + path, {
         ...options,
-        signal: AbortSignal.timeout(this.timeoutMs),
+        signal,
         redirect: 'error'
       });
     } catch {
-      // Do not include URL credentials, response bodies, or secrets in errors.
-      throw new TopClientError('24GOTOP API network request failed or timed out');
+      throw safeFailure();
     }
     let body;
     try {
       body = await response.json();
     } catch {
+      // Reading a streamed JSON body can also be interrupted by abort.
+      if (callerSignal?.aborted || timeoutSignal.aborted) throw safeFailure();
       throw new TopClientError('24GOTOP API returned invalid JSON', response.status);
     }
     if (!response.ok) {
@@ -66,21 +87,21 @@ export class TopClient {
     return body;
   }
 
-  health() {
-    return this.request('/api/health');
+  health({ signal } = {}) {
+    return this.request('/api/health', { signal });
   }
 
-  listPosts({ locale = 'en', category, limit = 20 } = {}) {
+  listPosts({ locale = 'en', category, limit = 20, signal } = {}) {
     const params = new URLSearchParams({ locale, limit: String(limit) });
     if (category) params.set('category', category);
-    return this.request('/api/posts?' + params);
+    return this.request('/api/posts?' + params, { signal });
   }
 
-  getPost(id) {
-    return this.request('/api/posts/' + encodeURIComponent(id));
+  getPost(id, { signal } = {}) {
+    return this.request('/api/posts/' + encodeURIComponent(id), { signal });
   }
 
-  publishPost(post) {
+  publishPost(post, { signal } = {}) {
     if (!this.apiKey) throw new TopClientError('apiKey is required for LOCAL publishing');
     if (new URL(this.baseURL).protocol !== 'https:'
         && !['localhost', '127.0.0.1', '[::1]'].includes(new URL(this.baseURL).hostname)) {
@@ -92,7 +113,8 @@ export class TopClient {
         'content-type': 'application/json',
         authorization: 'Bearer ' + this.apiKey
       },
-      body: JSON.stringify(post)
+      body: JSON.stringify(post),
+      signal
     });
   }
 }
