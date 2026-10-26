@@ -102,6 +102,8 @@ test('beforeunload warns for new or changed writing, not for unchanged reopened 
   assert.equal(app.beforeUnload().prevented,false);
   app.elements.postTitle.value = 'A new unsaved draft';
   app.elements.postBody.value = 'Long enough original technical writing from the user.';
+  app.elements.postBody.listeners.input();
+  assert.match(app.elements.draftSafety.textContent,/Check your exported/);
   let leaving = app.beforeUnload();
   assert.equal(leaving.prevented,true);
   assert.equal(leaving.returnValue,'');
@@ -111,7 +113,10 @@ test('beforeunload warns for new or changed writing, not for unchanged reopened 
   assert.equal(app.beforeUnload().prevented,false);
   await app.import(formatDraft(sample));
   assert.equal(app.beforeUnload().prevented,false, 'local file already exists');
+  assert.match(app.elements.draftSafety.textContent,/Reopened file is unchanged/);
   app.elements.postBody.value += '\nNew edits not in that file';
+  app.elements.postBody.listeners.input();
+  assert.match(app.elements.draftSafety.textContent,/Check your exported/);
   leaving = app.beforeUnload();
   assert.equal(leaving.prevented,true);
 });
