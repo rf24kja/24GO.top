@@ -4,6 +4,13 @@ This is the human-readable **history of verified changes**. Actual GitHub commit
 
 We follow a lightweight **Keep a Changelog** format until a first tagged release. These are development milestones, not npm release versions or proof that the community is in production.
 
+## 2026-10-26 — Browser-only draft loss protection
+
+- **PR #42:** request the browser's standard leaving-page confirmation only when the user has new writing or has changed an explicitly reopened local Markdown file. Exact imported-file content does not warn; Clear resets the baseline.
+- Add a visible non-persistent draft safety note, pure comparison helper and simulated-browser regression tests for missing/edited/imported/cancelled/cleared draft flows. Do not treat a clipboard copy or download request as proof of a file safely stored.
+- **Scope:** this is a best-effort browser guard, not autosave or durable storage. Browser prompts can be suppressed, especially without a recent user gesture. No cookies, network, credentials or production backend.
+- **Verification:** PR CI checks plus separately pending real-device navigation and file recovery tests in Issue #29. **Rollback:** revert PR #42; no database or infrastructure changes.
+
 ## 2026-10-26 — Original engineering note on safe Markdown preview
 
 - **PR #41:** add an original, source-backed engineering article describing the restricted Markdown preview threat model, implementation in PR #40, regression tests and limits. Index it in the static Engineering Notes section and RSS.
