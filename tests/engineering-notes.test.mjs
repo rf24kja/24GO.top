@@ -10,6 +10,7 @@ const home = read('index.html');
 const index = read('engineering/index.html');
 const article = read('engineering/why-draft-lab-first.html');
 const previewNote = read('engineering/markdown-preview-safety.html');
+const lifecycleNote = read('engineering/submit-is-not-publish.html');
 const feed = read('engineering/feed.xml');
 const progress = read('progress.html');
 
@@ -22,7 +23,7 @@ test('home and development timeline link to verifiable engineering notes', () =>
 });
 
 test('all relative navigation links in engineering collection resolve to packaged static artifacts', () => {
-  for (const path of ['engineering/index.html','engineering/why-draft-lab-first.html','engineering/markdown-preview-safety.html']) {
+  for (const path of ['engineering/index.html','engineering/why-draft-lab-first.html','engineering/markdown-preview-safety.html','engineering/submit-is-not-publish.html']) {
     const url = new URL('../site/' + path, import.meta.url);
     const html = read(path);
     for (const [, value] of html.matchAll(/\bhref="([^"]+)"/g)) {
@@ -54,7 +55,7 @@ test('static RSS lists actual article with explicit source URL and valid publica
   assert.match(feed, /<title>24GOTOP Engineering Notes<\/title>/);
   assert.match(feed, /https:\/\/www\.24go\.top\/engineering\/why-draft-lab-first\.html/);
   assert.match(feed, /<pubDate>Mon, 26 Oct 2026 00:00:00 GMT<\/pubDate>/);
-  assert.equal((feed.match(/<item>/g) || []).length, 2);
+  assert.equal((feed.match(/<item>/g) || []).length, 3);
   assert.match(feed, /https:\/\/www\.24go\.top\/engineering\/markdown-preview-safety\.html/);
   assert.match(index, /Preview Markdown without executing author HTML/);
   assert.match(index, /Why we built a Draft Lab before opening public writes/);
@@ -69,6 +70,23 @@ test('new safety article is tied to merged source and avoids production claims',
   assert.match(previewNote, /browser-only experiment/);
   assert.match(previewNote, /screen-reader/);
   assert.doesNotMatch(previewNote, /<script\b|<iframe\b|PUBLISH_API_KEY|sb_secret_|service_role/i);
+});
+
+test('review lifecycle note is indexed, readable and accurately describes prelaunch gates', () => {
+  assert.match(index, /href="\.\/submit-is-not-publish\.html"/);
+  assert.match(feed, /https:\/\/www\.24go\.top\/engineering\/submit-is-not-publish\.html/);
+  assert.match(feed, /<pubDate>Mon, 26 Oct 2026 12:00:00 GMT<\/pubDate>/);
+  assert.match(lifecycleNote, /<h1>Submit for review is not publish<\/h1>/);
+  assert.match(lifecycleNote, /not a live community publishing service/i);
+  assert.match(lifecycleNote, /immutable submission/i);
+  assert.match(lifecycleNote, /idempotent intake/i);
+  assert.match(lifecycleNote, /moderator/i);
+  assert.match(lifecycleNote, /https:\/\/github\.com\/rf24kja\/24GO\.top\/issues\/38/);
+  assert.match(lifecycleNote, /https:\/\/github\.com\/rf24kja\/24GO\.top\/issues\/29/);
+  assert.match(lifecycleNote, /<link rel="canonical" href="https:\/\/www\.24go\.top\/engineering\/submit-is-not-publish\.html"/);
+  assert.doesNotMatch(lifecycleNote, /<script\b|<iframe\b|PUBLISH_API_KEY|sb_secret_|service_role/i);
+  // No private full SQL or synthetic user credential in the published article.
+  assert.doesNotMatch(lifecycleNote, /CREATE ROLE|CREATE POLICY|INSERT INTO app_private|password123/i);
 });
 
 test('owner confirmation stays separate from independent DNS, TLS and public API assertions', () => {
