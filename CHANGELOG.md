@@ -4,6 +4,12 @@ This is the human-readable **history of verified changes**. Actual GitHub commit
 
 We follow a lightweight **Keep a Changelog** format until a first tagged release. These are development milestones, not npm release versions or proof that the community is in production.
 
+## 2026-10-26 — Cancellable public JavaScript SDK requests
+
+- Support caller-provided `AbortSignal` for SDK health, list, read and local-only publish methods, while retaining independent timeouts and redirect blocking. Caller cancellation does not send pre-aborted requests; errors distinguish `ABORTED` and `TIMEOUT` without exposing abort reasons.
+- Add regression tests for cancellation, pre-aborted publisher calls, timeout behavior and invalid signals. This is **public developer SDK source only**, not private production backend or an npm release.
+- **Verification:** GitHub Actions CI on the associated PR; local browser interoperability still requires manual review. **Rollback:** revert the SDK PR, with no schema, secrets, DNS or production changes.
+
 ## 2026-10-26 — Reopening saved article drafts
 
 - **PR #35:** Draft Lab now accepts its own previously exported Markdown files, letting an author download → leave → reopen → edit → download again without a registration, upload, autosave or production write API. [PR #35](https://github.com/rf24kja/24GO.top/pull/35).
