@@ -36,7 +36,7 @@ function runReader(locale='en') {
   };
   const location={pathname:'/'+locale+'/',href:''};
   runInNewContext(js,{
-    document,location,URLSearchParams,Date,
+    document,location,URL,URLSearchParams,Date,
     fetch(url){return new Promise(resolve=>requests.push({url,resolve}));}
   },{timeout:1000});
   return {nodes,buttons,requests,location};
@@ -140,4 +140,34 @@ test('all eight reader locales translate category filters and safe source link t
   assert.equal(sourceLink.target,'_blank');
   assert.equal(app.nodes.feed.getAttribute('aria-busy'),'false');
  }
+});
+
+test('reader never creates active or credentialed source links from untrusted persisted JSON',async()=>{
+ const values=['javascript:alert(1)','data:text/html,<script>alert(1)</script>',
+  'https://user:secret@example.org/', 'http://user@example.org/',
+  '/relative/path','//example.org/relative','not-a-url','ftp://example.org/',
+  'https://example.org/'+('x'.repeat(2100))];
+ for(const sourceUrl of values){
+  const app=runReader();
+  app.requests[0].resolve(okPosts([{
+   id:'local-example',title:'Example',body:'Plain safe content',category:'news',
+   publishedAt:'2026-10-26T10:00:00Z',authorType:'human',tags:[],sourceUrl
+  }]));
+  await settle();
+  const article=app.nodes.feed.children[0];
+  assert.ok(article,'still shows article for '+sourceUrl.slice(0,40));
+  assert.equal(article.children.filter(x=>x.tag==='a').length,0,
+   'unsafe source should not produce a link: '+sourceUrl.slice(0,40));
+  assert.equal(app.nodes.feed.attributes['aria-busy'],'false');
+ }
+ const safe=runReader();
+ safe.requests[0].resolve(okPosts([{
+  id:'valid',title:'Example',body:'Text',category:'news',tags:[],
+  publishedAt:'2026-10-26T10:00:00Z',authorType:'human',
+  sourceUrl:'https://example.org/technical-notes?q=1'
+ }]));
+ await settle();
+ const links=safe.nodes.feed.children[0].children.filter(x=>x.tag==='a');
+ assert.equal(links.length,1);
+ assert.equal(links[0].href,'https://example.org/technical-notes?q=1');
 });
