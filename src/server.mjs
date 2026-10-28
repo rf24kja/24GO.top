@@ -59,6 +59,37 @@ function origin(raw) {
 }
 function asset(path) { return readFileSync(join(root,'public',path)); }
 
+const loopbackSockets=new Set(['127.0.0.1','::1','::ffff:127.0.0.1']);
+const loopbackHostnames=new Set(['localhost','127.0.0.1','[::1]']);
+
+/**
+ * The JSON/key publishing route exists only for trusted LOCAL development.
+ * A user who accidentally binds 0.0.0.0 must not grant LAN or container
+ * callers write privileges. Browser requests additionally need a same-origin
+ * local Host/Origin pair. This is NOT production authentication.
+ */
+export function isTrustedLocalPublishRequest(req) {
+  const remote=req?.socket?.remoteAddress;
+  const local=req?.socket?.localAddress;
+  const host=req?.headers?.host;
+  if(!loopbackSockets.has(remote)||!loopbackSockets.has(local)||
+     typeof host!=='string'||host.length>100||/[\\\s,@]/.test(host))return false;
+  let target;
+  try{target=new URL('http://'+host);}
+  catch{return false;}
+  if(!loopbackHostnames.has(target.hostname)||target.username||target.password||
+     target.pathname!=='/'||target.search||target.hash)return false;
+  const suppliedOrigin=req.headers.origin;
+  if(suppliedOrigin===undefined)return true; // CLI / same-host SDK calls.
+  if(typeof suppliedOrigin!=='string'||suppliedOrigin.length>128)return false;
+  try{
+    const origin=new URL(suppliedOrigin);
+    return origin.protocol==='http:' && origin.origin===target.origin &&
+      origin.pathname==='/' && !origin.username&&!origin.password&&
+      !origin.search&&!origin.hash;
+  }catch{return false;}
+}
+
 export function createApp(config={}) {
   const apiKey=config.apiKey??process.env.PUBLISH_API_KEY??'';
   const site=origin(config.siteURL??process.env.SITE_URL??'');
@@ -91,6 +122,7 @@ export function createApp(config={}) {
       }
       if(req.method==='POST'&&path==='/api/posts') {
         if(store.mode!=='local') throw new ApiError(503,'Publishing disabled in read-only mode');
+        if(!isTrustedLocalPublishRequest(req)) throw new ApiError(403,'Local publishing requires a loopback request');
         if(!apiKey) throw new ApiError(503,'Publishing disabled');
         const auth=req.headers.authorization??'';
         if(!auth.startsWith('Bearer ')||!validSecret(auth.slice(7),apiKey)) throw new ApiError(401,'Unauthorized');

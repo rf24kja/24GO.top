@@ -4,7 +4,8 @@ import {mkdtempSync,rmSync,readFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {once} from 'node:events';
-import {createApp} from '../src/server.mjs';
+import {request as httpRequest} from 'node:http';
+import {createApp,isTrustedLocalPublishRequest} from '../src/server.mjs';
 import {TopClient} from '../packages/sdk/index.mjs';
 
 const secret='local-test-key-0123456789abcdef';
@@ -74,4 +75,71 @@ test('adds secure default headers to rendered pages and API responses',async t=>
   assert.match(page.headers.get('permissions-policy')||'',/microphone=\(\)/);
   const api=await fetch(base+'/api/health');
   assert.equal(api.headers.get('x-content-type-options'),'nosniff');
+});
+
+
+test('local JSON publisher rejects off-host and container traffic before checking development secret',()=>{
+  const good={socket:{remoteAddress:'127.0.0.1',localAddress:'127.0.0.1'},
+    headers:{host:'127.0.0.1:3000'}};
+  assert.equal(isTrustedLocalPublishRequest(good),true);
+  assert.equal(isTrustedLocalPublishRequest({...good,headers:{...good.headers,
+    origin:'http://127.0.0.1:3000'}}),true);
+  assert.equal(isTrustedLocalPublishRequest({...good,headers:{host:'localhost:3000',
+    origin:'http://localhost:3000'}}),true);
+  assert.equal(isTrustedLocalPublishRequest({socket:{
+    remoteAddress:'::1',localAddress:'::1'},headers:{host:'[::1]:3000'}}),true);
+  for(const remoteAddress of ['203.0.113.20','192.168.1.20','172.17.0.1',
+    '::ffff:192.168.1.2',undefined]){
+    assert.equal(isTrustedLocalPublishRequest({...good,socket:{
+      ...good.socket,remoteAddress}}),false,String(remoteAddress));
+  }
+  for(const localAddress of ['192.168.1.10','172.17.0.2',undefined]){
+    assert.equal(isTrustedLocalPublishRequest({...good,socket:{
+      ...good.socket,localAddress}}),false,String(localAddress));
+  }
+  for(const host of ['attacker.example','localhost.attacker.example',
+    '127.0.0.1.attacker.example','[::ffff:192.168.1.1]:3000',
+    '127.0.0.1@attacker.example','localhost:3000/path','localhost:3000?evil',
+    'localhost:3000,attacker.example','127.0.0.1:3000\nX-Evil: 1','',
+    'http://127.0.0.1:3000']){
+    assert.equal(isTrustedLocalPublishRequest({...good,headers:{host}}),false,
+      host);
+  }
+  for(const origin of ['null','https://127.0.0.1:3000',
+    'http://attacker.example','http://localhost:3000',
+    'http://127.0.0.1:3001','http://127.0.0.1:3000.evil',
+    'http://127.0.0.1:3000/path','http://u@127.0.0.1:3000']){
+    assert.equal(isTrustedLocalPublishRequest({...good,headers:{host:'127.0.0.1:3000',
+      origin}}),false,origin);
+  }
+});
+test('HTTP write rejects forged Host/Origin and leaves local JSON unchanged',async t=>{
+  const {base,dbPath}=await fixture(t);
+  const payload=JSON.stringify(valid);
+  const headers={'content-type':'application/json',authorization:'Bearer '+secret};
+  // fetch() rewrites Host from the URL. Use the real http.request API
+  // to send a forged Host header and prove the server actually rejects it.
+  const forgedHostStatus=await new Promise((resolve,reject)=>{
+    const req=httpRequest(base+'/api/posts',{
+      method:'POST',headers:{...headers,host:'attacker.example'}
+    },res=>{
+      res.resume();
+      res.on('end',()=>resolve(res.statusCode));
+    });
+    req.on('error',reject);
+    req.end(payload);
+  });
+  assert.equal(forgedHostStatus,403);
+  for(const extra of [{origin:'http://attacker.example'}, {origin:'null'},
+    {origin:'https://127.0.0.1'}]){
+    const response=await fetch(base+'/api/posts',{method:'POST',headers:{
+      ...headers,...extra},body:payload});
+    assert.equal(response.status,403,JSON.stringify(extra));
+  }
+  const feed=await (await fetch(base+'/api/posts')).json();
+  assert.deepEqual(feed.posts,[]);
+  // The normal SDK path without an Origin header must continue to work.
+  const result=await new TopClient({baseURL:base,apiKey:secret}).publishPost(valid);
+  assert.ok(result.post.id);
+  assert.equal(JSON.parse(readFileSync(dbPath,'utf8')).length,1);
 });
