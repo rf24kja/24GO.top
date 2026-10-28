@@ -4,6 +4,12 @@ This is the human-readable **history of verified changes**. Actual GitHub commit
 
 We follow a lightweight **Keep a Changelog** format until a first tagged release. These are development milestones, not npm release versions or proof that the community is in production.
 
+## 2026-10-29 — Local reader translation and source-link safety (public MIT prototype)
+
+- [PR #49](https://github.com/rf24kja/24GO.top/pull/49) — localized the five category buttons, accessible category-group label, interface language label and external source link for all eight supported reader locales. Stable API category keys are unchanged. Eight-locale DOM checks, pull-request CI and merged-main CI passed.
+- [PR #50](https://github.com/rf24kja/24GO.top/pull/50) — added defense-in-depth for the local reader's clickable original-source URL: invalid, non-HTTP(S), credential-bearing, relative and oversized URLs are not linked even if present in an untrusted API response or old local JSON. Local development POST validation also rejects credential-bearing URLs. The body remains inert text. Source/HTTP regression tests, pull-request CI and merged-main CI passed.
+- Follow-up [accessibility Issue #7](https://github.com/rf24kja/24GO.top/issues/7) invites actual 320/390px, keyboard, NVDA/VoiceOver/TalkBack and native-language feedback. No volunteer QA, WCAG certification, production hosting or live user articles are claimed. No private hosted-core or database logic was copied to the public MIT repository. **Rollback:** Git revert of #49 / #50.
+
 ## 2026-10-28 — Evidence-based OSS impact and official developer benefit review
 
 - Recorded a dated, independently checkable public repository baseline (1 star, 0 forks; external dependents/contributors and download impact not established). These are **not** active users, proof of service launch, or program eligibility.
