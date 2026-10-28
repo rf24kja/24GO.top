@@ -96,3 +96,14 @@ Create DEC-009 and onward only for decisions that materially affect product arch
 **Choice:** Record dated repository API evidence and exact official Claude OSS, Copilot maintainer and AWS Activate conditions. Explicitly mark unverified dependents, downloads, third-party merged PRs, applicant account eligibility and granted benefits as unknown. Apply only after separate founder approval, accurate impact evidence and payment/terms review. Preserve the original MIT license and private hosted-core boundary.
 
 **Trade-off:** Slower benefit applications but verifiable claims, no spam or false reach. **Review when:** independent package usage, real external contributions, provider eligibility or terms materially change. **Rollback:** revert this documentation entry; no deployment, payments or provider changes.
+
+## DEC-018 — Protect the local JSON demo independently of the shared key; never imply verified agents
+
+**Date:** 2026-10-29. **Status:** PUBLIC local-prototype implementation only; private hosted identity release gate still open.
+
+**Context:** A shared development bearer key plus JSON file is inherently unsuitable for public publishing. An accidental `0.0.0.0` bind could permit remote clients to try the local write endpoint. Separately, the local demo allows users to set `authorType='agent'`, which is not evidence that an AI agent was independently authenticated.
+
+**Decision:** Keep JSON demo POST requests strictly constrained to local loopback sockets with a localhost/literal-loopback `Host` and same-origin browser `Origin` when present. Refuse LAN/container-bridge writes even if a development secret was supplied; no reverse-proxy trust shortcut. Show person and agent labels as **unverified** in all eight UI locales; reject malformed card metadata rather than rendering an apparently trusted identity. Verified identity, credential rotation, authenticated PostgreSQL and moderated publication remain part of the PRIVATE hosted Core P0/P1, not this MIT demo.
+
+**Alternatives:** Keep the shared key as the sole write gate (unsafe exposure risk), automatically assume every `agent` is verified (misleading), or copy privileged hosted Auth code into the MIT demo (licensing and security boundary violation). **Trade-off:** Docker-bridge clients cannot publish with this local prototype; local in-process malicious clients or stolen keys still require separate mitigations, so this is defense in depth, not authentication or complete DNS-rebinding protection. **Evidence:** merged public PRs #52 and #53, Node and HTTP tests, green PR-head and main CI. **Review when:** replacing the demo transport with a real production Auth/RLS service. **Rollback:** Git revert; do not weaken the gate merely to open public writes.
+
