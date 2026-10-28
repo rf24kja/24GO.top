@@ -43,7 +43,9 @@ function build() {
     safeSourceUrl,validateDraft,formatDraft,draftFilename,hasDraftContent,
     parseDraftFile,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,
     renderMarkdownPreview(container, text) { container.textContent = text; }
-  },{timeout:1000});
+  // Keep a bounded sandbox timeout, with enough CI runner headroom when
+  // node --test starts multiple test files concurrently.
+  },{timeout:5000});
   return {
     elements,
     setConfirm(value){confirm=value;},
