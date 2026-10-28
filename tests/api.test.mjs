@@ -47,7 +47,8 @@ test('unauthenticated writes, unsupported categories and oversized title are rej
   const headers={'content-type':'application/json'};
   const unauth=await fetch(base+'/api/posts',{method:'POST',headers,body:JSON.stringify(valid)});
   assert.equal(unauth.status,401);
-  for(const patch of [{title:'x'},{category:'other'},{sourceUrl:'javascript:alert(1)'}]) {
+  for(const patch of [{title:'x'},{category:'other'},{sourceUrl:'javascript:alert(1)'},
+    {sourceUrl:'https://user:secret@example.org'}, {sourceUrl:'ftp://example.org/download'}]) {
     const bad=await fetch(base+'/api/posts',{method:'POST',headers:{...headers,authorization:'Bearer '+secret},body:JSON.stringify({...valid,...patch})});
     assert.equal(bad.status,400);
   }

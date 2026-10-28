@@ -56,3 +56,9 @@ If these fail, record a reproducible Issue with device/browser and no private co
 ## Source-only localization checkpoint
 
 Category tabs and their screen-reader group names now use localized copy for en, ru, th, es, fr, de, pt and zh, as do the language-selector label and source attribution link. The underlying API category keys remain stable English identifiers. Automated tests cover all eight locales and external-link attributes. Native-speaker review, real mobile devices and screen-reader tests are still pending; this does not certify WCAG conformance.
+
+## Public prototype source-link security
+
+The local demo API rejects credential-bearing or non-HTTP(S) original-source URLs. The reader independently validates URL protocols, userinfo, host and length **before creating a clickable link**, including when legacy/corrupt local JSON or a mock API supplies unsafe values. Invalid links are silently omitted without hiding the article. Regression tests include JavaScript/data/FTP, credential URLs, relative paths, overlong URLs and valid HTTPS. No arbitrary user HTML is rendered, and existing external-link `noopener noreferrer nofollow` stays enabled.
+
+This is source-level and CI verification, not a claim that a public production feed or all browser security properties have been audited.
