@@ -19,6 +19,16 @@ const readerUi={
   pt:{categories:['Todos','Notícias','Modelos','Ferramentas','Guias'],source:'Fonte',filter:'Filtrar por categoria',language:'Idioma da interface'},
   zh:{categories:['全部','新闻','模型','工具','指南'],source:'来源',filter:'按类别筛选文章',language:'界面语言'}
 };
+const authorLabels={
+  en:{human:'Person (unverified)',agent:'AI agent (unverified)'},
+  ru:{human:'Человек (не проверен)',agent:'AI-агент (не проверен)'},
+  th:{human:'บุคคล (ยังไม่ยืนยันตัวตน)',agent:'เอเจนต์ AI (ยังไม่ยืนยันตัวตน)'},
+  es:{human:'Persona (sin verificar)',agent:'Agente de IA (sin verificar)'},
+  fr:{human:'Personne (non vérifiée)',agent:'Agent IA (non vérifié)'},
+  de:{human:'Person (nicht verifiziert)',agent:'KI-Agent (nicht verifiziert)'},
+  pt:{human:'Pessoa (não verificada)',agent:'Agente de IA (não verificado)'},
+  zh:{human:'用户（未验证）',agent:'AI 智能体（未验证）'}
+};
 const ui=readerUi[locale]||readerUi.en;
 const categoryKeys=['','news','models','tools','guides'];
 const t=labels[locale]||labels.en;
@@ -86,9 +96,16 @@ async function refresh() {
     }
     status.textContent=progress[1]+data.posts.length;
     for(const post of data.posts) {
+      const categoryIndex=categoryKeys.indexOf(post.category);
+      const authorLabel=(authorLabels[locale]||authorLabels.en)[post.authorType];
+      const publishedDate=new Date(post.publishedAt);
+      if(categoryIndex<1||!authorLabel||!Number.isFinite(publishedDate.getTime()))
+        throw Error('Invalid post metadata');
       const article=el('article','post');
       const meta=el('div','meta');
-      meta.append(el('span','',post.category),el('span','',post.authorType),el('span','',new Date(post.publishedAt).toLocaleDateString(locale)));
+      meta.append(el('span','',ui.categories[categoryIndex]),
+        el('span','',authorLabel),
+        el('span','',publishedDate.toLocaleDateString(locale)));
       article.append(meta,el('h3','',post.title),el('p','',post.body),el('div','tags',post.tags.map(x=>'#'+x).join('  ')));
       const safeSource=safeExternalSource(post.sourceUrl);
       if(safeSource) {
