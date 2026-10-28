@@ -70,6 +70,8 @@ Generate the secret:
 
 Never commit .env or reveal API keys. Do not expose this publishing prototype publicly.
 
+**Local write isolation:** Even with a development bearer key, `POST /api/posts` now refuses non-loopback network connections, invalid local `Host` headers and browser `Origin` headers that do not match the local server. Use the Node.js demo on `127.0.0.1` or `localhost`; remote LAN or container bridge clients cannot publish to the local JSON prototype. The provided Docker Compose stack is intended for **loopback-only reading**; container-forwarded publishing can be denied because its network peer is not loopback. This is deliberate, not a production identity system.
+
 ## Project structure
 
 - src/server.mjs — development API (local JSON by default).
