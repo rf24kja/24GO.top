@@ -4,6 +4,7 @@ import {mkdtempSync,rmSync,readFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {once} from 'node:events';
+import {request as httpRequest} from 'node:http';
 import {createApp,isTrustedLocalPublishRequest} from '../src/server.mjs';
 import {TopClient} from '../packages/sdk/index.mjs';
 
@@ -116,8 +117,20 @@ test('HTTP write rejects forged Host/Origin and leaves local JSON unchanged',asy
   const {base,dbPath}=await fixture(t);
   const payload=JSON.stringify(valid);
   const headers={'content-type':'application/json',authorization:'Bearer '+secret};
-  for(const extra of [{host:'attacker.example'},
-    {origin:'http://attacker.example'}, {origin:'null'},
+  // fetch() rewrites Host from the URL. Use the real http.request API
+  // to send a forged Host header and prove the server actually rejects it.
+  const forgedHostStatus=await new Promise((resolve,reject)=>{
+    const req=httpRequest(base+'/api/posts',{
+      method:'POST',headers:{...headers,host:'attacker.example'}
+    },res=>{
+      res.resume();
+      res.on('end',()=>resolve(res.statusCode));
+    });
+    req.on('error',reject);
+    req.end(payload);
+  });
+  assert.equal(forgedHostStatus,403);
+  for(const extra of [{origin:'http://attacker.example'}, {origin:'null'},
     {origin:'https://127.0.0.1'}]){
     const response=await fetch(base+'/api/posts',{method:'POST',headers:{
       ...headers,...extra},body:payload});
