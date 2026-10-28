@@ -103,6 +103,6 @@ We track potential AI subscriptions, infrastructure credits and honest OSS impac
 
 ## Contribute
 
-Please see [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), [open Issues](https://github.com/rf24kja/24GO.top/issues), and our [roadmap](docs/ROADMAP.md). High-value early contributions include documentation, reproducible bug reports, accessibility, translations and tests.
+Please see [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), [open Issues](https://github.com/rf24kja/24GO.top/issues), and our [roadmap](docs/ROADMAP.md). High-value early contributions include documentation, reproducible bug reports, accessibility, translations and tests. Start with [five concrete first tasks](docs/CONTRIBUTOR_START.md#specific-first-tasks-you-can-verify-today) or contribute actual [reader accessibility feedback](https://github.com/rf24kja/24GO.top/issues/7). The local reader now translates category controls across eight locales and rejects unsafe source links ([PR #49](https://github.com/rf24kja/24GO.top/pull/49), [PR #50](https://github.com/rf24kja/24GO.top/pull/50)); neither change launches the hosted community.
 
 Software is MIT licensed; branding rights are separate. No affiliation with Anthropic, OpenAI or any model provider is implied.
