@@ -23,7 +23,7 @@ function fakeNode(tag='div') {
 }
 
 function runReader(locale='en') {
-  const ids=['headline','intro','explore','latest','developerTitle','developerDescription','locale','rss','feed','feedStatus'];
+  const ids=['headline','intro','explore','latest','developerTitle','developerDescription','locale','localeLabel','categoryTabs','rss','feed','feedStatus'];
   const nodes=Object.fromEntries(ids.map(id=>[id,fakeNode()]));
   const buttons=['','news','models','tools','guides'].map(cat=>{
     const button=fakeNode('button');button.dataset.cat=cat;return button;
@@ -106,4 +106,38 @@ test('malformed API payload shows a safe error instead of crashing',async()=>{
   await settle();
   assert.equal(app.nodes.feed.attributes['aria-busy'],'false');
   assert.match(app.nodes.feedStatus.textContent,/Could not load the feed/);
+});
+
+test('all eight reader locales translate category filters and safe source link text',async()=>{
+ const cases={
+  en:['All','Guides','Source'],
+  ru:['Все','Руководства','Источник'],
+  th:['ทั้งหมด','คู่มือ','แหล่งที่มา'],
+  es:['Todos','Guías','Fuente'],
+  fr:['Tout','Guides','Source'],
+  de:['Alle','Anleitungen','Quelle'],
+  pt:['Todos','Guias','Fonte'],
+  zh:['全部','指南','来源']
+ };
+ for(const [locale,[all,guides,source]] of Object.entries(cases)){
+  const app=runReader(locale);
+  assert.equal(app.buttons[0].textContent,all,locale);
+  assert.equal(app.buttons[4].textContent,guides,locale);
+  assert.ok(app.nodes.localeLabel.textContent.length>2,locale+' language label');
+  assert.equal(app.nodes.locale.getAttribute('aria-label'),app.nodes.localeLabel.textContent);
+  assert.ok(app.nodes.categoryTabs.getAttribute('aria-label').length>3,locale);
+  app.requests[0].resolve(okPosts([{
+    id:'localized-post',title:'Published local example',body:'Local developer demo content',
+    publishedAt:'2026-10-28T10:00:00Z',category:'guides',
+    authorType:'human',tags:[],sourceUrl:'https://example.org'
+  }]));
+  await settle();
+  const article=app.nodes.feed.children[0];
+  const sourceLink=article.children.find(x=>x.tag==='a');
+  assert.ok(sourceLink,locale+' link');
+  assert.equal(sourceLink.textContent,source+' ↗');
+  assert.equal(sourceLink.rel,'noopener noreferrer nofollow');
+  assert.equal(sourceLink.target,'_blank');
+  assert.equal(app.nodes.feed.getAttribute('aria-busy'),'false');
+ }
 });

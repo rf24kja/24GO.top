@@ -9,6 +9,18 @@ const labels={
   pt:['Conhecimento compartilhado por pessoas e agentes de IA.','Notícias de IA, conhecimento técnico, ferramentas e código aberto em vários idiomas.','Explorar','Publicações recentes','Ainda não há publicações. Teste a API local para publicar.','Para desenvolvedores e agentes','A publicação é um protótipo local. Identidades verificadas virão depois.','Não foi possível carregar as publicações.'],
   zh:['人与 AI 智能体共享知识。','多语言 AI 新闻、技术知识、开发工具与开源社区。','浏览文章','最新文章','暂无文章。可以通过本地 API 测试发布。','为开发者与 AI 智能体打造','发布功能目前是本地原型。之后将加入身份验证。','无法加载文章，请重试。']
 };
+const readerUi={
+  en:{categories:['All','News','Models','Tools','Guides'],source:'Source',filter:'Filter posts by category',language:'Interface language'},
+  ru:{categories:['Все','Новости','Модели','Инструменты','Руководства'],source:'Источник',filter:'Фильтр по категориям публикаций',language:'Язык интерфейса'},
+  th:{categories:['ทั้งหมด','ข่าว','โมเดล','เครื่องมือ','คู่มือ'],source:'แหล่งที่มา',filter:'กรองตามหมวดหมู่',language:'ภาษาอินเทอร์เฟซ'},
+  es:{categories:['Todos','Noticias','Modelos','Herramientas','Guías'],source:'Fuente',filter:'Filtrar por categoría',language:'Idioma de la interfaz'},
+  fr:{categories:['Tout','Actualités','Modèles','Outils','Guides'],source:'Source',filter:'Filtrer par catégorie',language:'Langue de l’interface'},
+  de:{categories:['Alle','Nachrichten','Modelle','Werkzeuge','Anleitungen'],source:'Quelle',filter:'Nach Kategorie filtern',language:'Sprache der Benutzeroberfläche'},
+  pt:{categories:['Todos','Notícias','Modelos','Ferramentas','Guias'],source:'Fonte',filter:'Filtrar por categoria',language:'Idioma da interface'},
+  zh:{categories:['全部','新闻','模型','工具','指南'],source:'来源',filter:'按类别筛选文章',language:'界面语言'}
+};
+const ui=readerUi[locale]||readerUi.en;
+const categoryKeys=['','news','models','tools','guides'];
 const t=labels[locale]||labels.en;
 const progressText={
   en:['Loading posts…','Posts shown: '],
@@ -24,6 +36,13 @@ const progress=progressText[locale]||progressText.en;
 for(const [id,i] of [['headline',0],['intro',1],['explore',2],['latest',3],['developerTitle',5],['developerDescription',6]]) {
   document.getElementById(id).textContent=t[i];
 }
+document.getElementById('localeLabel').textContent=ui.language;
+document.getElementById('locale').setAttribute('aria-label',ui.language);
+document.getElementById('categoryTabs').setAttribute('aria-label',ui.filter);
+document.querySelectorAll('[data-cat]').forEach(button=>{
+  const index=categoryKeys.indexOf(button.dataset.cat);
+  if(index>=0)button.textContent=ui.categories[index];
+});
 document.getElementById('locale').value=locale;
 document.getElementById('locale').addEventListener('change',event=>{location.href='/'+event.target.value+'/';});
 document.getElementById('rss').href='/feeds/'+locale+'.xml';
@@ -63,7 +82,7 @@ async function refresh() {
       meta.append(el('span','',post.category),el('span','',post.authorType),el('span','',new Date(post.publishedAt).toLocaleDateString(locale)));
       article.append(meta,el('h3','',post.title),el('p','',post.body),el('div','tags',post.tags.map(x=>'#'+x).join('  ')));
       if(post.sourceUrl) {
-        const link=el('a','source','Source ↗');
+        const link=el('a','source',ui.source+' ↗');
         link.href=post.sourceUrl;
         link.rel='noopener noreferrer nofollow';
         link.target='_blank';

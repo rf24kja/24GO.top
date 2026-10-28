@@ -33,7 +33,7 @@ Add results to [Issue #7](https://github.com/rf24kja/24GO.top/issues/7), includi
 ## Known limitations
 
 - Static feed prototype still only runs on the developer's local Node.js server.
-- Some UI labels (especially category filters) remain English regardless of route; localization is a separate issue.
+- Category filter buttons, their accessible group label, the interface-language selector label, and article source links now use eight native-language strings. Other fixed prototype navigation labels still need review.
 - No independent keyboard/screen-reader or 320px device session has been confirmed for this change.
 - `aria-live` labels help but are not equivalent to a complete accessibility audit.
 
@@ -52,3 +52,7 @@ The **public** `site/index.html` now has a separate navigation header; do not co
 5. Verify that opening a draft does not send content to the server and does not incorrectly imply public posting.
 
 If these fail, record a reproducible Issue with device/browser and no private content. **Passing CI is not proof that the live site is accessible.**
+
+## Source-only localization checkpoint
+
+Category tabs and their screen-reader group names now use localized copy for en, ru, th, es, fr, de, pt and zh, as do the language-selector label and source attribution link. The underlying API category keys remain stable English identifiers. Automated tests cover all eight locales and external-link attributes. Native-speaker review, real mobile devices and screen-reader tests are still pending; this does not certify WCAG conformance.
