@@ -86,3 +86,13 @@ Create DEC-009 and onward only for decisions that materially affect product arch
 **Status: FOUNDER-APPROVED ARCHITECTURE ON 2026-10-26; IMPLEMENTATION AND LEGAL REVIEW OPEN.** Maintain the current public MIT grants and a reviewable open SDK/MCP/API/documentation ecosystem. Develop newly authored, separable operational backend, admin/moderation systems and deployment code only in a separate private repo with explicit founder control and clean provenance. [Issue #24](https://github.com/rf24kja/24GO.top/issues/24) · [Boundary](PUBLIC_PRIVATE_BOUNDARY.md).
 
 **Alternatives:** fully MIT-hosted core (simpler contributions but wider permitted independent hosting); future source-available restrictions (less OSS eligibility and no retroactive cancellation of MIT); repurposing an unrelated private repository (unsafe and confusing). **Trade-off:** dual-repository API contracts, duplicated QA obligations and careful provenance/licensing work. **Review when:** establishing real Auth, managing outside contributors, receiving legal advice or preparing a production release. **Rollback:** architecture may be reviewed by the founder; published MIT rights cannot be retroactively removed. No deploy or existing code migration is authorized by this decision alone.
+
+## DEC-017 — Report OSS impact and benefit eligibility without inflated signals
+
+**Date:** 2026-10-28. **Status: reporting policy, not program approval.**
+
+**Context:** Public SDK/docs activity and a working static prelaunch site are useful, but GitHub stars, self-authored PRs and open issues cannot stand in for independent adoption, package dependents, external contributors, or a functioning hosted service.
+
+**Choice:** Record dated repository API evidence and exact official Claude OSS, Copilot maintainer and AWS Activate conditions. Explicitly mark unverified dependents, downloads, third-party merged PRs, applicant account eligibility and granted benefits as unknown. Apply only after separate founder approval, accurate impact evidence and payment/terms review. Preserve the original MIT license and private hosted-core boundary.
+
+**Trade-off:** Slower benefit applications but verifiable claims, no spam or false reach. **Review when:** independent package usage, real external contributions, provider eligibility or terms materially change. **Rollback:** revert this documentation entry; no deployment, payments or provider changes.

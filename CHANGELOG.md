@@ -4,6 +4,12 @@ This is the human-readable **history of verified changes**. Actual GitHub commit
 
 We follow a lightweight **Keep a Changelog** format until a first tagged release. These are development milestones, not npm release versions or proof that the community is in production.
 
+## 2026-10-28 — Evidence-based OSS impact and official developer benefit review
+
+- Recorded a dated, independently checkable public repository baseline (1 star, 0 forks; external dependents/contributors and download impact not established). These are **not** active users, proof of service launch, or program eligibility.
+- Rechecked official Claude for OSS, GitHub Copilot maintainer and AWS Activate program conditions. No applications, grants, cloud resources, private backend disclosure or production website changes.
+- Documentation-only, source-backed update; no license or API behavior change. Rollback: revert this public documentation PR.
+
 ## 2026-10-26 — Least-privilege PostgreSQL INSERT/RETURNING engineering note
 
 - New original [PostgreSQL privilege engineering note](site/engineering/postgres-insert-returning-least-privilege.html) demonstrates a real disposable-CI lesson: an INSERT-only role must not receive broader SELECT permissions simply because a test tried INSERT RETURNING. Explains per-column privilege probes, separation of synthetic DBA fixtures from runtime identity, and the limitations before public publishing; references official PostgreSQL 17 documentation.
