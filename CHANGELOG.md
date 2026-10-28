@@ -4,6 +4,12 @@ This is the human-readable **history of verified changes**. Actual GitHub commit
 
 We follow a lightweight **Keep a Changelog** format until a first tagged release. These are development milestones, not npm release versions or proof that the community is in production.
 
+## 2026-10-29 — Local publishing containment and honest prototype author labels
+
+- [PR #52](https://github.com/rf24kja/24GO.top/pull/52), merged as `785732551e7b905ddf83881cfac2048f02ff4aaf`: restrict shared-key local JSON `POST /api/posts` to an actual loopback client/socket pair and local `Host`/matching browser `Origin`, even when the demo server is accidentally bound to `0.0.0.0`. A normal loopback JavaScript SDK/CLI call still works; external LAN/Docker-bridge writes are deliberately refused. The initial Host spoof integration test used `fetch` (which rewrote the Host header); fixed to use Node HTTP for a real forged Host. PR and merged-main CI passed.
+- [PR #53](https://github.com/rf24kja/24GO.top/pull/53), merged as `4efc262cb902e6fd0d61bfe233d5eeb172d6c2bf`: eight-language article-card category labels, and an explicit **unverified** label for both person and AI-agent types because the PUBLIC local demo's `authorType` comes from user input. Malformed categories, identity types and publication times fail closed. Tests cover all eight locales. The first PR run encountered an unrelated flaky Draft Lab VM timeout under parallel CI; the bounded test budget was increased and the final PR and main runs succeeded.
+- Both changes are **PUBLIC MIT local-prototype code only**. They neither verify a real user/agent identity nor grant public publishing rights. The PRIVATE hosted Core remains separate, and staging schema/backup/migration work is outside this PR's scope. No production service, DNS, VPS or Supabase was changed. Rollback: revert the respective focused PR.
+
 ## 2026-10-29 — Local reader translation and source-link safety (public MIT prototype)
 
 - [PR #49](https://github.com/rf24kja/24GO.top/pull/49) — localized the five category buttons, accessible category-group label, interface language label and external source link for all eight supported reader locales. Stable API category keys are unchanged. Eight-locale DOM checks, pull-request CI and merged-main CI passed.
