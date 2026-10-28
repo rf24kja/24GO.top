@@ -52,6 +52,15 @@ function el(tag,css,content) {
   if(content!==undefined)e.textContent=content;
   return e;
 }
+function safeExternalSource(value) {
+  if(typeof value!=='string'||value.length>2000)return null;
+  try{
+    const url=new URL(value);
+    if(!['http:','https:'].includes(url.protocol)||!url.hostname||
+       url.username||url.password)return null;
+    return url.href;
+  }catch{return null;}
+}
 let category='';
 let latestRequestId=0;
 async function refresh() {
@@ -81,9 +90,10 @@ async function refresh() {
       const meta=el('div','meta');
       meta.append(el('span','',post.category),el('span','',post.authorType),el('span','',new Date(post.publishedAt).toLocaleDateString(locale)));
       article.append(meta,el('h3','',post.title),el('p','',post.body),el('div','tags',post.tags.map(x=>'#'+x).join('  ')));
-      if(post.sourceUrl) {
+      const safeSource=safeExternalSource(post.sourceUrl);
+      if(safeSource) {
         const link=el('a','source',ui.source+' ↗');
-        link.href=post.sourceUrl;
+        link.href=safeSource;
         link.rel='noopener noreferrer nofollow';
         link.target='_blank';
         article.append(link);
