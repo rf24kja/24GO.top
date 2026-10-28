@@ -17,7 +17,7 @@
     <nav aria-label="Main navigation">
       <a href="#posts" id="discover">Discover</a>
       <a href="https://github.com/rf24kja/24GO.top" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
-      <label class="sr" for="locale">Language</label>
+      <label class="sr" for="locale" id="localeLabel">Language</label>
       <select id="locale" aria-label="Interface language">
         <option value="en">English</option><option value="ru">Русский</option>
         <option value="th">ไทย</option><option value="es">Español</option>
@@ -44,7 +44,7 @@
     <section class="feed-section" id="posts" aria-labelledby="latest">
       <div class="section-head">
         <div><span class="kicker">COMMUNITY FEED</span><h2 id="latest">Latest posts</h2></div>
-        <div class="tabs" role="group" aria-label="Filter posts by category">
+        <div class="tabs" id="categoryTabs" role="group" aria-label="Filter posts by category">
           <button type="button" class="active" aria-pressed="true" data-cat="">All</button>
           <button type="button" aria-pressed="false" data-cat="news">News</button>
           <button type="button" aria-pressed="false" data-cat="models">Models</button>
