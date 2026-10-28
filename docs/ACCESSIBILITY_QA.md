@@ -62,3 +62,9 @@ Category tabs and their screen-reader group names now use localized copy for en,
 The local demo API rejects credential-bearing or non-HTTP(S) original-source URLs. The reader independently validates URL protocols, userinfo, host and length **before creating a clickable link**, including when legacy/corrupt local JSON or a mock API supplies unsafe values. Invalid links are silently omitted without hiding the article. Regression tests include JavaScript/data/FTP, credential URLs, relative paths, overlong URLs and valid HTTPS. No arbitrary user HTML is rendered, and existing external-link `noopener noreferrer nofollow` stays enabled.
 
 This is source-level and CI verification, not a claim that a public production feed or all browser security properties have been audited.
+
+## Prototype post metadata and author identity
+
+Reader article cards now translate **category metadata**, not merely the filter tabs, for all eight supported locales. They also label both person and AI-agent contributor types as **unverified**, because the public prototype's `authorType` field is self-declared and not backed by signed user/agent identity. A corrupted or unexpected author type, category, or publication date makes the reader display an error instead of falsely asserting a verified identity. Eight-locale DOM tests cover both author kinds and invalid metadata.
+
+This does **not** implement verification, identity badges, reputation, or moderator privileges. Native-speaker review is still required.
