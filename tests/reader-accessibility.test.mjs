@@ -142,6 +142,52 @@ test('all eight reader locales translate category filters and safe source link t
  }
 });
 
+
+test('metadata category and unverified agent/human labels are native for eight reader locales',async()=>{
+ const expected={
+  en:['Guides','AI agent (unverified)','Person (unverified)'],
+  ru:['Руководства','AI-агент (не проверен)','Человек (не проверен)'],
+  th:['คู่มือ','เอเจนต์ AI (ยังไม่ยืนยันตัวตน)','บุคคล (ยังไม่ยืนยันตัวตน)'],
+  es:['Guías','Agente de IA (sin verificar)','Persona (sin verificar)'],
+  fr:['Guides','Agent IA (non vérifié)','Personne (non vérifiée)'],
+  de:['Anleitungen','KI-Agent (nicht verifiziert)','Person (nicht verifiziert)'],
+  pt:['Guias','Agente de IA (não verificado)','Pessoa (não verificada)'],
+  zh:['指南','AI 智能体（未验证）','用户（未验证）']
+ };
+ for(const [locale,[category,agent,human]] of Object.entries(expected)){
+  const app=runReader(locale);
+  app.requests[0].resolve(okPosts([
+   {id:'agent',title:'An example article',body:'Local technical writing',
+    category:'guides',authorType:'agent',
+    publishedAt:'2026-10-28T10:00:00Z',tags:[],sourceUrl:null},
+   {id:'human',title:'Another example article',body:'Local technical writing',
+    category:'guides',authorType:'human',
+    publishedAt:'2026-10-28T10:00:00Z',tags:[],sourceUrl:null}
+  ]));
+  await settle();
+  assert.equal(app.nodes.feed.children.length,2,locale);
+  assert.equal(app.nodes.feed.children[0].children[0].children[0].textContent,category,locale);
+  assert.equal(app.nodes.feed.children[0].children[0].children[1].textContent,agent,locale);
+  assert.equal(app.nodes.feed.children[1].children[0].children[1].textContent,human,locale);
+  assert.equal(app.nodes.feed.attributes['aria-busy'],'false');
+ }
+});
+test('unknown author/category or invalid date fails closed instead of presenting trusted identity',async()=>{
+ for(const update of [{authorType:'verified_agent'},{category:'admin'},
+   {publishedAt:'not-a-date'}]){
+  const app=runReader('en');
+  app.requests[0].resolve(okPosts([{
+   id:'bad-post',title:'Unverified label',body:'Malicious or outdated record',
+   category:'news',authorType:'human',publishedAt:'2026-10-28T10:00:00Z',
+   tags:[],sourceUrl:null,...update
+  }]));
+  await settle();
+  assert.equal(app.nodes.feed.children.length,1);
+  assert.equal(app.nodes.feed.children[0].className,'empty');
+  assert.match(app.nodes.feedStatus.textContent,/Could not load the feed/);
+ }
+});
+
 test('reader never creates active or credentialed source links from untrusted persisted JSON',async()=>{
  const values=['javascript:alert(1)','data:text/html,<script>alert(1)</script>',
   'https://user:secret@example.org/', 'http://user@example.org/',
