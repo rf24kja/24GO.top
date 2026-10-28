@@ -1,6 +1,6 @@
 # 24GOTOP — Developer benefits & startup credits tracker
 
-**Last verified: 2026-10-26. Owner:** project maintainer. **This is a factual application planning log, not evidence of acceptance.**
+**Last verified: 2026-10-28. Owner:** project maintainer. **This is a factual application planning log, not evidence of acceptance.**
 
 Our goal is to lower genuine development costs while we build a useful, independent AI knowledge platform. Credits, subscriptions, compute, and discounts are **different benefit types**, cannot be combined into one cash figure, and may involve eligibility, expiry, overages, and taxes.
 
@@ -65,3 +65,12 @@ Or applicants may be considered under the **discretionary Ecosystem Impact Track
 The current public MIT SDK/examples support developer outreach and applicable OSS programs. Future founder-owned hosted services may have a private core; do not claim that proprietary components are open source, retroactively restrict prior MIT grants, or disclose operational secrets.
 
 **Review frequency:** monthly, or whenever a verified program term changes. No guaranteed benefit and no submissions made by this file.
+
+## Official terms rechecked — 2026-10-28 (UTC)
+
+- **[Claude for Open Source](https://claude.com/contact-sales/claude-for-oss):** official application still describes **six months of Claude Max 20x** (a personal subscription, **not** API/GPU credits). Its published qualifying examples include 500 dependent repositories, 100 dependent packages, 200,000 monthly downloads, 100 merged outside-repository PRs by the applicant, 20 unique outside merged-PR contributors, or OpenSSF criticality ≥ 0.4. The application allows discretionary review; no approval or eligibility is assumed.
+- **[GitHub Copilot OSS maintainer access](https://docs.github.com/en/copilot/how-tos/copilot-on-github/set-up-copilot/enable-copilot/set-up-for-teachers-and-os-maintainers):** GitHub describes free Pro for eligible maintainers of **popular** OSS projects and reevaluates eligibility monthly. This repository's activity alone does not establish eligibility. The owner's account settings have **not** been checked.
+- **[AWS Activate credits](https://aws.amazon.com/startups/credits):** the self-funded Founders route starts at **US$1,000** promotional credits; selected participants may reach **US$5,000**. Official eligibility includes a startup website, age/funding conditions and an AWS account on a paid tier; personal/legal eligibility, credit exclusions and possible paid usage must be reviewed before any application. No account or billable resource was created.
+- **Impact baseline:** [dated repository API evidence](OSS_IMPACT_EVIDENCE.md) records **1 star and 0 forks**, not qualified downloads, external contributors or proven OSS dependents. No grants, discounts, free subscriptions, GPU capacity or applications were received/submitted by this check.
+
+This is a source review and public evidence log only; no claim of personalized program approval, and no application submission.

@@ -25,3 +25,20 @@ This document explains how to collect authentic evidence before applying to main
 - Decision: application-ready, more evidence required, or ineligible:
 
 Use [Developer Benefits Tracker](DEVELOPER_BENEFITS_TRACKER.md) to log program rules and application status. Large-scale adoption is a consequence of a useful product, not a metric we should simulate.
+
+## Verified public baseline — 2026-10-28 (UTC)
+
+**Source:** [GitHub repository metadata API](https://api.github.com/repos/rf24kja/24GO.top) for the public MIT repository [rf24kja/24GO.top](https://github.com/rf24kja/24GO.top). Snapshot taken 2026-10-28; these values can change.
+
+| Metric | Observed | What it proves / does not prove |
+| --- | ---: | --- |
+| GitHub stars | 1 | A repository signal, **not** one verified dependent, customer, or external contributor |
+| Forks | 0 | No public forks recorded in this API snapshot; does not prove absence of local clones |
+| Repository subscribers | 0 | Not an adoption or user count |
+| Open issues (GitHub's combined issue/PR counter) | 14 | Maintenance backlog, not external impact or shipped product |
+| Dependency graph / registry downloads | **Not verified** | Cannot claim 500 dependents, 200,000 monthly downloads or other Claude OSS thresholds |
+| Unique external contributors with merged PRs | **Not verified** | No claim of 20 outside contributors; self-authored PRs do not qualify |
+| Merged upstream PRs by applicant in unrelated repositories | **Not verified** | No claim of 100 qualifying outside-repo PRs |
+| OpenSSF criticality score | **Not verified** | No claim of score ≥ 0.4 |
+
+**Decision:** the evidence collected here is **not application-ready** for a demonstrated-threshold Claude OSS claim or a guaranteed Copilot OSS grant. A project with active CI and technical articles is still not a proven widely adopted dependency. Do not submit applications, buy engagement, invent usage, or count self-generated issues/PRs as third-party impact. Personal eligibility, country restrictions, and account benefits were not accessed or verified.
