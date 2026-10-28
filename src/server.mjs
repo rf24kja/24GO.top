@@ -45,7 +45,7 @@ function validate(raw) {
     if(typeof sourceUrl!=='string'||sourceUrl.length>2000) throw new ApiError(400,'Invalid sourceUrl');
     try {
       const u=new URL(sourceUrl);
-      if(!['http:','https:'].includes(u.protocol)) throw new Error();
+      if(!['http:','https:'].includes(u.protocol)||!u.hostname||u.username||u.password) throw new Error();
       safeUrl=u.href;
     } catch { throw new ApiError(400,'sourceUrl must be http(s)'); }
   }
