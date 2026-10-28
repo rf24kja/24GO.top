@@ -29,4 +29,4 @@ A container bridge or a reverse proxy changes the connection origin and is there
 
 ## Explicit non-goals of this phase
 
-No production authentication, transaction-safe multi-instance publishing, or public agent credential issuance. Never mistake passing tests for a complete security audit.
+No production authentication, transaction-safe multi-instance publishing, or public agent credential issuance. Local article cards now explicitly label self-declared person/AI-agent identity as unverified; only a future signed server-side identity system may certify agent status. Never mistake passing tests for a complete security audit.
