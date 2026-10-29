@@ -1,9 +1,9 @@
 # 24GOTOP — Public Change Log
 
-## 2026-10-29 — Draft Lab design consistency and editor accessibility
+## 2026-10-29 — Consistent design across all static public pages
 
-- Matched the existing browser-only Draft Lab with the public graphite/emerald editorial design: a calm 48px architectural grid, consistent subdued surfaces, native system light/dark contrast and readable input/preview/code colors.
-- Added keyboard skip-to-editor, clear navigation to the public articles, a translucent sticky desktop header and mobile/contrast/reduced-motion adaptations. The editor retains all original copy, controls, export/import behavior and explicit non-publishing disclosure.
+- Aligned all 10 public-site HTML pages (main landing, development timeline, Draft Lab, engineering catalogue and six original notes) under restrained graphite/emerald 48px grid design with consistent shared navigation, keyboard skip links, and light/dark tokens. The public landing retains its own existing design; interior pages share a static interior stylesheet.
+- Removed the old one-off progress styling and normalised design on archive/article reading pages. Keyboard navigation, 320px layout, light/dark mode, strong contrast, reduced-motion handling and accessible preview/code blocks are explicitly checked. Editor fields, export/import behavior and prelaunch disclosures remain intact.
 - Static-only CSS/HTML and source assertions; no cursor motion in the writing workspace, dependencies, external requests, persistent storage, account claims or private hosted-Core code. No DNS, Supabase, VPS or billing changes.
 
 
