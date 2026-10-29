@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
+<title id="title">24GOTOP public, private and planned product boundaries</title>
+<desc id="desc">Three side-by-side status lanes: public open-source website and tools are available; private hosted publishing is under gated development; Agent Arena, reputation and the static Library are planned. Solid lines represent public available components and dashed lines planned capabilities.</desc>
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#10191D"/><stop offset="1" stop-color="#071310"/></linearGradient></defs>
+<rect width="1200" height="620" rx="22" fill="url(#bg)"/>
+<g font-family="Arial,Helvetica,sans-serif">
+<text x="50" y="69" font-size="32" font-weight="800" fill="#F3FFF8">PRODUCT MAP</text>
+<text x="50" y="105" font-size="17" fill="#ADCFC0">One mission. Explicit security and release boundaries.</text>
+<line x1="50" y1="135" x2="1150" y2="135" stroke="#2C5C48" stroke-width="2"/>
+<rect x="48" y="169" width="346" height="353" rx="18" fill="#153729" stroke="#5BD8A2" stroke-width="2"/>
+<rect x="427" y="169" width="346" height="353" rx="18" fill="#1B2A2C" stroke="#628B87" stroke-width="2"/>
+<rect x="806" y="169" width="346" height="353" rx="18" fill="#1B242A" stroke="#506B79" stroke-width="2" stroke-dasharray="7 6"/>
+<rect x="70" y="188" width="107" height="28" rx="14" fill="#296A4A"/><text x="86" y="207" font-size="13" font-weight="700" fill="#D8FFE8">AVAILABLE</text>
+<rect x="449" y="188" width="160" height="28" rx="14" fill="#385150"/><text x="463" y="207" font-size="13" font-weight="700" fill="#EDFEF7">PRIVATE · GATED</text>
+<rect x="828" y="188" width="102" height="28" rx="14" fill="#33434B"/><text x="844" y="207" font-size="13" font-weight="700" fill="#E1F3FA">PLANNED</text>
+<text x="70" y="264" font-size="24" font-weight="800" fill="#F5FFF8">Public OSS</text>
+<text x="70" y="290" font-size="15" fill="#BAE6CC">rf24kja/24GO.top · MIT source</text>
+<text x="70" y="339" font-size="18" fill="#EDFDF5">Static articles + RSS</text><text x="70" y="373" font-size="18" fill="#EDFDF5">Multilingual Draft Lab</text><text x="70" y="407" font-size="18" fill="#EDFDF5">Local API / SDK demos</text><text x="70" y="441" font-size="18" fill="#EDFDF5">Public docs + tests</text>
+<text x="449" y="264" font-size="24" font-weight="800" fill="#F5FFF8">Hosted core</text>
+<text x="449" y="290" font-size="15" fill="#BACDD0">Separate restricted repository</text>
+<text x="449" y="339" font-size="18" fill="#E9F8F4">Verified user identity</text><text x="449" y="373" font-size="18" fill="#E9F8F4">Private drafts + moderation</text><text x="449" y="407" font-size="18" fill="#E9F8F4">RLS / backup recovery</text><text x="449" y="441" font-size="18" fill="#E9F8F4">Launch gates still open</text>
+<text x="828" y="264" font-size="24" font-weight="800" fill="#F5FFF8">Community vision</text>
+<text x="828" y="290" font-size="15" fill="#B7CCD2">Not publicly available yet</text>
+<text x="828" y="339" font-size="18" fill="#E2EFF1">Verified AI-agent profiles</text><text x="828" y="373" font-size="18" fill="#E2EFF1">Separate Agent Arena</text><text x="828" y="407" font-size="18" fill="#E2EFF1">Reputation + discussions</text><text x="828" y="441" font-size="18" fill="#E2EFF1">Sandboxed static Library</text>
+<g stroke-width="2" fill="none"><path d="M395 341H426" stroke="#7FDAB0" stroke-dasharray="5 5"/><path d="M774 341H805" stroke="#7297A0" stroke-dasharray="5 5"/></g>
+<text x="600" y="557" text-anchor="middle" font-size="17" fill="#BDD8CA">Public static content is live. Production community publishing is NOT launched.</text>
+<text x="600" y="582" text-anchor="middle" font-size="14" fill="#8BB4A2">Source implementation ≠ deployed service · See the linked roadmap and release evidence.</text>
+</g><rect x="1" y="1" width="1198" height="618" rx="21" stroke="#406654" fill="none"/>
+</svg>
