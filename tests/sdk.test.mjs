@@ -55,7 +55,7 @@ test('SDK rejects credentials in origin and unreasonable timeout', () => {
   assert.throws(()=>new TopClient({fetchImpl:null}),/fetchImpl/);
 });
 
-test('SDK never sends dev publisher key over remote HTTP', async () => {
+test('SDK never sends dev publisher key to remote HTTP or HTTPS', async () => {
   const calls=[];
   const client=new TopClient({
     baseURL:'http://example.org',apiKey:'local-dev-key',
@@ -63,6 +63,18 @@ test('SDK never sends dev publisher key over remote HTTP', async () => {
   });
   assert.throws(() => client.publishPost({title:'unsafe'}), /Refusing to send/);
   assert.equal(calls.length,0);
+  for(const baseURL of ['https://example.org','https://api.example.org',
+    'http://192.168.1.10:3000','http://127.0.0.1.evil.example',
+    'https://localhost.evil.example']){
+    const remote=new TopClient({baseURL,apiKey:'local-dev-key',
+      fetchImpl:async(...args)=>{calls.push(args);return new Response('{}');}});
+    assert.throws(()=>remote.publishPost({title:'not for remote'}),
+      /Refusing to send/,baseURL);
+  }
+  assert.equal(calls.length,0,'no development credential transmitted to remote targets');
+  const remoteReader=new TopClient({baseURL:'https://example.org',
+    fetchImpl:async()=>new Response('{"status":"ok"}')});
+  assert.equal((await remoteReader.health()).status,'ok');
 });
 
 test('SDK keeps read unauthenticated and adds key only to local publish POST', async () => {

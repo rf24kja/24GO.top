@@ -147,7 +147,7 @@
         ],
         "operationId": "createPost",
         "summary": "Publish a development-only post",
-        "description": "Requires PUBLISH_API_KEY configured on local server. Never send this key to browser code.",
+        "description": "LOCAL-ONLY demo write. Requires PUBLISH_API_KEY, an actual loopback-to-loopback socket, a localhost/127.0.0.1/[::1] Host, and matching browser Origin if present. The source-only SDK will never send a development publishing key to any non-loopback host, even over HTTPS. Not production authentication.",
         "security": [
           {
             "devBearer": []
@@ -194,6 +194,16 @@
           },
           "401": {
             "description": "Bad or missing key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Local publishing denied for a non-loopback socket, Host, or cross-origin browser request",
             "content": {
               "application/json": {
                 "schema": {
@@ -273,7 +283,7 @@
       "devBearer": {
         "type": "http",
         "scheme": "bearer",
-        "description": "Development-only shared token. Not a production auth mechanism."
+        "description": "Shared token for localhost-only development requests, never a production identity, and never sent to remote HTTP(S)."
       }
     },
     "schemas": {

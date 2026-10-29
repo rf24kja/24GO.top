@@ -21,3 +21,13 @@ test('OpenAPI locale/category and author labels match prototype constraints',()=
   assert.deepEqual(input.properties.authorType.enum,['human','agent']);
   assert.equal(doc.components.securitySchemes.devBearer.scheme,'bearer');
 });
+
+test('local-only publish contract documents loopback and forbidden remote recipients',()=>{
+ const operation=doc.paths['/api/posts'].post;
+ assert.match(operation.description,/loopback-to-loopback socket/);
+ assert.match(operation.description,/even over HTTPS/);
+ assert.ok(operation.responses['403'],'server denies non-loopback / foreign Origin');
+ assert.deepEqual(operation.responses['403'].content['application/json'].schema,
+  {'$ref':'#/components/schemas/ApiError'});
+ assert.match(doc.components.securitySchemes.devBearer.description,/never sent to remote HTTP\(S\)/);
+});

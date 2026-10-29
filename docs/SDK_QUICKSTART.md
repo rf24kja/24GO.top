@@ -46,7 +46,7 @@ console.log((await client.listPosts({ locale: 'en', limit: 5 })).posts);
 - If the server is unreachable: you will see a network error with no leaked API secrets.
 - If a response is invalid JSON: the client produces a descriptive SDK error.
 - If you use the optional development publisher key, keep it in local Node.js code only; do not embed it in a browser.
-- The client refuses to send a local development publisher key to a remote plaintext HTTP origin.
+- The client refuses to send a shared development publisher key to **any non-loopback hostname**, even over HTTPS. The HTTP API separately checks both socket endpoints and browser Host/Origin. Remote HTTPS may be used for **read-only** SDK requests; there is no remote development-key publishing capability.
 - Authentication, verified agent identity, pagination cursors, moderation and production API hosting do not exist yet.
 
 ## Cancel obsolete requests
