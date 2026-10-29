@@ -45,7 +45,7 @@ Revert the corresponding accessibility PR to restore prior markup/styling/reader
 
 The **public** `site/index.html` now has a separate navigation header; do not confuse it with the development-only `public/index.html` reader. Automated HTML/CSS tests verify the links and focus rules, but the following checks need a person with a real browser:
 
-1. Open `https://www.24go.top/` after the new Pages deployment and press Tab. The skip-to-content link should become visible; Enter should focus the main content.
+1. Open `https://24go.top/` after the new Pages deployment and press Tab. The skip-to-content link should become visible; Enter should focus the main content.
 2. Tab through **Write a draft**, **Articles**, **Development**, **GitHub**. Check visible focus and that each link resolves.
 3. At 320px and 390px, 200% zoom, and with larger text settings, verify the nav wraps to accessible rows with no horizontal clipping.
 4. Switch to a mobile screen reader and review landmark/nav announcements, link names, and focus order.
@@ -68,3 +68,18 @@ This is source-level and CI verification, not a claim that a public production f
 Reader article cards now translate **category metadata**, not merely the filter tabs, for all eight supported locales. They also label both person and AI-agent contributor types as **unverified**, because the public prototype's `authorType` field is self-declared and not backed by signed user/agent identity. A corrupted or unexpected author type, category, or publication date makes the reader display an error instead of falsely asserting a verified identity. Eight-locale DOM tests cover both author kinds and invalid metadata.
 
 This does **not** implement verification, identity badges, reputation, or moderator privileges. Native-speaker review is still required.
+
+## Premium architectural-grid landing design — manual review (2026-10-29)
+
+The redesigned `site/index.html` loads local `landing.css` and `landing.js`. Automated checks confirm static HTML navigation/SEO, motion preference branching, pointer rAF throttling and inert reduced-motion fallback. The [read-only external SEO workflow](https://github.com/rf24kja/24GO.top/actions/workflows/seo-live.yml) now additionally checks that all **three** HTML/CSS/JS assets are actually available from the canonical HTTPS origin and the prelaunch disclosure remains present.
+
+**Manual review is still required** before claiming complete visual or WCAG approval:
+
+1. At 320px, 390px, 768px, 1024px and desktop widths: test header link wrapping, hero CTA placement, card layout, SDK code scrolling, footer columns, 200% text zoom and **no horizontal page scrollbar**.
+2. Set OS light theme and dark theme. Check text, badge, button and focus contrast on each; the color scheme follows system preference automatically and does not store state or use third-party fonts.
+3. With a mouse or trackpad on desktop: grid remains subtle and static; only a diffuse green glow follows the cursor. Keyboard-only users must not require the animation to navigate.
+4. With touch/coarse pointer and `prefers-reduced-motion: reduce`: the cursor-follow effect and scroll reveals must be disabled, with **all content immediately visible**.
+5. Test Tab/Shift+Tab focus including skip link; ensure decorative grid has `aria-hidden=true` and `pointer-events:none` and never blocks clicks or navigation. Check screen-reader heading order and footer navigation labels.
+6. Verify the primary CTA opens **real engineering notes**, secondary CTA the existing browser-only Draft Lab, and the website never implies live user submissions or authenticated agent access.
+
+Record device/browser/viewport screenshots **without account secrets** in [Issue #7](https://github.com/rf24kja/24GO.top/issues/7). GitHub CI, passing fetch probes, and visual appearance do **not** independently prove accessibility conformance.
