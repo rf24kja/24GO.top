@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1411">
+<meta name="description" content="How to prove a GitHub Pages release really reached its public HTTPS URL, avoid CI-versus-CDN races and record honest deployment evidence. Real workflow and logs.">
+<meta property="og:type" content="article"><meta property="og:title" content="GitHub Pages deployment verification: green CI is not enough — 24GOTOP">
+<meta property="og:description" content="A real failure and recovery: run a secrets-free external HTTPS smoke after Pages finishes, not alongside the merge.">
+<meta property="og:url" content="https://24go.top/engineering/verify-github-pages-deploy-not-just-ci.html">
+<meta property="article:published_time" content="2026-10-30T06:06:00+07:00"><meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://24go.top/engineering/verify-github-pages-deploy-not-just-ci.html">
+<title>Verify a GitHub Pages deployment, not just green CI — 24GOTOP</title>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Verify a GitHub Pages deployment, not just green CI","description":"How an independent HTTPS smoke test catches stale site assets, why push-triggered verification races deployment, and what to test.","datePublished":"2026-10-30T06:06:00+07:00","dateModified":"2026-10-30T06:06:00+07:00","inLanguage":"en","author":{"@type":"Organization","name":"24GOTOP Engineering","url":"https://github.com/rf24kja/24GO.top"},"publisher":{"@type":"Organization","name":"24GOTOP"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://24go.top/engineering/verify-github-pages-deploy-not-just-ci.html"},"isAccessibleForFree":true}</script>
+<link rel="stylesheet" href="./notes.css"><link rel="stylesheet" href="../interior.css"><link rel="alternate" type="application/rss+xml" title="24GOTOP engineering notes" href="./feed.xml">
+</head><body><a class="skip" href="#main-content">Skip to article content</a>
+<header class="interior-header"><nav class="wrap interior-nav" aria-label="Main navigation"><a class="interior-brand" href="../" aria-label="24GOTOP home">24GO<span>TOP</span><span class="interior-brand__dot" aria-hidden="true"></span></a><div class="interior-links"><a href="../">Home</a><a href="./">Articles</a><a href="../draft-lab.html">Draft Lab</a><a href="../progress.html">Development</a><a href="https://github.com/rf24kja/24GO.top">GitHub ↗</a></div></nav></header>
+<main class="wrap" id="main-content" tabindex="-1"><article class="article">
+<span class="eyebrow">Engineering guide · 30 October 2026 · CI/CD &amp; search</span>
+<h1>How to verify a GitHub Pages deployment—not just a green CI badge</h1>
+<p class="lead">A successful pull request confirms the repository changed. A green deployment action confirms a deployment workflow completed. Neither proves a reader can fetch the correct HTML and JavaScript from your canonical domain. We learned this during a real 24GOTOP release and turned the failure into a reproducible deployment check.</p>
+<p class="details">By <a href="https://github.com/rf24kja/24GO.top">24GOTOP Engineering</a> · <time datetime="2026-10-30">30 October 2026</time> · <a href="https://github.com/rf24kja/24GO.top/pull/79">HTTPS verification PR #79</a> · <a href="https://github.com/rf24kja/24GO.top/pull/82">Race fix PR #82</a></p>
+<div class="note" role="note"><strong>What was verified:</strong> the public static pages and assets were fetched over HTTPS from <code>https://24go.top</code> by GitHub-hosted runners. No measurement here proves constant uptime, Google indexing, production accounts, or a live user publishing API. This site is still pre-launch.</div>
+<h2>The three different questions you must answer</h2>
+<ol>
+<li><strong>Is the code correct?</strong> Unit tests, linting, build checks and source review can show the intended content and behavior under test conditions.</li>
+<li><strong>Did deployment finish?</strong> The official GitHub Pages workflow reports whether uploading and publishing the static artifact succeeded.</li>
+<li><strong>Is the actual site serving the update?</strong> An independent request must fetch the canonical HTTPS URL, follow safe redirects and inspect the resulting HTML/JS files for a release-specific, truthful marker.</li>
+</ol>
+<p>These are separate observations. A deployment can finish before a CDN edge serves new content; a test can also run before the deployment finishes. Reporting “launched successfully” after a Git merge alone conflates all three.</p>
+<h2>What happened in the 24GOTOP release</h2>
+<p>Our public <a href="https://github.com/rf24kja/24GO.top/pull/81">eight-language Draft Lab change</a> merged into the MIT repository. The <a href="https://github.com/rf24kja/24GO.top/actions/runs/40969864484">source CI</a> passed and the <a href="https://github.com/rf24kja/24GO.top/actions/runs/40969864491">Pages deployment</a> succeeded. The first external smoke check, however, <a href="https://github.com/rf24kja/24GO.top/actions/runs/40969864523">failed</a>: the check ran on <code>push</code> while the public site still served the previous version, so the new interface-language selector was absent.</p>
+<p>A later smoke check triggered by the <em>completed</em> Pages workflow <a href="https://github.com/rf24kja/24GO.top/actions/runs/40969903691">passed</a>. That is stronger delivery evidence, not proof that the earlier failure was imaginary. The failure reflected the real state visible to the runner when it executed. We retained both run links in the <a href="https://github.com/rf24kja/24GO.top/blob/main/docs/DEPLOYMENT_STATUS.md">deployment evidence log</a>.</p>
+<h2>Fix the dependency, not the assertion</h2>
+<p>The solution in <a href="https://github.com/rf24kja/24GO.top/pull/82">PR #82</a> was to remove the direct <code>push</code> trigger from the live verification workflow. It now runs after successful completion of <code>Deploy pre-launch landing</code>, or by explicit manual dispatch. The workflow itself needs only read access to the checkout; it cannot publish or change site settings.</p>
+<pre><code>name: Verify live Draft Lab release
+on:
+  workflow_run:
+    workflows: ["Deploy pre-launch landing"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - run: bash -n scripts/check-live-draft-lab.sh
+      - run: bash scripts/check-live-draft-lab.sh</code></pre>
+<p>The snippet illustrates the reviewed workflow shape; consult the <a href="https://github.com/rf24kja/24GO.top/blob/main/.github/workflows/live-draft-lab.yml">current workflow source</a> for the exact maintained version. Merely waiting a fixed number of seconds on every push is less reliable than waiting for the deployment event itself.</p>
+<h2>A practical, read-only HTTPS smoke test</h2>
+<p>Our <a href="https://github.com/rf24kja/24GO.top/blob/main/scripts/check-live-draft-lab.sh">public test script</a> downloads the canonical homepage, the experimental editor HTML, and its browser JavaScript. It restricts redirects to HTTPS, uses bounded timeouts and retries, and verifies that specific expected artifacts and safety messages are present. It does not upload content, authenticate, print response bodies or access any confidential user data.</p>
+<pre><code>curl --fail --silent --show-error --location \
+  --proto '=https' --proto-redir '=https' \
+  --connect-timeout 10 --max-time 25 \
+  --output draft.html https://24go.top/draft-lab.html
+
+grep --fixed-strings 'id="uiLocale"' draft.html</code></pre>
+<p>This example checks whether the latest deployed page contains the separately controlled interface language selector. The real script also checks that the preview still protects external links and that the page honestly says it is <strong>not</strong> public article publishing. Assertions should be based on stable user-facing behavior rather than brittle implementation-specific whitespace or minified line numbers.</p>
+<p>To avoid reporting a success for a mismatched release, make your check look for at least one feature unique to the revision being deployed. For more critical deployments, verify the deployed version identifier and content digest, and audit cache headers and redirects. A smoke test is not a substitute for real-browser navigation, accessibility tests or a production rollback drill.</p>
+<h2>SEO and AI discovery need delivery evidence too</h2>
+<p>Search engines and browsing agents are clients of the published site—not of your GitHub repository. A complete sitemap only helps if its URLs actually return readable HTML over HTTPS. Verify <a href="https://24go.top/robots.txt">robots.txt</a>, <a href="https://24go.top/sitemap.xml">sitemap.xml</a>, <a href="./feed.xml">RSS</a> and representative article pages separately after release.</p>
+<p>Google explains that satisfying its technical requirements and having discoverable content <a href="https://developers.google.com/search/docs/appearance/ai-features">does not guarantee indexing or AI-feature inclusion</a>. For actual search performance you still need verified <a href="https://search.google.com/search-console">Search Console</a> and <a href="https://www.bing.com/webmasters/">Bing Webmaster Tools</a> properties, not estimated traffic or a <code>site:</code> query treated as a definitive index count.</p>
+<h2>Copyable checklist for your next static release</h2>
+<ul>
+<li>Review the exact commit and run project CI before merging.</li>
+<li>Deploy only the expected static artifact with least-privilege GitHub Actions permissions.</li>
+<li>Wait for the Pages workflow success event before checking the live URL.</li>
+<li>Fetch canonical HTTPS pages from an external runner with safe redirects and retries.</li>
+<li>Assert a release-specific feature and the site's real public-security/disclosure boundary.</li>
+<li>Keep both failed and successful run links, and distinguish delivery from indexing, usage or conversion.</li>
+</ul>
+<p>This process is intentionally inspectable: <a href="https://github.com/rf24kja/24GO.top/pull/79">PR #79 added the smoke</a>, <a href="https://github.com/rf24kja/24GO.top/pull/82">PR #82 corrected scheduling</a>, and the <a href="https://github.com/rf24kja/24GO.top/actions/runs/40969903691">live verification run</a> records a successful externally fetched result. For the related search checklist, see <a href="./discoverable-technical-articles.html">publishing technical articles for people and AI search</a>.</p>
+<p class="source">Primary sources: public GitHub workflows, run results and code linked above. No claim of guaranteed indexing, independent user traffic or hosted production availability.</p>
+<p><a class="cta" href="./">Explore more original engineering notes ↗</a></p>
+</article></main><footer class="interior-footer"><div class="wrap">24GOTOP · Open engineering notes · <a href="./">All notes</a> · <a href="./feed.xml">RSS</a></div></footer>
+</body></html>
