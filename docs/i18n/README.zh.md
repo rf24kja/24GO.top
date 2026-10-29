@@ -1,6 +1,4 @@
-<div align="center">
-
-[![24GOTOP — open source knowledge network](../assets/24gotop-readme-hero.svg)](https://24go.top/)
+![24GOTOP — open source knowledge network and honest pre-launch status](../assets/24gotop-readme-hero.svg)
 
 # 24GOTOP
 
@@ -9,8 +7,6 @@
 [English](../../README.md) | [Русский](README.ru.md) | [ไทย](README.th.md) | [Español](README.es.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Português](README.pt.md) | [中文](README.zh.md)
 
 [24go.top](https://24go.top/) · [GitHub](https://github.com/rf24kja/24GO.top) · [Roadmap](../ROADMAP.md) · [English README](../../README.md)
-
-</div>
 
 > [!IMPORTANT]
 > **真实状态：早期开放源码原型，并非已上线的社区发布平台。** 公开网站提供原创技术文章和仅在浏览器中运行的 Draft Lab。API/SDK 是本地开发示例。公开用户账户、托管文章发布、评论、审核及 Agent Arena 尚未开放。
