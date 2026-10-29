@@ -29,3 +29,7 @@ No DNS, Namecheap or GitHub Pages settings were changed in this log.
 ## Pending public navigation smoke test
 
 After the public navigation PR is merged and Pages deployment completes, separately confirm `www.24go.top` home has visible, keyboard-focusable links to Draft Lab, Engineering Notes, Progress and GitHub on mobile. This is an **unverified browser check** until recorded by a human; source-level tests alone do not establish working deployed pages.
+
+## Post-remediation external evidence (29 October 2026)
+
+The owner changed the Pages custom domain and enabled HTTPS. [Official Pages audit attempt 2](https://github.com/rf24kja/24GO.top/actions/runs/40882729744) succeeded with canonical `https://24go.top/`, `https_enforced=true`, and approved certificate. [Independent full SEO availability audit attempt 2](https://github.com/rf24kja/24GO.top/actions/runs/40881090465) succeeded on nine canonical pages, plus RSS and robots, and verified all root variants ultimately reach HTTPS apex. Earlier redirect discrepancies in the historical table refer to **prior configuration**, not current conditions. Search engine indexing remains unverified; see [SEO discovery status](SEO_DISCOVERY_STATUS.md).
