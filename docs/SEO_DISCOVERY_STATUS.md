@@ -46,3 +46,7 @@ An actual GitHub-hosted Ubuntu runner completed full HTTP/TLS/content checks in 
 A new [GitHub Pages domain settings audit](https://github.com/rf24kja/24GO.top/actions/workflows/pages-settings-audit.yml) queries GitHub's `GET /repos/rf24kja/24GO.top/pages` endpoint using the standard short-lived Actions token with **Pages read** and **Contents read** permission. It exposes only the public CNAME, HTML URL, deployment state, HTTPS enforcement and certificate state; no key/token/response dump is printed. It **never PATCHes or changes** Pages, DNS, HTTPS or production. It fails if the Pages `cname` is not exactly `24go.top` or `https_enforced` is not true. See [official GitHub Pages guide](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site).
 
 **Important:** for GitHub Actions publishing, committing a `CNAME` file does not override the custom domain setting; GitHub explicitly documents that Pages ignores this file for Actions deployments. Repairing any Pages custom domain mismatch requires a separate reviewed owner-approved configuration change and subsequent external redirect audit.
+
+## Exact Pages remediation
+
+The confirmed settings/DNS evidence and step-by-step, owner-controlled fix are now collected in [DOMAIN_RECOVERY_RUNBOOK.md](DOMAIN_RECOVERY_RUNBOOK.md). This replaces speculation about paid IPv4 or missing DNS; only Pages `Custom domain` and `Enforce HTTPS` need owner review at this stage.
