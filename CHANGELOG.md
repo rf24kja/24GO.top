@@ -1,5 +1,13 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-29 — Accessible architectural-grid landing redesign
+
+- Redesigned **static** canonical home page with graphite/white/emerald design tokens, cursor-reactive subtle CSS architectural grid, prominent editor/engineering CTAs, improved reading hierarchy, consistent cards, sticky translucent header and informative footer.
+- Added native system light/dark themes, reduced-motion and coarse-pointer fallbacks, keyboard skip/focus, responsive 320px navigation, source-backed articles and honest prelaunch disclosures.
+- Effects use one passive pointer listener, requestAnimationFrame and optional IntersectionObserver; no external libraries, analytics, cookies, persistence, network requests or fake account/launch promises. No backend, Supabase, DNS or hosted publishing changes.
+- Preserved canonical homepage, RSS, roadmap, SDK and contributor links; source CI + Pages deploy required before claiming rollout.
+
+
 ## 2026-10-29 — HTTPS apex and permanent redirects independently verified
 
 - The owner changed GitHub Pages custom domain to `24go.top` and enabled `Enforce HTTPS`; [official settings audit attempt 2](https://github.com/rf24kja/24GO.top/actions/runs/40882729744) passed with an approved certificate for both apex and www.
