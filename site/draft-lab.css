@@ -18,7 +18,7 @@
 /* Visual continuation of the public 24GOTOP landing, without editing or storage side effects. */
 html{scroll-behavior:smooth;scroll-padding-top:105px}
 body{position:relative;isolation:isolate;min-width:280px}
-body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(to right,rgba(143,191,169,.07) 1px,transparent 1px),linear-gradient(to bottom,rgba(143,191,169,.07) 1px,transparent 1px);background-size:48px 48px;mask-image:linear-gradient(to bottom,rgba(0,0,0,.7),rgba(0,0,0,.3) 70%,transparent)}
+/* Grid supplied by shared interior.css. */
 .bar,main,footer{position:relative;z-index:1}
 .bar{position:sticky;top:0;z-index:20;-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
 .skip{position:fixed;top:12px;left:-9999px;z-index:100;padding:12px 18px;background:#dcfbea;color:#09251b;border-radius:10px;text-decoration:none;font-weight:750}
