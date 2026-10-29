@@ -8,6 +8,9 @@ const site=fileURLToPath(new URL('../site/',import.meta.url));
 const read=path=>readFileSync(join(site,path),'utf8');
 const withinSite=target=>target===site.slice(0,-1)||target.startsWith(site);
 const articleNames=[
+ 'multilingual-markdown-editor-without-losing-drafts.html',
+ 'verify-github-pages-deploy-not-just-ci.html',
+ 'safe-markdown-citation-links-without-xss.html',
  'discoverable-technical-articles.html',
  'javascript-sdk-api-key-leak-prevention.html',
  'markdown-preview-safety.html',
@@ -17,7 +20,7 @@ const articleNames=[
 ];
 const interiors=['progress.html','draft-lab.html','engineering/index.html',...articleNames.map(x=>'engineering/'+x)];
 
-test('all ten actual Pages documents use one coherent visual system',()=>{
+test('all thirteen actual Pages documents use one coherent visual system',()=>{
  const home=read('index.html'),landing=read('landing.css');
  assert.match(home,/<link rel="stylesheet" href="\.\/landing\.css">/);
  assert.match(home,/class="site-grid" aria-hidden="true"/);
@@ -72,7 +75,7 @@ test('article SEO and public prototype distinctions survive design convergence',
   assert.match(html,/<link rel="stylesheet" href="\.\/notes\.css">/);
  }
  const catalogue=read('engineering/index.html');
- assert.equal((catalogue.match(/<article class="card" data-note-card>/g)||[]).length,6);
+ assert.equal((catalogue.match(/<article class="card" data-note-card>/g)||[]).length,9);
  assert.match(catalogue,/data-engineering-search hidden/);
  const editor=read('draft-lab.html');
  assert.match(editor,/name="robots" content="noindex,follow"/);
