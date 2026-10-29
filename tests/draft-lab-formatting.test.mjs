@@ -31,3 +31,17 @@ test('refuse invalid selection, multiline heading, and overflow',()=>{
  assert.throws(()=>formatDraftSelection('one\ntwo',0,7,'heading'),TypeError);
  assert.throws(()=>formatDraftSelection('x'.repeat(12000),12000,12000,'code'),RangeError);
 });
+
+test('Link tool inserts bounded Markdown citations with selected URL placeholder',()=>{
+ const selection='API docs';
+ const edit=formatDraftSelection(selection,0,selection.length,'link');
+ assert.equal(edit.replacement,'[API docs](https://example.org)');
+ assert.equal(edit.replacement.slice(edit.selectionStart,edit.selectionEnd),'https://example.org');
+ const empty=formatDraftSelection('',0,0,'link');
+ assert.equal(empty.replacement,'[documentation](https://example.org)');
+ assert.equal(empty.replacement.slice(empty.selectionStart,empty.selectionEnd),'https://example.org');
+ for(const text of ['hello\\nworld'.replace('\\n','\n'),'[not flat]','x'.repeat(201)]){
+  assert.throws(()=>formatDraftSelection(text,0,text.length,'link'),TypeError);
+ }
+ assert.throws(()=>formatDraftSelection('a'.repeat(12000),12000,12000,'link'),RangeError);
+});
