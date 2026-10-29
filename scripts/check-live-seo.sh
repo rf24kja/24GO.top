@@ -31,7 +31,17 @@ probe() {
   echo "PASS public content: $route (resolved to $actual)"
 }
 
-probe '/' home '<title>24GOTOP'
+probe '/' home '<link rel="stylesheet" href="./landing.css">'
+probe '/landing.css' gridcss '.site-grid__glow'
+probe '/landing.js' motionjs 'pointermove'
+if ! grep -Fq -- '<script src="./landing.js" defer></script>' "$tmp/home"; then
+  echo '::error::Deployed homepage does not load its reviewed motion script'
+  failures=$((failures+1))
+fi
+if ! grep -Fq -- 'OPEN SOURCE · PRE-LAUNCH' "$tmp/home"; then
+  echo '::error::Deployed homepage lost the public pre-launch disclosure'
+  failures=$((failures+1))
+fi
 probe '/robots.txt' robots 'Sitemap: https://24go.top/sitemap.xml'
 probe '/sitemap.xml' sitemap '<loc>https://24go.top/engineering/'
 probe '/engineering/' index '<h1>Engineering notes</h1>'
