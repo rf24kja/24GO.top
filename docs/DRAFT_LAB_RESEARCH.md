@@ -5,7 +5,8 @@
 ## What a visitor can actually do
 
 - Open `https://24go.top/draft-lab.html` **if** GitHub Pages and the custom domain have been successfully deployed.
-- Enter a title, choose one of the eight existing interface languages and a content category.
+- Independently select the **editor interface** language (English, Russian, Thai, Spanish, French, German, Portuguese or Chinese) and the **article content** language. Changing the UI language never changes the title, article body, selected content language, source URL, downloaded Markdown format or imported-file baseline. These are prototype translations awaiting native-speaker and assistive-technology review.
+- Enter a title, choose one of eight article-content languages and a content category.
 - Write up to 12,000 characters, optionally attach an HTTP(S) source URL, and see a **restricted Markdown block preview** (headings, lists, quotes, fenced code, horizontal rules and paragraphs). Author HTML remains literal text. A narrow form of HTTP(S) citation link is rendered through fixed DOM-created anchors with escaped-text labels, a validated noncredentialed URL and privacy-safe navigation attributes. Other inline formatting and unsupported Markdown remain literal.
 - Copy the draft to the clipboard or download a UTF-8 Markdown `.md` file after client-side validation.
 - Reopen a previously exported Draft Lab `.md` file to continue writing. Only our export format is accepted, with a 64 KiB file limit, and existing unsaved text requires a replacement confirmation.
