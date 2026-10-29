@@ -1,5 +1,11 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-29 — Reduce pointer glow to a quiet architectural accent
+
+- Reduced the homepage cursor aura radius from 520px to 360px and dark-theme central intensity from 0.13 to 0.038, with light-theme intensity from 0.08 to 0.022; left the 48px static grid, text, CTAs, reduced-motion and high-contrast overrides intact.
+- Added regression assertions for both system color schemes so the stronger glow is not inadvertently reintroduced. No JavaScript, backend, DNS or user data changed.
+
+
 ## 2026-10-29 — Accessible architectural-grid landing redesign
 
 - Redesigned **static** canonical home page with graphite/white/emerald design tokens, cursor-reactive subtle CSS architectural grid, prominent editor/engineering CTAs, improved reading hierarchy, consistent cards, sticky translucent header and informative footer.
