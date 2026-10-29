@@ -53,3 +53,10 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 .format-tools button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 .format-help{margin:8px 0 5px}
 @media(max-width:550px){.format-tools button{flex:1 1 calc(50% - 8px)}}
+
+/* Editor UI language is separate from authored content language. */
+.interface-picker{display:flex;align-items:center;flex-wrap:wrap;gap:10px 16px;margin:18px 0 4px}
+.interface-picker label{margin:0;font-size:14px;color:var(--muted)}
+.interface-picker select{width:auto;max-width:100%;min-width:190px;min-height:44px;padding:8px 12px}
+[lang="th"] .eyebrow,[lang="zh"] .eyebrow{letter-spacing:.035em}
+@media(max-width:550px){.interface-picker{align-items:stretch}.interface-picker select{width:100%}}
