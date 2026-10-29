@@ -110,3 +110,11 @@ test('saved Markdown can be reopened through an explicit browser-only action',()
   assert.doesNotMatch(draftJs, /\bfetch\s*\(|XMLHttpRequest|sendBeacon|localStorage|sessionStorage|innerHTML/);
   assert.doesNotMatch(draftHtml,/PUBLISH_API_KEY|sb_secret_/);
 });
+
+
+test('public landing exposes roadmap and contributor onboarding directly for first-time visitors',()=>{
+  assert.match(html,/href="https:\/\/github\.com\/rf24kja\/24GO\.top\/blob\/main\/docs\/ROADMAP\.md">Roadmap/);
+  assert.match(html,/href="https:\/\/github\.com\/rf24kja\/24GO\.top\/blob\/main\/docs\/CONTRIBUTOR_START\.md">Contributor onboarding/);
+  assert.match(html,/OPEN SOURCE.*PRE-LAUNCH/s);
+  assert.doesNotMatch(html,/sb_secret_|PUBLISH_API_KEY/);
+});
