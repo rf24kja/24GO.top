@@ -1,5 +1,12 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-29 — Independent crawlability evidence and full sitemap monitoring
+
+- [PR #60](https://github.com/rf24kja/24GO.top/pull/60) added a secret-free daily/on-demand GitHub-hosted external SEO audit; [PR #61](https://github.com/rf24kja/24GO.top/pull/61) made it inspect every route even after a wrong redirect; [PR #63](https://github.com/rf24kja/24GO.top/pull/63) upgraded it to verify every sitemap-listed article and self-canonical tag.
+- [Real external runner #40881090465](https://github.com/rf24kja/24GO.top/actions/runs/40881090465) fetched all 9 sitemap pages and robots/RSS over HTTPS and confirmed the new SDK security article is served. The audit intentionally fails because **apex redirects to www**, and **HTTP requests still terminate on HTTP www**, contrary to canonical/HTTPS requirements. Source CI is green; Search Console/Bing indexation and AI search results remain unverified.
+- Recorded the precise evidence in deployment/SEO status documents and open Issue #59. The founder-approved canonical domain remains `https://24go.top` and must not be changed ad hoc to mask the misconfiguration. No DNS/Pages/production changes.
+
+
 ## 2026-10-29 — Original JavaScript SDK credential-leak prevention case study
 
 - New evergreen English engineering guide illustrates a real public PR #56 security boundary, specific test input, safe recipient validation and honest prototype limitations. Published as static HTML and linked in the home page, engineering index, RSS, sitemap and optional llms.txt; no private code or credentials.

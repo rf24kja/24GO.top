@@ -1,11 +1,11 @@
 # Public crawlability and indexing — 2026-10-29
 
-**Not yet independently verified as indexed.** Source changes are not a Google/Bing indexing report.
+**Public HTML and sitemap accessibility are externally confirmed on 2026-10-29; Google/Bing indexing is NOT confirmed.** Source changes and GitHub Actions success are not a search coverage report.
 
 ## Source-verified assets
 - Canonical policy: https://24go.top (the founder-selected canonical origin; production DNS/HTTPS still requires external verification).
 - Public root `site/robots.txt`, XML sitemap `site/sitemap.xml`, optional `site/llms.txt` (not an SEO ranking mechanism).
-- Editorial `site/engineering/`: six original static technical notes, metadata, HTML navigation, RSS, unique canonical URLs.
+- Editorial `site/engineering/`: six original static technical notes, metadata, HTML navigation, RSS, unique canonical URLs; every one appears in the now nine-URL sitemap.
 - The experimental `site/draft-lab.html` intentionally retains its `noindex,follow` metadata and is excluded from sitemap.
 - No fake translations, unverified `hreflang`, invented review stars, paid backlinks, synthetic traffic or fake public publishing API.
 
@@ -31,3 +31,12 @@ The new [External SEO availability audit](https://github.com/rf24kja/24GO.top/ac
 - Added `javascript-sdk-api-key-leak-prevention.html` with a reproducible local SDK key-recipient test, strictly tied to public PR #56 and existing JavaScript SDK tests. No private code, real API keys or production Auth claims.
 - Added index/home navigation, RSS entry, canonical and XML sitemap location. The article is editorial static HTML, not a user-created hosted post.
 - Independent GitHub-hosted HTTP audit on commit `42adc9ab0275d8f169f416cbea9480dd2f1e549d` observed that `https://24go.top/` **redirects to `https://www.24go.top/`**, contradicting the approved apex canonical. See [failure run](https://github.com/rf24kja/24GO.top/actions/runs/40879899999) and [Issue #59](https://github.com/rf24kja/24GO.top/issues/59). No domain settings changed. This is a demonstrable canonical mismatch, not a claim that the HTTPS site is globally down.
+
+
+## Independent live evidence — 2026-10-29
+
+An actual GitHub-hosted Ubuntu runner completed full HTTP/TLS/content checks in [External SEO availability audit #40881090465](https://github.com/rf24kja/24GO.top/actions/runs/40881090465): all **nine** sitemap-listed public pages (home, progress, engineering index, six engineering articles) returned the expected HTML with self-referential canonical tags; `robots.txt` and RSS returned their expected content. This includes the newly published SDK credential safety guide. The Pages deployment for that article succeeded independently in [run #40880803877](https://github.com/rf24kja/24GO.top/actions/runs/40880803877).
+
+**Failing canonical behavior is independently observed, not theoretical:** every `https://24go.top/*` probe redirects to corresponding `https://www.24go.top/*`, while the editor-approved canonical host, sitemap, HTML metadata and RSS all say `https://24go.top`. Both `http://24go.top/` and `http://www.24go.top/` ended at `http://www.24go.top/`, rather than being forced onto HTTPS. These are why the external audit is red. Owner-controlled GitHub Pages custom domain/HTTPS enforcement and authoritative DNS review are needed before claiming consistent canonical hosting; see [Issue #59](https://github.com/rf24kja/24GO.top/issues/59). **No DNS, certificate or hosting settings have been modified.**
+
+**Still not verified:** actual Google Search Console URL Inspection status, sitemap ingestion, indexed page counts, Bing coverage, search impressions/clicks, or references in AI-generated search results. The first deploy and successful HTTP fetch cannot prove those metrics. Submit/inspect sitemap after the canonical-host mismatch is corrected.
