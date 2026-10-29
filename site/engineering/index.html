@@ -5,33 +5,39 @@
 <title>Engineering notes — 24GOTOP</title>
 <link rel="canonical" href="https://24go.top/engineering/">
 <link rel="stylesheet" href="./notes.css"><link rel="alternate" type="application/rss+xml" title="24GOTOP engineering notes" href="./feed.xml">
+<script src="./search.js" defer></script>
 </head><body>
 <header><nav class="wrap" aria-label="Main navigation"><a class="brand" href="../">24GO<span>TOP</span></a><div class="navlinks"><a href="../draft-lab.html">Draft Lab</a><a href="../progress.html">Development history</a><a href="https://github.com/rf24kja/24GO.top/discussions">Discussions ↗</a></div></nav></header>
 <main class="wrap"><span class="eyebrow">Open development · Original technical writing</span>
 <h1>Engineering notes</h1><p class="lead">Short, reproducible explanations of the real engineering choices behind 24GOTOP — what works in source today, what is only experimental, and what we need to learn from developers.</p>
 <div class="note" role="note"><strong>Pre-launch:</strong> these are public technical articles about a developing open-source project, not user posts in an already launched social platform. No fictitious adoption, partners or benchmarks.</div>
 <section aria-labelledby="latest-heading"><h2 id="latest-heading">Recent articles</h2>
-<div class="cards"><article class="card"><span class="tag">29 October 2026 · JavaScript SDK security</span>
+<form class="note-search" role="search" aria-label="Find engineering notes" data-engineering-search hidden>
+<label for="engineering-filter">Find a technical article</label>
+<div class="note-search__controls"><input id="engineering-filter" type="search" placeholder="Search titles and summaries" maxlength="80" autocomplete="off" aria-controls="engineering-list"><span id="engineering-search-status" role="status" aria-live="polite" aria-atomic="true"></span></div>
+</form>
+<p class="note-search__empty" id="engineering-no-results" hidden>No matching articles. Try a different keyword.</p>
+<div class="cards" id="engineering-list"><article class="card" data-note-card><span class="tag">29 October 2026 · JavaScript SDK security</span>
 <h2><a href="./javascript-sdk-api-key-leak-prevention.html">Prevent API key leaks in JavaScript SDKs: why HTTPS alone is not enough</a></h2>
 <p>A reproducible security case study about bearer token recipient checks, loopback-only development credentials and adversarial SDK tests.</p>
 <a href="./javascript-sdk-api-key-leak-prevention.html">Read the SDK security case study ↗</a></article>
-<article class="card"><span class="tag">29 October 2026 · Discovery &amp; search</span>
+<article class="card" data-note-card><span class="tag">29 October 2026 · Discovery &amp; search</span>
 <h2><a href="./discoverable-technical-articles.html">Publishing technical articles for people and AI search: a practical discovery checklist</a></h2>
 <p>Canonical URLs, sitemaps, meaningful HTML, RSS and the difference between AI search crawlers and model training bots.</p>
 <a href="./discoverable-technical-articles.html">Read the discovery checklist ↗</a></article>
-<article class="card"><span class="tag">26 October 2026 · PostgreSQL security</span>
+<article class="card" data-note-card><span class="tag">26 October 2026 · PostgreSQL security</span>
 <h2><a href="./postgres-insert-returning-least-privilege.html">INSERT succeeds, RETURNING fails: a least-privilege lesson</a></h2>
 <p>What disposable PostgreSQL tests taught us about column-scoped INSERT permissions, read access and security regressions.</p>
 <a href="./postgres-insert-returning-least-privilege.html">Read the technical lesson ↗</a></article>
-<article class="card"><span class="tag">26 October 2026 · Publishing lifecycle</span>
+<article class="card" data-note-card><span class="tag">26 October 2026 · Publishing lifecycle</span>
 <h2><a href="./submit-is-not-publish.html">Submit for review is not publish</a></h2>
 <p>Why immutable revisions, idempotent review intake and moderator identity must agree before a public article URL can be trusted.</p>
 <a href="./submit-is-not-publish.html">Read the source-backed note ↗</a></article>
-<article class="card"><span class="tag">26 October 2026 · Security &amp; UX</span>
+<article class="card" data-note-card><span class="tag">26 October 2026 · Security &amp; UX</span>
 <h2><a href="./markdown-preview-safety.html">Preview Markdown without executing author HTML</a></h2>
 <p>Why technical article previews deserve a threat model, how we used fixed DOM elements and literal text, and what automated tests cannot prove.</p>
 <a href="./markdown-preview-safety.html">Read the implementation note ↗</a></article>
-<article class="card"><span class="tag">26 October 2026 · Product engineering</span>
+<article class="card" data-note-card><span class="tag">26 October 2026 · Product engineering</span>
 <h2><a href="./why-draft-lab-first.html">Why we built a Draft Lab before opening public writes</a></h2>
 <p>How we separate a usable writing experience from the identity, moderation and data-security work required for real publication. Includes actual PR evidence, runnable SDK steps and open requests for review.</p>
 <a href="./why-draft-lab-first.html">Read the full engineering note ↗</a></article>

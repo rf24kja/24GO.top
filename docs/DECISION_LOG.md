@@ -126,3 +126,7 @@ Provider terms can change without an award. Claude Startups currently says its c
 ## DESIGN-2026-10-29 — Verify live assets, not just source code
 
 **Status: verification workflow proposed.** A Pages deploy can succeed while a new CSS/JS asset is unavailable or stale in CDN. Include canonical HTTPS GET requests for `/landing.css`, `/landing.js`, and home HTML references in the existing low-cost read-only GitHub-hosted audit. Keep SEO crawler checks and all previously verified page/redirect cases. Network probes test availability/content, not pixels, WCAG conformance or Google indexing; separate real-device QA remains mandatory. Rollback: revert the source test PR only; visual design remains unchanged.
+
+## DESIGN-2026-10-29 — Progressive search in the editorial engineering archive
+
+**Scope: public static source-only engineering notes.** Filter six already-published article cards using only client-side text on the same page. Search never requests a backend or suggests that user-post publication is live; the input is hidden until JavaScript initializes and does not alter canonical URLs, sitemap or RSS. Keyboard and screen-reader users receive an accessible label, live result count and Escape reset. Do not hide article text from non-JS search crawlers. A static non-reactive architectural grid and system color-scheme styles connect the archive visually to the calmer homepage. Rollback: revert this static site PR; no provider data involved.
