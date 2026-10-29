@@ -102,12 +102,15 @@ test('PostgreSQL least-privilege article is verifiable, non-sensitive, and corre
   assert.doesNotMatch(permissionNote, /<script\b|<iframe\b|sb_secret_|PUBLISH_API_KEY|CREATE ROLE app_/i);
 });
 
-test('owner confirmation stays separate from independent DNS, TLS and public API assertions', () => {
+test('Pages status cites independently verified apex HTTPS and still discloses absent public publishing', () => {
   const d = readFileSync(fileURLToPath(new URL('../docs/DEPLOYMENT_STATUS.md',import.meta.url)), 'utf8');
-  assert.match(d, /Founder reports that the HTTPS page opens successfully/);
-  assert.match(d, /https:\/\/24go\.top\//);
-  assert.match(d, /Apex.*redirect to HTTPS www/is);
+  assert.match(d, /Canonical landing.*https:\/\/24go\.top\//);
+  assert.match(d, /owner-enabled enforcement/);
+  assert.match(d, /40886701790/);
+  assert.match(d, /initial HTTP 301/);
+  assert.match(d, /Search engine indexing remains unverified/i);
   assert.match(d, /Public publishing.*Not implemented/is);
+  assert.doesNotMatch(d,/all requests currently redirect apex.*www/i);
 });
 
 
