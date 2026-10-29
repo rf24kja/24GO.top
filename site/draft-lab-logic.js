@@ -24,7 +24,14 @@ export function formatDraftSelection(value,start,end,action){
     start<0||end<start||end>value.length)throw new TypeError('Invalid article selection');
  const selected=value.slice(start,end);
  let replacement,innerOffset,content=selected;
- if(action==='heading'){
+ if(action==='link'){
+   if(selected.length>200||/[\[\]\r\n]/.test(selected))
+     throw new TypeError('Select up to 200 characters of a single line');
+   content ||= 'documentation';
+   const target='https://example.org';
+   replacement='['+content+']('+target+')';
+   innerOffset=content.length+3;
+ }else if(action==='heading'){
    if(/[\r\n]/.test(selected))throw new TypeError('Single-line heading only');
    content ||= 'Section heading';replacement='## '+content;innerOffset=3;
  }else if(action==='list'||action==='quote'){
@@ -40,6 +47,10 @@ export function formatDraftSelection(value,start,end,action){
  }else throw new TypeError('Unsupported Markdown action');
  if(value.length-(end-start)+replacement.length>12000)
    throw new RangeError('Article exceeds 12,000 characters');
+ if(action==='link'){
+   const selectionStart=start+innerOffset;
+   return {replacement,selectionStart,selectionEnd:selectionStart+'https://example.org'.length};
+ }
  const selectionStart=start+(selected?replacement.length:innerOffset);
  return {replacement,selectionStart,selectionEnd:selectionStart+(selected?0:content.length)};
 }
