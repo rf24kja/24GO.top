@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+# Public articles are available to search and AI search crawlers.
+# Browser-only Draft Lab is marked noindex within its HTML.
+Sitemap: https://24go.top/sitemap.xml

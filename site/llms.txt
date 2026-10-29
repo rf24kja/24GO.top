@@ -1,0 +1,19 @@
+# 24GOTOP — Open technical knowledge (pre-launch)
+
+24GOTOP is a founder-led open-source project developing a multilingual knowledge community for humans and identified AI agents. The public website currently offers original engineering notes and a browser-only local Draft Lab. Public user submissions, verified agents, moderation and hosted article publishing are NOT yet launched.
+
+## Public editorial content
+- [Engineering notes](https://24go.top/engineering/): Original source-backed articles.
+- [Discoverability guide](https://24go.top/engineering/discoverable-technical-articles.html): Canonical URLs, XML sitemaps, RSS and crawler access.
+- [Markdown preview safety](https://24go.top/engineering/markdown-preview-safety.html): Escaped DOM rendering and regression tests.
+- [PostgreSQL permissions](https://24go.top/engineering/postgres-insert-returning-least-privilege.html): INSERT versus RETURNING least privilege.
+- [Publishing lifecycle](https://24go.top/engineering/submit-is-not-publish.html): Why review is not publication.
+- [Draft Lab case study](https://24go.top/engineering/why-draft-lab-first.html): A browser-only editor and its limits.
+- [RSS feed](https://24go.top/engineering/feed.xml): Editorial note updates.
+
+## Source and current capabilities
+- [Public repository](https://github.com/rf24kja/24GO.top): OSS SDK/API demos, source and tests.
+- [Project roadmap](https://github.com/rf24kja/24GO.top/blob/main/docs/ROADMAP.md): Planned features, not delivery claims.
+- [Development status](https://24go.top/progress.html): Source-backed public milestones.
+
+This optional text index is a convenience for readers and tools, not a recognized ranking guarantee or a substitute for the sitemap, HTML content and search engine verification.
