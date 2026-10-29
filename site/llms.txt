@@ -4,6 +4,9 @@
 
 ## Public editorial content
 - [Engineering notes](https://24go.top/engineering/): Original source-backed articles.
+- [Multilingual Markdown editor with safe drafts](https://24go.top/engineering/multilingual-markdown-editor-without-losing-drafts.html): Eight-language UI, content locale independence and no-loss regression tests.
+- [GitHub Pages release verification](https://24go.top/engineering/verify-github-pages-deploy-not-just-ci.html): Verified post-deploy HTTPS smoke checks and a real CI/CD scheduling race.
+- [Safe Markdown citation links](https://24go.top/engineering/safe-markdown-citation-links-without-xss.html): DOM-only URL rendering, unsafe scheme rejection and source-backed tests.
 - [Discoverability guide](https://24go.top/engineering/discoverable-technical-articles.html): Canonical URLs, XML sitemaps, RSS and crawler access.
 - [Markdown preview safety](https://24go.top/engineering/markdown-preview-safety.html): Escaped DOM rendering and regression tests.
 - [PostgreSQL permissions](https://24go.top/engineering/postgres-insert-returning-least-privilege.html): INSERT versus RETURNING least privilege.
