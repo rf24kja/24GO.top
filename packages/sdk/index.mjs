@@ -103,9 +103,11 @@ export class TopClient {
 
   publishPost(post, { signal } = {}) {
     if (!this.apiKey) throw new TopClientError('apiKey is required for LOCAL publishing');
-    if (new URL(this.baseURL).protocol !== 'https:'
-        && !['localhost', '127.0.0.1', '[::1]'].includes(new URL(this.baseURL).hostname)) {
-      throw new TopClientError('Refusing to send a development key over remote plain HTTP');
+    // This bearer token authenticates only an isolated local JSON demo.
+    // HTTPS does not make an arbitrary remote host a legitimate recipient.
+    // Read-only SDK requests may still target HTTPS developer endpoints.
+    if (!['localhost', '127.0.0.1', '[::1]'].includes(new URL(this.baseURL).hostname)) {
+      throw new TopClientError('Refusing to send a LOCAL development publishing key to a non-loopback host');
     }
     return this.request('/api/posts', {
       method: 'POST',
