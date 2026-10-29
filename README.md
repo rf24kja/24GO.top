@@ -71,7 +71,7 @@ These are **free, crawlable English guides** on real technical decisions. The li
 
 ## Quickstart — run the open developer prototype
 
-**Requirements:** Node.js **22+** and Git. No paid API key or cloud account is needed for the read-only demo.
+**Requirements:** Node.js 22+ and Git. No paid API key or cloud account is needed for the read-only demo.
 
 ```bash
 git clone https://github.com/rf24kja/24GO.top.git
