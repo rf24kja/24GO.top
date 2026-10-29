@@ -9,6 +9,9 @@ const canonicalHost='https://24go.top';
 const sitemap=read('sitemap.xml');
 const robots=read('robots.txt');
 const articles=[
+ 'engineering/multilingual-markdown-editor-without-losing-drafts.html',
+ 'engineering/verify-github-pages-deploy-not-just-ci.html',
+ 'engineering/safe-markdown-citation-links-without-xss.html',
  'engineering/javascript-sdk-api-key-leak-prevention.html',
  'engineering/discoverable-technical-articles.html',
  'engineering/why-draft-lab-first.html',
@@ -21,7 +24,7 @@ test('sitemap includes exactly the intended canonical, discoverable static pages
  assert.match(sitemap,/^<\?xml version="1.0" encoding="UTF-8"\?>/);
  assert.match(sitemap,/<urlset xmlns="http:\/\/www\.sitemaps\.org\/schemas\/sitemap\/0\.9">/);
  const locations=[...sitemap.matchAll(/<url><loc>([^<]+)<\/loc><\/url>/g)].map(m=>m[1]);
- assert.equal(locations.length,9);
+ assert.equal(locations.length,12);
  assert.equal(new Set(locations).size,locations.length);
  for(const link of locations){
   assert.ok(link.startsWith(canonicalHost+'/'),link);
@@ -59,7 +62,7 @@ test('engineering article directory, RSS and optional machine index agree',()=>{
  const index=read('engineering/index.html');
  const rss=read('engineering/feed.xml');
  const llms=read('llms.txt');
- assert.equal((rss.match(/<item>/g)||[]).length,6);
+ assert.equal((rss.match(/<item>/g)||[]).length,9);
  for(const article of articles){
   const leaf=article.split('/').at(-1);
   const full=canonicalHost+'/'+article;
