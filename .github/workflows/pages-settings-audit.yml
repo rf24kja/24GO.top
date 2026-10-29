@@ -33,20 +33,34 @@ jobs:
           # Output only nonsecret deployment configuration; never dump headers,
           # workflow token or the complete API response.
           printf '%s' "$info" | jq '{cname: .cname, html_url: .html_url, status: .status,
-            https_enforced: .https_enforced, certificate_state: .https_certificate.state}'
+            https_enforced: .https_enforced, certificate_state: .https_certificate.state,
+            certificate_domains: .https_certificate.domains,
+            protected_domain_state: .protected_domain_state}'
+          # DNS information is public and this action only reads it.
+          if command -v dig >/dev/null 2>&1; then
+            echo 'Apex A records:'
+            dig +time=2 +tries=1 +short 24go.top A || true
+            echo 'www CNAME records:'
+            dig +time=2 +tries=1 +short www.24go.top CNAME || true
+          fi
           cname="$(printf '%s' "$info" | jq -r '.cname // ""')"
           https_enforced="$(printf '%s' "$info" | jq -r '.https_enforced // false')"
           cert="$(printf '%s' "$info" | jq -r '.https_certificate.state // "unknown"')"
+          failures=0
           if [[ "$cname" != '24go.top' ]]; then
             echo "::error::Pages custom domain does not match founder-approved apex 24go.top"
-            exit 1
+            failures=$((failures+1))
           fi
           if [[ "$https_enforced" != 'true' ]]; then
             echo "::error::Enforce HTTPS is not enabled in Pages settings"
-            exit 1
+            failures=$((failures+1))
           fi
           if [[ "$cert" != 'approved' ]]; then
             echo "::warning::HTTPS certificate is not reported approved; inspect provider details"
+          fi
+          if (( failures > 0 )); then
+            echo "::error::$failures Pages domain/HTTPS setting(s) require owner configuration review"
+            exit 1
           fi
           echo 'PASS: Pages custom domain and HTTPS enforcement configured for apex.'
           echo 'NOTE: live redirect and index coverage must be checked separately.'
