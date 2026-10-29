@@ -1,5 +1,12 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-29 — Markdown editing tools for technical authors
+
+- Added keyboard-accessible heading, list, quote and fenced-code insertion to the existing browser-only Draft Lab, with selection-aware edits, editable placeholders and existing live preview.
+- Pure formatting checks enforce the 12,000-character limit, refuse malformed selection positions and single-line heading violations, and use code fences longer than any selected backtick run. New tests cover safe formatting, import/editor UI and loss-warning invariants.
+- No backend, accounts, uploads, persistent browser storage, analytics, DNS, private code or publication claims. Source-only prototype enhancement; rollback via PR revert.
+
+
 ## 2026-10-29 — Consistent design across all static public pages
 
 - Aligned all 10 public-site HTML pages (main landing, development timeline, Draft Lab, engineering catalogue and six original notes) under restrained graphite/emerald 48px grid design with consistent shared navigation, keyboard skip links, and light/dark tokens. The public landing retains its own existing design; interior pages share a static interior stylesheet.
