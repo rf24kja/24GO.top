@@ -23,7 +23,7 @@ function build() {
     'postTitle','postBody','postLocale','postCategory','postSource','formStatus',
     'previewHeading','previewBody','previewLocale','previewCategory','bodyCount',
     'previewSource','draftSafety','downloadDraft','copyDraft','clearDraft','importDraft','importDraftFile','draftForm',
-    'formatHeading','formatList','formatQuote','formatCode'
+    'formatHeading','formatList','formatQuote','formatCode','formatLink'
   ];
   const elements = Object.fromEntries(ids.map(id => {
     const el = {
@@ -175,4 +175,28 @@ test('over-limit code formatting does not change or clear text',()=>{
  assert.equal(app.elements.postBody.value.length,12000);
  assert.equal(app.elements.formStatus.dataset.error,'true');
  assert.equal(app.beforeUnload().prevented,true);
+});
+
+test('public Link tool writes only Markdown and selects an editable HTTPS destination',()=>{
+ const app=build();
+ const article='Reproducible API security evidence';
+ app.elements.postBody.value=article;
+ app.elements.postBody.selectionStart=13;
+ app.elements.postBody.selectionEnd=16; // API
+ app.elements.formatLink.listeners.click();
+ assert.match(app.elements.postBody.value,/\[API\]\(https:\/\/example\.org\)/);
+ const selection=app.elements.postBody.value.slice(
+  app.elements.postBody.selectionStart,app.elements.postBody.selectionEnd);
+ assert.equal(selection,'https://example.org');
+ assert.equal(app.beforeUnload().prevented,true);
+ assert.match(app.elements.formStatus.textContent,/locally/);
+});
+test('invalid multiline Link selection keeps local author text untouched',()=>{
+ const app=build();
+ app.elements.postBody.value='one\ntwo with extra detail';
+ app.elements.postBody.selectionStart=0;
+ app.elements.postBody.selectionEnd=7;
+ app.elements.formatLink.listeners.click();
+ assert.equal(app.elements.postBody.value,'one\ntwo with extra detail');
+ assert.equal(app.elements.formStatus.dataset.error,'true');
 });

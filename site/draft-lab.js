@@ -59,7 +59,7 @@ for (const control of [title,body,locale,category,source]) {
 
 
 for(const [id,action] of [['formatHeading','heading'],['formatList','list'],
-  ['formatQuote','quote'],['formatCode','code']]){
+  ['formatQuote','quote'],['formatCode','code'],['formatLink','link']]){
  field(id).addEventListener('click',()=>{
   try{
    const edit=formatDraftSelection(body.value,body.selectionStart,body.selectionEnd,action);
@@ -71,7 +71,7 @@ for(const [id,action] of [['formatHeading','heading'],['formatList','list'],
   }catch(error){
    message(error instanceof RangeError
     ? 'Formatting would exceed the 12,000-character article limit.'
-    : 'Choose a valid selection (a heading must be one line).',true);
+    : 'Choose a valid selection (headings and links must be one line).',true);
   }
  });
 }
