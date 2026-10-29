@@ -1,0 +1,52 @@
+name: GitHub Pages domain settings (read only)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/pages-settings-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: read
+
+jobs:
+  inspect:
+    name: Inspect current Pages custom domain and HTTPS settings
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Query approved GitHub Pages configuration (no writes)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          info="$(curl --fail --silent --show-error \
+            --connect-timeout 10 --max-time 20 --retry 2 \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${REPO}/pages")"
+          # Output only nonsecret deployment configuration; never dump headers,
+          # workflow token or the complete API response.
+          printf '%s' "$info" | jq '{cname: .cname, html_url: .html_url, status: .status,
+            https_enforced: .https_enforced, certificate_state: .https_certificate.state}'
+          cname="$(printf '%s' "$info" | jq -r '.cname // ""')"
+          https_enforced="$(printf '%s' "$info" | jq -r '.https_enforced // false')"
+          cert="$(printf '%s' "$info" | jq -r '.https_certificate.state // "unknown"')"
+          if [[ "$cname" != '24go.top' ]]; then
+            echo "::error::Pages custom domain does not match founder-approved apex 24go.top"
+            exit 1
+          fi
+          if [[ "$https_enforced" != 'true' ]]; then
+            echo "::error::Enforce HTTPS is not enabled in Pages settings"
+            exit 1
+          fi
+          if [[ "$cert" != 'approved' ]]; then
+            echo "::warning::HTTPS certificate is not reported approved; inspect provider details"
+          fi
+          echo 'PASS: Pages custom domain and HTTPS enforcement configured for apex.'
+          echo 'NOTE: live redirect and index coverage must be checked separately.'
