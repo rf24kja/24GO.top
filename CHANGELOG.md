@@ -1,5 +1,12 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-29 — Discoverable engineering archive with local article filtering
+
+- Added progressive, no-network search by title/summary across six static source-backed engineering notes. Search UI appears only when JavaScript initializes, keeping the entire catalogue readable/crawlable with JS disabled. Results count uses an ARIA live region and Escape clears the query.
+- Applied restrained static architectural lines to the engineering reading experience, aligned card borders and sticky navigation with the home design, and added system light/dark tokens with explicit readable code blocks. No cursor animation on article pages, analytics, third-party dependencies or private content exposed.
+- Tests cover matching, zero results, reset, keyboard, no-JS fallback, six canonical articles and limited color/motion rules. No additional pages or sitemap changes.
+
+
 ## 2026-10-29 — Reduce pointer glow to a quiet architectural accent
 
 - Reduced the homepage cursor aura radius from 520px to 360px and dark-theme central intensity from 0.13 to 0.038, with light-theme intensity from 0.08 to 0.022; left the 48px static grid, text, CTAs, reduced-motion and high-contrast overrides intact.
