@@ -20,7 +20,8 @@ test('public Draft Lab release evidence checks actual canonical HTTPS assets',()
   assert.match(smoke,/--connect-timeout 10 --max-time 25/);
   assert.doesNotMatch(smoke,/PUBLISH_API_KEY|sb_secret_|VERCEL_TOKEN|Authorization:|localStorage|--data(?:-raw)?/);
 });
-test('read-only workflow runs after Pages delivery and on standalone verification changes',()=>{
+test('read-only workflow runs only after Pages delivery or explicit manual dispatch',()=>{
+  assert.doesNotMatch(workflow,/^  push:/m,'a push-triggered smoke would race the Pages deploy');
   assert.match(workflow,/workflow_run:/);
   assert.match(workflow,/Deploy pre-launch landing/);
   assert.match(workflow,/github\.event\.workflow_run\.conclusion == 'success'/);
