@@ -12,7 +12,7 @@
 
 **Owner-verified website:** [www.24go.top](https://www.24go.top/) opened successfully in the founder's browser on 26 October 2026. This does **not** verify the apex-domain redirect, uptime or public publishing functionality; see [deployment verification log](docs/DEPLOYMENT_STATUS.md).
 
-The static site now has [original engineering writing](site/engineering/index.html) supported by actual merged PRs, plus a [project RSS feed](site/engineering/feed.xml) for technical updates. These articles describe how the project is built; they are **not** user-submitted posts in a launched community.
+The static site now has [original engineering writing](site/engineering/index.html) supported by actual merged PRs, plus a [project RSS feed](site/engineering/feed.xml) for technical updates. These articles describe how the project is built; they are **not** user-submitted posts in a launched community. Newly published source-backed guides cover [multilingual Markdown editor safety](site/engineering/multilingual-markdown-editor-without-losing-drafts.html), [real GitHub Pages deployment verification](site/engineering/verify-github-pages-deploy-not-just-ci.html), and [safe citation links](site/engineering/safe-markdown-citation-links-without-xss.html). All are accessible in HTML, the canonical sitemap, and RSS. Search indexing and AI citations are not yet verified.
 
 ## Accessibility and reader feedback
 
@@ -51,7 +51,7 @@ Visit http://127.0.0.1:3000/en/ or http://127.0.0.1:3000/ru/.
 
 ## Try the browser-only publishing UX experiment
 
-The public [Draft Lab](site/draft-lab.html) demonstrates a minimal first-author experience: title, language, category, a **restricted, DOM-safe Markdown block preview** (headings, lists, quotes, fenced code), source link and **copy, local Markdown download, and reopening a saved Draft Lab file**. Inline Markdown, raw HTML and Markdown links remain literal preview text. A best-effort browser warning protects writing when leaving with new or modified content; unchanged imported files do not warn. Download clicks do not prove a file was saved, so verify the file before leaving. Nothing is submitted, uploaded, automatically saved or published; imported and exported files stay on the visitor's device. It is deliberately separate from the production Auth/backend roadmap. See [research protocol](docs/DRAFT_LAB_RESEARCH.md) and [feedback RFC](https://github.com/rf24kja/24GO.top/issues/21).
+The public [Draft Lab](site/draft-lab.html) demonstrates a minimal first-author experience: title, language, category, a **restricted, DOM-safe Markdown block preview** (headings, lists, quotes, fenced code), source link and **copy, local Markdown download, and reopening a saved Draft Lab file**. Raw HTML and unsupported Markdown remain literal text; narrowly validated HTTP(S) Markdown citation links are clickable via fixed DOM anchors. A best-effort browser warning protects writing when leaving with new or modified content; unchanged imported files do not warn. Download clicks do not prove a file was saved, so verify the file before leaving. Nothing is submitted, uploaded, automatically saved or published; imported and exported files stay on the visitor's device. It is deliberately separate from the production Auth/backend roadmap. See [research protocol](docs/DRAFT_LAB_RESEARCH.md) and [feedback RFC](https://github.com/rf24kja/24GO.top/issues/21).
 
 ## Read the API with zero credentials
 

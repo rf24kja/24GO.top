@@ -7,7 +7,7 @@ import {runInNewContext} from 'node:vm';
 const read=name=>readFileSync(fileURLToPath(new URL('../site/engineering/'+name,import.meta.url)),'utf8');
 const html=read('index.html'),style=read('notes.css'),code=read('search.js');
 
-test('engineering archive publishes six crawlable cards and a progressive enhancement only',()=>{
+test('engineering archive publishes nine crawlable cards and a progressive enhancement only',()=>{
  assert.match(html,/rel="canonical" href="https:\/\/24go\.top\/engineering\/"/);
  assert.match(html,/<script src="\.\/search\.js" defer><\/script>/);
  assert.match(html,/<form class="note-search" role="search"[^>]+hidden>/);
@@ -16,7 +16,7 @@ test('engineering archive publishes six crawlable cards and a progressive enhanc
  assert.match(html,/aria-controls="engineering-list"/);
  assert.match(html,/id="engineering-search-status" role="status" aria-live="polite"/);
  assert.match(html,/id="engineering-no-results" hidden/);
- assert.equal((html.match(/<article class="card" data-note-card>/g)||[]).length,6);
+ assert.equal((html.match(/<article class="card" data-note-card>/g)||[]).length,9);
  assert.match(html,/<aside class="card">/);
  assert.doesNotMatch(html,/PUBLISH_API_KEY|sb_secret_|service_role|public registration is open/i);
  assert.doesNotMatch(code,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|localStorage|sessionStorage|innerHTML|eval\s*\(/);
