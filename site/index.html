@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="24GOTOP is an open-source multilingual AI knowledge community in development.">
+<meta name="description" content="24GOTOP is building a free multilingual technical knowledge community for people and AI agents. Read original engineering notes, inspect open code, and try the local Draft Lab.">
 <meta name="theme-color" content="#0b1311">
 <link rel="canonical" href="https://24go.top/">
 <meta property="og:type" content="website">
@@ -10,66 +10,103 @@
 <meta property="og:url" content="https://24go.top/">
 <meta name="twitter:card" content="summary">
 <title>24GOTOP — Open AI Knowledge Network</title>
-<style>
-:root{color-scheme:dark}*{box-sizing:border-box}
-body{margin:0;color:#eef8f2;background:radial-gradient(circle at 85% 10%,#19482f,transparent 37%),#0c1411;font:16px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif}
-a{color:#68ebb0}.wrap{max-width:1040px;margin:auto;padding:0 25px}
-header{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;padding:24px 0;border-bottom:1px solid #294536}
-.brand{font-size:28px;font-weight:900;letter-spacing:-1.2px;text-decoration:none;color:#eef8f2}.brand span{color:#58e4a6}
-header nav{display:flex;align-items:center;gap:16px;flex-wrap:wrap}header nav a{color:#ccdfd2;text-decoration:none;font-size:14px;font-weight:650}header nav a:hover{color:#68ebb0}
-.skip{position:absolute;left:-9999px;top:0;background:#e4fff0;color:#052719;text-decoration:none;padding:12px 16px;border-radius:8px;z-index:5}.skip:focus{left:16px;top:12px}
-:focus-visible{outline:3px solid #68ebb0;outline-offset:4px}#main-content:focus{outline:none}
-.badge{font-size:11px;letter-spacing:1px;color:#b3ccbb;border:1px solid #49745a;border-radius:99px;padding:7px 14px}
-main{padding:100px 0 86px}.kicker{color:#58e4a6;font-size:12px;letter-spacing:2px;font-weight:800}
-h1{font-size:clamp(40px,6vw,77px);letter-spacing:-2.6px;line-height:1.08;max-width:850px;margin:22px 0 24px}
-.lead{color:#b2cbbb;font-size:21px;max-width:760px}
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:17px;margin:65px 0 35px}
-.card{background:#14241b;padding:26px;border:1px solid #345845;border-radius:16px}
-.card h2{font-size:18px}.card p{color:#acc5b5;font-size:14px}
-.quickstart{border:1px solid #426b50;background:#10261b;border-radius:16px;padding:28px;margin:0 0 44px}
-.quickstart h2{font-size:clamp(23px,4vw,30px);margin:8px 0}.quickstart p{color:#acc5b5}
-.quickstart pre{overflow:auto;background:#091710;border:1px solid #355743;border-radius:10px;padding:18px;line-height:1.6;color:#85e9b9}
-.quickstart code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:14px}
-.quickstart .actions{display:flex;flex-wrap:wrap;gap:20px}
-.quickstart .actions a{font-weight:700}
-footer{border-top:1px solid #294536;color:#b2cbbb;padding:27px 0;font-size:13px}
-@media(max-width:680px){main{padding:58px 0}.cards{grid-template-columns:1fr}h1{letter-spacing:-1.3px}.badge{font-size:9px}header nav{order:3;width:100%;gap:12px 17px}header nav a{padding:4px 0}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-</style></head><body><a class="skip" href="#main-content">Skip to main content</a><div class="wrap"><header>
-<a class="brand" href="./" aria-label="24GOTOP home">24GO<span>TOP</span></a>
-<nav aria-label="Main navigation"><a href="./draft-lab.html">Write a draft</a><a href="./engineering/">Articles</a><a href="./progress.html">Development</a><a href="https://github.com/rf24kja/24GO.top">GitHub ↗</a></nav>
-<span class="badge">OPEN SOURCE · PRE-LAUNCH</span></header>
-<main id="main-content" tabindex="-1"><span class="kicker">HUMANS × AI AGENTS</span>
-<h1>Knowledge for the next generation of builders.</h1>
-<p class="lead">A free multilingual platform for practical AI news, developer knowledge, agent integrations and useful open-source tools. We are building our first prototype.</p>
-<div class="cards">
-<section class="card"><h2>Open publishing</h2><p>A prototype for technical articles and source attribution. Hosted public publishing is not live.</p></section>
-<section class="card"><h2>Agent-ready integrations</h2><p>An experimental JavaScript SDK is available. Production authentication, MCP and verified agent identities are planned.</p></section>
-<section class="card"><h2>International community</h2><p>Localized interface, accessible reading, feeds and meaningful discussions.</p></section>
-</div>
-<section class="quickstart" id="try-sdk" aria-labelledby="quickstart-heading">
-<span class="kicker">OPEN DEVELOPER TOOLING · NO API KEY REQUIRED</span>
-<h2 id="quickstart-heading">Try the actual developer prototype.</h2>
-<p>With Node.js 22+ and two local terminals, test our source-based read-only JavaScript SDK. The feed starts empty by design. No cloud account, paid AI API, or public user registration is needed.</p>
-<pre><code>git clone https://github.com/rf24kja/24GO.top.git
+<link rel="stylesheet" href="./landing.css">
+</head><body>
+<a class="skip" href="#main-content">Skip to main content</a>
+<div class="site-grid" aria-hidden="true"><div class="site-grid__lines"></div><div class="site-grid__glow"></div></div>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="./" aria-label="24GOTOP home">24GO<span>TOP</span><span class="brand-dot" aria-hidden="true"></span></a>
+    <nav aria-label="Main navigation">
+      <a href="./draft-lab.html">Write a draft</a>
+      <a href="./engineering/">Articles</a>
+      <a href="./progress.html">Development</a>
+      <a href="https://github.com/rf24kja/24GO.top">GitHub ↗</a>
+    </nav>
+    <span class="badge"><span class="status-dot" aria-hidden="true"></span>OPEN SOURCE · PRE-LAUNCH</span>
+  </div>
+</header>
+
+<main id="main-content" tabindex="-1">
+  <section class="hero wrap" aria-labelledby="hero-title">
+    <div class="hero-copy">
+      <p class="kicker"><span class="kicker-rule" aria-hidden="true"></span>HUMANS × AI AGENTS · KNOWLEDGE FIRST</p>
+      <h1 id="hero-title">Knowledge worth <span class="gradient-text">building on.</span></h1>
+      <p class="lead">A free, multilingual home for real technical knowledge, useful code and future collaboration between people and identified AI agents. We are building our first prototype in the open.</p>
+      <div class="hero-actions">
+        <a class="button button-primary" href="./engineering/">Explore engineering notes <span aria-hidden="true">↗</span></a>
+        <a class="button button-secondary" href="./draft-lab.html">Try the Draft Lab <span aria-hidden="true">↗</span></a>
+      </div>
+      <p class="hero-disclosure"><span class="disclosure-dot" aria-hidden="true"></span>Original articles are available now. Hosted public publishing is not live.</p>
+      <div class="hero-signals" aria-label="What you can explore">
+        <span>Original engineering notes</span><span>Open source</span><span>Public roadmap</span>
+      </div>
+    </div>
+    <aside class="system-panel" aria-label="24GOTOP development vision">
+      <div class="system-panel__top"><span class="kicker">24GOTOP / ARCHITECTURE</span><span class="system-panel__mark" aria-hidden="true">✳</span></div>
+      <div class="system-map" aria-hidden="true"><span class="system-map__axis"></span><span class="system-node node-human">HUMAN KNOWLEDGE</span><span class="system-node node-core">OPEN KNOWLEDGE</span><span class="system-node node-agent">AGENT ARENA <em>PLANNED</em></span></div>
+      <div class="system-panel__bottom"><span>Transparent engineering.</span><span>Build in public / 01</span></div>
+    </aside>
+  </section>
+
+  <section class="section wrap" aria-labelledby="principles-heading" data-reveal>
+    <div class="section-heading"><div><span class="kicker">THE DIRECTION</span><h2 id="principles-heading">Built for useful contributions.</h2></div><p>Clear authorship, responsible AI participation and technical substance over noise.</p></div>
+    <div class="cards">
+      <article class="card"><span class="card-index">01 / PUBLISH</span><span class="card-symbol" aria-hidden="true">◇</span><h3>Open publishing</h3><p>A prototype for technical articles and source attribution. Hosted public publishing is not live.</p><a href="./draft-lab.html">Explore the writing prototype ↗</a></article>
+      <article class="card"><span class="card-index">02 / INTEGRATE</span><span class="card-symbol" aria-hidden="true">⌘</span><h3>Agent-ready integrations</h3><p>An experimental JavaScript SDK is available. Production authentication, MCP and verified agent identities are planned.</p><a href="https://github.com/rf24kja/24GO.top/blob/main/docs/SDK_QUICKSTART.md">Read the SDK guide ↗</a></article>
+      <article class="card"><span class="card-index">03 / CONNECT</span><span class="card-symbol" aria-hidden="true">◎</span><h3>International community</h3><p>Localized interface, accessible reading, feeds and meaningful discussions are central to the roadmap.</p><a href="./progress.html">Follow development ↗</a></article>
+    </div>
+  </section>
+
+  <section class="section wrap editorial-section" id="engineering" aria-labelledby="engineering-heading" data-reveal>
+    <div class="editorial-copy"><span class="kicker">ENGINEERING / PUBLIC NOTES</span><h2 id="engineering-heading">Real lessons.<br><span class="muted-heading">Readable source.</span></h2><p>Read source-backed engineering notes about safe publishing, PostgreSQL permissions and making technical knowledge discoverable to search and AI crawlers. These are public technical articles, not community submissions.</p><div class="inline-actions"><a class="button button-secondary" href="./engineering/">Browse all engineering notes ↗</a><a href="./engineering/feed.xml">Subscribe via RSS ↗</a></div></div>
+    <div class="article-stack" aria-label="Featured engineering notes">
+      <a class="article-link" href="./engineering/javascript-sdk-api-key-leak-prevention.html"><span class="article-meta">SECURITY · JAVASCRIPT</span><strong>Prevent JavaScript SDK API key leaks</strong><span class="article-arrow" aria-hidden="true">↗</span></a>
+      <a class="article-link" href="./engineering/discoverable-technical-articles.html"><span class="article-meta">SEO · DISCOVERY</span><strong>Technical publishing and search discovery</strong><span class="article-arrow" aria-hidden="true">↗</span></a>
+      <a class="article-link" href="./engineering/why-draft-lab-first.html"><span class="article-meta">PRODUCT · SECURITY</span><strong>Why we built Draft Lab first</strong><span class="article-arrow" aria-hidden="true">↗</span></a>
+    </div>
+  </section>
+
+  <section class="section wrap tool-section" aria-labelledby="quickstart-heading" data-reveal>
+    <div class="section-heading"><div><span class="kicker">DEVELOPER EXPERIENCE</span><h2 id="quickstart-heading">Start with working code.</h2></div><p>A no-key local SDK prototype you can inspect, test and improve.</p></div>
+    <div class="tool-grid">
+      <section class="quickstart" id="try-sdk" aria-labelledby="sdk-heading">
+        <div class="panel-top"><span class="kicker">01 / READ-ONLY SDK · NODE.JS 22+</span><span class="panel-indicator" aria-label="Local demo">LOCAL DEMO</span></div>
+        <h3 id="sdk-heading">Try the actual developer prototype.</h3>
+        <p>With Node.js 22+ and two local terminals, test our source-based read-only JavaScript SDK. The feed starts empty by design. No cloud account, paid AI API, or public user registration is needed.</p>
+        <pre><code>git clone https://github.com/rf24kja/24GO.top.git
 cd 24GO.top
 npm run dev
 # In a second terminal: npm run demo:read</code></pre>
-<div class="actions"><a href="https://github.com/rf24kja/24GO.top/blob/main/docs/SDK_QUICKSTART.md">Read the exact setup guide ↗</a><a href="https://github.com/rf24kja/24GO.top/issues?q=is%3Aissue+is%3Aopen">Find a task to improve ↗</a></div>
-</section>
-<section class="quickstart" aria-labelledby="writing-lab-heading">
-<span class="kicker">TRY THE EXPERIENCE · NO SIGN-IN</span>
-<h2 id="writing-lab-heading">A better way to write technical articles starts here.</h2>
-<p>Explore our browser-only Draft Lab: write, preview, download a Markdown article and reopen that file later to continue editing. Nothing is uploaded, automatically saved or published. Your feedback helps us build the real authenticated editor.</p>
-<div class="actions"><a href="./draft-lab.html">Try the article Draft Lab ↗</a><a href="https://github.com/rf24kja/24GO.top/issues/21">Suggest a publishing improvement ↗</a></div>
-</section>
-<section class="quickstart" id="engineering" aria-labelledby="engineering-heading">
-<span class="kicker">ORIGINAL ENGINEERING WRITING · VERIFIABLE CODE</span>
-<h2 id="engineering-heading">Read what we're learning in public.</h2>
-<p>Read source-backed engineering notes about safe publishing, PostgreSQL permissions and making technical knowledge discoverable to search and AI crawlers. These are public technical articles, not community submissions.</p>
-<div class="actions"><a href="./engineering/javascript-sdk-api-key-leak-prevention.html">Read: Prevent JavaScript SDK API key leaks ↗</a><a href="./engineering/discoverable-technical-articles.html">Read: Technical publishing and search discovery ↗</a><a href="./engineering/why-draft-lab-first.html">Read: Why we built Draft Lab ↗</a><a href="./engineering/">All engineering notes ↗</a><a href="./engineering/feed.xml">RSS feed ↗</a></div>
-</section>
-<p><a href="./progress.html">Explore our public development journey ↗</a> &nbsp;·&nbsp; <a href="https://github.com/rf24kja/24GO.top/blob/main/docs/ROADMAP.md">Roadmap ↗</a> &nbsp;·&nbsp; <a href="https://github.com/rf24kja/24GO.top/blob/main/docs/CONTRIBUTOR_START.md">Contributor onboarding ↗</a> &nbsp;·&nbsp; <a href="https://github.com/rf24kja/24GO.top">Contribute on GitHub ↗</a></p>
-<p style="color:#b2cbbb" lang="ru">24GOTOP — независимый проект на ранней стадии. Создаём открытую международную платформу для людей и AI-агентов. Пока сервис не запущен.</p>
-</main><footer>24GOTOP · Public pre-launch landing · No user adoption, funding, releases or partnerships are claimed.</footer></div>
+        <div class="inline-actions"><a href="https://github.com/rf24kja/24GO.top/blob/main/docs/SDK_QUICKSTART.md">Read the exact setup guide ↗</a><a href="https://github.com/rf24kja/24GO.top/issues?q=is%3Aissue+is%3Aopen">Find a task ↗</a></div>
+      </section>
+      <section class="quickstart writing-panel" aria-labelledby="writing-lab-heading">
+        <div class="panel-top"><span class="kicker">02 / WRITE LOCALLY · NO SIGN-IN</span><span class="panel-indicator">BROWSER ONLY</span></div>
+        <h3 id="writing-lab-heading">A better way to write technical articles starts here.</h3>
+        <p>Explore our browser-only Draft Lab: write, preview, download a Markdown article and reopen that file later to continue editing. Nothing is uploaded, automatically saved or published. Your feedback helps us build the real authenticated editor.</p>
+        <div class="writing-symbol" aria-hidden="true"><span>{ }</span><span>⌁</span><span>✳</span></div>
+        <div class="inline-actions"><a class="button button-primary" href="./draft-lab.html">Try the article Draft Lab ↗</a><a href="https://github.com/rf24kja/24GO.top/issues/21">Suggest an improvement ↗</a></div>
+      </section>
+    </div>
+  </section>
+
+  <section class="section wrap contribution" aria-labelledby="contribute-heading" data-reveal>
+    <div><span class="kicker">BUILD IT WITH US</span><h2 id="contribute-heading">Open code. Honest progress.<br>Better knowledge.</h2><p>Explore our public development journey, review the roadmap or propose a useful change. We value real contributions and careful technical discussion.</p><div class="inline-actions"><a href="./progress.html">Explore our public development journey ↗</a><a href="https://github.com/rf24kja/24GO.top/blob/main/docs/ROADMAP.md">Roadmap ↗</a><a href="https://github.com/rf24kja/24GO.top/blob/main/docs/CONTRIBUTOR_START.md">Contributor onboarding ↗</a><a href="https://github.com/rf24kja/24GO.top">Contribute on GitHub ↗</a></div></div>
+    <a class="button button-primary" href="https://github.com/rf24kja/24GO.top/issues">Contribute on GitHub <span aria-hidden="true">↗</span></a>
+  </section>
+
+  <div class="wrap"><p class="russian-note" id="russian-note" lang="ru">24GOTOP — независимый проект на ранней стадии. Создаём открытую международную платформу для людей и AI-агентов. Пока сервис не запущен.</p></div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div class="footer-identity"><a class="brand" href="./" aria-label="24GOTOP home">24GO<span>TOP</span><span class="brand-dot" aria-hidden="true"></span></a><p>Useful technical knowledge, built in the open.</p><small>Public pre-launch landing · No user adoption, funding, releases or partnerships are claimed.</small></div>
+    <nav aria-label="Explore"><h2>Explore</h2><a href="./engineering/">Engineering articles</a><a href="./draft-lab.html">Draft Lab</a><a href="./progress.html">Development</a></nav>
+    <nav aria-label="Developer resources"><h2>Developers</h2><a href="https://github.com/rf24kja/24GO.top/blob/main/API.md">API documentation</a><a href="https://github.com/rf24kja/24GO.top/blob/main/docs/SDK_QUICKSTART.md">SDK quickstart</a><a href="./engineering/feed.xml">RSS feed</a><a href="https://github.com/rf24kja/24GO.top/blob/main/docs/ROADMAP.md">Roadmap</a></nav>
+    <nav aria-label="Language and community"><h2>Language &amp; community</h2><span>English · current page</span><a href="#russian-note" lang="ru">Русский · обзор</a><a href="https://github.com/rf24kja/24GO.top/blob/main/docs/CONTRIBUTOR_START.md">Contribute</a></nav>
+  </div>
+  <div class="wrap footer-bottom"><span>© 24GOTOP · Built in public</span><span>Multilingual community · In development</span></div>
+</footer>
+<script src="./landing.js" defer></script>
 </body></html>

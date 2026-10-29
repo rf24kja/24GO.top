@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const html = readFileSync(fileURLToPath(new URL('../site/index.html', import.meta.url)), 'utf8');
+const landingCss = readFileSync(fileURLToPath(new URL('../site/landing.css', import.meta.url)), 'utf8');
 const workflow = readFileSync(fileURLToPath(new URL('../.github/workflows/pages.yml', import.meta.url)), 'utf8');
 
 test('pre-launch landing includes truthful disclosure and contributor link', () => {
@@ -90,9 +91,9 @@ test('public landing exposes meaningful 320px navigation and visible keyboard fo
   for(const target of ['./draft-lab.html','./engineering/','./progress.html','https://github.com/rf24kja/24GO.top']){
     assert.ok(html.includes('href="'+target+'"'),'Missing visible navigation: '+target);
   }
-  assert.match(html, /:focus-visible\{outline:3px solid #68ebb0/);
-  assert.match(html, /header nav\{order:3;width:100%/);
-  assert.match(html, /@media\(prefers-reduced-motion:reduce\)/);
+  assert.match(landingCss, /:focus-visible\{outline:3px solid #68ebb0/);
+  assert.match(landingCss, /\.site-header nav\{order:3;width:100%/);
+  assert.match(landingCss, /@media\(prefers-reduced-motion:reduce\)/);
   assert.doesNotMatch(html, /nav a\{display:none\}|display:none[^}]*nav/i);
 });
 
