@@ -97,6 +97,10 @@ Create DEC-009 and onward only for decisions that materially affect product arch
 
 **Trade-off:** Slower benefit applications but verifiable claims, no spam or false reach. **Review when:** independent package usage, real external contributions, provider eligibility or terms materially change. **Rollback:** revert this documentation entry; no deployment, payments or provider changes.
 
+### 2026-10-29 verification note for DEC-017
+
+Provider terms can change without an award. Claude Startups currently says its cohort is full and applications are closed; AWS Pioneer is a separate **business-eligibility-unverified** credit route. Keep research-only status and factual OSS metrics (1 star, 0 forks); no application or credit may be claimed without founder authorization, provider approval and billing review. No new decision to spend or deploy is made.
+
 ## DEC-018 — Protect the local JSON demo independently of the shared key; never imply verified agents
 
 **Date:** 2026-10-29. **Status:** PUBLIC local-prototype implementation only; private hosted identity release gate still open.
