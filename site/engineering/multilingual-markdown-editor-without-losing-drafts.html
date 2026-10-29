@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1411">
+<meta name="description" content="How to localize an eight-language browser Markdown editor without changing the author’s content, article locale, or unsaved-file baseline. Source, code and tests.">
+<meta property="og:type" content="article"><meta property="og:title" content="Localize an editor without losing drafts — 24GOTOP">
+<meta property="og:description" content="A tested approach to separating interface language from document language, protecting local Markdown drafts and keeping accessibility labels in sync.">
+<meta property="og:url" content="https://24go.top/engineering/multilingual-markdown-editor-without-losing-drafts.html">
+<meta property="article:published_time" content="2026-10-30T06:05:00+07:00">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://24go.top/engineering/multilingual-markdown-editor-without-losing-drafts.html">
+<title>How to localize a Markdown editor without losing drafts — 24GOTOP</title>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"How to localize a Markdown editor without losing drafts","description":"A reproducible method to separate UI language from article language in a browser-only writing tool.","datePublished":"2026-10-30T06:05:00+07:00","dateModified":"2026-10-30T06:05:00+07:00","inLanguage":"en","author":{"@type":"Organization","name":"24GOTOP Engineering","url":"https://github.com/rf24kja/24GO.top"},"publisher":{"@type":"Organization","name":"24GOTOP"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://24go.top/engineering/multilingual-markdown-editor-without-losing-drafts.html"},"isAccessibleForFree":true}</script>
+<link rel="stylesheet" href="./notes.css"><link rel="stylesheet" href="../interior.css"><link rel="alternate" type="application/rss+xml" title="24GOTOP engineering notes" href="./feed.xml">
+</head><body><a class="skip" href="#main-content">Skip to article content</a>
+<header class="interior-header"><nav class="wrap interior-nav" aria-label="Main navigation"><a class="interior-brand" href="../" aria-label="24GOTOP home">24GO<span>TOP</span><span class="interior-brand__dot" aria-hidden="true"></span></a><div class="interior-links"><a href="../">Home</a><a href="./">Articles</a><a href="../draft-lab.html">Draft Lab</a><a href="../progress.html">Development</a><a href="https://github.com/rf24kja/24GO.top">GitHub ↗</a></div></nav></header>
+<main class="wrap" id="main-content" tabindex="-1"><article class="article">
+<span class="eyebrow">Engineering guide · 30 October 2026 · Internationalization</span>
+<h1>How to localize a Markdown editor without losing drafts</h1>
+<p class="lead">A writer may prefer a Russian interface while producing an English article, or switch to Thai controls halfway through editing. A language selector must not silently translate the document, change its metadata, or mark an unchanged imported file as modified. Here is a tested, source-backed approach.</p>
+<p class="details">By <a href="https://github.com/rf24kja/24GO.top">24GOTOP Engineering</a> · <time datetime="2026-10-30">30 October 2026</time> · <a href="https://github.com/rf24kja/24GO.top/pull/81">Implementation PR #81</a> · <a href="https://github.com/rf24kja/24GO.top/blob/main/tests/draft-lab-i18n.test.mjs">Tests</a></p>
+<div class="note" role="note"><strong>Verified scope:</strong> the public <a href="../draft-lab.html">24GOTOP Draft Lab</a> is an on-device writing prototype. It does not automatically save, upload or publish articles. Its translations are first-pass and still require native-speaker and screen-reader review. The hosted 24GOTOP community is not launched.</div>
+<h2>The trap: interface locale is not article locale</h2>
+<p>A single <code>locale</code> variable is tempting. But there are two different decisions: the language of buttons, hints and errors; and the language of the article readers will eventually see. Treating them as the same field can cause a UI preference change to rewrite exported metadata, invalidate a draft comparison or select an unintended publication language.</p>
+<p>Our public editor keeps <code>postLocale</code> for the authored document and introduces <code>uiLocale</code> for display strings. Changing <code>uiLocale</code> should not modify the title, body, category, source URL, article locale, selection or previously reopened file baseline. A multilingual author can therefore work across languages without affecting the original writing.</p>
+<h2>Architecture: a fixed dictionary, not a document translation pass</h2>
+<p>The <a href="https://github.com/rf24kja/24GO.top/blob/main/site/draft-lab-i18n.js">translation module</a> has eight explicit dictionaries: English, Russian, Thai, Spanish, French, German, Portuguese and Chinese. Every locale uses the same set of keys. Missing or unexpected keys fall back to a known English string or are rejected by the lookup function.</p>
+<pre><code>// Simplified from the public implementation
+const ui = key =&gt; uiText(uiLocale.value, key);
+function refreshInterface() {
+  applyUiLanguage(document, uiLocale.value);
+  preview();
+  message('');
+}
+uiLocale.addEventListener('change', refreshInterface);</code></pre>
+<p>The important part is what that handler <em>does not</em> do. It does not write to the draft fields, export a new file, make a network request or call a translation API. On the existing page, fixed markers such as <code>data-ui="headline"</code> identify interface text. Text nodes are updated via <code>textContent</code>, placeholders through <code>setAttribute</code>, and <code>html.lang</code> is set to the current interface locale.</p>
+<p>This is much safer than accepting translated HTML fragments and assigning them to <code>innerHTML</code>. The article body is untrusted user content and remains separate from the interface dictionary. The dictionaries contain only fixed source-controlled strings, not rich text fetched from remote services.</p>
+<h2>Handle warnings and validation, not only button labels</h2>
+<p>Many incomplete localizations translate navigation but leave the most important text in English: <em>this draft is not saved</em>, <em>opening a file replaces the current draft</em>, <em>download requested</em>, or <em>your selection is invalid</em>. Those messages affect irreversible choices and should be localized with the rest of the UI.</p>
+<p>In <a href="https://github.com/rf24kja/24GO.top/pull/81">PR #81</a>, the eight dictionaries include 78 keys each. They cover labels, editor controls, accessibility text, error states, import confirmations and privacy notices. The English text is present directly in HTML so the page has meaningful static content before JavaScript executes. This is a local application feature, <strong>not</strong> eight translated search landing pages.</p>
+<h2>Preserve the file baseline during a language switch</h2>
+<p>The editor supports a workflow in which a writer downloads an <code>.md</code> file and later reopens that exact exported file. It tracks the reopened file in a memory-only baseline. The warning before leaving depends on whether the current article actually differs from that baseline, not whether a user changed the interface labels.</p>
+<pre><code>// Conceptual invariant checked by the tests
+const before = { title, body, locale, category, source };
+changeInterfaceLanguage('ru');
+assert.deepEqual(currentDraft(), before);
+assert.equal(hasUnexportedChanges(currentDraft(), baseline), false);</code></pre>
+<p>The actual <a href="https://github.com/rf24kja/24GO.top/blob/main/tests/draft-lab-import-ui.test.mjs">browser-simulation test</a> reopens a locally exported Markdown file, changes the interface from English to Russian, and checks that every author field is unchanged. It then edits the body, confirms the unsaved-change guard becomes active, switches to Chinese, and checks that the guard remains active. This catches a class of data-loss bugs that dictionary-completeness tests alone cannot detect.</p>
+<h2>What about accessibility and SEO?</h2>
+<p>The interface-language selector has an explicit label and uses native <code>select</code> keyboard behavior. The page's <code>lang</code> attribute changes with the interface so assistive technology has an appropriate language hint. Accessible labels and placeholders use the same translation keys as visible controls. We have automated assertions for those contracts; we have <strong>not</strong> measured comprehension with native speakers or tested every device/screen reader.</p>
+<p>From an SEO perspective, do not create eight duplicate URLs merely because a JavaScript control can switch the UI. Genuine locale-specific articles need unique, translated visible content, correct language URLs and self-consistent canonical/hreflang signals. This engineering note is an English original and declares <code>lang="en"</code>; the local editor itself remains <code>noindex</code> because it is a prototype, not a public document to rank.</p>
+<h2>Reproduce the evidence</h2>
+<ol>
+<li>Inspect <a href="https://github.com/rf24kja/24GO.top/pull/81">PR #81</a> and its changes to the dictionary, static HTML and on-device editor.</li>
+<li>Run <code>npm test</code> after cloning the <a href="https://github.com/rf24kja/24GO.top">public MIT repository</a> (Node.js 22 or newer). Review <a href="https://github.com/rf24kja/24GO.top/blob/main/tests/draft-lab-i18n.test.mjs">dictionary completeness</a> and the <a href="https://github.com/rf24kja/24GO.top/blob/main/tests/draft-lab-import-ui.test.mjs">import-preservation test</a>.</li>
+<li>Open the <a href="../draft-lab.html">live Draft Lab</a>. Draft a short technical explanation in English, change interface language to Russian or Thai, export the file, and confirm its content-language metadata still matches your selection.</li>
+<li>Check <a href="https://github.com/rf24kja/24GO.top/actions/runs/40969903691">the post-deployment HTTPS smoke evidence</a>. It shows the files were served; it does not prove native-language quality.</li>
+</ol>
+<h2>Practical checklist for any multilingual editor</h2>
+<ul><li>Model <strong>UI language</strong> and <strong>document language</strong> separately.</li>
+<li>Keep the translation surface fixed, source-controlled and reviewable; use safe text/attribute insertion.</li>
+<li>Translate destructive confirmations, status and accessibility text as well as headings.</li>
+<li>Test both unchanged and dirty drafts through multiple language switches.</li>
+<li>Use real bilingual readers and assistive-technology users to validate wording and navigation before launch.</li></ul>
+<p>Related reading: <a href="./why-draft-lab-first.html">why we built a Draft Lab before public writes</a>, <a href="./markdown-preview-safety.html">how our Markdown preview handles untrusted content</a>, and <a href="./">all engineering notes</a>.</p>
+<p class="source">Primary evidence: <a href="https://github.com/rf24kja/24GO.top/pull/81">merged public PR #81</a>, <a href="https://github.com/rf24kja/24GO.top/actions/runs/40969864484">CI source tests</a> and <a href="https://github.com/rf24kja/24GO.top/actions/runs/40969903691">post-Pages live HTTPS check</a>. No invented users, search rankings or published community articles.</p>
+<p><a class="cta" href="../draft-lab.html">Try the browser-only multilingual editor ↗</a></p>
+</article></main><footer class="interior-footer"><div class="wrap">24GOTOP · Open engineering notes · <a href="./">All notes</a> · <a href="./feed.xml">RSS</a></div></footer>
+</body></html>
