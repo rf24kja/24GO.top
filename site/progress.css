@@ -1,0 +1,17 @@
+:root{color-scheme:dark;--bg:#0b1113;--panel:rgba(20,32,31,.89);--border:rgba(168,205,188,.2);--text:#f2f7f5;--muted:#b6c8c1;--accent:#65e9b5;--notice-bg:#173524;--notice-border:#527b5b;--notice-text:#e2f4e9}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;color:var(--text);background:radial-gradient(ellipse at 80% -5%,rgba(34,94,70,.22),transparent 49%),var(--bg);font:16px/1.7 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:var(--accent);text-underline-offset:3px}a:hover{color:var(--text)}:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
+.wrap{max-width:1140px;margin:auto;padding:0 24px}
+.hero{padding:90px 0 72px}.kicker{font-size:11px;font-weight:800;letter-spacing:.155em;text-transform:uppercase;color:var(--accent)}
+h1{font-size:clamp(42px,6vw,76px);line-height:1.08;letter-spacing:-.055em;max-width:930px;margin:22px 0}
+h2{font-size:clamp(25px,3vw,33px);line-height:1.2;letter-spacing:-.035em;margin:10px 0 24px}
+.lead{color:var(--muted);font-size:clamp(17px,1.7vw,20px);max-width:720px}
+.note{max-width:800px;padding:17px 20px;border:1px solid var(--notice-border);border-radius:12px;background:var(--notice-bg);color:var(--notice-text)}
+section{border-top:1px solid var(--border);padding:42px 0}
+.event{margin:25px 0;padding-left:22px;border-left:3px solid var(--accent)}.event h3{margin:0;font-size:20px}.event p{margin:4px 0;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.card{min-width:0;padding:24px;border-radius:15px;background:var(--panel);border:1px solid var(--border)}.card h3{margin:0}.card p{color:var(--muted);margin-bottom:0}p,li{overflow-wrap:anywhere}
+@media(max-width:680px){.grid{grid-template-columns:1fr}.hero{padding:55px 0}h1{letter-spacing:-.035em}.wrap{padding:0 18px}}
+@media(prefers-color-scheme:light){:root{color-scheme:light;--bg:#f4f7f5;--panel:rgba(255,255,255,.89);--border:#c1d4ca;--text:#142420;--muted:#49635a;--accent:#006c4b;--notice-bg:#e7f6ed;--notice-border:#79ab8a;--notice-text:#244c35}body{background:radial-gradient(ellipse at 80% -5%,rgba(76,185,123,.12),transparent 49%),var(--bg)}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
