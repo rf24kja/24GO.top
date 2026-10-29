@@ -7,7 +7,7 @@ const read=name=>readFileSync(fileURLToPath(new URL('../site/'+name,import.meta.
 const html=read('draft-lab.html'),css=read('draft-lab.css'),js=read('draft-lab.js');
 
 test('editor shares honest prototype navigation and keyboard skip with the redesigned landing',()=>{
- assert.match(html,/<a class="skip" href="#main-content">Skip to editor<\/a>/);
+ assert.match(html,/<a class="skip" href="#main-content" data-ui="skip">Skip to editor<\/a>/);
  assert.match(html,/<main class="shell" id="main-content" tabindex="-1">/);
  assert.match(html,/<nav class="wrap interior-nav" aria-label="Main navigation">/);
  for(const href of ['./','./engineering/','./progress.html']){

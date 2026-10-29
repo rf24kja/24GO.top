@@ -7,12 +7,13 @@ const smoke=readFileSync(new URL('../scripts/check-live-draft-lab.sh',import.met
 
 test('public Draft Lab release evidence checks actual canonical HTTPS assets',()=>{
   assert.match(smoke,/https:\/\/24go\.top/);
-  for(const name of ['draft-lab.html','draft-lab.js','draft-lab-logic.js','draft-lab-preview.js']){
+  for(const name of ['draft-lab.html','draft-lab.js','draft-lab-logic.js','draft-lab-preview.js','draft-lab-i18n.js']){
     assert.ok(smoke.includes(name),'Missing '+name);
   }
   for(const marker of ['id="formatLink"','safeCitationUrl','noopener noreferrer ugc',
     'does not publish, upload or automatically save your writing',
-    'Hosted public publishing is not live']){
+    'Hosted public publishing is not live','id="uiLocale"','UI_STRINGS',
+    'applyUiLanguage(document,uiLocale.value)']){
     assert.ok(smoke.includes(marker),'Missing verified public feature '+marker);
   }
   assert.match(smoke,/--proto '=https' --proto-redir '=https'/);

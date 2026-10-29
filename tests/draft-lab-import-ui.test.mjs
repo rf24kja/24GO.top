@@ -7,10 +7,12 @@ import {
   safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent,
   parseDraftFile, MAX_DRAFT_FILE_BYTES, hasUnexportedChanges, formatDraftSelection
 } from '../site/draft-lab-logic.js';
+import {uiText,applyUiLanguage} from '../site/draft-lab-i18n.js';
 
 const source = readFileSync(fileURLToPath(new URL('../site/draft-lab.js', import.meta.url)), 'utf8')
   .replace(/^import .* from '.\/draft-lab-logic\.js';\n/m, '')
-  .replace(/^import .* from '.\/draft-lab-preview\.js';\n/m, '');
+  .replace(/^import .* from '.\/draft-lab-preview\.js';\n/m, '')
+  .replace(/^import .* from '.\/draft-lab-i18n\.js';\n/m, '');
 
 const sample = {
   title:'Return and improve the documentation', locale:'ru', category:'tools',
@@ -23,7 +25,7 @@ function build() {
     'postTitle','postBody','postLocale','postCategory','postSource','formStatus',
     'previewHeading','previewBody','previewLocale','previewCategory','bodyCount',
     'previewSource','draftSafety','downloadDraft','copyDraft','clearDraft','importDraft','importDraftFile','draftForm',
-    'formatHeading','formatList','formatQuote','formatCode','formatLink'
+    'formatHeading','formatList','formatQuote','formatCode','formatLink','uiLocale'
   ];
   const elements = Object.fromEntries(ids.map(id => {
     const el = {
@@ -37,15 +39,21 @@ function build() {
     };
     return [id,el];
   }));
+  elements.uiLocale.value='en';
   elements.postLocale.value='en';
   elements.postCategory.value='guides';
   let confirm = true;
   const window = {listeners:{}, confirm(){return confirm;}, addEventListener(type, callback){this.listeners[type]=callback;}};
-  const document = {getElementById(id){return elements[id];}};
+  const document = {
+    documentElement:{lang:'en'},
+    getElementById(id){return elements[id];},
+    querySelectorAll(){return [];}
+  };
   runInNewContext(source, {
     document, window, navigator:{}, URL, Blob, setTimeout,
     safeSourceUrl,validateDraft,formatDraft,draftFilename,hasDraftContent,
     parseDraftFile,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,
+    uiText,applyUiLanguage,
     renderMarkdownPreview(container, text) { container.textContent = text; }
   // Keep a bounded sandbox timeout, with enough CI runner headroom when
   // node --test starts multiple test files concurrently.
@@ -199,4 +207,32 @@ test('invalid multiline Link selection keeps local author text untouched',()=>{
  app.elements.formatLink.listeners.click();
  assert.equal(app.elements.postBody.value,'one\ntwo with extra detail');
  assert.equal(app.elements.formStatus.dataset.error,'true');
+});
+
+test('interface language changes preserve the draft, saved-file baseline and current article language',async()=>{
+ const app=build();
+ await app.import(formatDraft(sample));
+ const before={
+  title:app.elements.postTitle.value,body:app.elements.postBody.value,
+  articleLanguage:app.elements.postLocale.value,category:app.elements.postCategory.value,
+  source:app.elements.postSource.value
+ };
+ assert.equal(app.beforeUnload().prevented,false);
+ app.elements.uiLocale.value='ru';
+ app.elements.uiLocale.listeners.change();
+ assert.deepEqual({
+  title:app.elements.postTitle.value,body:app.elements.postBody.value,
+  articleLanguage:app.elements.postLocale.value,category:app.elements.postCategory.value,
+  source:app.elements.postSource.value
+ },before);
+ assert.equal(app.beforeUnload().prevented,false,'language switch must not mark saved file dirty');
+ assert.match(app.elements.draftSafety.textContent,/файл не изменён|Открытый файл/);
+ app.elements.postBody.value+='\nNew paragraph';
+ app.elements.postBody.listeners.input();
+ assert.equal(app.beforeUnload().prevented,true);
+ assert.match(app.elements.draftSafety.textContent,/не сохраняются/i);
+ app.elements.uiLocale.value='zh';
+ app.elements.uiLocale.listeners.change();
+ assert.equal(app.beforeUnload().prevented,true,'language change does not pretend edits were exported');
+ assert.match(app.elements.draftSafety.textContent,/不会自动保存/);
 });

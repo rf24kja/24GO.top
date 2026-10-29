@@ -42,7 +42,7 @@ test('all ten actual Pages documents use one coherent visual system',()=>{
   assert.match(html,/<nav class="wrap interior-nav" aria-label="Main navigation">/);
   assert.match(html,/<header class="[^"]*interior-header"/);
   assert.match(html,/<footer class="interior-footer">/);
-  assert.match(html,/<a class="skip" href="#main-content">/);
+  assert.match(html,/<a class="skip" href="#main-content"(?: data-ui="skip")?>/);
   assert.match(html,/id="main-content" tabindex="-1"/);
   assert.match(html,/class="interior-links"/);
   for(const name of ['Home','Articles','Draft Lab','Development','GitHub ↗']){

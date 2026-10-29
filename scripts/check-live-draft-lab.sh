@@ -31,6 +31,7 @@ download "$origin/draft-lab.html" "$tmp/draft.html"
 download "$origin/draft-lab.js" "$tmp/editor.js"
 download "$origin/draft-lab-logic.js" "$tmp/logic.js"
 download "$origin/draft-lab-preview.js" "$tmp/preview.js"
+download "$origin/draft-lab-i18n.js" "$tmp/i18n.js"
 require 'href="./draft-lab.html"' "$tmp/home.html" 'public Draft Lab navigation'
 require 'Hosted public publishing is not live' "$tmp/home.html" 'truthful launch disclosure'
 require 'id="formatLink"' "$tmp/draft.html" 'Link editor control'
@@ -39,5 +40,12 @@ require "['formatQuote','quote'],['formatCode','code'],['formatLink','link']" "$
 require "if(action==='link')" "$tmp/logic.js" 'Markdown Link pure edit'
 require 'export function safeCitationUrl' "$tmp/preview.js" 'bounded safe citation preview'
 require 'noopener noreferrer ugc' "$tmp/preview.js" 'user-generated external link security'
-echo 'PASS: live canonical HTTPS site contains the reviewed browser-only Draft Lab citation feature.'
+require 'id="uiLocale"' "$tmp/draft.html" 'independent interface language selector'
+require 'data-ui="notice"' "$tmp/draft.html" 'localized pre-launch safety disclosure'
+require 'applyUiLanguage(document,uiLocale.value)' "$tmp/editor.js" 'language switch preserving editor fields'
+require 'export const UI_STRINGS' "$tmp/i18n.js" 'eight-language offline dictionary'
+require 'const RU={' "$tmp/i18n.js" 'Russian locale bundle'
+require 'const TH={' "$tmp/i18n.js" 'Thai locale bundle'
+require 'const ZH={' "$tmp/i18n.js" 'Chinese locale bundle'
+echo 'PASS: live canonical HTTPS site contains safe citations and eight-language Draft Lab interface assets.'
 echo 'This does NOT validate real-browser accessibility, Auth, RLS, public publishing or uptime.'

@@ -2,6 +2,7 @@
 
 import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, parseDraftFile, MAX_DRAFT_FILE_BYTES, formatDraftSelection } from './draft-lab-logic.js';
 import { renderMarkdownPreview } from './draft-lab-preview.js';
+import { applyUiLanguage,uiText } from './draft-lab-i18n.js';
 
 // Browser-only UX research prototype: no network, browser persistence or analytics.
 const field = id => document.getElementById(id);
@@ -11,7 +12,16 @@ const locale = field('postLocale');
 const category = field('postCategory');
 const source = field('postSource');
 const status = field('formStatus');
-const headings = { guides:'Guides', tools:'Tools', news:'News', models:'Models' };
+const ui=key=>uiText(field('uiLocale').value,key);
+const uiLocale=field('uiLocale');
+function refreshInterface(){
+  applyUiLanguage(document,uiLocale.value);
+  // Changing interface language never modifies the author's own draft,
+  // article language, selection, source, or reopened-file baseline.
+  preview();
+  message('');
+}
+uiLocale.addEventListener('change',refreshInterface);
 // A file selected by the user provides an authoritative in-tab baseline only.
 // Download requests and clipboard copy never silently change this baseline.
 let reopenedFileBaseline = null;
@@ -30,25 +40,25 @@ function updateSafetyNotice() {
   const note = field('draftSafety');
   const draft = currentDraft();
   if (!hasDraftContent(draft)) {
-    note.textContent = 'No draft content yet. Draft Lab never automatically saves your work.';
+    note.textContent = ui('safetyEmpty');
   } else if (hasUnexportedChanges(draft, reopenedFileBaseline)) {
-    note.textContent = 'Changes in this tab are not automatically saved. Check your exported .md file before leaving.';
+    note.textContent = ui('safetyDirty');
   } else {
-    note.textContent = 'Reopened file is unchanged. Any new edits must be exported again.';
+    note.textContent = ui('safetySame');
   }
 }
 
 function preview() {
   // textContent prevents user HTML or Markdown from executing.
-  field('previewHeading').textContent = title.value.trim() || 'Your title will appear here.';
-  renderMarkdownPreview(field('previewBody'), body.value.trim() || 'Begin writing to see your article preview.');
+  field('previewHeading').textContent = title.value.trim() || ui('emptyTitle');
+  renderMarkdownPreview(field('previewBody'), body.value.trim() || ui('emptyBody'));
   field('previewLocale').textContent = locale.value.toUpperCase();
-  field('previewCategory').textContent = headings[category.value] || 'Guides';
+  field('previewCategory').textContent = ui(['guides','tools','news','models'].includes(category.value)?category.value:'guides');
   field('bodyCount').textContent = body.value.length.toLocaleString('en-US') + ' / 12,000';
   const link = safeSourceUrl(source.value);
   const node = field('previewSource');
   node.hidden = !link;
-  node.textContent = link ? 'Source: ' + link : '';
+  node.textContent = link ? ui('sourcePrefix') + link : '';
   updateSafetyNotice();
 }
 
@@ -67,11 +77,11 @@ for(const [id,action] of [['formatHeading','heading'],['formatList','list'],
    body.focus();
    body.setSelectionRange(edit.selectionStart,edit.selectionEnd);
    preview();
-   message('Markdown formatting added locally. Export the .md file to keep it.');
+   message(ui('formatDone'));
   }catch(error){
    message(error instanceof RangeError
-    ? 'Formatting would exceed the 12,000-character article limit.'
-    : 'Choose a valid selection (headings and links must be one line).',true);
+    ? ui('formatLimit')
+    : ui('formatInvalid'),true);
   }
  });
 }
@@ -79,7 +89,11 @@ for(const [id,action] of [['formatHeading','heading'],['formatList','list'],
 function readyToExport() {
   const invalid = validateDraft(currentDraft());
   if (!invalid) return true;
-  message(invalid, true);
+  const fieldKey=invalid.startsWith('Enter a title')?'invalidTitle':
+    invalid.startsWith('Write between')?'invalidBody':
+    invalid.startsWith('Choose a supported language')?'invalidLocale':
+    invalid.startsWith('Choose a supported category')?'invalidCategory':'invalidSource';
+  message(ui(fieldKey), true);
   if (title.value.trim().length < 5) title.focus();
   else if (body.value.trim().length < 20) body.focus();
   else source.focus();
@@ -102,8 +116,8 @@ field('importDraftFile').addEventListener('change', async event => {
     // Reading a user-selected local file does not make a network request.
     const reopened = parseDraftFile(await file.text());
     if (hasDraftContent(currentDraft())
-      && !window.confirm('Opening this file replaces your current unsaved draft. Download it first if needed. Continue?')) {
-      message('Import cancelled. Your current draft was kept.');
+      && !window.confirm(ui('replaceConfirm'))) {
+      message(ui('replaceCanceled'));
       return;
     }
     title.value = reopened.title;
@@ -113,9 +127,9 @@ field('importDraftFile').addEventListener('change', async event => {
     source.value = reopened.source;
     reopenedFileBaseline = { ...reopened };
     preview();
-    message('Markdown draft opened locally. Nothing was uploaded. Export again to keep changes.');
+    message(ui('opened'));
   } catch {
-    message('Could not open this file. Choose a valid 24GOTOP Draft Lab .md export (64 KB maximum).', true);
+    message(ui('openError'),true);
   } finally {
     // Permit re-opening the same file after editing it.
     input.value = '';
@@ -136,27 +150,27 @@ field('downloadDraft').addEventListener('click', () => {
   anchor.remove();
   // The browser may still be using the Blob immediately after the click.
   setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
-  message('Download requested: ' + anchor.download + '. Nothing was published or uploaded.');
+  message(ui('downloadStarted') + anchor.download + ui('downloadSuffix'));
 });
 
 field('copyDraft').addEventListener('click', async () => {
   if (!readyToExport()) return;
   if (!navigator.clipboard?.writeText) {
-    message('Clipboard unavailable. Select and copy your text manually.', true);
+    message(ui('copyUnavailable'),true);
     return;
   }
   try {
     await navigator.clipboard.writeText(formatDraft(currentDraft()));
-    message('Draft copied. It has not been published or saved.');
+    message(ui('copied'));
   } catch {
-    message('Could not access the clipboard. Select and copy your text manually.', true);
+    message(ui('copyError'),true);
   }
 });
 
 field('clearDraft').addEventListener('click', () => {
   if (hasDraftContent(currentDraft())
-    && !window.confirm('This will discard the current draft in this tab. Download or copy it first if you want to keep it. Clear anyway?')) {
-    message('Draft kept. Nothing was erased.');
+    && !window.confirm(ui('clearConfirm'))) {
+    message(ui('clearCanceled'));
     return;
   }
   title.value = '';
@@ -166,7 +180,7 @@ field('clearDraft').addEventListener('click', () => {
   category.value = 'guides';
   reopenedFileBaseline = null;
   preview();
-  message('Draft cleared from this browser tab.');
+  message(ui('cleared'));
   title.focus();
 });
 
@@ -179,4 +193,4 @@ window.addEventListener('beforeunload', event => {
 });
 
 field('draftForm').addEventListener('submit', event => event.preventDefault());
-preview();
+refreshInterface();
