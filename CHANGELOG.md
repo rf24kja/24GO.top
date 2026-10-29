@@ -1,5 +1,11 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-29 — SDK development-key recipient isolation (PUBLIC OSS)
+
+- [PR #56](https://github.com/rf24kja/24GO.top/pull/56), merged as `00f83bbe79b7e728049f8554a003f5f7392230a4`, fixes a real public SDK credential-leak path: `TopClient.publishPost()` no longer sends the shared local development bearer token to **any remote HTTP or HTTPS hostname**, including misleading localhost-like domains. This aligns the SDK with the earlier local-only HTTP write gate from PR #52.
+- Read-only SDK requests to remote HTTPS endpoints still work and do not transmit development keys. Unit tests cover remote HTTPS, LAN, malformed lookalike hosts, and proper loopback behavior; OpenAPI now includes real local socket/Host/Origin constraints and the 403 error, with updated quickstart. PR and post-merge `main` checks both passed.
+- This is a development-token safeguard in the public MIT client, **not** verified Auth, a launched remote API, npm package or active user publication. No hosted Core, Supabase, DNS, VPS, secrets or production state was changed. Rollback: Git revert (restores unsafe key transmission and is not advised).
+
 This is the human-readable **history of verified changes**. Actual GitHub commits and merged Pull Requests are the authoritative audit trail. Planned capabilities are in [the roadmap](docs/ROADMAP.md), not represented as released features.
 
 We follow a lightweight **Keep a Changelog** format until a first tagged release. These are development milestones, not npm release versions or proof that the community is in production.
