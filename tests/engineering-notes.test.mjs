@@ -56,7 +56,7 @@ test('static RSS lists actual article with explicit source URL and valid publica
   assert.match(feed, /<title>24GOTOP Engineering Notes<\/title>/);
   assert.match(feed, /https:\/\/24go\.top\/engineering\/why-draft-lab-first\.html/);
   assert.match(feed, /<pubDate>Mon, 26 Oct 2026 00:00:00 GMT<\/pubDate>/);
-  assert.equal((feed.match(/<item>/g) || []).length, 5);
+  assert.equal((feed.match(/<item>/g) || []).length, 6);
   assert.match(feed, /https:\/\/24go\.top\/engineering\/markdown-preview-safety\.html/);
   assert.match(index, /Preview Markdown without executing author HTML/);
   assert.match(index, /Why we built a Draft Lab before opening public writes/);
@@ -106,6 +106,20 @@ test('owner confirmation stays separate from independent DNS, TLS and public API
   const d = readFileSync(fileURLToPath(new URL('../docs/DEPLOYMENT_STATUS.md',import.meta.url)), 'utf8');
   assert.match(d, /Founder reports that the HTTPS page opens successfully/);
   assert.match(d, /https:\/\/24go\.top\//);
-  assert.match(d, /Apex.*Not independently confirmed|Not independently confirmed.*Apex/is);
+  assert.match(d, /Apex.*redirect to HTTPS www/is);
   assert.match(d, /Public publishing.*Not implemented/is);
+});
+
+
+test('new JS SDK credential-safety article cites real public code without production claims',()=>{
+ const text=read('engineering/javascript-sdk-api-key-leak-prevention.html');
+ assert.match(text,/Prevent API key leaks in JavaScript SDKs/);
+ assert.match(text,/https:\/\/github\.com\/rf24kja\/24GO\.top\/pull\/56/);
+ assert.match(text,/packages\/sdk\/index\.mjs/);
+ assert.match(text,/tests\/sdk\.test\.mjs/);
+ assert.match(text,/assert\.equal\(calls, 0\)/);
+ assert.match(text,/not.*complete production SDK/i);
+ assert.doesNotMatch(text,/<script\b|sb_secret_|service_role|PUBLISH_API_KEY/i);
+ assert.match(index, /href="\.\/javascript-sdk-api-key-leak-prevention\.html"/);
+ assert.match(feed, /https:\/\/24go\.top\/engineering\/javascript-sdk-api-key-leak-prevention\.html/);
 });
