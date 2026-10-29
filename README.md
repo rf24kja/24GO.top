@@ -12,7 +12,7 @@
 
 **Owner-verified website:** [www.24go.top](https://www.24go.top/) opened successfully in the founder's browser on 26 October 2026. This does **not** verify the apex-domain redirect, uptime or public publishing functionality; see [deployment verification log](docs/DEPLOYMENT_STATUS.md).
 
-The static site now has [original engineering writing](site/engineering/index.html) supported by actual merged PRs, plus a [project RSS feed](site/engineering/feed.xml) for technical updates. These articles describe how the project is built; they are **not** user-submitted posts in a launched community.
+The static site now has [original engineering writing](site/engineering/index.html) supported by actual merged PRs, plus a [project RSS feed](site/engineering/feed.xml) for technical updates. These articles describe how the project is built; they are **not** user-submitted posts in a launched community. Newly published source-backed guides cover [multilingual Markdown editor safety](site/engineering/multilingual-markdown-editor-without-losing-drafts.html), [real GitHub Pages deployment verification](site/engineering/verify-github-pages-deploy-not-just-ci.html), and [safe citation links](site/engineering/safe-markdown-citation-links-without-xss.html). All are accessible in HTML, the canonical sitemap, and RSS. Search indexing and AI citations are not yet verified.
 
 ## Accessibility and reader feedback
 
