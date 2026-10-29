@@ -72,3 +72,7 @@ Caller cancellation and the SDK's 8-second default timeout remain independent. E
 Provide a reproducible setup report in [Issue #9](https://github.com/rf24kja/24GO.top/issues/9) or in [GitHub Discussions](https://github.com/rf24kja/24GO.top/discussions). Do not invent users, traffic, successful grants, or published SDK packages.
 
 **Rollback:** restoring the previous SDK file restores the old behavior; no database migration or production deployment is involved.
+
+## Contract stability and release guidance
+
+This is a source-only SDK example for the prototype API `0.1.0`, not an npm package. Until a tagged `1.0.0` stable contract exists, expect deliberate incompatibilities and use a specific Git commit when reproducing examples. For proposed Semantic Versioning and current error codes/validation, see [API.md](../API.md#explicit-versioning-policy-source-only-v01). No production version guarantee, agent credential protocol or `/v1` endpoint is implied.
