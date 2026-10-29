@@ -105,7 +105,8 @@ test('saved Markdown can be reopened through an explicit browser-only action',()
   assert.match(draftHtml, /Opening or refreshing|Closing or refreshing/);
   assert.match(draftJs, /parseDraftFile\(await file\.text\(\)\)/);
   assert.match(draftJs, /file\.size > MAX_DRAFT_FILE_BYTES/);
-  assert.match(draftJs, /window\.confirm\('Opening this file replaces your current unsaved draft/);
+  assert.match(draftJs, /window\.confirm\(ui\('replaceConfirm'\)\)/);
+  assert.match(readFileSync(fileURLToPath(new URL('../site/draft-lab-i18n.js',import.meta.url)),'utf8'),/Opening this file replaces your current unsaved draft/);
   assert.match(draftJs, /input\.value = ''/);
   assert.match(logic, /export function parseDraftFile/);
   assert.doesNotMatch(draftJs, /\bfetch\s*\(|XMLHttpRequest|sendBeacon|localStorage|sessionStorage|innerHTML/);
