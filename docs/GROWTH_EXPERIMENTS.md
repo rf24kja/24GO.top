@@ -73,6 +73,14 @@
 
 Before public user analytics ship: define a privacy notice, event schema, retention rules, bot filters and opt-out strategy. Track weekly hypotheses and results; do not optimize for fictional DAU/MAU.
 
+### EXP-007 — Original, citeable engineering research for SEO and AI discovery
+
+- **Hypothesis:** readers searching for practical implementation problems will value original source-backed explanations more than generic launch announcements.
+- **Published source in this release:** three articles about safe eight-language Markdown editors, independently verified GitHub Pages deployment, and safe Markdown hyperlinks. The production site still accepts no user-authored public posts.
+- **Distribution:** indexed-intent HTML pages with truthful schema.org Article markup, consistent canonical links, internal navigation, RSS and sitemap. Only voluntary ethical community sharing; no automated backlink spam or fake recommendations.
+- **Evidence and next test:** verify each static article's real HTTPS delivery after Pages publishes. With verified search properties, measure actual Google/Bing coverage and queries; with consent-aware analytics, measure genuine return visits. These are **not yet measured**.
+- **Decision rule:** after real reader feedback or indexing diagnostics, update useful answers and add further original work; do not publish repetitive AI-generated content just to hit a daily count. See [Editorial Search Discovery Plan](EDITORIAL_SEARCH_DISCOVERY_PLAN.md).
+
 ## Content cadence
 
 Post **only when there is a real event or insight**: a tested PR, a design tradeoff, a secure integration example or a relevant lesson. A light goal after beta is one useful technical update weekly plus genuine responses to relevant questions; quality outranks volume.
