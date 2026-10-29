@@ -1,5 +1,11 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-30 — Draft Lab safe citation links, public static release
+
+- Added a keyboard-accessible Link action in the browser-only Draft Lab that wraps selected text in Markdown `[label](https://example.org)` and selects the destination for editing, without submitting or storing any draft.
+- Extended the intentionally restricted Markdown preview to render only bounded, noncredentialed HTTP(S) citation anchors through safe DOM APIs, using `rel="noopener noreferrer ugc"`, `target="_blank"` and `referrerpolicy="no-referrer"`. Unsupported or unsafe syntax stays literal; code fences, untrusted HTML, and scripts remain inert.
+- Added tests for URL validation, malicious labels/schemes, toolbar keyboard-selection behavior, offline draft persistence boundaries, and public disclosure. Existing MIT code and static-only Pages workflow remain unchanged; no hosted publishing is enabled.
+
 ## 2026-10-29 — Markdown editing tools for technical authors
 
 - Added keyboard-accessible heading, list, quote and fenced-code insertion to the existing browser-only Draft Lab, with selection-aware edits, editable placeholders and existing live preview.
