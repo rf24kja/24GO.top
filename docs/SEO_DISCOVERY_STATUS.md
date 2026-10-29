@@ -50,3 +50,9 @@ A new [GitHub Pages domain settings audit](https://github.com/rf24kja/24GO.top/a
 ## Exact Pages remediation
 
 The confirmed settings/DNS evidence and step-by-step, owner-controlled fix are now collected in [DOMAIN_RECOVERY_RUNBOOK.md](DOMAIN_RECOVERY_RUNBOOK.md). This replaces speculation about paid IPv4 or missing DNS; only Pages `Custom domain` and `Enforce HTTPS` need owner review at this stage.
+
+## Verified Pages settings and canonical URLs — 2026-10-29
+
+The founder enabled correct Pages settings and our [configuration audit attempt 2](https://github.com/rf24kja/24GO.top/actions/runs/40882729744) returned **PASS**: `cname=24go.top`, `https_enforced=true`, `html_url=https://24go.top/`, approved certificate for both apex and www. [External content audit attempt 2](https://github.com/rf24kja/24GO.top/actions/runs/40881090465) returned **PASS** for all nine sitemap URLs, robots, RSS and final HTTP/www redirects to HTTPS apex. Earlier failures remain in original Actions logs as historical evidence, not current configuration. Redirect first-hop permanence and path/query preservation are additionally audited in the updated live script before closing [Issue #59](https://github.com/rf24kja/24GO.top/issues/59).
+
+Search Console or Bing index coverage, ranking positions and AI recommendation visibility are **not** established by these tests.

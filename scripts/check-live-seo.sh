@@ -55,7 +55,24 @@ for url in "${listed_urls[@]}"; do
   probe "$route" "page$item" "rel=\"canonical\" href=\"$url\""
 done
 
-for variant in 'https://www.24go.top/' 'http://24go.top/' 'http://www.24go.top/'; do
+# GitHub Pages may use intermediate redirects, but the initial canonical
+# redirect must be permanent. Verify the complete URL separately because
+# a correct root redirect can still drop article paths or query parameters.
+for variant in 'https://www.24go.top/' 'http://24go.top/' 'http://www.24go.top/' \
+  'https://www.24go.top/engineering/markdown-preview-safety.html?origin=seo-audit' \
+  'http://24go.top/engineering/markdown-preview-safety.html?origin=seo-audit'; do
+  if ! first="$(curl --silent --show-error --connect-timeout 10 --max-time 30 \
+    --retry 2 --retry-all-errors --retry-delay 3 --max-redirs 0 \
+    --output /dev/null --write-out '%{http_code}|%{redirect_url}' "$variant")"; then
+    echo "::error::Cannot inspect initial redirect for $variant"
+    failures=$((failures+1))
+    continue
+  fi
+  initial_status="${first%%|*}"
+  if [[ "$initial_status" != '301' && "$initial_status" != '308' ]]; then
+    echo "::error::Non-permanent redirect status $initial_status for $variant (expected 301 or 308)"
+    failures=$((failures+1))
+  fi
   if ! resolved="$(curl --fail --silent --show-error --location --max-redirs 5 \
     --retry 2 --retry-all-errors --retry-delay 3 --connect-timeout 10 --max-time 30 \
     --output /dev/null --write-out '%{url_effective}' "$variant")"; then
@@ -63,11 +80,15 @@ for variant in 'https://www.24go.top/' 'http://24go.top/' 'http://www.24go.top/'
     failures=$((failures+1))
     continue
   fi
-  if [[ "$resolved" != "$base/" ]]; then
-    echo "::error::Canonical redirect mismatch for $variant (reached $resolved)"
+  expected_target="$base/"
+  if [[ "$variant" == *'/engineering/markdown-preview-safety.html?origin=seo-audit' ]]; then
+    expected_target="$base/engineering/markdown-preview-safety.html?origin=seo-audit"
+  fi
+  if [[ "$resolved" != "$expected_target" ]]; then
+    echo "::error::Canonical redirect mismatch or lost URL path/query for $variant (reached $resolved)"
     failures=$((failures+1))
   else
-    echo "PASS redirect: $variant -> $resolved"
+    echo "PASS redirect: $variant -> $resolved (initial HTTP $initial_status)"
   fi
 done
 
