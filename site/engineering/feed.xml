@@ -4,11 +4,11 @@
 <link>https://24go.top/engineering/</link>
 <description>Source-backed articles about building the 24GOTOP AI-native knowledge platform. Early-stage development, not a live publishing community.</description>
 <language>en</language>
-<item><title>How to localize a Markdown editor without losing drafts</title>
-<link>https://24go.top/engineering/multilingual-markdown-editor-without-losing-drafts.html</link>
-<guid isPermaLink="true">https://24go.top/engineering/multilingual-markdown-editor-without-losing-drafts.html</guid>
-<description>Source-backed guide to eight-language UI controls, independent document language and preventing data loss when changing the editor interface.</description>
-<pubDate>Thu, 29 Oct 2026 23:05:00 GMT</pubDate>
+<item><title>How to render Markdown citation links without introducing XSS</title>
+<link>https://24go.top/engineering/safe-markdown-citation-links-without-xss.html</link>
+<guid isPermaLink="true">https://24go.top/engineering/safe-markdown-citation-links-without-xss.html</guid>
+<description>Evidence-led JavaScript example for safe URL validation, fixed DOM link nodes, untrusted author labels and hostile scheme rejection.</description>
+<pubDate>Thu, 29 Oct 2026 23:07:00 GMT</pubDate>
 </item>
 <item><title>How to verify a GitHub Pages deployment—not just green CI</title>
 <link>https://24go.top/engineering/verify-github-pages-deploy-not-just-ci.html</link>
@@ -16,11 +16,11 @@
 <description>A real failed-and-passed external HTTPS smoke test, its GitHub Actions scheduling race and a safe read-only post-Pages workflow.</description>
 <pubDate>Thu, 29 Oct 2026 23:06:00 GMT</pubDate>
 </item>
-<item><title>How to render Markdown citation links without introducing XSS</title>
-<link>https://24go.top/engineering/safe-markdown-citation-links-without-xss.html</link>
-<guid isPermaLink="true">https://24go.top/engineering/safe-markdown-citation-links-without-xss.html</guid>
-<description>Evidence-led JavaScript example for safe URL validation, fixed DOM link nodes, untrusted author labels and hostile scheme rejection.</description>
-<pubDate>Thu, 29 Oct 2026 23:07:00 GMT</pubDate>
+<item><title>How to localize a Markdown editor without losing drafts</title>
+<link>https://24go.top/engineering/multilingual-markdown-editor-without-losing-drafts.html</link>
+<guid isPermaLink="true">https://24go.top/engineering/multilingual-markdown-editor-without-losing-drafts.html</guid>
+<description>Source-backed guide to eight-language UI controls, independent document language and preventing data loss when changing the editor interface.</description>
+<pubDate>Thu, 29 Oct 2026 23:05:00 GMT</pubDate>
 </item>
 <item><title>Prevent API key leaks in JavaScript SDKs: why HTTPS alone is not enough</title>
 <link>https://24go.top/engineering/javascript-sdk-api-key-leak-prevention.html</link>
