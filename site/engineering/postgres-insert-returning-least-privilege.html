@@ -6,9 +6,9 @@
 <meta property="og:description" content="How a permission error in a disposable PostgreSQL CI test helped preserve a truly insert-only role.">
 <title>INSERT succeeds, RETURNING fails — 24GOTOP</title>
 <link rel="canonical" href="https://24go.top/engineering/postgres-insert-returning-least-privilege.html">
-<link rel="stylesheet" href="./notes.css"><link rel="alternate" type="application/rss+xml" title="24GOTOP engineering notes" href="./feed.xml">
-</head><body><header><nav class="wrap" aria-label="Main navigation"><a class="brand" href="../">24GO<span>TOP</span></a><div class="navlinks"><a href="./">Engineering notes</a><a href="../progress.html">Development timeline</a><a href="https://github.com/rf24kja/24GO.top/issues/38">Security tests ↗</a></div></nav></header>
-<main class="wrap"><article class="article">
+<link rel="stylesheet" href="./notes.css"><link rel="stylesheet" href="../interior.css"><link rel="alternate" type="application/rss+xml" title="24GOTOP engineering notes" href="./feed.xml">
+</head><body><a class="skip" href="#main-content">Skip to article content</a><header class="interior-header"><nav class="wrap interior-nav" aria-label="Main navigation"><a class="interior-brand" href="../" aria-label="24GOTOP home">24GO<span>TOP</span><span class="interior-brand__dot" aria-hidden="true"></span></a><div class="interior-links"><a href="../">Home</a><a href="./">Articles</a><a href="../draft-lab.html">Draft Lab</a><a href="../progress.html">Development</a><a href="https://github.com/rf24kja/24GO.top">GitHub ↗</a></div></nav></header>
+<main class="wrap" id="main-content" tabindex="-1"><article class="article">
 <span class="eyebrow">Engineering note · 26 October 2026 · PostgreSQL security</span>
 <h1>INSERT succeeds, RETURNING fails: a least-privilege lesson</h1>
 <p class="lead">A database test can fail for the right reason. When we exercised a tightly scoped insert-only role in disposable PostgreSQL 17 CI, a convenient <code>RETURNING</code> clause requested a permission the role was deliberately designed not to have.</p>
@@ -58,4 +58,4 @@ SELECT has_column_privilege(
 <blockquote>A failed permission check can be the proof that your security boundary is working.</blockquote>
 <p class="source">References: <a href="https://www.postgresql.org/docs/17/sql-insert.html">PostgreSQL 17 INSERT — required privileges</a>, <a href="./submit-is-not-publish.html">Submit for review is not publish</a> and the <a href="https://github.com/rf24kja/24GO.top/blob/main/docs/ROADMAP.md">24GOTOP roadmap</a>. Static source publication does not establish that the article is reachable on the live domain; deployment is verified separately.</p>
 <p><a class="cta" href="https://github.com/rf24kja/24GO.top/issues/38">Suggest a security regression test ↗</a></p>
-</article></main><footer><div class="wrap">24GOTOP · Original engineering notes · <a href="./">All notes</a> · <a href="https://github.com/rf24kja/24GO.top">GitHub</a></div></footer></body></html>
+</article></main><footer class="interior-footer"><div class="wrap">24GOTOP · Original engineering notes · <a href="./">All notes</a> · <a href="https://github.com/rf24kja/24GO.top">GitHub</a></div></footer></body></html>
