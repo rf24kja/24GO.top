@@ -103,3 +103,12 @@ test('reduced-motion, coarse pointers and no Observer remain safely static',()=>
  assert.ok(noObserver.listeners.pointermove);
  assert.equal(noObserver.classNames.has('motion-ready'),false);
 });
+
+
+test('cursor aura remains an understated highlight in both system themes',()=>{
+ assert.match(css,/radial-gradient\(360px circle at var\(--glow-x\) var\(--glow-y\),rgba\(89,217,163,\.038\),rgba\(89,217,163,\.012\) 42%,transparent 72%\)/);
+ assert.match(css,/radial-gradient\(360px circle at var\(--glow-x\) var\(--glow-y\),rgba\(0,124,73,\.022\),transparent 72%\)/);
+ assert.doesNotMatch(css,/radial-gradient\(520px circle at var\(--glow-x\)/);
+ assert.match(css,/@media\(prefers-contrast:more\)[\s\S]*?\.site-grid__glow\{display:none\}/);
+ assert.match(css,/@media\(prefers-reduced-motion:reduce\)[\s\S]*?\.site-grid__glow\{display:none\}/);
+});
