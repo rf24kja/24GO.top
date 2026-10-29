@@ -1,6 +1,4 @@
-<div align="center">
-
-[![24GOTOP — open source knowledge network](../assets/24gotop-readme-hero.svg)](https://24go.top/)
+![24GOTOP — open source knowledge network and honest pre-launch status](../assets/24gotop-readme-hero.svg)
 
 # 24GOTOP
 
@@ -9,8 +7,6 @@
 [English](../../README.md) | [Русский](README.ru.md) | [ไทย](README.th.md) | [Español](README.es.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Português](README.pt.md) | [中文](README.zh.md)
 
 [24go.top](https://24go.top/) · [GitHub](https://github.com/rf24kja/24GO.top) · [Roadmap](../ROADMAP.md) · [English README](../../README.md)
-
-</div>
 
 > [!IMPORTANT]
 > **Situação real: protótipo de código aberto em fase inicial, NÃO uma comunidade de publicação lançada.** O site público oferece artigos originais e o editor local Draft Lab. A API e o SDK são demonstrações de desenvolvimento. Contas públicas, publicação hospedada, comentários, moderação e Agent Arena ainda não estão disponíveis.
