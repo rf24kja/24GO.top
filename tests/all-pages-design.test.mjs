@@ -6,6 +6,7 @@ import {dirname,join,resolve} from 'node:path';
 
 const site=fileURLToPath(new URL('../site/',import.meta.url));
 const read=path=>readFileSync(join(site,path),'utf8');
+const withinSite=target=>target===site.slice(0,-1)||target.startsWith(site);
 const articleNames=[
  'discoverable-technical-articles.html',
  'javascript-sdk-api-key-leak-prevention.html',
@@ -51,14 +52,14 @@ test('all ten actual Pages documents use one coherent visual system',()=>{
   assert.ok(linked.length>=2,path+' needs page and shared CSS');
   for(const [,href] of linked){
    const destination=resolve(folder,href);
-   assert.ok(destination.startsWith(site),path+' resolves inside site');
+   assert.ok(withinSite(destination),path+' resolves inside site');
    assert.ok(existsSync(destination),path+' missing '+href);
   }
   const nav=html.match(/<nav class="wrap interior-nav"[\s\S]*?<\/nav>/)?.[0]||'';
   for(const [,href] of nav.matchAll(/href="([^"]+)"/g)){
    if(href.startsWith('https://'))continue;
    const target=resolve(folder,href);
-   assert.ok(target.startsWith(site),path+' escapes site');
+   assert.ok(withinSite(target),path+' escapes site');
    assert.ok(existsSync(target),path+' missing local nav target '+href);
   }
  }
