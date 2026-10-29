@@ -1,5 +1,12 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-29 — Original JavaScript SDK credential-leak prevention case study
+
+- New evergreen English engineering guide illustrates a real public PR #56 security boundary, specific test input, safe recipient validation and honest prototype limitations. Published as static HTML and linked in the home page, engineering index, RSS, sitemap and optional llms.txt; no private code or credentials.
+- Unit tests updated to cover six actual engineering notes, nine sitemap URLs and full internal navigation consistency. No mock rankings, fake authors or synthetic backlinks.
+- Independent external GitHub runner verified that `https://24go.top/` redirects to HTTPS `www.24go.top`, contradicting approved apex canonicals; Issue #59 remains open pending separately authorized DNS/Pages settings review. No DNS change in this PR.
+
+
 ## 2026-10-29 — Source-only search and AI discovery foundation
 
 - Prepared root-level `robots.txt` and eight canonical URLs in `sitemap.xml` for the founder-approved `https://24go.top` origin. Explicitly excluded Draft Lab because it remains `noindex,follow`.

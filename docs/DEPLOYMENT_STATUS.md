@@ -6,7 +6,7 @@
 | --- | --- | --- |
 | Repository | Public source and CI in `rf24kja/24GO.top` | GitHub PRs, Actions and tests |
 | Static landing, `https://www.24go.top/` | **Founder reports that the HTTPS page opens successfully in their browser** | Direct owner confirmation on 26 Oct 2026; independent automated request did not return inspectable content |
-| Apex `https://24go.top/` | **Not independently confirmed** | DNS, redirect and certificate need a separate check; do not assert apex-to-www or www-to-apex behavior |
+| Apex `https://24go.top/` | **Externally observed to redirect to HTTPS www on 29 Oct** | [GitHub-hosted live check #40879899999](https://github.com/rf24kja/24GO.top/actions/runs/40879899999) followed the apex to `https://www.24go.top/`. Exact redirect status, canonical indexing and all subpaths require further checks. |
 | Draft Lab, `/draft-lab.html` | Source committed and browser-only logic tested | Browser/HTTPS reachability and mobile behavior not independently verified |
 | Engineering notes, `/engineering/` | Static page and RSS prepared in a reviewable PR | Must verify after Pages deploy; no live content URL claim until then |
 | Public publishing / login | **Not implemented** | The site's public landing is not the Node.js API and does not accept user posts |

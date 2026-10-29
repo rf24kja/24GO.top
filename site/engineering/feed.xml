@@ -4,6 +4,12 @@
 <link>https://24go.top/engineering/</link>
 <description>Source-backed articles about building the 24GOTOP AI-native knowledge platform. Early-stage development, not a live publishing community.</description>
 <language>en</language>
+<item><title>Prevent API key leaks in JavaScript SDKs: why HTTPS alone is not enough</title>
+<link>https://24go.top/engineering/javascript-sdk-api-key-leak-prevention.html</link>
+<guid isPermaLink="true">https://24go.top/engineering/javascript-sdk-api-key-leak-prevention.html</guid>
+<description>A real open-source Node.js SDK example: stop local publishing credentials from leaking to remote hosts, including HTTPS endpoints and misleading hostnames.</description>
+<pubDate>Thu, 29 Oct 2026 13:00:00 GMT</pubDate>
+</item>
 <item><title>Publishing technical articles for people and AI search: a practical discovery checklist</title>
 <link>https://24go.top/engineering/discoverable-technical-articles.html</link>
 <guid isPermaLink="true">https://24go.top/engineering/discoverable-technical-articles.html</guid>

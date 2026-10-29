@@ -5,7 +5,7 @@
 ## Source-verified assets
 - Canonical policy: https://24go.top (the founder-selected canonical origin; production DNS/HTTPS still requires external verification).
 - Public root `site/robots.txt`, XML sitemap `site/sitemap.xml`, optional `site/llms.txt` (not an SEO ranking mechanism).
-- Editorial `site/engineering/`: five original static technical notes, metadata, HTML navigation, RSS, unique canonical URLs.
+- Editorial `site/engineering/`: six original static technical notes, metadata, HTML navigation, RSS, unique canonical URLs.
 - The experimental `site/draft-lab.html` intentionally retains its `noindex,follow` metadata and is excluded from sitemap.
 - No fake translations, unverified `hreflang`, invented review stars, paid backlinks, synthetic traffic or fake public publishing API.
 
@@ -25,3 +25,9 @@ Official evidence: https://developers.google.com/search/docs/crawling-indexing/s
 The new [External SEO availability audit](https://github.com/rf24kja/24GO.top/actions/workflows/seo-live.yml) uses a GitHub-hosted Linux runner to verify DNS/TLS and HTTP delivery of the actual canonical `https://24go.top` pages, sitemap, robots and RSS, plus permanent-host routing expectations from www and HTTP variants. It is read-only, on-demand + scheduled daily, with short bounded retries, no credentials and no paid monitoring services.
 
 **A green run is evidence that these public URLs responded from that runner at that time, not that Google/Bing indexed them or AI systems recommend them.** If the check is red, preserve its log and review [Issue #59](https://github.com/rf24kja/24GO.top/issues/59) before changing DNS/HTTPS/Pages settings. The check intentionally fails for a wrong www/apex redirect or unexpected canonical, rather than silently passing by accepting a duplicate host. In particular, the GitHub Pages deployment's `http://www.24go.top/` reported environment URL needs independent confirmation.
+
+## Source-backed API credential article — 2026-10-29
+
+- Added `javascript-sdk-api-key-leak-prevention.html` with a reproducible local SDK key-recipient test, strictly tied to public PR #56 and existing JavaScript SDK tests. No private code, real API keys or production Auth claims.
+- Added index/home navigation, RSS entry, canonical and XML sitemap location. The article is editorial static HTML, not a user-created hosted post.
+- Independent GitHub-hosted HTTP audit on commit `42adc9ab0275d8f169f416cbea9480dd2f1e549d` observed that `https://24go.top/` **redirects to `https://www.24go.top/`**, contradicting the approved apex canonical. See [failure run](https://github.com/rf24kja/24GO.top/actions/runs/40879899999) and [Issue #59](https://github.com/rf24kja/24GO.top/issues/59). No domain settings changed. This is a demonstrable canonical mismatch, not a claim that the HTTPS site is globally down.
