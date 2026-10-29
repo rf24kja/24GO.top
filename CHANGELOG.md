@@ -1,5 +1,12 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-30 — International GitHub README and original architecture graphics
+
+- Rebuilt the root GitHub README as an accessible, practical project landing: honest pre-launch disclosures, featured original engineering guides, public vs private vs future product map, verified developer quickstart, contribution paths, security/IP rights and links to the actual website, RSS, changelog and delivery evidence.
+- Created two self-contained, optimized graphite/emerald SVG illustrations (brand hero and three-lane architecture infographic), with descriptive titles/alt text and no remote dependencies, scripts, animations or external assets.
+- Added independently navigable README translations for RU, TH, ES, FR, DE, PT and ZH, alongside canonical English; each includes a substantial project overview, working links, local setup and release disclaimers. Translation quality needs real native-speaker review, tracked separately.
+- Added structural tests for eight-language navigation, all local links, SVG safety, real product status and developer commands; documented a maintainable translation workflow in `docs/README_LOCALIZATION_GUIDE.md`. This is GitHub documentation only; no hosted community launch, new domain, Supabase write, secret or paid service.
+
 ## 2026-10-30 — Three original, source-backed engineering articles for SEO and AI discovery
 
 - Added three original English technical guides: independent interface/document localization in Markdown editors (public PR #81), GitHub Pages live verification and deployment race (PRs #79/#82), and safe DOM citation hyperlinks (PR #78). Each includes a reproducible lesson, source and test links, explicit limits, self-canonical, OG metadata and visible publication date with supported `Article` JSON-LD.
