@@ -9,6 +9,38 @@ const RULE = /^ {0,3}(?:(?:-\s*){3,}|(?:\*\s*){3,}|(?:_\s*){3,})$/;
 const QUOTE = /^ {0,3}> ?(.*)$/;
 const LIST = /^ {0,3}([-*+]|\d+[.)])\s+(.+)$/;
 
+// Limited user-authored citation links. Never interpret raw HTML or image Markdown.
+const CITATION=/\[([^\[\]\n]{1,200})\]\((https?:\/\/[^<>\s()\\]{1,1500})\)/g;
+export function safeCitationUrl(raw){
+ if(typeof raw!=='string'||raw.length>1500)return null;
+ try{
+  const url=new URL(raw);
+  return ['https:','http:'].includes(url.protocol)&&url.hostname&&
+    !url.username&&!url.password&&url.href.length<=2048?url.href:null;
+ }catch{return null;}
+}
+function setInline(node,text,doc){
+ const parts=[];
+ let offset=0,hasLink=false;
+ for(const match of text.matchAll(CITATION)){
+  const safe=safeCitationUrl(match[2]);
+  if(!safe)continue;
+  if(match.index>offset)parts.push(doc.createTextNode(text.slice(offset,match.index)));
+  const link=doc.createElement('a');
+  link.textContent=match[1];
+  link.setAttribute('href',safe);
+  link.setAttribute('rel','noopener noreferrer ugc');
+  link.setAttribute('target','_blank');
+  link.setAttribute('referrerpolicy','no-referrer');
+  parts.push(link);
+  offset=match.index+match[0].length;
+  hasLink=true;
+ }
+ if(!hasLink){node.textContent=text;return;}
+ if(offset<text.length)parts.push(doc.createTextNode(text.slice(offset)));
+ node.append(...parts);
+}
+
 function startsBlock(line) {
   return FENCE.test(line) || HEADING.test(line) || RULE.test(line)
     || QUOTE.test(line) || LIST.test(line);
@@ -103,20 +135,20 @@ export function renderMarkdownPreview(container, markdown, doc = document) {
       case 'heading':
         // The article title is already an H3; keep a meaningful heading hierarchy.
         node = doc.createElement('h' + (block.level + 3));
-        node.textContent = block.text;
+        setInline(node,block.text,doc);
         break;
       case 'rule':
         node = doc.createElement('hr');
         break;
       case 'quote':
         node = doc.createElement('blockquote');
-        node.textContent = block.text;
+        setInline(node,block.text,doc);
         break;
       case 'list':
         node = doc.createElement(block.ordered ? 'ol' : 'ul');
         for (const item of block.items) {
           const li = doc.createElement('li');
-          li.textContent = item;
+          setInline(li,item,doc);
           node.append(li);
         }
         break;
@@ -129,7 +161,7 @@ export function renderMarkdownPreview(container, markdown, doc = document) {
       }
       default:
         node = doc.createElement('p');
-        node.textContent = block.text;
+        setInline(node,block.text,doc);
     }
     nodes.push(node);
   }
