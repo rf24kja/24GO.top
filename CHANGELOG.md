@@ -1,5 +1,12 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-29 — Draft Lab design consistency and editor accessibility
+
+- Matched the existing browser-only Draft Lab with the public graphite/emerald editorial design: a calm 48px architectural grid, consistent subdued surfaces, native system light/dark contrast and readable input/preview/code colors.
+- Added keyboard skip-to-editor, clear navigation to the public articles, a translucent sticky desktop header and mobile/contrast/reduced-motion adaptations. The editor retains all original copy, controls, export/import behavior and explicit non-publishing disclosure.
+- Static-only CSS/HTML and source assertions; no cursor motion in the writing workspace, dependencies, external requests, persistent storage, account claims or private hosted-Core code. No DNS, Supabase, VPS or billing changes.
+
+
 ## 2026-10-29 — Discoverable engineering archive with local article filtering
 
 - Added progressive, no-network search by title/summary across six static source-backed engineering notes. Search UI appears only when JavaScript initializes, keeping the entire catalogue readable/crawlable with JS disabled. Results count uses an ARIA live region and Escape clears the query.
