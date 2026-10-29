@@ -1,0 +1,30 @@
+name: External SEO availability audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/seo-live.yml"
+      - "scripts/check-live-seo.sh"
+  workflow_dispatch:
+  schedule:
+    # Daily independent GitHub-hosted runner check; no crawler/index claim.
+    - cron: "17 2 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  check-public-site:
+    name: Check public DNS, TLS, canonical and content
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - name: Checkout read-only
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Static shell syntax
+        run: bash -n scripts/check-live-seo.sh
+      - name: Probe real public website without secrets
+        run: bash scripts/check-live-seo.sh

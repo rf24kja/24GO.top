@@ -19,3 +19,9 @@
 Official evidence: https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap and https://developers.openai.com/api/docs/bots.
 
 **Environment note:** Direct HTTP/DNS verification was unavailable from the assistant runtime, including unrelated sites; do not mistake that constraint for proof of the domain's global outage. No DNS or Pages settings were modified.
+
+## External crawlability verification workflow — 2026-10-29
+
+The new [External SEO availability audit](https://github.com/rf24kja/24GO.top/actions/workflows/seo-live.yml) uses a GitHub-hosted Linux runner to verify DNS/TLS and HTTP delivery of the actual canonical `https://24go.top` pages, sitemap, robots and RSS, plus permanent-host routing expectations from www and HTTP variants. It is read-only, on-demand + scheduled daily, with short bounded retries, no credentials and no paid monitoring services.
+
+**A green run is evidence that these public URLs responded from that runner at that time, not that Google/Bing indexed them or AI systems recommend them.** If the check is red, preserve its log and review [Issue #59](https://github.com/rf24kja/24GO.top/issues/59) before changing DNS/HTTPS/Pages settings. The check intentionally fails for a wrong www/apex redirect or unexpected canonical, rather than silently passing by accepting a duplicate host. In particular, the GitHub Pages deployment's `http://www.24go.top/` reported environment URL needs independent confirmation.
