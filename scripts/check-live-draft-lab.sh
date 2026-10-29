@@ -47,5 +47,27 @@ require 'export const UI_STRINGS' "$tmp/i18n.js" 'eight-language offline diction
 require 'const RU={' "$tmp/i18n.js" 'Russian locale bundle'
 require 'const TH={' "$tmp/i18n.js" 'Thai locale bundle'
 require 'const ZH={' "$tmp/i18n.js" 'Chinese locale bundle'
+# Verify the newly published HTML articles and their discovery surfaces
+# after Pages completes. Do not mistake a successful Git merge for CDN delivery.
+download "$origin/engineering/" "$tmp/articles.html"
+download "$origin/engineering/feed.xml" "$tmp/feed.xml"
+download "$origin/sitemap.xml" "$tmp/sitemap.xml"
+download "$origin/robots.txt" "$tmp/robots.txt"
+require 'Sitemap: https://24go.top/sitemap.xml' "$tmp/robots.txt" 'canonical sitemap discovery'
+for article in \
+  multilingual-markdown-editor-without-losing-drafts \
+  verify-github-pages-deploy-not-just-ci \
+  safe-markdown-citation-links-without-xss; do
+  download "$origin/engineering/$article.html" "$tmp/$article.html"
+  require "https://24go.top/engineering/$article.html" "$tmp/$article.html" 'article canonical'
+  require 'type="application/ld+json"' "$tmp/$article.html" 'Article JSON-LD'
+  require "href=\"./$article.html\"" "$tmp/articles.html" 'crawlable archive link'
+  require "<loc>https://24go.top/engineering/$article.html</loc>" "$tmp/sitemap.xml" 'sitemap entry'
+  require "<link>https://24go.top/engineering/$article.html</link>" "$tmp/feed.xml" 'RSS entry'
+done
+require 'https://github.com/rf24kja/24GO.top/pull/81' "$tmp/multilingual-markdown-editor-without-losing-drafts.html" 'verified i18n PR source'
+require 'https://github.com/rf24kja/24GO.top/pull/82' "$tmp/verify-github-pages-deploy-not-just-ci.html" 'verified deployment PR source'
+require 'https://github.com/rf24kja/24GO.top/pull/78' "$tmp/safe-markdown-citation-links-without-xss.html" 'verified safe Markdown PR source'
+echo 'PASS: canonical HTTPS article pages, archive, RSS, sitemap and source evidence were publicly fetched.'
 echo 'PASS: live canonical HTTPS site contains safe citations and eight-language Draft Lab interface assets.'
 echo 'This does NOT validate real-browser accessibility, Auth, RLS, public publishing or uptime.'
