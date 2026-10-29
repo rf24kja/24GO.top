@@ -1,15 +1,17 @@
 # 24GOTOP — verified GitHub Pages domain recovery
 
-**Date:** 2026-10-29. **Status:** REQUIRES OWNER SETTINGS ACTION. No DNS or Pages setting was changed by this document.
+**Date:** 2026-10-29. **Status: RESOLVED, independently verified.** The founder changed only GitHub Pages custom domain/HTTPS settings. No Namecheap SSL purchase or DNS changes were needed.
 
-## Verified root cause (read-only evidence)
+[Pages configuration run attempt 2](https://github.com/rf24kja/24GO.top/actions/runs/40882729744): **PASS**, `cname=24go.top`, `https_enforced=true`, approved two-domain certificate. [Live canonical and permanent redirect audit #40886701790](https://github.com/rf24kja/24GO.top/actions/runs/40886701790): **PASS** all nine sitemap pages, RSS, robots, root 301 redirections and article path/query preservation. [Issue #59](https://github.com/rf24kja/24GO.top/issues/59): closed as completed.
+
+## Historical root cause — before the owner fixed Pages
 
 - Live [full sitemap audit](https://github.com/rf24kja/24GO.top/actions/runs/40881090465) confirmed all **nine** sitemap-listed pages, `/robots.txt` and RSS are accessible over HTTPS and return expected content. Every apex HTTPS request redirects to the www subdomain; HTTP variants terminate on HTTP www rather than upgrading.
 - The [GitHub Pages settings API audit](https://github.com/rf24kja/24GO.top/actions/runs/40882729744) confirms `cname = www.24go.top`, `https_enforced = false`, `html_url = http://www.24go.top/`, and `https_certificate.state = approved`. The certificate covers **both** `www.24go.top` and `24go.top`.
 - GitHub-hosted DNS lookups confirmed all four official Pages apex A addresses: `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`. The www CNAME is `rf24kja.github.io.`.
 - Approved canonical policy remains `https://24go.top`. No provider changes or paid purchases are required based on current evidence. Do **not** alter registrar DNS or production infrastructure as a first fix.
 
-## Minimal owner-controlled settings change
+## Recovery steps performed by the owner (historical, no action needed)
 
 1. Keep a screenshot or written note of existing GitHub Pages settings and current DNS records for rollback.
 2. Open https://github.com/rf24kja/24GO.top/settings/pages while signed in as an administrator.
@@ -18,14 +20,14 @@
 5. When the **Enforce HTTPS** control is available, enable it. If it cannot be enabled, do not disable TLS checks or issue insecure redirects; inspect Pages errors and certificate/DNS status first.
 6. Re-run both [Pages settings audit](https://github.com/rf24kja/24GO.top/actions/workflows/pages-settings-audit.yml) and [external SEO availability audit](https://github.com/rf24kja/24GO.top/actions/workflows/seo-live.yml) manually through **Run workflow** on `main`.
 
-## Definition of done
+## Verified acceptance criteria (complete on 2026-10-29)
 
 - `https://24go.top/` serves the homepage directly with valid TLS.
 - `https://www.24go.top/`, `http://24go.top/`, and `http://www.24go.top/` ultimately redirect to `https://24go.top/`, preserving paths and query strings.
 - GitHub Pages API reports `cname=24go.top`, `https_enforced=true`, and a valid certificate covering the apex.
 - All nine URLs listed in `https://24go.top/sitemap.xml`, plus `robots.txt` and the engineering RSS feed, are externally reachable without authentication, HTTP errors or canonical drift.
-- Record HTTP redirect chain and exact response codes (ideally permanent 301/308) before closing [Issue #59](https://github.com/rf24kja/24GO.top/issues/59).
-- **After** the routing issue is corrected, verify site ownership and sitemap status in Google Search Console and Bing Webmaster Tools. This does not guarantee indexing or rankings.
+- The independent [post-fix audit #40886701790](https://github.com/rf24kja/24GO.top/actions/runs/40886701790) confirmed the tested initial redirects are HTTP **301** and preserve article path/query; [Issue #59](https://github.com/rf24kja/24GO.top/issues/59) was closed with evidence.
+- **Next separate task:** verify site ownership and sitemap status in Google Search Console and Bing Webmaster Tools. That has **not** been confirmed and is not part of the completed HTTPS issue.
 
 ## Safety and rollback
 

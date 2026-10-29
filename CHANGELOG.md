@@ -1,5 +1,12 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-29 — HTTPS apex and permanent redirects independently verified
+
+- The owner changed GitHub Pages custom domain to `24go.top` and enabled `Enforce HTTPS`; [official settings audit attempt 2](https://github.com/rf24kja/24GO.top/actions/runs/40882729744) passed with an approved certificate for both apex and www.
+- [PR #70](https://github.com/rf24kja/24GO.top/pull/70) expanded external SEO verification to first-hop permanent redirects and preservation of article paths/query parameters. [Post-merge full external audit #40886701790](https://github.com/rf24kja/24GO.top/actions/runs/40886701790) and [Node CI #40886702093](https://github.com/rf24kja/24GO.top/actions/runs/40886702093) passed. Nine sitemap pages, RSS and robots served correct canonical HTTPS content; checked HTTP/www redirects are 301.
+- [Issue #59](https://github.com/rf24kja/24GO.top/issues/59) closed as completed, with GitHub Actions evidence. No paid SSL or registrar DNS changes. Google/Bing indexing and AI-search citation metrics remain unverified.
+
+
 ## 2026-10-29 — Independent crawlability evidence and full sitemap monitoring
 
 - [PR #60](https://github.com/rf24kja/24GO.top/pull/60) added a secret-free daily/on-demand GitHub-hosted external SEO audit; [PR #61](https://github.com/rf24kja/24GO.top/pull/61) made it inspect every route even after a wrong redirect; [PR #63](https://github.com/rf24kja/24GO.top/pull/63) upgraded it to verify every sitemap-listed article and self-canonical tag.

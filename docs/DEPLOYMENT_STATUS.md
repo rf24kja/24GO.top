@@ -1,34 +1,32 @@
 # 24GOTOP public deployment — verification log
 
-**Maintainer record, 2026-10-26.** This log distinguishes code merges, GitHub Actions output, owner observations and independent external checks. It is not an uptime guarantee.
+**Maintainer record, updated 2026-10-29.** This log distinguishes code merges, GitHub Actions output, owner observations and independent external checks. It is not an uptime guarantee.
 
 | Area | What is confirmed | Evidence / verification boundary |
 | --- | --- | --- |
 | Repository | Public source and CI in `rf24kja/24GO.top` | GitHub PRs, Actions and tests |
-| Static landing, `https://www.24go.top/` | **Founder reports that the HTTPS page opens successfully in their browser**; external runner verified content on 29 Oct | Owner observation 26 Oct and [independent GitHub Action](https://github.com/rf24kja/24GO.top/actions/runs/40881090465) on 29 Oct. Not evidence of Google indexation. |
-| Apex `https://24go.top/` | **Externally observed to redirect to HTTPS www on 29 Oct** | [Full GitHub-hosted audit #40881090465](https://github.com/rf24kja/24GO.top/actions/runs/40881090465) followed all nine sitemap URLs to `https://www.24go.top/`; both HTTP root variants ended on `http://www.24go.top/` instead of HTTPS. Redirect HTTP status code, domain/provider repair and Google/Bing indexation require separate verification. |
+| Canonical landing, `https://24go.top/` | **Externally verified HTTPS main domain with owner-enabled enforcement** | [Pages audit attempt 2](https://github.com/rf24kja/24GO.top/actions/runs/40882729744) and [permanent redirects audit](https://github.com/rf24kja/24GO.top/actions/runs/40886701790). Google indexing is not yet confirmed. |
+| Other site origins | **HTTP/www variants permanently redirect to `https://24go.top/`** | [External audit #40886701790](https://github.com/rf24kja/24GO.top/actions/runs/40886701790): initial HTTP 301, correct final target; sampled article URL retains path and query. |
 | Draft Lab, `/draft-lab.html` | Source committed and browser-only logic tested | Browser/device verification not independently completed; intentionally noindex and excluded from sitemap |
-| Engineering notes, `/engineering/` | **Independent external HTTPS content verified**, including RSS and six source-backed notes | [Full GitHub-hosted audit #40881090465](https://github.com/rf24kja/24GO.top/actions/runs/40881090465) validated every sitemap page and its canonical tag; all requests currently redirect apex → www, contrary to intended canonical. No Google indexing proof. |
+| Engineering notes, `/engineering/` | **Six source-backed HTML articles, RSS and nine-item sitemap externally verified on canonical apex** | [Post-fix live audit #40886701790](https://github.com/rf24kja/24GO.top/actions/runs/40886701790). Search rankings and index coverage still unverified. |
 | Public publishing / login | **Not implemented** | The site's public landing is not the Node.js API and does not accept user posts |
 | Privacy and analytics | No site-side analytics are claimed | GitHub Pages/provider/server logs may still exist; do not claim zero network metadata collection |
 
 ## What the owner can verify without changing DNS
 
-1. In a private browser window, open `https://www.24go.top/` and inspect HTTPS/certificate.
-2. Open `https://www.24go.top/draft-lab.html`, test typing, local Markdown download and Clear cancellation.
-3. After the corresponding GitHub Pages deployment succeeds, open `https://www.24go.top/engineering/` and its article and RSS links.
-4. Open `https://24go.top/` separately; record whether it loads, and if redirects occur, capture the actual final URL.
+1. In a private browser window, open `https://24go.top/` and inspect HTTPS/certificate.
+2. Open `https://24go.top/draft-lab.html`, test typing, local Markdown download and Clear cancellation.
+3. Open `https://24go.top/engineering/` and its article and RSS links.
+4. Verify `www` and HTTP variants redirect to the canonical apex HTTPS address (automated tests already passed).
 5. Check mobile keyboard navigation and whether every asset loads correctly; do not paste private drafts into bug reports.
 
-## When to close deployment Issue #11
+## Closed delivery issues
 
-Close only with evidence that the intended canonical host is configured, DNS checks pass, HTTPS works, GitHub Pages deployment is successful, and primary prelaunch pages have been smoke-tested. A single successful `www` page view is strong progress but **not** proof of the entire deployment chain.
-
-No DNS, Namecheap or GitHub Pages settings were changed in this log.
+[Landing delivery #11](https://github.com/rf24kja/24GO.top/issues/11) and [canonical/HTTPS routing #59](https://github.com/rf24kja/24GO.top/issues/59) are both **completed with independent Actions evidence**. The owner performed the Pages settings correction; no Namecheap/DNS or paid SSL change was necessary. Full hosted user publishing is a distinct incomplete release gate.
 
 ## Pending public navigation smoke test
 
-After the public navigation PR is merged and Pages deployment completes, separately confirm `www.24go.top` home has visible, keyboard-focusable links to Draft Lab, Engineering Notes, Progress and GitHub on mobile. This is an **unverified browser check** until recorded by a human; source-level tests alone do not establish working deployed pages.
+Separately confirm `24go.top` home has visible, keyboard-focusable links to Draft Lab, Engineering Notes, Progress and GitHub on mobile. This is an **unverified browser check** until recorded by a human; source-level tests alone do not establish working deployed pages.
 
 ## Post-remediation external evidence (29 October 2026)
 
