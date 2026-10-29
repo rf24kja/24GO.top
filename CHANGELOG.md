@@ -1,5 +1,12 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-29 — Consistent design across all static public pages
+
+- Aligned all 10 public-site HTML pages (main landing, development timeline, Draft Lab, engineering catalogue and six original notes) under restrained graphite/emerald 48px grid design with consistent shared navigation, keyboard skip links, and light/dark tokens. The public landing retains its own existing design; interior pages share a static interior stylesheet.
+- Removed the old one-off progress styling and normalised design on archive/article reading pages. Keyboard navigation, 320px layout, light/dark mode, strong contrast, reduced-motion handling and accessible preview/code blocks are explicitly checked. Editor fields, export/import behavior and prelaunch disclosures remain intact.
+- Static-only CSS/HTML and source assertions; no cursor motion in the writing workspace, dependencies, external requests, persistent storage, account claims or private hosted-Core code. No DNS, Supabase, VPS or billing changes.
+
+
 ## 2026-10-29 — Discoverable engineering archive with local article filtering
 
 - Added progressive, no-network search by title/summary across six static source-backed engineering notes. Search UI appears only when JavaScript initializes, keeping the entire catalogue readable/crawlable with JS disabled. Results count uses an ARIA live region and Escape clears the query.

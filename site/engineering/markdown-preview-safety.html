@@ -6,10 +6,9 @@
 <meta property="og:description" content="A code-backed walkthrough of a restricted, DOM-safe Markdown preview with explicit limitations and a real regression suite.">
 <title>Preview Markdown without executing author HTML — 24GOTOP</title>
 <link rel="canonical" href="https://24go.top/engineering/markdown-preview-safety.html">
-<link rel="stylesheet" href="./notes.css"><link rel="alternate" type="application/rss+xml" title="24GOTOP engineering notes" href="./feed.xml">
-</head><body><header><nav class="wrap" aria-label="Main navigation"><a class="brand" href="../">24GO<span>TOP</span></a><div class="navlinks">
-<a href="./">Engineering notes</a><a href="../draft-lab.html">Try Draft Lab</a><a href="https://github.com/rf24kja/24GO.top">GitHub ↗</a></div></nav></header>
-<main class="wrap"><article class="article">
+<link rel="stylesheet" href="./notes.css"><link rel="stylesheet" href="../interior.css"><link rel="alternate" type="application/rss+xml" title="24GOTOP engineering notes" href="./feed.xml">
+</head><body><a class="skip" href="#main-content">Skip to article content</a><header class="interior-header"><nav class="wrap interior-nav" aria-label="Main navigation"><a class="interior-brand" href="../" aria-label="24GOTOP home">24GO<span>TOP</span><span class="interior-brand__dot" aria-hidden="true"></span></a><div class="interior-links"><a href="../">Home</a><a href="./">Articles</a><a href="../draft-lab.html">Draft Lab</a><a href="../progress.html">Development</a><a href="https://github.com/rf24kja/24GO.top">GitHub ↗</a></div></nav></header>
+<main class="wrap" id="main-content" tabindex="-1"><article class="article">
 <span class="eyebrow">Engineering note · 26 October 2026 · Security &amp; UX</span>
 <h1>Preview Markdown without executing author HTML</h1>
 <p class="lead">A technical writing interface should display code, headings and lists clearly. But the article being typed is untrusted input. This is how we added a deliberately limited Markdown preview to the 24GOTOP Draft Lab without interpreting arbitrary HTML.</p>
@@ -52,4 +51,4 @@ npm test</code></pre>
 <p>Which single code-oriented writing feature should we validate next: inline formatting, citations, syntax highlighting or an explicit Markdown source/preview switch? Bring a small reproducible case to <a href="https://github.com/rf24kja/24GO.top/issues/21">the publishing RFC</a> or the <a href="https://github.com/rf24kja/24GO.top/discussions">GitHub Discussions</a>.</p>
 <p class="source">Evidence: <a href="https://github.com/rf24kja/24GO.top/pull/40">merged PR #40</a>, <a href="https://github.com/rf24kja/24GO.top/blob/main/CHANGELOG.md">change log</a> and <a href="https://github.com/rf24kja/24GO.top/blob/main/docs/MODULE_READINESS.md">module readiness register</a>. This article describes source implementation and known limitations, not a launched hosted product.</p>
 <p><a class="cta" href="../draft-lab.html">Try the experimental editor ↗</a></p>
-</article></main><footer><div class="wrap">24GOTOP · Open engineering notes · <a href="./">All notes</a> · <a href="https://github.com/rf24kja/24GO.top">GitHub</a></div></footer></body></html>
+</article></main><footer class="interior-footer"><div class="wrap">24GOTOP · Open engineering notes · <a href="./">All notes</a> · <a href="https://github.com/rf24kja/24GO.top">GitHub</a></div></footer></body></html>
