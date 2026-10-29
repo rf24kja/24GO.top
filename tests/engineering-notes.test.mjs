@@ -54,10 +54,10 @@ test('static RSS lists actual article with explicit source URL and valid publica
   assert.match(feed, /^<\?xml version="1\.0" encoding="UTF-8"\?>/);
   assert.match(feed, /<rss version="2\.0">/);
   assert.match(feed, /<title>24GOTOP Engineering Notes<\/title>/);
-  assert.match(feed, /https:\/\/www\.24go\.top\/engineering\/why-draft-lab-first\.html/);
+  assert.match(feed, /https:\/\/24go\.top\/engineering\/why-draft-lab-first\.html/);
   assert.match(feed, /<pubDate>Mon, 26 Oct 2026 00:00:00 GMT<\/pubDate>/);
-  assert.equal((feed.match(/<item>/g) || []).length, 4);
-  assert.match(feed, /https:\/\/www\.24go\.top\/engineering\/markdown-preview-safety\.html/);
+  assert.equal((feed.match(/<item>/g) || []).length, 5);
+  assert.match(feed, /https:\/\/24go\.top\/engineering\/markdown-preview-safety\.html/);
   assert.match(index, /Preview Markdown without executing author HTML/);
   assert.match(index, /Why we built a Draft Lab before opening public writes/);
   assert.doesNotMatch(feed, /<script|&(?!(?:amp|lt|gt|quot|apos);)/i);
@@ -75,7 +75,7 @@ test('new safety article is tied to merged source and avoids production claims',
 
 test('review lifecycle note is indexed, readable and accurately describes prelaunch gates', () => {
   assert.match(index, /href="\.\/submit-is-not-publish\.html"/);
-  assert.match(feed, /https:\/\/www\.24go\.top\/engineering\/submit-is-not-publish\.html/);
+  assert.match(feed, /https:\/\/24go\.top\/engineering\/submit-is-not-publish\.html/);
   assert.match(feed, /<pubDate>Mon, 26 Oct 2026 12:00:00 GMT<\/pubDate>/);
   assert.match(lifecycleNote, /<h1>Submit for review is not publish<\/h1>/);
   assert.match(lifecycleNote, /not a live community publishing service/i);
@@ -84,7 +84,7 @@ test('review lifecycle note is indexed, readable and accurately describes prelau
   assert.match(lifecycleNote, /moderator/i);
   assert.match(lifecycleNote, /https:\/\/github\.com\/rf24kja\/24GO\.top\/issues\/38/);
   assert.match(lifecycleNote, /https:\/\/github\.com\/rf24kja\/24GO\.top\/issues\/29/);
-  assert.match(lifecycleNote, /<link rel="canonical" href="https:\/\/www\.24go\.top\/engineering\/submit-is-not-publish\.html"/);
+  assert.match(lifecycleNote, /<link rel="canonical" href="https:\/\/24go\.top\/engineering\/submit-is-not-publish\.html"/);
   assert.doesNotMatch(lifecycleNote, /<script\b|<iframe\b|PUBLISH_API_KEY|sb_secret_|service_role/i);
   // No private full SQL or synthetic user credential in the published article.
   assert.doesNotMatch(lifecycleNote, /CREATE ROLE|CREATE POLICY|INSERT INTO app_private|password123/i);
@@ -92,7 +92,7 @@ test('review lifecycle note is indexed, readable and accurately describes prelau
 
 test('PostgreSQL least-privilege article is verifiable, non-sensitive, and correctly syndicated', () => {
   assert.match(index, /href="\.\/postgres-insert-returning-least-privilege\.html"/);
-  assert.match(feed, /https:\/\/www\.24go\.top\/engineering\/postgres-insert-returning-least-privilege\.html/);
+  assert.match(feed, /https:\/\/24go\.top\/engineering\/postgres-insert-returning-least-privilege\.html/);
   assert.match(permissionNote, /<h1>INSERT succeeds, RETURNING fails: a least-privilege lesson<\/h1>/);
   assert.match(permissionNote, /www\.postgresql\.org\/docs\/17\/sql-insert\.html/);
   assert.match(permissionNote, /has_column_privilege/);
@@ -105,7 +105,7 @@ test('PostgreSQL least-privilege article is verifiable, non-sensitive, and corre
 test('owner confirmation stays separate from independent DNS, TLS and public API assertions', () => {
   const d = readFileSync(fileURLToPath(new URL('../docs/DEPLOYMENT_STATUS.md',import.meta.url)), 'utf8');
   assert.match(d, /Founder reports that the HTTPS page opens successfully/);
-  assert.match(d, /https:\/\/www\.24go\.top\//);
+  assert.match(d, /https:\/\/24go\.top\//);
   assert.match(d, /Apex.*Not independently confirmed|Not independently confirmed.*Apex/is);
   assert.match(d, /Public publishing.*Not implemented/is);
 });

@@ -1,30 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0"><channel>
 <title>24GOTOP Engineering Notes</title>
-<link>https://www.24go.top/engineering/</link>
+<link>https://24go.top/engineering/</link>
 <description>Source-backed articles about building the 24GOTOP AI-native knowledge platform. Early-stage development, not a live publishing community.</description>
 <language>en</language>
+<item><title>Publishing technical articles for people and AI search: a practical discovery checklist</title>
+<link>https://24go.top/engineering/discoverable-technical-articles.html</link>
+<guid isPermaLink="true">https://24go.top/engineering/discoverable-technical-articles.html</guid>
+<description>An evidence-led checklist for canonical URLs, crawlable HTML, XML sitemaps, RSS and OpenAI search crawler access. No promises of indexing or a launched publishing platform.</description>
+<pubDate>Thu, 29 Oct 2026 12:00:00 GMT</pubDate>
+</item>
 <item><title>INSERT succeeds, RETURNING fails: a least-privilege lesson</title>
-<link>https://www.24go.top/engineering/postgres-insert-returning-least-privilege.html</link>
-<guid isPermaLink="true">https://www.24go.top/engineering/postgres-insert-returning-least-privilege.html</guid>
+<link>https://24go.top/engineering/postgres-insert-returning-least-privilege.html</link>
+<guid isPermaLink="true">https://24go.top/engineering/postgres-insert-returning-least-privilege.html</guid>
 <description>PostgreSQL 17 permission testing: an insert-only role should not acquire SELECT merely to satisfy an INSERT RETURNING test.</description>
 <pubDate>Mon, 26 Oct 2026 14:00:00 GMT</pubDate>
 </item>
 <item><title>Submit for review is not publish</title>
-<link>https://www.24go.top/engineering/submit-is-not-publish.html</link>
-<guid isPermaLink="true">https://www.24go.top/engineering/submit-is-not-publish.html</guid>
+<link>https://24go.top/engineering/submit-is-not-publish.html</link>
+<guid isPermaLink="true">https://24go.top/engineering/submit-is-not-publish.html</guid>
 <description>Why review snapshots, idempotent moderation handoff and authenticated moderator decisions must be separate from public release; code is prelaunch and production remains blocked.</description>
 <pubDate>Mon, 26 Oct 2026 12:00:00 GMT</pubDate>
 </item>
 <item><title>Preview Markdown without executing author HTML</title>
-<link>https://www.24go.top/engineering/markdown-preview-safety.html</link>
-<guid isPermaLink="true">https://www.24go.top/engineering/markdown-preview-safety.html</guid>
+<link>https://24go.top/engineering/markdown-preview-safety.html</link>
+<guid isPermaLink="true">https://24go.top/engineering/markdown-preview-safety.html</guid>
 <description>A source-backed look at restricted Markdown preview blocks, safe DOM text insertion, regression tests and the limitations before public publishing.</description>
 <pubDate>Mon, 26 Oct 2026 07:00:00 GMT</pubDate>
 </item>
 <item><title>Why we built a Draft Lab before opening public writes</title>
-<link>https://www.24go.top/engineering/why-draft-lab-first.html</link>
-<guid isPermaLink="true">https://www.24go.top/engineering/why-draft-lab-first.html</guid>
+<link>https://24go.top/engineering/why-draft-lab-first.html</link>
+<guid isPermaLink="true">https://24go.top/engineering/why-draft-lab-first.html</guid>
 <description>How we test the author experience without publishing unauthenticated content, and which safety controls are still missing.</description>
 <pubDate>Mon, 26 Oct 2026 00:00:00 GMT</pubDate>
 </item>

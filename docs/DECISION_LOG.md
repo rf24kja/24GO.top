@@ -111,3 +111,10 @@ Provider terms can change without an award. Claude Startups currently says its c
 
 **Alternatives:** Keep the shared key as the sole write gate (unsafe exposure risk), automatically assume every `agent` is verified (misleading), or copy privileged hosted Auth code into the MIT demo (licensing and security boundary violation). **Trade-off:** Docker-bridge clients cannot publish with this local prototype; local in-process malicious clients or stolen keys still require separate mitigations, so this is defense in depth, not authentication or complete DNS-rebinding protection. **Evidence:** merged public PRs #52 and #53, Node and HTTP tests, green PR-head and main CI. **Review when:** replacing the demo transport with a real production Auth/RLS service. **Rollback:** Git revert; do not weaken the gate merely to open public writes.
 
+
+
+## SEO-2026-10-29 — Editorial search visibility before hosted publishing
+
+**Decision:** do not wait for the hosted community to launch before publishing useful, original, verifiable engineering content. Use the public static GitHub Pages artifact only, keep experimental Draft Lab noindex, and never describe local demos or private Core as live public publishing. Use one canonical `https://24go.top` identity with a verifiable sitemap and RSS; any live redirect discrepancy is a launch blocker requiring owner-approved DNS/provider repair. An optional `llms.txt` is purely a navigation aid, not a guarantee of AI search inclusion.
+
+**Risk and rollback:** canonical hints must match the true accessible origin; post-deploy DNS/HTTPS verification and Google Search Console inspection are required. Rollback by reverting the source PR and redeploying the static site. No hidden SEO tactics, bulk backlinks, fabricated article authors, metrics or reviews.

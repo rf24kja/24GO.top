@@ -1,5 +1,13 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-29 — Source-only search and AI discovery foundation
+
+- Prepared root-level `robots.txt` and eight canonical URLs in `sitemap.xml` for the founder-approved `https://24go.top` origin. Explicitly excluded Draft Lab because it remains `noindex,follow`.
+- Normalized editorial canonical hints and RSS URLs to the approved apex, published a new original, referenced technical article on crawlable knowledge, and updated engineering/home navigation and an optional `llms.txt` reader index. No invented translations or rankings.
+- Added source-level tests for canonical URL consistency, public-file existence, sitemap validity shape, RSS coverage and prototype exclusion.
+- **Not proven:** external DNS, HTTPS, www-to-apex redirect, GitHub Pages delivery, Google/Bing index status, AI crawler access, Search Console ownership and user adoption. Those require independent post-deploy checks and Search Console/Bing evidence. No DNS/settings/production change made.
+
+
 ## 2026-10-29 — SDK development-key recipient isolation (PUBLIC OSS)
 
 - [PR #56](https://github.com/rf24kja/24GO.top/pull/56), merged as `00f83bbe79b7e728049f8554a003f5f7392230a4`, fixes a real public SDK credential-leak path: `TopClient.publishPost()` no longer sends the shared local development bearer token to **any remote HTTP or HTTPS hostname**, including misleading localhost-like domains. This aligns the SDK with the earlier local-only HTTP write gate from PR #52.
