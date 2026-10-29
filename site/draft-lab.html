@@ -12,66 +12,73 @@
   <script type="module" src="./draft-lab.js"></script>
 </head>
 <body>
-  <a class="skip" href="#main-content">Skip to editor</a>
-  <header class="bar interior-header"><nav class="wrap interior-nav" aria-label="Main navigation"><a class="interior-brand" href="./" aria-label="24GOTOP home">24GO<span>TOP</span><span class="interior-brand__dot" aria-hidden="true"></span></a><div class="interior-links"><a href="./">Home</a><a href="./engineering/">Articles</a><a href="./draft-lab.html" aria-current="page">Draft Lab</a><a href="./progress.html">Development</a><a href="https://github.com/rf24kja/24GO.top">GitHub ↗</a></div></nav></header>
+  <a class="skip" href="#main-content" data-ui="skip">Skip to editor</a>
+  <header class="bar interior-header"><nav class="wrap interior-nav" aria-label="Main navigation"><a class="interior-brand" href="./" aria-label="24GOTOP home">24GO<span>TOP</span><span class="interior-brand__dot" aria-hidden="true"></span></a><div class="interior-links"><a href="./" data-ui="home">Home</a><a href="./engineering/" data-ui="articles">Articles</a><a href="./draft-lab.html" aria-current="page" data-ui="lab">Draft Lab</a><a href="./progress.html" data-ui="development">Development</a><a href="https://github.com/rf24kja/24GO.top" data-ui="github">GitHub ↗</a></div></nav></header>
   <main class="shell" id="main-content" tabindex="-1">
     <div class="intro">
-      <div class="eyebrow">EARLY UX EXPERIMENT · FREE · NO SIGN-IN</div>
-      <h1>Make knowledge worth sharing.</h1>
-      <p>Write a technical article, export it as a Markdown file, then reopen that same file when you return. Help us test a publishing experience that respects your time and privacy.</p>
+      <div class="eyebrow" data-ui="eyebrow">EARLY UX EXPERIMENT · FREE · NO SIGN-IN</div>
+      <h1 data-ui="headline">Make knowledge worth sharing.</h1>
+      <p data-ui="intro">Write a technical article, export it as a Markdown file, then reopen that same file when you return. Help us test a publishing experience that respects your time and privacy.</p>
+      <div class="interface-picker">
+        <label for="uiLocale" data-ui="uiLabel">Interface language</label>
+        <select id="uiLocale" aria-label="Interface language" data-ui-label="uiLabel">
+          <option value="en">English</option><option value="ru">Русский</option><option value="th">ไทย</option><option value="es">Español</option>
+          <option value="fr">Français</option><option value="de">Deutsch</option><option value="pt">Português</option><option value="zh">中文</option>
+        </select>
+      </div>
       <div class="notice" role="note">
-        <strong>Prototype only.</strong> This page does not publish, upload or automatically save your writing. Export to a Markdown file on your device, then reopen that file here to continue. Nothing goes to the 24GOTOP server. Closing or refreshing this tab loses unsaved changes.
+        <strong data-ui="prototype">Prototype only.</strong> <span data-ui="notice">This page does not publish, upload or automatically save your writing. Export to a Markdown file on your device, then reopen that file here to continue. Nothing goes to the 24GOTOP server. Closing or refreshing this tab loses unsaved changes.</span>
       </div>
     </div>
     <div class="workspace">
       <section class="panel" aria-labelledby="form-title">
-        <div class="panel-head"><div><span class="eyebrow">01 / COMPOSE</span><h2 id="form-title">Your draft</h2></div><span class="pill">No backend</span></div>
+        <div class="panel-head"><div><span class="eyebrow" data-ui="compose">01 / COMPOSE</span><h2 id="form-title" data-ui="yourDraft">Your draft</h2></div><span class="pill" data-ui="noBackend">No backend</span></div>
         <form id="draftForm" novalidate>
-          <label for="postTitle">Title <span class="hint">5–160 characters</span></label>
-          <input id="postTitle" name="title" maxlength="160" placeholder="What did you build, learn or discover?" autocomplete="off" required>
+          <label for="postTitle"><span data-ui="title">Title</span> <span class="hint" data-ui="titleHint">5–160 characters</span></label>
+          <input id="postTitle" name="title" maxlength="160" placeholder="What did you build, learn or discover?" data-ui-placeholder="titlePlaceholder" autocomplete="off" required>
           <div class="meta">
-            <div><label for="postLocale">Language</label><select id="postLocale" name="locale"><option value="en">English</option><option value="ru">Русский</option><option value="th">ไทย</option><option value="es">Español</option><option value="fr">Français</option><option value="de">Deutsch</option><option value="pt">Português</option><option value="zh">中文</option></select></div>
-            <div><label for="postCategory">Category</label><select id="postCategory" name="category"><option value="guides">Guides</option><option value="tools">Tools</option><option value="news">News</option><option value="models">Models</option></select></div>
+            <div><label for="postLocale" data-ui="language">Language</label><select id="postLocale" name="locale"><option value="en">English</option><option value="ru">Русский</option><option value="th">ไทย</option><option value="es">Español</option><option value="fr">Français</option><option value="de">Deutsch</option><option value="pt">Português</option><option value="zh">中文</option></select></div>
+            <div><label for="postCategory" data-ui="category">Category</label><select id="postCategory" name="category"><option value="guides" data-ui="guides">Guides</option><option value="tools" data-ui="tools">Tools</option><option value="news" data-ui="news">News</option><option value="models" data-ui="models">Models</option></select></div>
           </div>
-          <label for="postBody">Article <span class="hint">20–12,000 characters</span></label>
-          <textarea id="postBody" name="body" rows="11" maxlength="12000" placeholder="Explain the problem, what you tried, the result and what others can reproduce." required></textarea>
-          <div class="format-tools" role="group" aria-label="Insert Markdown formatting">
-            <button id="formatHeading" type="button" aria-label="Insert section heading">Heading</button>
-            <button id="formatList" type="button" aria-label="Insert bullet list">List</button>
-            <button id="formatQuote" type="button" aria-label="Insert quotation">Quote</button>
-            <button id="formatCode" type="button" aria-label="Insert fenced code block">Code block</button>
-            <button id="formatLink" type="button" aria-label="Insert HTTP or HTTPS citation link">Link</button>
+          <label for="postBody"><span data-ui="body">Article</span> <span class="hint" data-ui="bodyHint">20–12,000 characters</span></label>
+          <textarea id="postBody" name="body" rows="11" maxlength="12000" placeholder="Explain the problem, what you tried, the result and what others can reproduce." data-ui-placeholder="bodyPlaceholder" required></textarea>
+          <div class="format-tools" role="group" aria-label="Insert Markdown formatting" data-ui-label="formatGroup">
+            <button id="formatHeading" type="button" aria-label="Insert section heading" data-ui-label="headingLabel" data-ui="heading">Heading</button>
+            <button id="formatList" type="button" aria-label="Insert bullet list" data-ui-label="listLabel" data-ui="list">List</button>
+            <button id="formatQuote" type="button" aria-label="Insert quotation" data-ui-label="quoteLabel" data-ui="quote">Quote</button>
+            <button id="formatCode" type="button" aria-label="Insert fenced code block" data-ui-label="codeLabel" data-ui="code">Code block</button>
+            <button id="formatLink" type="button" aria-label="Insert HTTP or HTTPS citation link" data-ui-label="linkLabel" data-ui="link">Link</button>
           </div>
-          <p class="hint format-help">Select text to format it, or place the cursor to insert an editable placeholder. Export to keep changes.</p>
+          <p class="hint format-help" data-ui="formatHelp">Select text to format it, or place the cursor to insert an editable placeholder. Export to keep changes.</p>
           <div class="meter" id="bodyCount" aria-live="off">0 / 12,000</div>
-          <label for="postSource">Original source <span class="hint">optional HTTPS/HTTP link</span></label>
+          <label for="postSource"><span data-ui="source">Original source</span> <span class="hint" data-ui="sourceHint">optional HTTPS/HTTP link</span></label>
           <input id="postSource" name="source" type="url" placeholder="https://example.org/research">
-          <p class="tiny">Only files previously exported by Draft Lab can be reopened. Imported text stays in this browser tab; original files remain on your device. Export again to keep new changes.</p>
+          <p class="tiny" data-ui="importHint">Only files previously exported by Draft Lab can be reopened. Imported text stays in this browser tab; original files remain on your device. Export again to keep new changes.</p>
           <div class="buttons">
-            <button id="downloadDraft" class="primary" type="button">Download .md</button>
-            <button id="importDraft" class="secondary" type="button">Open saved .md</button>
+            <button id="downloadDraft" class="primary" type="button" data-ui="download">Download .md</button>
+            <button id="importDraft" class="secondary" type="button" data-ui="open">Open saved .md</button>
             <input id="importDraftFile" type="file" accept=".md,text/markdown" hidden>
-            <button id="copyDraft" class="secondary" type="button">Copy draft</button>
-            <button id="clearDraft" class="secondary danger" type="button">Clear</button>
+            <button id="copyDraft" class="secondary" type="button" data-ui="copy">Copy draft</button>
+            <button id="clearDraft" class="secondary danger" type="button" data-ui="clear">Clear</button>
           </div>
-          <p id="draftSafety" class="tiny">No draft content yet. Draft Lab never automatically saves your work.</p>
+          <p id="draftSafety" class="tiny" data-ui="safetyEmpty">No draft content yet. Draft Lab never automatically saves your work.</p>
           <p id="formStatus" role="status" aria-live="polite"></p>
         </form>
       </section>
       <section class="panel preview" aria-labelledby="preview-title">
-        <div class="panel-head"><div><span class="eyebrow">02 / REVIEW</span><h2 id="preview-title">Reader preview</h2></div><span class="pill">Local only</span></div>
-        <div class="preview-meta"><span id="previewCategory">Guides</span><span id="previewLocale">EN</span><span>Draft · Not published</span></div>
-        <h3 id="previewHeading">Your title will appear here.</h3>
-        <div id="previewBody" class="preview-content" aria-label="Article body preview">Begin writing to see your article preview.</div>
+        <div class="panel-head"><div><span class="eyebrow" data-ui="review">02 / REVIEW</span><h2 id="preview-title" data-ui="reader">Reader preview</h2></div><span class="pill" data-ui="local">Local only</span></div>
+        <div class="preview-meta"><span id="previewCategory">Guides</span><span id="previewLocale">EN</span><span data-ui="notPublished">Draft · Not published</span></div>
+        <h3 id="previewHeading" data-ui="emptyTitle">Your title will appear here.</h3>
+        <div id="previewBody" class="preview-content" aria-label="Article body preview" data-ui-label="previewLabel" data-ui="emptyBody">Begin writing to see your article preview.</div>
         <p id="previewSource" class="source" hidden></p>
-        <div class="preview-foot">Limited Markdown preview: headings, lists, quotes, fenced code and safe HTTP(S) citation links. Inline emphasis and raw HTML remain literal text. Export a local Markdown file to keep your work. No comments, views, reactions or public URL have been created.</div>
+        <div class="preview-foot" data-ui="previewHelp">Limited Markdown preview: headings, lists, quotes, fenced code and safe HTTP(S) citation links. Inline emphasis and raw HTML remain literal text. Export a local Markdown file to keep your work. No comments, views, reactions or public URL have been created.</div>
       </section>
     </div>
     <section class="bottom">
-      <div><span class="eyebrow">HELP SHAPE THE PRODUCT</span><h2>Where does writing feel difficult?</h2><p>Tell us what would improve this workflow: formatting, code blocks, translation, media, editor shortcuts or transparent moderation.</p></div>
-      <a class="feedback" href="https://github.com/rf24kja/24GO.top/issues/21">Review the publishing RFC ↗</a>
+      <div><span class="eyebrow" data-ui="feedbackTag">HELP SHAPE THE PRODUCT</span><h2 data-ui="feedbackTitle">Where does writing feel difficult?</h2><p data-ui="feedbackBody">Tell us what would improve this workflow: formatting, code blocks, translation, media, editor shortcuts or transparent moderation.</p></div>
+      <a class="feedback" href="https://github.com/rf24kja/24GO.top/issues/21" data-ui="feedbackLink">Review the publishing RFC ↗</a>
     </section>
   </main>
-  <footer class="interior-footer"><div class="shell wrap">24GOTOP · Open UX prototype · <a href="https://github.com/rf24kja/24GO.top">Source on GitHub</a></div></footer>
+  <footer class="interior-footer"><div class="shell wrap"><span data-ui="footer">24GOTOP · Open UX prototype ·</span> <a href="https://github.com/rf24kja/24GO.top" data-ui="footerLink">Source on GitHub</a></div></footer>
 </body>
 </html>
