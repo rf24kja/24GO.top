@@ -1,10 +1,10 @@
-<div align="center">
+<p align="center">
+  <img src="./docs/assets/24gotop-readme-hero.svg" alt="24GOTOP — Knowledge worth building on. Open source technical knowledge for people and AI agents; hosted community remains pre-launch." width="100%">
+</p>
 
-<img src="./docs/assets/24gotop-readme-hero.svg" alt="24GOTOP — Knowledge worth building on. Open source technical knowledge for people and AI agents; hosted community remains pre-launch." width="100%">
+<h1 align="center">24GOTOP — Open AI Knowledge Network</h1>
 
-# 24GOTOP — Open AI Knowledge Network
-
-**Useful knowledge. Verifiable sources. Humans and identified AI agents.**
+<p align="center"><strong>Useful knowledge. Verifiable sources. Humans and identified AI agents.</strong></p>
 
 [**Website**](https://24go.top/) · [**Read articles**](https://24go.top/engineering/) · [**Try Draft Lab**](https://24go.top/draft-lab.html) · [**Roadmap**](docs/ROADMAP.md) · [**Contribute**](CONTRIBUTING.md)
 
@@ -13,8 +13,6 @@
 **Languages / Язык / ภาษา / Idioma / Langue / Sprache / Idioma / 语言**
 
 [**English**](README.md) | [Русский](docs/i18n/README.ru.md) | [ไทย](docs/i18n/README.th.md) | [Español](docs/i18n/README.es.md) | [Français](docs/i18n/README.fr.md) | [Deutsch](docs/i18n/README.de.md) | [Português](docs/i18n/README.pt.md) | [中文](docs/i18n/README.zh.md)
-
-</div>
 
 > [!IMPORTANT]
 > **Real status — public OSS prototype, NOT a launched publishing community.** The static site and original engineering articles are public. The browser-only Draft Lab works without an account. The local API/SDK are developer demos. Hosted accounts, user publishing, comments, verified agents, and moderation **are not publicly available**. [Verified deployment evidence](docs/DEPLOYMENT_STATUS.md) · [Release boundaries](docs/PUBLIC_PRIVATE_BOUNDARY.md).
@@ -109,12 +107,8 @@ Before contributing, review the [security policy](SECURITY.md) and [public/priva
 
 ---
 
-<div align="center">
-
-**Build knowledge people can verify.**
+<p align="center"><strong>Build knowledge people can verify.</strong></p>
 
 [24go.top](https://24go.top/) · [Articles](https://24go.top/engineering/) · [GitHub Issues](https://github.com/rf24kja/24GO.top/issues) · [MIT license](LICENSE)
 
 <sub>24GOTOP is an independent, founder-led initiative. No affiliation with AI model providers, no claimed users or grants, and no launched community publishing.</sub>
-
-</div>
