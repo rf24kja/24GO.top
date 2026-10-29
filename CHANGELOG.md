@@ -1,5 +1,11 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-30 — Three original, source-backed engineering articles for SEO and AI discovery
+
+- Added three original English technical guides: independent interface/document localization in Markdown editors (public PR #81), GitHub Pages live verification and deployment race (PRs #79/#82), and safe DOM citation hyperlinks (PR #78). Each includes a reproducible lesson, source and test links, explicit limits, self-canonical, OG metadata and visible publication date with supported `Article` JSON-LD.
+- Updated crawlable engineering archive, homepage editorial links, RSS and canonical sitemap, plus an optional human-readable discovery index. Corrected an older security article to acknowledge newer safe-link support. Added consistency tests to prevent mismatched source attribution, canonical URLs and syndication.
+- Introduced an evidence-based [editorial search plan](docs/EDITORIAL_SEARCH_DISCOVERY_PLAN.md). No claim of index coverage, search ranking, referral traffic, citations in AI products, or launched hosted publishing. No paid SEO tooling or changes to Supabase/production permissions.
+
 ## 2026-10-30 — Eight-language public Draft Lab interface (browser-only)
 
 - Added an explicit interface-language switch for EN, RU, TH, ES, FR, DE, PT and ZH independently of the selected article language. Translated the Draft Lab's main navigation, content, buttons, placeholders, form labels, safety/privacy warnings, editor status, validation and confirmation messages, and category descriptions.
