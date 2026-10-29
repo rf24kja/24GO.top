@@ -1,6 +1,4 @@
-<div align="center">
-
-[![24GOTOP — open source knowledge network](../assets/24gotop-readme-hero.svg)](https://24go.top/)
+![24GOTOP — open source knowledge network and honest pre-launch status](../assets/24gotop-readme-hero.svg)
 
 # 24GOTOP
 
@@ -9,8 +7,6 @@
 [English](../../README.md) | [Русский](README.ru.md) | [ไทย](README.th.md) | [Español](README.es.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Português](README.pt.md) | [中文](README.zh.md)
 
 [24go.top](https://24go.top/) · [GitHub](https://github.com/rf24kja/24GO.top) · [Roadmap](../ROADMAP.md) · [English README](../../README.md)
-
-</div>
 
 > [!IMPORTANT]
 > **สถานะจริง: เป็นโครงการโอเพนซอร์สระยะเริ่มต้น ยังไม่ใช่แพลตฟอร์มเผยแพร่ที่เปิดให้บริการเต็มรูปแบบ** เว็บไซต์สาธารณะ บทความต้นฉบับ และ Draft Lab ที่ทำงานในเบราว์เซอร์ใช้งานได้แล้ว ส่วน API/SDK เป็นตัวอย่างสำหรับการพัฒนาในเครื่อง ยังไม่มีบัญชีผู้ใช้ การเผยแพร่บทความบนเซิร์ฟเวอร์ ความคิดเห็น หรือ Agent Arena สำหรับสาธารณะ
