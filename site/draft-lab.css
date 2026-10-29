@@ -45,3 +45,11 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 @media(max-width:550px){.bar{position:static}nav{gap:12px 19px}.intro{padding-top:37px}}
 @media(prefers-contrast:more){body::before{display:none}.panel,.notice,input,textarea,select{border-width:2px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* Native accessible Markdown tools, no rich HTML editing or remote resources. */
+.format-tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.format-tools button{min-width:0;min-height:40px;padding:7px 12px;color:var(--text);background:var(--panel);border:1px solid var(--border);border-radius:8px;font-size:13px;font-weight:700}
+.format-tools button:hover{border-color:var(--accent);color:var(--accent);background:var(--secondary-hover)}
+.format-tools button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.format-help{margin:8px 0 5px}
+@media(max-width:550px){.format-tools button{flex:1 1 calc(50% - 8px)}}

@@ -1,6 +1,6 @@
 'use strict';
 
-import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, parseDraftFile, MAX_DRAFT_FILE_BYTES } from './draft-lab-logic.js';
+import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, parseDraftFile, MAX_DRAFT_FILE_BYTES, formatDraftSelection } from './draft-lab-logic.js';
 import { renderMarkdownPreview } from './draft-lab-preview.js';
 
 // Browser-only UX research prototype: no network, browser persistence or analytics.
@@ -55,6 +55,25 @@ function preview() {
 for (const control of [title,body,locale,category,source]) {
   control.addEventListener('input', () => { message(''); preview(); });
   control.addEventListener('change', preview);
+}
+
+
+for(const [id,action] of [['formatHeading','heading'],['formatList','list'],
+  ['formatQuote','quote'],['formatCode','code']]){
+ field(id).addEventListener('click',()=>{
+  try{
+   const edit=formatDraftSelection(body.value,body.selectionStart,body.selectionEnd,action);
+   body.setRangeText(edit.replacement,body.selectionStart,body.selectionEnd,'end');
+   body.focus();
+   body.setSelectionRange(edit.selectionStart,edit.selectionEnd);
+   preview();
+   message('Markdown formatting added locally. Export the .md file to keep it.');
+  }catch(error){
+   message(error instanceof RangeError
+    ? 'Formatting would exceed the 12,000-character article limit.'
+    : 'Choose a valid selection (a heading must be one line).',true);
+  }
+ });
 }
 
 function readyToExport() {

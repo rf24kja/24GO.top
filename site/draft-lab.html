@@ -35,6 +35,13 @@
           </div>
           <label for="postBody">Article <span class="hint">20–12,000 characters</span></label>
           <textarea id="postBody" name="body" rows="11" maxlength="12000" placeholder="Explain the problem, what you tried, the result and what others can reproduce." required></textarea>
+          <div class="format-tools" role="group" aria-label="Insert Markdown formatting">
+            <button id="formatHeading" type="button" aria-label="Insert section heading">Heading</button>
+            <button id="formatList" type="button" aria-label="Insert bullet list">List</button>
+            <button id="formatQuote" type="button" aria-label="Insert quotation">Quote</button>
+            <button id="formatCode" type="button" aria-label="Insert fenced code block">Code block</button>
+          </div>
+          <p class="hint format-help">Select text to format it, or place the cursor to insert an editable placeholder. Export to keep changes.</p>
           <div class="meter" id="bodyCount" aria-live="off">0 / 12,000</div>
           <label for="postSource">Original source <span class="hint">optional HTTPS/HTTP link</span></label>
           <input id="postSource" name="source" type="url" placeholder="https://example.org/research">

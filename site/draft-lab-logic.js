@@ -16,6 +16,34 @@ export function safeSourceUrl(input) {
   }
 }
 
+
+/** Prepare a native textarea edit without rendering, saving or executing content. */
+export function formatDraftSelection(value,start,end,action){
+ if(typeof value!=='string'||value.length>12000||
+    !Number.isSafeInteger(start)||!Number.isSafeInteger(end)||
+    start<0||end<start||end>value.length)throw new TypeError('Invalid article selection');
+ const selected=value.slice(start,end);
+ let replacement,innerOffset,content=selected;
+ if(action==='heading'){
+   if(/[\r\n]/.test(selected))throw new TypeError('Single-line heading only');
+   content ||= 'Section heading';replacement='## '+content;innerOffset=3;
+ }else if(action==='list'||action==='quote'){
+   content ||= action==='list'?'List item':'Quote';
+   const prefix=action==='list'?'- ':'> ';
+   replacement=content.split(/\r?\n/).map(line=>prefix+line).join('\n');
+   innerOffset=prefix.length;
+ }else if(action==='code'){
+   content ||= '// your code';
+   const runs=selected.match(/`+/g)||[];
+   const fence='`'.repeat(Math.max(3,...runs.map(run=>run.length+1)));
+   replacement=fence+'\n'+content+'\n'+fence;innerOffset=fence.length+1;
+ }else throw new TypeError('Unsupported Markdown action');
+ if(value.length-(end-start)+replacement.length>12000)
+   throw new RangeError('Article exceeds 12,000 characters');
+ const selectionStart=start+(selected?replacement.length:innerOffset);
+ return {replacement,selectionStart,selectionEnd:selectionStart+(selected?0:content.length)};
+}
+
 export function validateDraft({ title, body, locale, category, source }) {
   if (typeof title !== 'string' || title.trim().length < 5 || title.length > 160) return 'Enter a title between 5 and 160 characters.';
   if (typeof body !== 'string' || body.trim().length < 20 || body.length > 12000) return 'Write between 20 and 12,000 characters.';

@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { runInNewContext } from 'node:vm';
 import {
   safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent,
-  parseDraftFile, MAX_DRAFT_FILE_BYTES, hasUnexportedChanges
+  parseDraftFile, MAX_DRAFT_FILE_BYTES, hasUnexportedChanges, formatDraftSelection
 } from '../site/draft-lab-logic.js';
 
 const source = readFileSync(fileURLToPath(new URL('../site/draft-lab.js', import.meta.url)), 'utf8')
@@ -22,11 +22,15 @@ function build() {
   const ids = [
     'postTitle','postBody','postLocale','postCategory','postSource','formStatus',
     'previewHeading','previewBody','previewLocale','previewCategory','bodyCount',
-    'previewSource','draftSafety','downloadDraft','copyDraft','clearDraft','importDraft','importDraftFile','draftForm'
+    'previewSource','draftSafety','downloadDraft','copyDraft','clearDraft','importDraft','importDraftFile','draftForm',
+    'formatHeading','formatList','formatQuote','formatCode'
   ];
   const elements = Object.fromEntries(ids.map(id => {
     const el = {
       id, value:'', textContent:'', hidden:false, dataset:{}, listeners:{}, files:[],
+      selectionStart:0,selectionEnd:0,
+      setRangeText(replacement,start,end){this.value=this.value.slice(0,start)+replacement+this.value.slice(end);},
+      setSelectionRange(start,end){this.selectionStart=start;this.selectionEnd=end;},
       addEventListener(type,callback){this.listeners[type]=callback;},
       click(){this.clicked=true;},
       focus(){}
@@ -41,7 +45,7 @@ function build() {
   runInNewContext(source, {
     document, window, navigator:{}, URL, Blob, setTimeout,
     safeSourceUrl,validateDraft,formatDraft,draftFilename,hasDraftContent,
-    parseDraftFile,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,
+    parseDraftFile,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,
     renderMarkdownPreview(container, text) { container.textContent = text; }
   // Keep a bounded sandbox timeout, with enough CI runner headroom when
   // node --test starts multiple test files concurrently.
@@ -142,4 +146,33 @@ test('an explicit Clear reset turns off the warning after user confirmation', ()
   app.elements.clearDraft.listeners.click();
   assert.equal(app.beforeUnload().prevented,false);
   assert.match(app.elements.draftSafety.textContent,/No draft content yet/);
+});
+
+test('format buttons edit locally, preview, and keep unsaved-exit protection',()=>{
+ const app=build();
+ app.elements.postTitle.value='A reproducible technical article';
+ app.elements.postBody.value='A security finding with exact tests and reproducible steps.';
+ app.elements.postBody.selectionStart=0;
+ app.elements.postBody.selectionEnd=0;
+ app.elements.formatHeading.listeners.click();
+ assert.match(app.elements.postBody.value,/^## Section heading/);
+ assert.match(app.elements.formStatus.textContent,/locally/);
+ assert.equal(app.beforeUnload().prevented,true);
+ const before=app.elements.postBody.value;
+ app.elements.postBody.selectionStart=before.length;
+ app.elements.postBody.selectionEnd=before.length;
+ app.elements.formatCode.listeners.click();
+ assert.match(app.elements.postBody.value,/```\n\/\/ your code\n```$/);
+ assert.equal(app.elements.postBody.selectionEnd-app.elements.postBody.selectionStart,'// your code'.length);
+ assert.match(app.elements.draftSafety.textContent,/Check your exported/);
+});
+test('over-limit code formatting does not change or clear text',()=>{
+ const app=build();
+ app.elements.postBody.value='x'.repeat(12000);
+ app.elements.postBody.selectionStart=12000;
+ app.elements.postBody.selectionEnd=12000;
+ app.elements.formatCode.listeners.click();
+ assert.equal(app.elements.postBody.value.length,12000);
+ assert.equal(app.elements.formStatus.dataset.error,'true');
+ assert.equal(app.beforeUnload().prevented,true);
 });
