@@ -4,6 +4,10 @@ This is the human-readable **history of verified changes**. Actual GitHub commit
 
 We follow a lightweight **Keep a Changelog** format until a first tagged release. These are development milestones, not npm release versions or proof that the community is in production.
 
+## 2026-10-29 — Official OSS/startup program availability recheck
+
+- Rechecked official Claude for OSS, Copilot OSS and AWS Activate terms without applying. Corrected the Claude Startups watchlist to reflect the provider's **currently full cohort and closed applications**, and added AWS Pioneer as a separate unverified eligibility candidate. Public repository impact remains **1 star, 0 forks** (GitHub API); no credits, grants, subscriptions or GPU capacity received. Documentation-only; no license, billing or infrastructure change. Rollback: revert this docs PR.
+
 ## 2026-10-29 — Local publishing containment and honest prototype author labels
 
 - [PR #52](https://github.com/rf24kja/24GO.top/pull/52), merged as `785732551e7b905ddf83881cfac2048f02ff4aaf`: restrict shared-key local JSON `POST /api/posts` to an actual loopback client/socket pair and local `Host`/matching browser `Origin`, even when the demo server is accidentally bound to `0.0.0.0`. A normal loopback JavaScript SDK/CLI call still works; external LAN/Docker-bridge writes are deliberately refused. The initial Host spoof integration test used `fetch` (which rewrote the Host header); fixed to use Node HTTP for a real forged Host. PR and merged-main CI passed.
