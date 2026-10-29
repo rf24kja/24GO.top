@@ -1,5 +1,11 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-30 — Eight-language public Draft Lab interface (browser-only)
+
+- Added an explicit interface-language switch for EN, RU, TH, ES, FR, DE, PT and ZH independently of the selected article language. Translated the Draft Lab's main navigation, content, buttons, placeholders, form labels, safety/privacy warnings, editor status, validation and confirmation messages, and category descriptions.
+- The language switch updates only fixed text nodes, HTML language and accessible attributes; it never changes the actual article text, source link, content locale, category, imported-file baseline or Markdown export format. There are no network requests, cookies, browser storage, tracking, authentication or publishing permissions.
+- Added eight-locale dictionary and DOM-safety regression tests, writer-session data-loss checks and responsive language selection. Translations need native-speaker and screen-reader review before being considered production-quality; the entire hosted community remains pre-launch.
+
 ## 2026-10-30 — Draft Lab safe citation links, public static release
 
 - Added a keyboard-accessible Link action in the browser-only Draft Lab that wraps selected text in Markdown `[label](https://example.org)` and selects the destination for editing, without submitting or storing any draft.
