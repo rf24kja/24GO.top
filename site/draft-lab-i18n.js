@@ -2,6 +2,14 @@
 // or translations of the user's article. English is the explicit fallback.
 export const UI_LOCALES=Object.freeze(['en','ru','th','es','fr','de','pt','zh']);
 const EN={
+ skip:"Skip to editor",
+ formatGroup:"Insert Markdown formatting",
+ invalidTitle:"Enter a title between 5 and 160 characters.",
+ invalidBody:"Write between 20 and 12,000 characters.",
+ invalidLocale:"Choose a supported language.",
+ invalidCategory:"Choose a supported category.",
+ invalidSource:"Use a valid HTTP or HTTPS source link without credentials.",
+
  uiLabel:'Interface language',
  home:'Home',articles:'Articles',lab:'Draft Lab',development:'Development',github:'GitHub ↗',
  eyebrow:'EARLY UX EXPERIMENT · FREE · NO SIGN-IN',
@@ -43,6 +51,14 @@ const EN={
  clearCanceled:'Draft kept. Nothing was erased.',cleared:'Draft cleared from this browser tab.'
 };
 const RU={
+ skip:"К редактору",
+ formatGroup:"Форматирование Markdown",
+ invalidTitle:"Введите название длиной от 5 до 160 символов.",
+ invalidBody:"Напишите от 20 до 12 000 символов.",
+ invalidLocale:"Выберите поддерживаемый язык статьи.",
+ invalidCategory:"Выберите допустимую категорию.",
+ invalidSource:"Укажите ссылку HTTP или HTTPS без логина и пароля.",
+
  uiLabel:'Язык интерфейса',home:'Главная',articles:'Статьи',lab:'Редактор',development:'Разработка',github:'GitHub ↗',
  eyebrow:'ТЕСТОВЫЙ РЕДАКТОР · БЕСПЛАТНО · БЕЗ ВХОДА',
  headline:'Создавайте знания, которыми хочется делиться.',
@@ -83,6 +99,14 @@ const RU={
  clearCanceled:'Черновик оставлен без изменений.',cleared:'Черновик очищен в этой вкладке.'
 };
 const TH={
+ skip:"ข้ามไปยังตัวแก้ไข",
+ formatGroup:"จัดรูปแบบ Markdown",
+ invalidTitle:"กรุณากรอกชื่อเรื่อง 5–160 อักขระ",
+ invalidBody:"กรุณาเขียน 20–12,000 อักขระ",
+ invalidLocale:"เลือกภาษาบทความที่รองรับ",
+ invalidCategory:"เลือกหมวดหมู่ที่รองรับ",
+ invalidSource:"ใช้ลิงก์ HTTP หรือ HTTPS ที่ไม่มีชื่อผู้ใช้และรหัสผ่าน",
+
  uiLabel:'ภาษาของหน้าจอ',home:'หน้าแรก',articles:'บทความ',lab:'ร่างบทความ',development:'การพัฒนา',github:'GitHub ↗',
  eyebrow:'ทดลองใช้งาน · ฟรี · ไม่ต้องเข้าสู่ระบบ',headline:'สร้างความรู้ที่ควรค่าแก่การแบ่งปัน',
  intro:'เขียนบทความทางเทคนิค ดาวน์โหลดเป็น Markdown แล้วเปิดไฟล์เดิมในภายหลัง ช่วยเราทดสอบเครื่องมือที่คำนึงถึงความสะดวกและความเป็นส่วนตัว',
@@ -122,6 +146,14 @@ const TH={
  clearCanceled:'เก็บร่างเดิมไว้',cleared:'ล้างร่างในแท็บนี้แล้ว'
 };
 const ES={
+ skip:"Ir al editor",
+ formatGroup:"Dar formato Markdown",
+ invalidTitle:"Escribe un título de entre 5 y 160 caracteres.",
+ invalidBody:"Escribe entre 20 y 12.000 caracteres.",
+ invalidLocale:"Elige un idioma compatible.",
+ invalidCategory:"Elige una categoría compatible.",
+ invalidSource:"Usa una URL HTTP o HTTPS sin credenciales.",
+
  uiLabel:'Idioma de la interfaz',home:'Inicio',articles:'Artículos',lab:'Borradores',development:'Desarrollo',github:'GitHub ↗',
  eyebrow:'PRUEBA INICIAL · GRATIS · SIN REGISTRO',headline:'Conocimiento que merece compartirse.',
  intro:'Escribe un artículo técnico, descárgalo como Markdown y vuelve a abrir el archivo cuando quieras. Ayúdanos a crear una experiencia cómoda y privada.',
@@ -161,6 +193,14 @@ const ES={
  clearCanceled:'Borrador conservado.',cleared:'Borrador borrado de esta pestaña.'
 };
 const FR={
+ skip:"Aller à l’éditeur",
+ formatGroup:"Mise en forme Markdown",
+ invalidTitle:"Saisissez un titre de 5 à 160 caractères.",
+ invalidBody:"Écrivez entre 20 et 12 000 caractères.",
+ invalidLocale:"Choisissez une langue prise en charge.",
+ invalidCategory:"Choisissez une catégorie valide.",
+ invalidSource:"Utilisez un lien HTTP ou HTTPS sans identifiants.",
+
  uiLabel:'Langue de l’interface',home:'Accueil',articles:'Articles',lab:'Brouillons',development:'Développement',github:'GitHub ↗',
  eyebrow:'ESSAI PRÉLIMINAIRE · GRATUIT · SANS CONNEXION',headline:'Des connaissances qui méritent d’être partagées.',
  intro:'Rédigez un article technique, téléchargez-le en Markdown et rouvrez ce fichier plus tard. Aidez-nous à tester une expérience respectueuse de votre temps et de votre vie privée.',
@@ -200,6 +240,14 @@ const FR={
  clearCanceled:'Brouillon conservé.',cleared:'Brouillon effacé de cet onglet.'
 };
 const DE={
+ skip:"Zum Editor springen",
+ formatGroup:"Markdown formatieren",
+ invalidTitle:"Geben Sie einen Titel mit 5 bis 160 Zeichen ein.",
+ invalidBody:"Schreiben Sie 20 bis 12.000 Zeichen.",
+ invalidLocale:"Wählen Sie eine unterstützte Artikelsprache.",
+ invalidCategory:"Wählen Sie eine unterstützte Kategorie.",
+ invalidSource:"Verwenden Sie eine HTTP(S)-URL ohne Zugangsdaten.",
+
  uiLabel:'Sprache der Oberfläche',home:'Startseite',articles:'Artikel',lab:'Entwürfe',development:'Entwicklung',github:'GitHub ↗',
  eyebrow:'FRÜHER TEST · KOSTENLOS · OHNE ANMELDUNG',headline:'Wissen, das es wert ist, geteilt zu werden.',
  intro:'Schreiben Sie einen technischen Artikel, laden Sie ihn als Markdown herunter und öffnen Sie dieselbe Datei später erneut. Helfen Sie uns, eine einfache und datensparsame Lösung zu testen.',
@@ -239,6 +287,14 @@ const DE={
  clearCanceled:'Entwurf beibehalten.',cleared:'Entwurf aus diesem Tab gelöscht.'
 };
 const PT={
+ skip:"Ir para o editor",
+ formatGroup:"Formatação Markdown",
+ invalidTitle:"Informe um título de 5 a 160 caracteres.",
+ invalidBody:"Escreva entre 20 e 12.000 caracteres.",
+ invalidLocale:"Escolha um idioma compatível.",
+ invalidCategory:"Escolha uma categoria válida.",
+ invalidSource:"Use um link HTTP ou HTTPS sem credenciais.",
+
  uiLabel:'Idioma da interface',home:'Início',articles:'Artigos',lab:'Rascunhos',development:'Desenvolvimento',github:'GitHub ↗',
  eyebrow:'TESTE INICIAL · GRÁTIS · SEM LOGIN',headline:'Conhecimento que vale a pena compartilhar.',
  intro:'Escreva um artigo técnico, baixe em Markdown e abra o mesmo arquivo mais tarde. Ajude-nos a testar uma experiência que respeita seu tempo e sua privacidade.',
@@ -278,6 +334,14 @@ const PT={
  clearCanceled:'Rascunho mantido.',cleared:'Rascunho apagado desta aba.'
 };
 const ZH={
+ skip:"跳转到编辑器",
+ formatGroup:"Markdown 格式工具",
+ invalidTitle:"请输入 5–160 个字符的标题。",
+ invalidBody:"请输入 20–12,000 个字符的正文。",
+ invalidLocale:"请选择支持的文章语言。",
+ invalidCategory:"请选择支持的分类。",
+ invalidSource:"请使用不含账号密码的 HTTP 或 HTTPS 链接。",
+
  uiLabel:'界面语言',home:'首页',articles:'文章',lab:'草稿编辑器',development:'开发进展',github:'GitHub ↗',
  eyebrow:'早期体验 · 免费 · 无需登录',headline:'让有价值的知识得到分享。',
  intro:'撰写技术文章，下载 Markdown 文件，以后再重新打开继续编辑。帮助我们测试重视时间与隐私的写作体验。',
