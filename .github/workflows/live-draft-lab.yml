@@ -1,10 +1,7 @@
 name: Verify live Draft Lab release
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/live-draft-lab.yml"
-      - "scripts/check-live-draft-lab.sh"
+  # Do NOT check immediately on push: Pages may still be serving the old
+  # artifact, creating a false negative. The completed deployment is authoritative.
   workflow_run:
     workflows: ["Deploy pre-launch landing"]
     types: [completed]
