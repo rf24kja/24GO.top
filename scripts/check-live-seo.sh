@@ -36,8 +36,24 @@ probe '/robots.txt' robots 'Sitemap: https://24go.top/sitemap.xml'
 probe '/sitemap.xml' sitemap '<loc>https://24go.top/engineering/'
 probe '/engineering/' index '<h1>Engineering notes</h1>'
 probe '/engineering/feed.xml' feed '<rss version="2.0">'
-probe '/engineering/discoverable-technical-articles.html' article '<h1>Publishing technical articles'
-probe '/engineering/postgres-insert-returning-least-privilege.html' postgres '<h1>INSERT succeeds, RETURNING fails'
+# Every canonical URL in the actual sitemap must be fetchable, correct and
+# render its own canonical tag. New reviewed articles need no script edits.
+mapfile -t listed_urls < <(grep -oE '<loc>[^<]+' "$tmp/sitemap" | sed 's/^<loc>//')
+if (( ${#listed_urls[@]} < 5 )); then
+  echo '::error::Sitemap unexpectedly empty or malformed'
+  failures=$((failures+1))
+fi
+item=0
+for url in "${listed_urls[@]}"; do
+  item=$((item+1))
+  if [[ "$url" != "$base/"* ]]; then
+    echo "::error::Unexpected sitemap canonical hostname: $url"
+    failures=$((failures+1))
+    continue
+  fi
+  route="${url#"$base"}"
+  probe "$route" "page$item" "rel=\"canonical\" href=\"$url\""
+done
 
 for variant in 'https://www.24go.top/' 'http://24go.top/' 'http://www.24go.top/'; do
   if ! resolved="$(curl --fail --silent --show-error --location --max-redirs 5 \
