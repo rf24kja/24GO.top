@@ -20,6 +20,19 @@ test('public Draft Lab release evidence checks actual canonical HTTPS assets',()
   assert.match(smoke,/--connect-timeout 10 --max-time 25/);
   assert.doesNotMatch(smoke,/PUBLISH_API_KEY|sb_secret_|VERCEL_TOKEN|Authorization:|localStorage|--data(?:-raw)?/);
 });
+test('release smoke checks actual new engineering content and search-discovery assets',()=>{
+ for(const article of [
+  'multilingual-markdown-editor-without-losing-drafts',
+  'verify-github-pages-deploy-not-just-ci',
+  'safe-markdown-citation-links-without-xss'
+ ])assert.ok(smoke.includes(article),'missing public article verification: '+article);
+ for(const marker of [
+  'engineering/feed.xml','sitemap.xml','robots.txt','application/ld+json',
+  'crawlable archive link','sitemap entry','RSS entry',
+  'verified i18n PR source','verified deployment PR source','verified safe Markdown PR source'
+ ])assert.ok(smoke.includes(marker),'missing SEO smoke evidence: '+marker);
+ assert.doesNotMatch(smoke,/\bPOST\b|Authorization:|service_role|secret_|PUBLISH_API_KEY/);
+});
 test('read-only workflow runs only after Pages delivery or explicit manual dispatch',()=>{
   assert.doesNotMatch(workflow,/^  push:/m,'a push-triggered smoke would race the Pages deploy');
   assert.match(workflow,/workflow_run:/);
