@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parsePreviewBlocks, renderMarkdownPreview } from '../site/draft-lab-preview.js';
+import { parsePreviewBlocks, renderMarkdownPreview, safeCitationUrl } from '../site/draft-lab-preview.js';
 
 test('parses headings, paragraphs, lists, quotes and fenced code', () => {
   const article = [
@@ -78,4 +78,63 @@ test('renderer uses only fixed element names and textContent, never executable u
 test('displays author-controlled URLs and unsupported Markdown as plain text', () => {
   const blocks=parsePreviewBlocks('Read [unsafe](javascript:alert(1)) or **bold**.');
   assert.deepEqual(blocks,[{type:'paragraph',text:'Read [unsafe](javascript:alert(1)) or **bold**.'}]);
+});
+
+test('public Draft Lab preview shows safe HTTP(S) citation anchors without interpreting user HTML',()=>{
+ const created=[];
+ const doc={
+  createElement(tag){
+   const el={tag,textContent:'',attributes:{},children:[],
+    append(...items){this.children.push(...items);},
+    setAttribute(key,value){this.attributes[key]=value;}};
+   created.push(el);return el;
+  },
+  createTextNode(value){return {tag:'#text',textContent:value};}
+ };
+ const container={nodes:[],replaceChildren(...nodes){this.nodes=nodes;}};
+ const tick=String.fromCharCode(96);
+ const input=[
+  'Read [Docs & <img onerror=evil()>](https://example.org/guide?a=1&b=2) now.',
+  '',
+  '- [API](http://example.net/api)',
+  '',
+  '> [Evidence](https://example.org/evidence)',
+  '',
+  tick.repeat(3)+'txt',
+  '[not clickable](https://example.org)',
+  tick.repeat(3)
+ ].join('\n');
+ renderMarkdownPreview(container,input,doc);
+ assert.deepEqual(container.nodes.map(n=>n.tag),['p','ul','blockquote','pre']);
+ const links=created.filter(n=>n.tag==='a');
+ assert.equal(links.length,3);
+ assert.equal(links[0].textContent,'Docs & <img onerror=evil()>');
+ assert.deepEqual(links[0].attributes,{
+  href:'https://example.org/guide?a=1&b=2',
+  rel:'noopener noreferrer ugc',
+  target:'_blank',
+  referrerpolicy:'no-referrer'
+ });
+ assert.equal(container.nodes[0].children[0].textContent,'Read ');
+ assert.equal(container.nodes[0].children.at(-1).textContent,' now.');
+ assert.equal(container.nodes[3].children[0].textContent,'[not clickable](https://example.org)');
+ assert.ok(created.every(n=>!('innerHTML' in n)));
+});
+test('malicious schemes and credential-bearing citations remain literal plaintext',()=>{
+ assert.equal(safeCitationUrl('https://user:pass@example.org'),null);
+ assert.equal(safeCitationUrl('javascript:alert(1)'),null);
+ assert.equal(safeCitationUrl('https://example.org/path'),'https://example.org/path');
+ const doc={
+  createElement(tag){return {tag,children:[],textContent:'',
+   append(...n){this.children.push(...n);},
+   setAttribute(){throw new Error('No unsafe anchor should be created');}};},
+  createTextNode(text){return {tag:'#text',textContent:text};}
+ };
+ const container={nodes:[],replaceChildren(...n){this.nodes=n;}};
+ const input='[not allowed](javascript:alert(1)) and '+
+  '[credentials](https://name:pass@example.org/x) and '+
+  '[bad label](data:text/html,foo)';
+ renderMarkdownPreview(container,input,doc);
+ assert.equal(container.nodes.length,1);
+ assert.equal(container.nodes[0].textContent,input);
 });
