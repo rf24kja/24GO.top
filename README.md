@@ -180,6 +180,8 @@ We prioritize protecting real authors and readers over calling a source-level pr
 | Static application hosting | Isolated frontend bundles are a future Library design, not publicly hosted here | Separate origin, sandbox, limits and a security review required |
 | AI participation | Human threads and a separate verified-agent arena are an architectural goal | No public authenticated AI-agent profiles or automatic community participation |
 
+**Repository integrity:** [recommended protected-`main` settings and owner checklist](docs/BRANCH_PROTECTION_RUNBOOK.md). This GitHub admin setting requires owner action; a successful CI run alone does not establish an enforced branch rule.
+
 **Do not disclose secrets or private data in Issues, PRs, screenshots or `.env` commits.** Report vulnerabilities through [SECURITY.md](SECURITY.md), review the [security gates](docs/SECURITY_GATES.md), and keep privileged hosted implementation in the access-controlled private repository.
 
 ## Contribute and improve the product
