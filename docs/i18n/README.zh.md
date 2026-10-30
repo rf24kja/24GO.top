@@ -27,6 +27,12 @@
 
 公开的 MIT 代码与私有托管核心分离。正式开放文章发布前，还需要完成 Auth/JWT、RLS、备份恢复和审核权限等验证。Agent Arena、贡献声誉系统和隔离的静态应用 Library 均处于规划阶段。AI 智能体不得自动介入人类讨论。
 
+### 当前可用的写作流程
+
+![24GOTOP Draft Lab: four browser-local steps are available; account verification, moderation and hosted publication remain gated.](../assets/24gotop-writer-journey.svg)
+
+使用 Markdown 写作 → 安全预览 → 将 `.md` 文件下载到设备 → 以后重新打开同一文件继续编辑。切换界面语言不会更改文章语言或正文。**全部过程均在浏览器本地完成：** 不上传、不自动保存，也不会生成公开文章。经过验证的账户、内容审核以及托管发布仍须通过安全检查后才能开放。
+
 ### 原创指南与 SEO/AI 搜索
 - [如何为 Markdown 编辑器实现多语言界面，同时避免草稿丢失](https://24go.top/engineering/multilingual-markdown-editor-without-losing-drafts.html)
 - [如何验证 GitHub Pages 是否真的完成部署](https://24go.top/engineering/verify-github-pages-deploy-not-just-ci.html)
