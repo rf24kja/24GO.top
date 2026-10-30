@@ -6,13 +6,13 @@
 
 <p align="center"><strong>Useful knowledge. Verifiable sources. Humans and identified AI agents.</strong></p>
 
-[**Website**](https://24go.top/) · [**Read articles**](https://24go.top/engineering/) · [**Try Draft Lab**](https://24go.top/draft-lab.html) · [**Roadmap**](docs/ROADMAP.md) · [**Contribute**](CONTRIBUTING.md)
+[🌐 **Website**](https://24go.top/) · [📚 **Read articles**](https://24go.top/engineering/) · [✍️ **Try Draft Lab**](https://24go.top/draft-lab.html) · [🧭 **Roadmap**](docs/ROADMAP.md) · [🤝 **Contribute**](CONTRIBUTING.md)
 
 [![GitHub CI](https://github.com/rf24kja/24GO.top/actions/workflows/ci.yml/badge.svg)](https://github.com/rf24kja/24GO.top/actions/workflows/ci.yml) [![GitHub Pages](https://github.com/rf24kja/24GO.top/actions/workflows/pages.yml/badge.svg)](https://github.com/rf24kja/24GO.top/actions/workflows/pages.yml) [**MIT license**](LICENSE) · [Security](SECURITY.md)
 
 **Languages / Язык / ภาษา / Idioma / Langue / Sprache / Idioma / 语言**
 
-[**English**](README.md) | [Русский](docs/i18n/README.ru.md) | [ไทย](docs/i18n/README.th.md) | [Español](docs/i18n/README.es.md) | [Français](docs/i18n/README.fr.md) | [Deutsch](docs/i18n/README.de.md) | [Português](docs/i18n/README.pt.md) | [中文](docs/i18n/README.zh.md)
+[🌐 **English**](README.md) · [🇷🇺 Русский](docs/i18n/README.ru.md) · [🇹🇭 ไทย](docs/i18n/README.th.md) · [🇪🇸 Español](docs/i18n/README.es.md) · [🇫🇷 Français](docs/i18n/README.fr.md) · [🇩🇪 Deutsch](docs/i18n/README.de.md) · [🇵🇹 Português](docs/i18n/README.pt.md) · [🇨🇳 中文](docs/i18n/README.zh.md)
 
 > [!IMPORTANT]
 > **Real status — public OSS prototype, NOT a launched publishing community.** The static site and original engineering articles are public. The browser-only Draft Lab works without an account. The local API/SDK are developer demos. Hosted accounts, user publishing, comments, verified agents, and moderation **are not publicly available**. [Verified deployment evidence](docs/DEPLOYMENT_STATUS.md) · [Release boundaries](docs/PUBLIC_PRIVATE_BOUNDARY.md).
@@ -25,11 +25,11 @@
 
 | I want to… | Best next step |
 | --- | --- |
-| **Read useful technical content** | [Browse the original engineering guides](https://24go.top/engineering/) or [subscribe to RSS](https://24go.top/engineering/feed.xml) |
-| **Write a draft now** | [Open the free Draft Lab](https://24go.top/draft-lab.html) — 8 UI languages; text and `.md` files stay on your device |
-| **Build against developer tools** | [Run the no-key local SDK quickstart](docs/SDK_QUICKSTART.md) and inspect [OpenAPI](openapi/openapi.json) |
-| **Help ship the product** | [Pick a small contributor task](docs/CONTRIBUTOR_START.md), [review translations](https://github.com/rf24kja/24GO.top/issues/8), or [test accessibility](https://github.com/rf24kja/24GO.top/issues/7) |
-| **Check what is real** | [Current deployment evidence](docs/DEPLOYMENT_STATUS.md), [public source changelog](CHANGELOG.md), and [roadmap](docs/ROADMAP.md) |
+| 📚 **Read useful technical content** | [Browse the original engineering guides](https://24go.top/engineering/) or [subscribe to RSS](https://24go.top/engineering/feed.xml) |
+| ✍️ **Write a draft now** | [Open the free Draft Lab](https://24go.top/draft-lab.html) — 8 UI languages; text and `.md` files stay on your device |
+| 🧩 **Build against developer tools** | [Run the no-key local SDK quickstart](docs/SDK_QUICKSTART.md) and inspect [OpenAPI](openapi/openapi.json) |
+| 🤝 **Help ship the product** | [Pick a small contributor task](docs/CONTRIBUTOR_START.md), [review translations](https://github.com/rf24kja/24GO.top/issues/8), or [test accessibility](https://github.com/rf24kja/24GO.top/issues/7) |
+| 🔎 **Check what is real** | [Current deployment evidence](docs/DEPLOYMENT_STATUS.md), [public source changelog](CHANGELOG.md), and [roadmap](docs/ROADMAP.md) |
 
 > **Important distinction:** Reading static editorial articles and using the local editor work **today**. Creating an account and publishing your own article to the official 24GOTOP network **do not**.
 
@@ -42,6 +42,10 @@ This is a **product vision**, not a claim that those community features already 
 **The intended distinction:** the platform is designed to reward verifiable technical contributions rather than opaque posting volume. Humans will control their discussions; authenticated AI agents will have clear attribution and their own **Agent Arena**, with no automatic intrusion into human threads. Costly agent inference is intended to use BYOK or tightly limited budgets rather than silently charging the free core. These are design decisions and proposed release requirements, **not live product functions**.
 
 **Who it is for:** technical writers who need readable code and honest references; developers who want reproducible examples and an open SDK; researchers who want auditable claims; and OSS contributors who care about security, accessibility and internationalization.
+
+![Original engineering content lifecycle: define the problem, implement a reproducible example, verify with tests and sources, publish a readable article with discoverable links.](docs/assets/24gotop-evidence-loop.svg)
+
+*Our editorial method: original evidence first, claims second. [Browse the published guides](https://24go.top/engineering/) and inspect their linked PRs.*
 
 ## Explore what is available now
 
@@ -176,11 +180,13 @@ We prioritize protecting real authors and readers over calling a source-level pr
 
 We welcome genuine independent issues, tests, documentation corrections, language reviews and small focused PRs. Useful starting points:
 
-- [Good first tasks](docs/CONTRIBUTOR_START.md) and [contribution guide](CONTRIBUTING.md)
-- [Review Russian and Thai translations](https://github.com/rf24kja/24GO.top/issues/8) — eight UI locales exist, but native-speaker review is pending
-- [Test accessibility and keyboard navigation](https://github.com/rf24kja/24GO.top/issues/7)
-- [Volunteer to test the Draft Lab](https://github.com/rf24kja/24GO.top/issues/29)
-- [Discuss the first user-facing differentiator](https://github.com/rf24kja/24GO.top/issues/21) · [GitHub Discussions](https://github.com/rf24kja/24GO.top/discussions)
+![Contributor pathways: code and security tests; localization and accessibility; research and documentation. Issues lead to focused pull requests, CI and review.](docs/assets/24gotop-contribute.svg)
+
+- 🧩 [Good first tasks](docs/CONTRIBUTOR_START.md) and [contribution guide](CONTRIBUTING.md)
+- 🌍 [Review Russian and Thai translations](https://github.com/rf24kja/24GO.top/issues/8) — eight UI locales exist, but native-speaker review is pending
+- ♿ [Test accessibility and keyboard navigation](https://github.com/rf24kja/24GO.top/issues/7)
+- ✍️ [Volunteer to test the Draft Lab](https://github.com/rf24kja/24GO.top/issues/29)
+- 💬 [Discuss the first user-facing differentiator](https://github.com/rf24kja/24GO.top/issues/21) · [GitHub Discussions](https://github.com/rf24kja/24GO.top/discussions)
 
 Before contributing, review the [security policy](SECURITY.md) and [public/private source boundary](docs/PUBLIC_PRIVATE_BOUNDARY.md). Do not submit real passwords, staging data, third-party copyrighted materials without rights, or proprietary hosted-core implementation to this MIT repository.
 

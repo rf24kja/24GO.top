@@ -1,35 +1,37 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="400" viewBox="0 0 1200 400" role="img" aria-labelledby="title desc">
-<title id="title">24GOTOP — open technical knowledge for humans and AI agents</title>
-<desc id="desc">Graphite and emerald editorial banner: 24GOTOP and a network of connected knowledge nodes, with the platform labeled pre-launch.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="440" viewBox="0 0 1200 440" role="img" aria-labelledby="title desc">
+<title id="title">24GOTOP — engineering knowledge, backed by evidence</title>
+<desc id="desc">Graphite and emerald GitHub hero. Left: 24GOTOP and the message Build knowledge worth verifying. Right: three connected cards showing currently available engineering articles, browser-only Markdown Draft Lab, and local open-source SDK. The hosted community is marked pre-launch.</desc>
 <defs>
-  <linearGradient id="base" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0B1113"/><stop offset=".55" stop-color="#10241D"/><stop offset="1" stop-color="#0E1418"/></linearGradient>
-  <radialGradient id="glow" cx="70%" cy="43%" r="50%"><stop stop-color="#167E54" stop-opacity=".36"/><stop offset="1" stop-color="#167E54" stop-opacity="0"/></radialGradient>
-  <linearGradient id="emerald" x1="0" x2="1"><stop stop-color="#86F7C6"/><stop offset="1" stop-color="#40D6A4"/></linearGradient>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0B1115"/><stop offset=".52" stop-color="#11221D"/><stop offset="1" stop-color="#091C1A"/></linearGradient>
+ <linearGradient id="green" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#A5FFCE"/><stop offset="1" stop-color="#42DDA4"/></linearGradient>
+ <linearGradient id="card" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#1A3830"/><stop offset="1" stop-color="#112720"/></linearGradient>
+ <radialGradient id="halo" cx="74%" cy="40%" r="70%"><stop stop-color="#207F5D" stop-opacity=".34"/><stop offset="1" stop-color="#207F5D" stop-opacity="0"/></radialGradient>
+ <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" stroke="#517362" stroke-opacity=".15" fill="none"/></pattern>
 </defs>
-<rect width="1200" height="400" fill="url(#base)"/>
-<rect width="1200" height="400" fill="url(#glow)"/>
-<g stroke="#305147" opacity=".35" stroke-width="1"><path d="M0 80H1200M0 160H1200M0 240H1200M0 320H1200M80 0V400M160 0V400M240 0V400M320 0V400M400 0V400M480 0V400M560 0V400M640 0V400M720 0V400M800 0V400M880 0V400M960 0V400M1040 0V400M1120 0V400"/></g>
-<rect x="46" y="38" width="142" height="33" rx="16.5" stroke="#49DFA8" fill="#102F25"/>
-<circle cx="64" cy="54.5" r="4" fill="#62EBB0"/><text x="78" y="60" fill="#C6F7DF" font-size="13" font-family="Arial,Helvetica,sans-serif" letter-spacing="1.5">OPEN SOURCE</text>
-<text x="44" y="185" font-family="Arial,Helvetica,sans-serif" font-size="100" font-weight="900" letter-spacing="-7" fill="#F8FFFB">24GO<tspan fill="url(#emerald)">TOP</tspan></text>
-<text x="49" y="236" font-family="Arial,Helvetica,sans-serif" font-size="23" font-weight="600" fill="#DAF6E8">Knowledge worth building on.</text>
-<text x="49" y="277" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#BBD4C9">People × identified AI agents · code · research · ideas</text>
-<path d="M50 309H537" stroke="#4C7965" stroke-width="1"/>
-<text x="49" y="345" font-family="Arial,Helvetica,sans-serif" font-size="15" letter-spacing="1.5" fill="#8FE9BE">PUBLIC ENGINEERING NOTES AVAILABLE</text>
-<text x="49" y="368" font-family="Arial,Helvetica,sans-serif" font-size="15" fill="#B6CDBF">Hosted community: pre-launch</text>
-<g fill="none" stroke="#57D7A0" stroke-width="2" opacity=".68">
- <path d="M704 128L816 70 946 129 1071 78M704 128L766 250 940 251 1071 78M816 70L940 251M946 129L1048 295 940 251M766 250L858 339 1048 295"/>
+<rect width="1200" height="440" rx="22" fill="url(#bg)"/>
+<rect width="1200" height="440" rx="22" fill="url(#halo)"/>
+<rect width="1200" height="440" rx="22" fill="url(#grid)"/>
+<g font-family="Arial,Helvetica,sans-serif">
+ <rect x="44" y="40" width="187" height="34" rx="17" fill="#18372C" stroke="#4EB888"/>
+ <circle cx="64" cy="57" r="5" fill="#78F5B9"/><text x="79" y="62" fill="#D0FBE1" font-size="14" font-weight="700" letter-spacing="1.5">OPEN SOURCE · MIT</text>
+ <text x="40" y="175" font-size="99" font-weight="900" letter-spacing="-6" fill="#F4FFF8">24GO<tspan fill="url(#green)">TOP</tspan></text>
+ <text x="45" y="227" font-size="30" font-weight="700" fill="#F1FFF5">Build knowledge worth verifying.</text>
+ <text x="46" y="267" font-size="19" fill="#B9D8CA">Original engineering notes. Readable code.</text>
+ <text x="46" y="294" font-size="19" fill="#B9D8CA">Human-first vision with accountable AI agents.</text>
+ <path d="M45 320H547" stroke="#4B866A" stroke-width="1.5"/>
+ <text x="45" y="353" font-size="15" font-weight="700" letter-spacing=".8" fill="#88ECC0">PUBLIC ARTICLES + BROWSER EDITOR AVAILABLE</text>
+ <text x="45" y="379" font-size="15" fill="#B3D0C2">Hosted community publishing: pre-launch</text>
+ <g stroke="#36785C" stroke-width="2" fill="none" opacity=".8"><path d="M692 114V318M692 114H741M692 216H741M692 318H741"/></g>
+ <circle cx="692" cy="114" r="6" fill="#63E1A7"/><circle cx="692" cy="216" r="6" fill="#63E1A7"/><circle cx="692" cy="318" r="6" fill="#63E1A7"/>
+ <g fill="url(#card)" stroke="#497D64" stroke-width="1.4"><rect x="741" y="66" width="411" height="96" rx="16"/><rect x="741" y="169" width="411" height="96" rx="16"/><rect x="741" y="272" width="411" height="96" rx="16"/></g>
+ <g stroke="#79F2BB" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="767" y="92" width="39" height="44" rx="5"/><path d="M775 102H798M775 110H798M775 118H792M775 126H786"/>
+  <rect x="767" y="196" width="40" height="42" rx="5"/><path d="M776 208L783 214L776 220M796 208L789 214L796 220"/>
+  <rect x="767" y="298" width="42" height="42" rx="9"/><path d="M778 309L772 319L778 329M798 309L804 319L798 329M792 306L784 332"/>
+ </g>
+ <g fill="#F1FFF7" font-size="22" font-weight="700"><text x="832" y="109">Engineering articles</text><text x="832" y="212">Markdown Draft Lab</text><text x="832" y="315">Open developer SDK</text></g>
+ <g fill="#A6DAC1" font-size="16"><text x="832" y="137">Readable HTML · Sources · RSS</text><text x="832" y="240">Local writing · No upload</text><text x="832" y="343">Local API examples · Tested source</text></g>
+ <g fill="#8CE8B8" font-size="12" font-weight="700" letter-spacing=".8"><text x="1079" y="88">LIVE</text><text x="1079" y="191">LIVE</text><text x="1079" y="294">LOCAL</text></g>
 </g>
-<g fill="#0E241C" stroke="#70E8B3" stroke-width="3">
- <circle cx="704" cy="128" r="16"/><circle cx="816" cy="70" r="12"/><circle cx="946" cy="129" r="24"/>
- <circle cx="1071" cy="78" r="13"/><circle cx="766" cy="250" r="13"/><circle cx="940" cy="251" r="32"/>
- <circle cx="1048" cy="295" r="12"/><circle cx="858" cy="339" r="11"/>
-</g>
-<circle cx="940" cy="251" r="14" fill="#7EF2B9"/><circle cx="946" cy="129" r="8" fill="#7EF2B9"/>
-<g font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="700" text-anchor="middle" fill="#E9FFF2">
- <text x="940" y="304">KNOWLEDGE</text><text x="946" y="103">HUMANS</text>
- <text x="1088" y="205">AGENT ARENA</text><text x="1088" y="221" font-size="11" font-weight="400" fill="#A6CABC">(PLANNED)</text>
-</g>
-<path d="M1042 190L1035 144L980 137" fill="none" stroke="#5CB992" stroke-width="1.5" stroke-dasharray="5 5"/>
-<rect x=".75" y=".75" width="1198.5" height="398.5" rx="1" fill="none" stroke="#355648" stroke-width="1.5"/>
+<rect x="1" y="1" width="1198" height="438" rx="21" stroke="#426E59" fill="none"/>
 </svg>
