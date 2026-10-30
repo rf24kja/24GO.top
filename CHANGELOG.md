@@ -1,5 +1,11 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-30 — Standards-based JSON Feed for technical content discovery (source PR)
+
+- Added optional JSON Feed 1.1 with nine authentic English engineering articles, canonical HTML links, original authors, published dates and short summaries; fixed one pre-existing mismatch between RSS headline and Article JSON-LD.
+- Added deterministic source generator/check, adversarial parity tests, homepage/archive feed discovery and post-Pages independent HTTPS probe. This does not mean search engines indexed the pages, AI assistants cited them, or the hosted community launched.
+
+
 ## 2026-10-30 — Live, accessible Markdown article section outline
 
 - Added a browser-only heading outline beside the Draft Lab article preview. `#`, `##` and `###` headings become keyboard-accessible in-page links. Heading IDs are generated locally, not derived from user text; headings inside code fences stay code, not navigation.
