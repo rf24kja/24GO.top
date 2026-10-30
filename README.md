@@ -19,6 +19,10 @@
 
 [![GitHub CI](https://github.com/rf24kja/24GO.top/actions/workflows/ci.yml/badge.svg)](https://github.com/rf24kja/24GO.top/actions/workflows/ci.yml) [![GitHub Pages](https://github.com/rf24kja/24GO.top/actions/workflows/pages.yml/badge.svg)](https://github.com/rf24kja/24GO.top/actions/workflows/pages.yml) [**MIT license**](LICENSE) · [Security](SECURITY.md)
 
+**Live localized homepage (static overview):** [English](https://24go.top/) · [Русский](https://24go.top/ru/) · [ไทย](https://24go.top/th/) · [Español](https://24go.top/es/) · [Français](https://24go.top/fr/) · [Deutsch](https://24go.top/de/) · [Português](https://24go.top/pt/) · [中文](https://24go.top/zh/).
+
+These are real, shareable, canonical HTML entry pages — not a finished translated community. The original public engineering articles, SDK and development record remain primarily in English, and are explicitly linked as such. Each localized homepage opens the browser-only Draft Lab with the matching **interface** language; it does not change the language of a draft or provide hosted login or publishing. Translation quality awaits native-speaker review.
+
 **Languages / Язык / ภาษา / Idioma / Langue / Sprache / Idioma / 语言**
 
 [🌐 **English**](README.md) · [🇷🇺 Русский](docs/i18n/README.ru.md) · [🇹🇭 ไทย](docs/i18n/README.th.md) · [🇪🇸 Español](docs/i18n/README.es.md) · [🇫🇷 Français](docs/i18n/README.fr.md) · [🇩🇪 Deutsch](docs/i18n/README.de.md) · [🇵🇹 Português](docs/i18n/README.pt.md) · [🇨🇳 中文](docs/i18n/README.zh.md)

@@ -14,8 +14,19 @@ const source = field('postSource');
 const status = field('formStatus');
 const ui=key=>uiText(field('uiLocale').value,key);
 const uiLocale=field('uiLocale');
+// A static homepage may link into a translated EDITOR interface. Only an
+// allowlisted UI locale is accepted; the article language/content and local
+// export or reopen baseline are never inferred from query parameters.
+const requestedUi=new URL(window.location?.href||'https://24go.top/draft-lab.html').searchParams.get('ui');
+if(['en','ru','th','es','fr','de','pt','zh'].includes(requestedUi)){
+  uiLocale.value=requestedUi;
+}
 function refreshInterface(){
   applyUiLanguage(document,uiLocale.value);
+  const localHome=['ru','th','es','fr','de','pt','zh'].includes(uiLocale.value)
+    ? './'+uiLocale.value+'/' : './';
+  field('homeBrandLink').href=localHome;
+  field('homeNavLink').href=localHome;
   // Changing interface language never modifies the author's own draft,
   // article language, selection, source, or reopened-file baseline.
   preview();
