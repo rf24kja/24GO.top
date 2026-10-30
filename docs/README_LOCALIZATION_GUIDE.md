@@ -24,6 +24,20 @@ Each file includes real translated narrative, currently available static resourc
 - [Author journey](assets/24gotop-writer-journey.svg): four available browser-only steps (write, preview, download, reopen) deliberately separated from future authenticated moderation and hosting; it must never imply the local file is published automatically.
 - SVGs have fixed viewBoxes, title/description elements and no JavaScript, external images, foreign objects, arbitrary fonts or animations. Markdown captions and status tables remain readable when images are disabled or GitHub doesn't display the SVG.
 
+## GitHub presentation design — v3
+
+The English overview and the seven translated summaries now have **five** repository-local vector assets. All assets are optimized for GitHub's Markdown renderer and stored as editable SVG source: the replaced hero banner, refreshed architectural release map, writer journey, and two new mid-page visuals covering the evidence-first editorial lifecycle and genuine contributor workflow.
+
+- [Hero banner](assets/24gotop-readme-hero.svg): actual public value proposition, not a simulated launched interface.
+- [Evidence-to-article flow](assets/24gotop-evidence-loop.svg): source-backed, testable technical content for readers and search/AI discovery; **no ranking promises**.
+- [Author workflow](assets/24gotop-writer-journey.svg): explicit on-device draft/export/reopen and gated publishing.
+- [Architecture map](assets/24gotop-platform-map.svg): current public OSS vs gated private core vs future community.
+- [Contributor pathway](assets/24gotop-contribute.svg): contributions by code, localization/accessibility, or technical editorial evidence, then Issue → PR → tests → review.
+
+All README locale switchers include **one globe for English as an international language** and representative flag pictograms next to the remaining locale names (RU, TH, ES, FR, DE, PT, ZH). Flags are navigational visual hints, **not** statements that a language belongs exclusively to a country. Keep the written language names visible, preserve the link destinations, and do not use third-party flag images, CDN icons or decorative dependencies.
+
+**Safety/maintainability:** SVGs must use descriptive `title` and `desc`, fixed shapes and text, no scripting, external fonts/images, unsafe links or hidden tracking. Diagram text is English source artwork; assistive-reader alt is localized. Native-speaker accessibility/contrast review on real GitHub mobile/dark/light remains pending. `tests/readme-presentation.test.mjs` validates all five assets, links, locale markers and the truthful release states. The diagrams are not a visual QA certification.
+
 ## README information architecture and source-of-truth checks
 
 The main README is the authoritative English overview. It should help three audiences in their first minute: **readers** (technical articles and RSS), **authors** (what browser-only Draft Lab can and cannot do), and **developers** (no-key local API, SDK, source, tests and safe contributions). Keep the first screen concise; place deep detail in navigable sections and linked documentation.
