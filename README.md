@@ -17,6 +17,10 @@
 > [!IMPORTANT]
 > **Real status — public OSS prototype, NOT a launched publishing community.** The static site and original engineering articles are public. The browser-only Draft Lab works without an account. The local API/SDK are developer demos. Hosted accounts, user publishing, comments, verified agents, and moderation **are not publicly available**. [Verified deployment evidence](docs/DEPLOYMENT_STATUS.md) · [Release boundaries](docs/PUBLIC_PRIVATE_BOUNDARY.md).
 
+## Contents
+
+[Start here](#start-here) · [The problem](#why-24gotop) · [Available features](#explore-what-is-available-now) · [Try the writing workflow](#the-author-workflow-available-now) · [Architecture](#product-architecture-and-release-status) · [Repository map](#repository-map) · [Engineering articles](#original-engineering-articles) · [Local quickstart](#quickstart--run-the-open-developer-prototype) · [Security and privacy](#security-privacy-and-trust-boundaries) · [Contributing](#contribute-and-improve-the-product) · [Roadmap](#verified-progress-and-upcoming-release-gates) · [FAQ](#frequently-asked-questions)
+
 ## Start here
 
 | I want to… | Best next step |
@@ -35,6 +39,10 @@ Technical knowledge is often difficult to reuse: ideas lack citations, code exam
 
 This is a **product vision**, not a claim that those community features already work. We document the source, its real limitations, and what needs verification before opening public submissions.
 
+**The intended distinction:** the platform is designed to reward verifiable technical contributions rather than opaque posting volume. Humans will control their discussions; authenticated AI agents will have clear attribution and their own **Agent Arena**, with no automatic intrusion into human threads. Costly agent inference is intended to use BYOK or tightly limited budgets rather than silently charging the free core. These are design decisions and proposed release requirements, **not live product functions**.
+
+**Who it is for:** technical writers who need readable code and honest references; developers who want reproducible examples and an open SDK; researchers who want auditable claims; and OSS contributors who care about security, accessibility and internationalization.
+
 ## Explore what is available now
 
 | Experience | What you can do today | Current boundary |
@@ -44,6 +52,26 @@ This is a **product vision**, not a claim that those community features already 
 | **[Experimental API and SDK](docs/SDK_QUICKSTART.md)** | Run a local read-only Node.js example; inspect [OpenAPI](openapi/openapi.json) and the [JavaScript SDK](packages/sdk/). | Local development; **not** a production API |
 | **[Development record](https://24go.top/progress.html)** | Inspect tested PRs, release evidence, decisions and unresolved gaps. | Plans are separated from shipped features |
 | **[RSS](https://24go.top/engineering/feed.xml)** | Subscribe to published original engineering notes. | No real community activity feed yet |
+
+## The author workflow available now
+
+![Workflow illustration: write Markdown, preview safe text, download a local file, and reopen later. Hosted authenticated moderation and publication are separate, not available to the public.](docs/assets/24gotop-writer-journey.svg)
+
+The **[live Draft Lab](https://24go.top/draft-lab.html)** is intentionally a simple browser-only experiment. It is free and requires no account.
+
+1. **Write locally.** Enter a title, choose the **article content language** and category, and write a technical explanation. The **interface language** can be switched independently among English, Russian, Thai, Spanish, French, German, Portuguese and Chinese.
+2. **Preview safely.** Inspect headings, lists, quotations, fenced code and tightly validated HTTP(S) citation links. Raw HTML is not executed. This preview is deliberately not a full rich-text renderer.
+3. **Download your work.** Export a structured `.md` file to your own device. Confirm the browser really saved it; this is neither cloud autosave nor encrypted backup.
+4. **Continue later.** Open **the file exported by Draft Lab** to restore its article fields, edit, and download again. Unsaved-change warnings are best-effort browser protections, not a storage guarantee.
+
+**Data flow:** your article is handled within the browser tab and the file you explicitly download. Draft Lab does **not** upload the article, create an account, publish a public URL, or record community views/comments. If you close the tab before exporting, unsaved changes may be lost. See the [returning-author research plan](docs/RETURNING_AUTHOR_PILOT.md) and [source-backed editor guide](https://24go.top/engineering/multilingual-markdown-editor-without-losing-drafts.html).
+
+<details>
+<summary><strong>What needs to happen before actual hosted publishing?</strong></summary>
+
+A future author flow requires a verifiably authenticated account, per-author ownership enforced on the server and in PostgreSQL, safe draft revisions, submission into moderation, audit logs, abuse controls, and a recoverable database backup. Only an authorized publication transition may make content publicly visible. **An accepted submission is not a published article.** These gates are tracked in [Security Gates](docs/SECURITY_GATES.md), [Issue #38](https://github.com/rf24kja/24GO.top/issues/38) and [the publishing lifecycle article](https://24go.top/engineering/submit-is-not-publish.html). This is a **target workflow, not available on the public website**.
+
+</details>
 
 ## Product architecture and release status
 
@@ -58,6 +86,23 @@ This is a **product vision**, not a claim that those community features already 
 **Design:** mobile-first, graphite / white / emerald, light and dark themes, accessible navigation, authentic multilingual content. **Agents must not automatically enter human discussions.** The future Library is limited to isolated static HTML/CSS/JS builds, not arbitrary backend execution.
 
 **Ownership:** **Founder and official project lead: [@rf24kja](https://github.com/rf24kja).** Existing code is covered by the [MIT license](LICENSE): forks and independent deployment of licensed versions remain permitted. The official brand, domain, product governance and future separate hosted-core architecture are managed independently. See [GOVERNANCE.md](GOVERNANCE.md), [Brand Policy](BRAND_POLICY.md), [IP and Licensing](docs/IP_AND_LICENSING.md) and [open boundary decision #24](https://github.com/rf24kja/24GO.top/issues/24). No registered-trademark claim is made.
+
+## Repository map
+
+This repository is the **public MIT developer and documentation surface**, not a dump of the future hosted backend. The following paths make it easy to review actual code and find an appropriately scoped contribution.
+
+| Path | Contents and purpose | Running where? |
+| --- | --- | --- |
+| [`site/`](site/) | Static GitHub Pages landing, nine English editorial articles, RSS, sitemap, `robots.txt`, and the browser-only Draft Lab | Public HTTPS static site |
+| [`public/`](public/) | Local reader UI, styling and language controls | Local Node.js demo |
+| [`src/`](src/) | Minimal development HTTP server and in-memory/JSON demonstration store | Local only; **never expose development writes** |
+| [`packages/sdk/`](packages/sdk/) | JavaScript source SDK for local reader API exploration | Source-only; not an npm production package |
+| [`openapi/`](openapi/) | API contract for the development example | Documentation, not a hosted API |
+| [`examples/`](examples/) | Read-only Node.js integration examples | Local, no key required |
+| [`tests/`](tests/) | Automated behavior, safety, localization, editorial and documentation checks | GitHub Actions and local Node.js |
+| [`docs/`](docs/) | Roadmap, governance, security contracts, localization, evidence and contributor runbooks | Public developer documentation |
+
+**Not included:** private hosted-core server implementation, privileged operations, production database migrations, secret credentials, live customer content, or production moderation admin code. Public and private components are deliberately distinct while [Issue #24](https://github.com/rf24kja/24GO.top/issues/24) is under governance review.
 
 ## Original engineering articles
 
@@ -97,7 +142,35 @@ Open [http://127.0.0.1:3000/en/](http://127.0.0.1:3000/en/) or [http://127.0.0.1
 npm run demo:read
 ```
 
+**Expected initial behavior:** the English feed starts empty on a fresh checkout. The `npm run demo:read` script requests the local health endpoint and read-only posts and explains that an empty feed is expected. There is no public user account or production content behind this demo.
+
+<details>
+<summary><strong>Common setup problems</strong></summary>
+
+- **Node.js too old:** run `node --version`; the package requires **22 or newer**. Then run `npm run check` again.
+- **Port 3000 occupied:** stop another process using the port before starting this local demo; do not change network binding to a public address to work around it.
+- **Connection refused:** keep `npm run dev` running in the first terminal, then retry `npm run demo:read` in the second.
+- **Empty posts:** normal on a new local installation, not evidence that the hosted website has no editorial articles. Static articles are published separately on GitHub Pages.
+- **Want to experiment with a write?** Read the isolated [local database/demo setup](docs/DATABASE_SETUP.md) and [security limitations](docs/SECURITY_GATES.md) first. Do not enable the shared development key on a server accessible to other devices.
+
+</details>
+
 The feed **starts empty by design**. The [local publishing demo](docs/DATABASE_SETUP.md) is intentionally separate and requires a private development-only bearer key. **Never expose the local write API, .env, or token on the public internet.** It is not an authenticated community publishing service. [SDK guide](docs/SDK_QUICKSTART.md) · [API documentation](API.md) · [OpenAPI contract](openapi/openapi.json).
+
+## Security, privacy and trust boundaries
+
+We prioritize protecting real authors and readers over calling a source-level prototype a finished platform. These are **tested or documented boundaries**, not a blanket security certification.
+
+| Threat or concern | Public implementation / current rule | Release limitation |
+| --- | --- | --- |
+| Malicious article HTML | Local reader and Draft Lab use escaped text or restricted DOM creation; Markdown links are limited to validated HTTP(S) destinations | A full public renderer still needs deployed end-to-end security review |
+| Exposed author data | Draft Lab stores drafts only in tab memory or an explicitly downloaded local `.md`; no implicit upload or cloud autosave | Downloaded files are readable by anyone who can access them |
+| Credential exfiltration | SDK example refuses to send a shared developer publishing key to non-loopback hosts | A shared dev key is **not** an author identity or production authorization |
+| Account ownership and moderation | Public writing is disabled; private staging source and database policy work are separate | Signed cross-user JWT/RLS, role checks, recovery drill and spam/rate limits remain release blockers |
+| Static application hosting | Isolated frontend bundles are a future Library design, not publicly hosted here | Separate origin, sandbox, limits and a security review required |
+| AI participation | Human threads and a separate verified-agent arena are an architectural goal | No public authenticated AI-agent profiles or automatic community participation |
+
+**Do not disclose secrets or private data in Issues, PRs, screenshots or `.env` commits.** Report vulnerabilities through [SECURITY.md](SECURITY.md), review the [security gates](docs/SECURITY_GATES.md), and keep privileged hosted implementation in the access-controlled private repository.
 
 ## Contribute and improve the product
 
@@ -121,11 +194,26 @@ Before contributing, review the [security policy](SECURITY.md) and [public/priva
 
 **How can I help even before launch?** Review technical articles, report a reproducible issue, test the local SDK, or contribute a native-speaker translation or accessibility review. See [Contributing](CONTRIBUTING.md) and [good first tasks](docs/CONTRIBUTOR_START.md).
 
+## Verified progress and upcoming release gates
+
+We publish code, tests, decisions and release evidence separately. A merged PR is evidence of source changes; GitHub Pages deployment confirms static delivery; an independently fetched HTTPS page confirms public reachability at that time. **None alone proves working hosted publishing, search indexing, AI citations or active community adoption.**
+
+| Priority | What counts as completed | Current evidence / next action |
+| --- | --- | --- |
+| **P0 · A real safe article** | Verified author authentication, owned PostgreSQL draft, safe submission/moderation, audited publish, restored backup and abuse controls | [Security gates](docs/SECURITY_GATES.md) · [Issue #38](https://github.com/rf24kja/24GO.top/issues/38) · **not launched** |
+| **P1 · International discussions** | Fully localized content/URLs, accessible editor, comments and public profiles, verified scoped SDK/MCP/agent integration | [Roadmap](docs/ROADMAP.md) · [locale review #8](https://github.com/rf24kja/24GO.top/issues/8) |
+| **P2 · Reputation & Library** | Trustworthy counters and resistant-to-abuse rankings, isolated static frontend hosting | [Roadmap](docs/ROADMAP.md) · **planned** |
+| **Reach · Search / AI discovery** | Real indexed URLs, impressions, returning readers, useful referrals and human feedback | [Search status](docs/SEO_DISCOVERY_STATUS.md) · [editorial plan](docs/EDITORIAL_SEARCH_DISCOVERY_PLAN.md) · **traffic not verified** |
+
+**What is independently verified for the public site:** the [SEO delivery register](docs/SEO_DISCOVERY_STATUS.md) documents a GitHub-hosted HTTPS audit of **12 canonical sitemap URLs**, including **nine original articles**, on 30 October 2026. It does **not** establish indexing in Google/Bing, usage, conversions or generative-AI citations. See [deployment status](docs/DEPLOYMENT_STATUS.md) for run links and caveats.
+
 ## Development evidence and next steps
 
 **Read:** [Roadmap](docs/ROADMAP.md) · [CHANGELOG](CHANGELOG.md) · [Decision Log](docs/DECISION_LOG.md) · [Deployment Status](docs/DEPLOYMENT_STATUS.md) · [Growth Experiments](docs/GROWTH_EXPERIMENTS.md) · [OSS Impact Evidence](docs/OSS_IMPACT_EVIDENCE.md).
 
-**P0 before hosted launch:** demonstrated database restore, signed multi-user JWT/RLS isolation, per-author ownership, moderation authorization, abuse protection and safe published content URLs. No source-level test or static landing page alone clears those gates.
+**P0 before hosted launch:** demonstrated database restore, signed multi-user JWT/RLS isolation, per-author ownership, moderation authorization, abuse protection and safe published content URLs. No source-level test or static landing page alone clears those gates. Each new change should follow a scoped Issue → focused branch → reproducible tests → reviewed PR → green CI → deployment proof where applicable.
+
+**Public project facts change.** For the most current state, inspect the actual [GitHub Actions](https://github.com/rf24kja/24GO.top/actions), [open Issues](https://github.com/rf24kja/24GO.top/issues), [CHANGELOG](CHANGELOG.md) and [live deployment evidence](docs/DEPLOYMENT_STATUS.md) instead of treating this README as a real-time uptime monitor.
 
 ---
 
