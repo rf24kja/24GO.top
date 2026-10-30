@@ -41,6 +41,20 @@ download "$origin/visuals/24gotop-showcase.svg" "$tmp/showcase.svg"
 require '24GOTOP — connected knowledge, human first' "$tmp/network.svg" 'illustrated knowledge map'
 require 'Original engineering notes. Readable code.' "$tmp/showcase.svg" 'public visual poster content'
 require 'PRE-LAUNCH' "$tmp/showcase.svg" 'honest hosted product status'
+# Each localized homepage must actually be delivered by canonical HTTPS,
+# with the right self canonical and language-aware editor link. No auth writes.
+require 'href="./ru/"' "$tmp/home.html" 'discoverable Russian homepage'
+download "$origin/localized.css" "$tmp/localized.css"
+require '.language-switch' "$tmp/localized.css" 'shared mobile language picker'
+for locale in ru th es fr de pt zh; do
+  download "$origin/$locale/" "$tmp/home-$locale.html"
+  require "<html lang=\"$locale\">" "$tmp/home-$locale.html" "$locale localized HTML"
+  require "rel=\"canonical\" href=\"$origin/$locale/\"" "$tmp/home-$locale.html" "$locale canonical homepage"
+  require "href=\"../draft-lab.html?ui=$locale\"" "$tmp/home-$locale.html" "$locale editor language transition"
+  require 'OPEN SOURCE · PRE-LAUNCH' "$tmp/home-$locale.html" "$locale release disclosure"
+done
+require 'hreflang="ru" href="https://24go.top/ru/"' "$tmp/home.html" 'language alternate from English homepage'
+require "const requestedUi=new URL(window.location?.href" "$tmp/editor.js" 'allowlisted editor interface deep link'
 require 'href="./draft-lab.html"' "$tmp/home.html" 'public Draft Lab navigation'
 require 'Hosted public publishing is not live' "$tmp/home.html" 'truthful launch disclosure'
 require 'id="formatLink"' "$tmp/draft.html" 'Link editor control'
