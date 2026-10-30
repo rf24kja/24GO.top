@@ -117,6 +117,43 @@ test('previously exported Markdown survives export → reopen without data loss'
   }
 });
 
+test('export → reopen preserves leading indentation, tabs, trailing spaces and blank lines in the article',()=>{
+ const bodies=[
+  '\n\n  Four-space-indented code block that must remain exactly as authored.\n    extra indentation\n',
+  '  # A heading intentionally indented\n\nA technical paragraph with enough details.  \n  ',
+  '\tconst x = 1; // a pasted code sample with tab indentation\n\tconsole.log(x);\n\n',
+  'Research text in 中文 ภาษาไทย и Русский.\n\n---\nUnpublished draft · Generated in the 24GOTOP static Draft Lab.\n\n',
+  'A long reproducible explanation with a final significant blank line.\n\n\n',
+  'A long reproducible explanation with trailing spaces and no newline.   '
+ ];
+ for(const locale of LOCALES){
+  for(const body of bodies){
+   const original={...valid,locale,body};
+   const serialized=formatDraft(original);
+   assert.ok(serialized.includes(body),'raw body must appear without trimming');
+   const reopened=parseDraftFile(serialized);
+   assert.equal(reopened.body,body,locale+' article body is unchanged');
+   assert.deepEqual(reopened,original,locale+' article fields round-trip');
+   assert.equal(formatDraft(reopened),serialized,'resaving must be byte-for-byte stable');
+  }
+ }
+});
+
+test('previously exported trimmed Markdown remains importable after the lossless change',()=>{
+ const priorFormatBody=valid.body.trim();
+ const oldFile=[
+  '# '+valid.title.trim(),'',
+  'Language: '+valid.locale,
+  'Category: '+valid.category,
+  'Original source: '+valid.source,
+  '',priorFormatBody,'','---',
+  'Unpublished draft · Generated in the 24GOTOP static Draft Lab.'
+ ].join('\n');
+ const reopened=parseDraftFile(oldFile);
+ assert.deepEqual(reopened,valid);
+ assert.equal(formatDraft(reopened),oldFile);
+});
+
 test('reopen old drafts without a source URL and handle UTF-8 BOM/Windows line endings', () => {
   const old = { ...valid, source: '' };
   assert.deepEqual(parseDraftFile(formatDraft(old)), old);
