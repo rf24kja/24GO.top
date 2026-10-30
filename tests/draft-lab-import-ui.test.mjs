@@ -24,7 +24,7 @@ function build() {
   const ids = [
     'postTitle','postBody','postLocale','postCategory','postSource','formStatus',
     'previewHeading','previewBody','previewLocale','previewCategory','bodyCount',
-    'previewSource','draftSafety','downloadDraft','copyDraft','clearDraft','importDraft','importDraftFile','draftForm',
+    'previewSource','draftSafety','articleOutline','articleOutlineSection','downloadDraft','copyDraft','clearDraft','importDraft','importDraftFile','draftForm',
     'formatHeading','formatList','formatQuote','formatCode','formatLink','uiLocale'
   ];
   const elements = Object.fromEntries(ids.map(id => {
@@ -54,7 +54,8 @@ function build() {
     safeSourceUrl,validateDraft,formatDraft,draftFilename,hasDraftContent,
     parseDraftFile,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,
     uiText,applyUiLanguage,
-    renderMarkdownPreview(container, text) { container.textContent = text; }
+    renderMarkdownPreview(container, text) { container.textContent = text; },
+    renderPreviewOutline(container,text) { container.textContent=text;return /^#{1,3} /m.test(text)?1:0; }
   // Keep a bounded sandbox timeout, with enough CI runner headroom when
   // node --test starts multiple test files concurrently.
   },{timeout:5000});
@@ -235,4 +236,22 @@ test('interface language changes preserve the draft, saved-file baseline and cur
  app.elements.uiLocale.listeners.change();
  assert.equal(app.beforeUnload().prevented,true,'language change does not pretend edits were exported');
  assert.match(app.elements.draftSafety.textContent,/不会自动保存/);
+});
+
+test('live outline visibility follows headings without modifying the article or exported baseline',async()=>{
+ const app=build();
+ const original=formatDraft(sample);
+ await app.import(original);
+ assert.equal(app.elements.articleOutlineSection.hidden,true);
+ app.elements.postBody.value+='\n\n## Source evidence';
+ app.elements.postBody.listeners.input();
+ assert.equal(app.elements.articleOutlineSection.hidden,false);
+ assert.equal(app.beforeUnload().prevented,true);
+ app.elements.uiLocale.value='th';
+ app.elements.uiLocale.listeners.change();
+ assert.equal(app.elements.articleOutlineSection.hidden,false);
+ assert.equal(app.beforeUnload().prevented,true);
+ app.elements.postBody.value='A technical note without a Markdown section title.';
+ app.elements.postBody.listeners.input();
+ assert.equal(app.elements.articleOutlineSection.hidden,true);
 });
