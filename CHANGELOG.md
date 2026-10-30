@@ -1,5 +1,11 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-30 — Accessible field validation and explicit Markdown export shortcut
+
+- Added Ctrl+S (Windows/Linux) / Command+S (Mac) for the browser-only Draft Lab. It dispatches the existing validated **local .md download** action, not autosave or server publishing; a visible explanation is translated across all eight interface languages.
+- Replaced fragile English-error-message parsing with field-identity validation. On invalid export or copy, focus the exact failing title/body/language/category/source control, mark it `aria-invalid`, associate the status explanation through `aria-describedby`, and clear the marker upon editing or approved draft replacement.
+- Added simulated keyboard, error-focus and boundary tests. No additional dependencies, storage, tracking, new public write API, credentials, DNS or private hosted code.
+
 ## 2026-10-30 — Draft Lab: preserve user writing during asynchronous .md import (source PR)
 
 - Prevented older slow file reads and a second file picker selection from overwriting newer in-tab edits. Import applies only when it is the latest request **and** the article fields were not edited, formatted or cleared while the file was opening.
