@@ -1,6 +1,6 @@
 'use strict';
 
-import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, parseDraftFile, MAX_DRAFT_FILE_BYTES, formatDraftSelection, createDraftImportGate } from './draft-lab-logic.js';
+import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, parseDraftFile, MAX_DRAFT_FILE_BYTES, formatDraftSelection, createDraftImportGate, invalidDraftField } from './draft-lab-logic.js';
 import { renderMarkdownPreview,renderPreviewOutline } from './draft-lab-preview.js';
 import { applyUiLanguage,uiText } from './draft-lab-i18n.js';
 
@@ -31,6 +31,14 @@ function currentDraft() {
   return { title:title.value, body:body.value, locale:locale.value,
     category:category.value, source:source.value };
 }
+
+const validatedFields=Object.freeze({title,body,locale,category,source});
+const validationLabels=Object.freeze({title:'invalidTitle',body:'invalidBody',locale:'invalidLocale',category:'invalidCategory',source:'invalidSource'});
+function clearFieldError(node){
+  node.removeAttribute('aria-invalid');
+  node.removeAttribute('aria-describedby');
+}
+function clearFieldErrors(){for(const node of Object.values(validatedFields))clearFieldError(node);}
 
 function message(text, isError = false) {
   status.textContent = text;
@@ -65,8 +73,8 @@ function preview() {
 }
 
 for (const control of [title,body,locale,category,source]) {
-  control.addEventListener('input', () => { importGate.changed();message(''); preview(); });
-  control.addEventListener('change', () => { importGate.changed();preview(); });
+  control.addEventListener('input', () => { clearFieldError(control);importGate.changed();message(''); preview(); });
+  control.addEventListener('change', () => { clearFieldError(control);importGate.changed();preview(); });
 }
 
 
@@ -90,16 +98,14 @@ for(const [id,action] of [['formatHeading','heading'],['formatList','list'],
 }
 
 function readyToExport() {
-  const invalid = validateDraft(currentDraft());
-  if (!invalid) return true;
-  const fieldKey=invalid.startsWith('Enter a title')?'invalidTitle':
-    invalid.startsWith('Write between')?'invalidBody':
-    invalid.startsWith('Choose a supported language')?'invalidLocale':
-    invalid.startsWith('Choose a supported category')?'invalidCategory':'invalidSource';
-  message(ui(fieldKey), true);
-  if (title.value.trim().length < 5) title.focus();
-  else if (body.value.trim().length < 20) body.focus();
-  else source.focus();
+  clearFieldErrors();
+  const invalid=invalidDraftField(currentDraft());
+  if(!invalid)return true;
+  const control=validatedFields[invalid];
+  control.setAttribute('aria-invalid','true');
+  control.setAttribute('aria-describedby','formStatus');
+  message(ui(validationLabels[invalid]),true);
+  control.focus();
   return false;
 }
 
@@ -137,6 +143,7 @@ field('importDraftFile').addEventListener('change', async event => {
     category.value = reopened.category;
     source.value = reopened.source;
     reopenedFileBaseline = { ...reopened };
+    clearFieldErrors();
     importGate.changed();
     preview();
     message(ui('opened'));
@@ -165,6 +172,15 @@ field('downloadDraft').addEventListener('click', () => {
   message(ui('downloadStarted') + anchor.download + ui('downloadSuffix'));
 });
 
+// On this local editor only, Ctrl/Cmd+S explicitly downloads the Markdown
+// export. Do not intercept other browser shortcuts, and never imply autosave.
+document.addEventListener('keydown',event=>{
+  if(event.key?.toLowerCase()!=='s'||event.repeat||
+     event.altKey||event.shiftKey||(!event.ctrlKey&&!event.metaKey))return;
+  event.preventDefault();
+  field('downloadDraft').click();
+});
+
 field('copyDraft').addEventListener('click', async () => {
   if (!readyToExport()) return;
   if (!navigator.clipboard?.writeText) {
@@ -191,6 +207,7 @@ field('clearDraft').addEventListener('click', () => {
   locale.value = 'en';
   category.value = 'guides';
   reopenedFileBaseline = null;
+  clearFieldErrors();
   importGate.changed();
   preview();
   message(ui('cleared'));
