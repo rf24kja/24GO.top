@@ -57,7 +57,7 @@ test('public README uses status-aware descriptions, credible calls to action, ho
  assert.match(publicREADME,/MIT license/);
  assert.match(publicREADME,/forks and independent deployment/);
  assert.match(publicREADME,/NOT a launched publishing community/);
- assert.match(publicREADME,/Hosted public publishing is not live/);
+ assert.match(publicREADME,/Hosted public publishing is not live|Hosted accounts, user publishing,[^\n]+are not publicly available/);
  assert.match(publicREADME,/verified|Verified/);
  assert.match(publicREADME,/npm run demo:read/);
  assert.match(publicREADME,/npm test/);
