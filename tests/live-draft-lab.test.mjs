@@ -13,7 +13,8 @@ test('public Draft Lab release evidence checks actual canonical HTTPS assets',()
   for(const marker of ['id="formatLink"','safeCitationUrl','noopener noreferrer ugc',
     'does not publish, upload or automatically save your writing',
     'Hosted public publishing is not live','id="uiLocale"','UI_STRINGS',
-    'applyUiLanguage(document,uiLocale.value)']){
+    'applyUiLanguage(document,uiLocale.value)','id="articleOutlineSection"',
+    'renderPreviewOutline','outlineTitle:']){
     assert.ok(smoke.includes(marker),'Missing verified public feature '+marker);
   }
   assert.match(smoke,/--proto '=https' --proto-redir '=https'/);
