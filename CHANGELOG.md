@@ -1,5 +1,12 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-30 — Refined GitHub README visuals, infographic storytelling and language flags
+
+- Replaced the public GitHub README graphite/emerald hero artwork with a more readable source-controlled banner focused on the **actually available** editorial articles, browser-only Draft Lab and local OSS SDK examples; retained the pre-launch disclosure.
+- Redesigned the public/private/planned architecture SVG for clearer status lanes. Added two new lightweight source-controlled, accessible SVG infographics: an evidence-first editorial publication workflow (real problem → reproducible implementation → tests/sources → discoverable guide) and a reviewed OSS contribution path (code/security, localization/accessibility, technical docs and Issues → PR → CI → review).
+- Placed all five diagrams naturally across the main English README and seven existing localized summaries (RU, TH, ES, FR, DE, PT, ZH), and added accessible globe/flag hints to all language switchers. Introduced subtle action icons for the primary links and contributor calls to action, without remote assets or scripts.
+- Expanded automated tests for image security/accessibility, live-vs-planned accuracy, source-controlled image positions, links and all eight language selectors. This is **documentation presentation only**, not a launch of user publishing, AI agents, moderation or any new hosted feature.
+
 ## 2026-10-30 — Deeper eight-language README and safe author-workflow diagram
 
 - Expanded the English GitHub README with a concise navigation index, detailed browser-local writer lifecycle, realistic release constraints, repository source map, security/privacy trust boundaries, evidence-backed roadmap gates, troubleshooting and contributor pathways.
