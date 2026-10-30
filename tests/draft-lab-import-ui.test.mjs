@@ -20,7 +20,7 @@ const sample = {
   source:'https://example.org/guide'
 };
 
-function build() {
+function build({uiHref='https://24go.top/draft-lab.html'}={}) {
   const ids = [
     'postTitle','postBody','postLocale','postCategory','postSource','formStatus',
     'previewHeading','previewBody','previewLocale','previewCategory','bodyCount',
@@ -48,7 +48,7 @@ function build() {
   elements.postLocale.value='en';
   elements.postCategory.value='guides';
   let confirm = true;
-  const window = {listeners:{}, confirm(){return confirm;}, addEventListener(type, callback){this.listeners[type]=callback;}};
+  const window = {listeners:{}, location:{href:uiHref}, confirm(){return confirm;}, addEventListener(type, callback){this.listeners[type]=callback;}};
   const document = {
     listeners:{},
     addEventListener(type,callback){this.listeners[type]=callback;},
@@ -581,4 +581,20 @@ test('a valid import-zone drop remains supported and does not show misplaced-dro
  assert.match(app.elements.formStatus.textContent,/Markdown draft opened locally/);
  assert.doesNotMatch(app.elements.formStatus.textContent,/Drop one saved Draft Lab/);
  assert.equal(app.beforeUnload().prevented,false);
+});
+
+test('homepage language links select only Draft Lab interface without modifying article language',()=>{
+ for(const code of ['en','ru','th','es','fr','de','pt','zh']){
+  const app=build({uiHref:'https://24go.top/draft-lab.html?ui='+code});
+  assert.equal(app.elements.uiLocale.value,code);
+  assert.equal(app.document.documentElement.lang,code);
+  assert.equal(app.elements.postLocale.value,'en','article language is separate');
+  assert.equal(app.elements.postTitle.value,'');
+  assert.equal(app.elements.postBody.value,'');
+ }
+ for(const supplied of ['?ui=../ru','?ui=__proto__','?ui=RU','?ui=%3Cscript%3E','?lang=ru']){
+  const app=build({uiHref:'https://24go.top/draft-lab.html'+supplied});
+  assert.equal(app.elements.uiLocale.value,'en','unknown UI must fall back to English');
+  assert.equal(app.elements.postLocale.value,'en');
+ }
 });
