@@ -1,5 +1,11 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-31 — Draft Lab preserves whitespace in exported article bodies
+
+- Replaced body-wide trimming during local Markdown export with exact body text preservation, including leading indentation and trailing blank lines.
+- Added multilingual export/reopen tests, strict UTF-8 file-read coverage and old export compatibility.
+- Browser-only: no network, autosave, database, public publishing or new privileges. Browser line-ending behavior and native download handling remain unchanged.
+
 ## 2026-10-31 — Distinct on-device draft names for multilingual authors
 
 - Prevented Russian, Thai, Chinese and other non-Latin article titles from collapsing into a single generic local Markdown filename for each language. Suggested `.md` filenames now contain a readable bounded ASCII slug, language and stable 64-bit title fingerprint; slash, markup and long headings remain safe in filenames.
