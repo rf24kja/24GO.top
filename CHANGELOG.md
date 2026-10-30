@@ -1,5 +1,12 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-31 — Premium README hero and reader keyboard focus
+
+- Updated the local SVG README hero in the graphite/emerald design system with readable `OPEN SOURCE · MIT`, cinematic styling, and honest `LIVE`/`LOCAL`/`PRE-LAUNCH` capability labels; no external resources or scripts.
+- Added concise public articles / browser-only Draft Lab / local SDK entry points to README while retaining verified status, ownership and existing MIT license.
+- Made local demo main and feed fragment targets programmatically focusable with `tabindex="-1"`, preserving native Tab order; extended source tests and keyboard/screen-reader manual QA guide.
+- No private Core, production account/write access, Supabase, infrastructure, secrets, DNS or hosting changes. Manual browser QA and independent P0 security review remain open.
+
 ## 2026-10-30 — Local Markdown drop and corruption-safe multilingual import
 
 - Added a visible, responsive drag-and-drop area for exactly one **previously exported** Draft Lab `.md` file; the native file picker remains available for keyboard and mobile users. The drop target does not transmit, store or execute file contents.
