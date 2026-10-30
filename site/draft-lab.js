@@ -1,7 +1,7 @@
 'use strict';
 
 import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, parseDraftFile, MAX_DRAFT_FILE_BYTES, formatDraftSelection } from './draft-lab-logic.js';
-import { renderMarkdownPreview } from './draft-lab-preview.js';
+import { renderMarkdownPreview,renderPreviewOutline } from './draft-lab-preview.js';
 import { applyUiLanguage,uiText } from './draft-lab-i18n.js';
 
 // Browser-only UX research prototype: no network, browser persistence or analytics.
@@ -52,6 +52,7 @@ function preview() {
   // textContent prevents user HTML or Markdown from executing.
   field('previewHeading').textContent = title.value.trim() || ui('emptyTitle');
   renderMarkdownPreview(field('previewBody'), body.value.trim() || ui('emptyBody'));
+  field('articleOutlineSection').hidden=renderPreviewOutline(field('articleOutline'),body.value)===0;
   field('previewLocale').textContent = locale.value.toUpperCase();
   field('previewCategory').textContent = ui(['guides','tools','news','models'].includes(category.value)?category.value:'guides');
   field('bodyCount').textContent = body.value.length.toLocaleString('en-US') + ' / 12,000';
