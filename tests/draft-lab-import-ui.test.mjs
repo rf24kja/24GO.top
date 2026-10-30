@@ -341,5 +341,6 @@ test('local formatting and explicit Clear invalidate slow import; UI language sw
  third.resolve(formatDraft(sample));await importC;
  assert.equal(app.elements.postTitle.value,sample.title);
  assert.equal(app.beforeUnload().prevented,false);
- assert.match(app.elements.formStatus.textContent,/Ничего не загружено|Ничего не отправлено|Ничего не было загружено/);
+ assert.equal(app.elements.formStatus.textContent,uiText('ru','opened'));
+ assert.equal(app.elements.formStatus.dataset.error,'false');
 });
