@@ -1,5 +1,11 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-30 — Material Design SVG navigation and protected-main runbook (README-only PR)
+
+- Added seven small source-controlled emerald Google Material Design icons (Apache-2.0, copyright/attribution and original source paths preserved) and replaced inconsistent decorative UI emoji with accessible text-labelled icon navigation in all eight README languages. No font package or CDN was installed.
+- Added regression tests for safe SVGs, local path resolution and accessible navigation, plus precise GitHub owner-only branch protection steps and expected CI status. No GitHub branch settings were changed by this source-only PR.
+
+
 ## 2026-10-30 — Standards-based JSON Feed for technical content discovery (source PR)
 
 - Added optional JSON Feed 1.1 with nine authentic English engineering articles, canonical HTML links, original authors, published dates and short summaries; fixed one pre-existing mismatch between RSS headline and Article JSON-LD.

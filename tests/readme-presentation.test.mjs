@@ -165,7 +165,7 @@ test('README visual landmarks link only to local revision-controlled SVGs',()=>{
  const contribute=publicREADME.indexOf('24gotop-contribute.svg');
  assert.ok(top>=0&&top<evidence&&evidence<journey&&journey<map&&map<contribute,
   'editorial image order should match the narrative without crowding the first screen');
- assert.match(publicREADME,/📚 \*\*Read articles\*\*/);
- assert.match(publicREADME,/✍️ \*\*Try Draft Lab\*\*/);
- assert.match(publicREADME,/🧩 \*\*Build against developer tools\*\*/);
+ assert.match(publicREADME,/<a href="https:\/\/24go\.top\/engineering\/"><img src="\.\/docs\/assets\/readme-icons\/article\.svg" alt="" width="18" height="18"> Read articles<\/a>/);
+ assert.match(publicREADME,/<a href="https:\/\/24go\.top\/draft-lab\.html"><img src="\.\/docs\/assets\/readme-icons\/edit\.svg" alt="" width="18" height="18"> Try Draft Lab<\/a>/);
+ assert.match(publicREADME,/<img src="\.\/docs\/assets\/readme-icons\/code\.svg" alt="" width="18" height="18"> \*\*Build against developer tools\*\*/);
 });
