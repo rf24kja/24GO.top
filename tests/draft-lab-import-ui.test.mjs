@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { runInNewContext } from 'node:vm';
 import {
   safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent,
-  parseDraftFile, MAX_DRAFT_FILE_BYTES, hasUnexportedChanges, formatDraftSelection
+  parseDraftFile, MAX_DRAFT_FILE_BYTES, hasUnexportedChanges, formatDraftSelection, createDraftImportGate
 } from '../site/draft-lab-logic.js';
 import {uiText,applyUiLanguage} from '../site/draft-lab-i18n.js';
 
@@ -52,7 +52,7 @@ function build() {
   runInNewContext(source, {
     document, window, navigator:{}, URL, Blob, setTimeout,
     safeSourceUrl,validateDraft,formatDraft,draftFilename,hasDraftContent,
-    parseDraftFile,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,
+    parseDraftFile,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,createDraftImportGate,
     uiText,applyUiLanguage,
     renderMarkdownPreview(container, text) { container.textContent = text; },
     renderPreviewOutline(container,text) { container.textContent=text;return /^#{1,3} /m.test(text)?1:0; }
@@ -66,6 +66,11 @@ function build() {
       const event = {prevented:false, returnValue:undefined, preventDefault(){this.prevented=true;}};
       window.listeners.beforeunload(event);
       return event;
+    },
+    startImport(file) {
+      const input=elements.importDraftFile;
+      input.files=[file];
+      return input.listeners.change({currentTarget:input});
     },
     async import(content, filename='24gotop-saved.md', size=Buffer.byteLength(content,'utf8')) {
       const input=elements.importDraftFile;
@@ -254,4 +259,87 @@ test('live outline visibility follows headings without modifying the article or 
  app.elements.postBody.value='A technical note without a Markdown section title.';
  app.elements.postBody.listeners.input();
  assert.equal(app.elements.articleOutlineSection.hidden,true);
+});
+
+function deferred(){
+ let resolve,reject;
+ const promise=new Promise((ok,fail)=>{resolve=ok;reject=fail;});
+ return {promise,resolve,reject};
+}
+
+test('typing during a slow file read preserves every newer edit and the unsaved warning',async()=>{
+ const app=build();
+ const future=deferred();
+ const pending=app.startImport({name:'24gotop-a.md',size:4000,text:()=>future.promise});
+ app.elements.postTitle.value='Fresh hand-written title';
+ app.elements.postBody.value='A newer technical explanation written while the file was opening.';
+ app.elements.postBody.listeners.input();
+ future.resolve(formatDraft(sample));
+ await pending;
+ assert.equal(app.elements.postTitle.value,'Fresh hand-written title');
+ assert.equal(app.elements.postBody.value,'A newer technical explanation written while the file was opening.');
+ assert.match(app.elements.formStatus.textContent,/draft changed while/i);
+ assert.equal(app.elements.formStatus.dataset.error,'true');
+ assert.equal(app.beforeUnload().prevented,true);
+ assert.equal(app.elements.importDraftFile.value,'');
+});
+
+test('newer file selection wins regardless of read completion order',async()=>{
+ const app=build();
+ const old=deferred(),newer=deferred();
+ const first=app.startImport({name:'24gotop-old.md',size:4000,text:()=>old.promise});
+ const second=app.startImport({name:'24gotop-new.md',size:4000,text:()=>newer.promise});
+ // An old rejected or successful read cannot clear the new selection's status.
+ old.reject(new Error('old file unreadable'));
+ await first;
+ assert.equal(app.elements.formStatus.textContent,'');
+ const winning={...sample,title:'A second and newer selected draft file'};
+ newer.resolve(formatDraft(winning));
+ await second;
+ assert.equal(app.elements.postTitle.value,winning.title);
+ assert.equal(app.elements.postBody.value,winning.body);
+ assert.equal(app.beforeUnload().prevented,false,'most recent reopened file is baseline');
+ assert.match(app.elements.formStatus.textContent,/Nothing was uploaded/);
+});
+
+test('slow first import cannot overwrite already opened second file',async()=>{
+ const app=build();
+ const old=deferred(),newer=deferred();
+ const first=app.startImport({name:'24gotop-old.md',size:4000,text:()=>old.promise});
+ const second=app.startImport({name:'24gotop-new.md',size:4000,text:()=>newer.promise});
+ const winning={...sample,title:'A replacement selected after the first file'};
+ newer.resolve(formatDraft(winning));await second;
+ old.resolve(formatDraft(sample));await first;
+ assert.equal(app.elements.postTitle.value,winning.title);
+ assert.match(app.elements.formStatus.textContent,/Nothing was uploaded/);
+ assert.equal(app.beforeUnload().prevented,false);
+});
+
+test('local formatting and explicit Clear invalidate slow import; UI language switch does not',async()=>{
+ const app=build();
+ const first=deferred();
+ const importA=app.startImport({name:'24gotop-old.md',size:4000,text:()=>first.promise});
+ app.elements.postBody.value='An existing local technical paragraph with enough content for editing.';
+ app.elements.postBody.selectionStart=0;app.elements.postBody.selectionEnd=0;
+ app.elements.formatHeading.listeners.click();
+ const formatted=app.elements.postBody.value;
+ first.resolve(formatDraft(sample));await importA;
+ assert.equal(app.elements.postBody.value,formatted);
+ assert.match(app.elements.formStatus.textContent,/draft changed while/i);
+
+ const second=deferred();
+ const importB=app.startImport({name:'24gotop-old.md',size:4000,text:()=>second.promise});
+ app.elements.clearDraft.listeners.click();
+ second.resolve(formatDraft(sample));await importB;
+ assert.equal(app.elements.postBody.value,'');
+ assert.match(app.elements.formStatus.textContent,/draft changed while/i);
+
+ const third=deferred();
+ const importC=app.startImport({name:'24gotop-valid.md',size:4000,text:()=>third.promise});
+ app.elements.uiLocale.value='ru';
+ app.elements.uiLocale.listeners.change();
+ third.resolve(formatDraft(sample));await importC;
+ assert.equal(app.elements.postTitle.value,sample.title);
+ assert.equal(app.beforeUnload().prevented,false);
+ assert.match(app.elements.formStatus.textContent,/Ничего не загружено|Ничего не отправлено|Ничего не было загружено/);
 });
