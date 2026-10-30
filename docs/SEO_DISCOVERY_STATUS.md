@@ -1,11 +1,11 @@
-# Public crawlability and indexing — 2026-10-29
+# Public crawlability and indexing — 2026-10-30
 
-**Public HTML and sitemap accessibility are externally confirmed on 2026-10-29; Google/Bing indexing is NOT confirmed.** Source changes and GitHub Actions success are not a search coverage report.
+**Historical public HTML and sitemap accessibility were externally confirmed on 2026-10-29 for the then-current six articles; Google/Bing indexing is NOT confirmed.** The three additional October 30 articles need their own post-Pages external check. Source changes and green unit tests alone are not a search coverage report.
 
 ## Source-verified assets
 - Canonical policy: https://24go.top (**owner settings and live routing independently verified on 2026-10-29**).
 - Public root `site/robots.txt`, XML sitemap `site/sitemap.xml`, optional `site/llms.txt` (not an SEO ranking mechanism).
-- Editorial `site/engineering/`: six original static technical notes, metadata, HTML navigation, RSS, unique canonical URLs; every one appears in the now nine-URL sitemap.
+- Editorial `site/engineering/`: **nine** original static technical notes, metadata, HTML navigation, RSS, unique canonical URLs; all nine appear in the **12-URL** source sitemap (home, progress, archive and nine articles).
 - The experimental `site/draft-lab.html` intentionally retains its `noindex,follow` metadata and is excluded from sitemap.
 - No fake translations, unverified `hreflang`, invented review stars, paid backlinks, synthetic traffic or fake public publishing API.
 
@@ -23,7 +23,7 @@ Official evidence: https://developers.google.com/search/docs/crawling-indexing/s
 
 ## External crawlability verification workflow — 2026-10-29
 
-The new [External SEO availability audit](https://github.com/rf24kja/24GO.top/actions/workflows/seo-live.yml) uses a GitHub-hosted Linux runner to verify DNS/TLS and HTTP delivery of the actual canonical `https://24go.top` pages, sitemap, robots and RSS, plus permanent-host routing expectations from www and HTTP variants. It is read-only, on-demand + scheduled daily, with short bounded retries, no credentials and no paid monitoring services.
+The new [External SEO availability audit](https://github.com/rf24kja/24GO.top/actions/workflows/seo-live.yml) uses a GitHub-hosted Linux runner to verify DNS/TLS and HTTP delivery of the actual canonical `https://24go.top` pages, sitemap, robots and RSS, plus permanent-host routing expectations from www and HTTP variants. It is read-only, on-demand + scheduled daily **and after successful Pages deployment**, with short bounded retries, no credentials and no paid monitoring services.
 
 **A green run is evidence that these public URLs responded from that runner at that time, not that Google/Bing indexed them or AI systems recommend them.** If the check is red, preserve its log and review [Issue #59](https://github.com/rf24kja/24GO.top/issues/59) before changing DNS/HTTPS/Pages settings. The check intentionally fails for a wrong www/apex redirect or unexpected canonical, rather than silently passing by accepting a duplicate host. In particular, the GitHub Pages deployment's `http://www.24go.top/` reported environment URL needs independent confirmation.
 
@@ -57,3 +57,10 @@ The completed root cause, owner settings change and rollback procedure are docum
 The founder enabled correct Pages settings and our [configuration audit attempt 2](https://github.com/rf24kja/24GO.top/actions/runs/40882729744) returned **PASS**: `cname=24go.top`, `https_enforced=true`, `html_url=https://24go.top/`, approved certificate for both apex and www. [External content audit attempt 2](https://github.com/rf24kja/24GO.top/actions/runs/40881090465) returned **PASS** for all nine sitemap URLs, robots, RSS and final HTTP/www redirects to HTTPS apex. Earlier failures remain in original Actions logs as historical evidence, not current configuration. [PR #70](https://github.com/rf24kja/24GO.top/pull/70) added first-hop HTTP 301 and article path/query verification; the [post-merge live audit #40886701790](https://github.com/rf24kja/24GO.top/actions/runs/40886701790) passed and [Issue #59](https://github.com/rf24kja/24GO.top/issues/59) was closed.
 
 Search Console or Bing index coverage, ranking positions and AI recommendation visibility are **not** established by these tests.
+
+## Source and release-audit reconciliation — 2026-10-30
+
+- The current public `main` source includes **nine** engineering HTML articles, **nine** RSS items and **12** XML sitemap URLs. The three newest original guides were merged in [PR #83](https://github.com/rf24kja/24GO.top/pull/83), and metadata/feed parity in [PR #84](https://github.com/rf24kja/24GO.top/pull/84). The existing [Article structured-data test](https://github.com/rf24kja/24GO.top/blob/main/tests/article-structured-data.test.mjs) checks matching visible headings, Article JSON-LD, canonical URLs, RSS publication dates, index navigation and newest-first ordering. This is **source verification**, not search indexing.
+- [Pages deployment #40973542565](https://github.com/rf24kja/24GO.top/actions/runs/40973542565) completed after PR #84. [Draft Lab HTTPS check #40973593512](https://github.com/rf24kja/24GO.top/actions/runs/40973593512) also passed, but its scope is the Draft Lab, **not** an independent full check of the three newest article URLs. The earlier full [SEO audit #40894098316](https://github.com/rf24kja/24GO.top/actions/runs/40894098316) predates those additions and must not be used as proof of their delivery.
+- This release adds a read-only `workflow_run` trigger for **successful completion** of the named Pages workflow. The SEO runner checks every URL actually listed in the deployed sitemap, not a hard-coded historical page count, after Pages has finished. An independent **new successful run** is required before reporting all nine articles as externally reachable.
+- Neither a passing source test nor an HTTPS response proves Google/Bing index coverage, impressions, clicks, RSS subscribers, unique readers or AI answer citations. All remain **unmeasured** without their respective authoritative telemetry. No live DNS/Pages configuration, Supabase or billing was changed.

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-const names = ['ci.yml','database.yml','pages.yml'];
+const names = ['ci.yml','database.yml','pages.yml','seo-live.yml'];
 const workflows = Object.fromEntries(names.map(name => [
   name,
   readFileSync(fileURLToPath(new URL('../.github/workflows/' + name,import.meta.url)), 'utf8')
@@ -40,4 +40,13 @@ test('GitHub Pages deployment still uploads static site only', () => {
   assert.match(pages,/pages: write/);
   assert.match(pages,/id-token: write/);
   assert.doesNotMatch(pages,/npm run (?:dev|start)/);
+});
+
+test('read-only live SEO audit starts after successful Pages deployment, not in parallel',()=>{
+  const seo=workflows['seo-live.yml'];
+  assert.match(seo,/workflow_run:\s*\n\s+workflows: \["Deploy pre-launch landing"\]\s*\n\s+types: \[completed\]/);
+  assert.match(seo,/if: github\.event_name != 'workflow_run' \|\| github\.event\.workflow_run\.conclusion == 'success'/);
+  assert.match(seo,/permissions:\s*\n\s+contents: read/);
+  assert.match(seo,/run: bash scripts\/check-live-seo\.sh/);
+  assert.doesNotMatch(seo,/pages: write|id-token: write|\$\{\{\s*secrets\./);
 });

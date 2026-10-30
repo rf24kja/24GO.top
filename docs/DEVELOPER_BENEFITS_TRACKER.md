@@ -1,6 +1,6 @@
 # 24GOTOP — Developer benefits & startup credits tracker
 
-**Last verified: 2026-10-29. Owner:** project maintainer. **This is a factual application planning log, not evidence of acceptance.**
+**Last verified: 2026-10-30. Owner:** project maintainer. **This is a factual application planning log, not evidence of acceptance.**
 
 Our goal is to lower genuine development costs while we build a useful, independent AI knowledge platform. Credits, subscriptions, compute, and discounts are **different benefit types**, cannot be combined into one cash figure, and may involve eligibility, expiry, overages, and taxes.
 
@@ -83,3 +83,10 @@ This is a source review and public evidence log only; no claim of personalized p
 - **GitHub Copilot OSS:** [official maintainer guidance](https://docs.github.com/en/copilot/how-tos/copilot-on-github/set-up-copilot/enable-copilot/set-up-for-teachers-and-os-maintainers) still requires popular OSS maintainer eligibility, reevaluated monthly. GitHub settings and owner eligibility were not inspected.
 - **AWS:** [official Activate Founders guide](https://aws.amazon.com/aws-startups/learn/applying-for-aws-activate-credits-a-step-by-step-guide/) retains the self-funded US$1,000 starting route. A distinct [Pioneer program](https://aws.amazon.com/pioneer-credits/) describes promotional credits for eligible businesses new to AWS, including AI workloads; no guaranteed amount or suitability for an unincorporated individual is established. [Promotional credit terms](https://aws.amazon.com/awscredits/) may leave chargeable usage; no AWS account or paid resource created.
 - **OSS impact:** the public GitHub repository API on 2026-10-29 reports **1 star, 0 forks, MIT**. These are not verified dependent packages, monthly downloads, independent contributors, or benefit awards. No applications submitted.
+
+## Official program recheck — 2026-10-30 (UTC)
+
+- **[Claude for OSS](https://claude.com/contact-sales/claude-for-oss):** official application remains visible and advertises **six months of personal Claude Max 20x**, not API credits or GPU. The [binding terms](https://www.anthropic.com/claude-for-oss-terms) reserve discretionary review, reject artificial/trivial activity and require legal residence/sanctions eligibility; the current repo does not demonstrate the numerical impact thresholds. No application submitted.
+- **[GitHub Copilot for OSS](https://docs.github.com/en/copilot/how-tos/copilot-on-github/set-up-copilot/enable-copilot/set-up-for-teachers-and-os-maintainers):** free Pro remains conditional on maintaining a **popular** open-source project, with **monthly** reevaluation. Separately, [GitHub's Copilot cloud documentation](https://docs.github.com/en/copilot/concepts/copilot-surfaces/copilot-on-github) says its **new** cloud experience from 28 October 2026 requires a paid plan; Copilot Free retains the older chat experience. Neither page proves this owner's personal entitlement.
+- **[AWS Activate](https://aws.amazon.com/aws-startups/learn/applying-for-aws-activate-credits-a-step-by-step-guide/):** official June 2026 guide describes Founders US$1,000 for eligible self-funded startups (some up to US$5,000 over time) and Portfolio up to US$200,000 with a qualifying provider. [Pioneer](https://aws.amazon.com/pioneer-credits/) remains a separate, approval-based business program without a published guaranteed award. No application, account change or paid resource.
+- **Impact:** source PRs and engineering guides demonstrate work, not external dependency adoption or verified search traffic. No new grant, credit, GPU, subscriber or maintainer entitlement is claimed.

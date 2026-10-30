@@ -80,6 +80,7 @@ Before public user analytics ship: define a privacy notice, event schema, retent
 - **Distribution:** indexed-intent HTML pages with truthful schema.org Article markup, consistent canonical links, internal navigation, RSS and sitemap. Only voluntary ethical community sharing; no automated backlink spam or fake recommendations.
 - **Evidence and next test:** verify each static article's real HTTPS delivery after Pages publishes. With verified search properties, measure actual Google/Bing coverage and queries; with consent-aware analytics, measure genuine return visits. These are **not yet measured**.
 - **Decision rule:** after real reader feedback or indexing diagnostics, update useful answers and add further original work; do not publish repetitive AI-generated content just to hit a daily count. See [Editorial Search Discovery Plan](EDITORIAL_SEARCH_DISCOVERY_PLAN.md).
+- **2026-10-30 release-evidence gate:** source has nine original articles, nine RSS entries and 12 sitemap URLs, but the last complete external SEO audit predates three newly merged guides. Trigger the read-only live SEO audit only **after successful Pages deployment** and record the resulting run before claiming those new pages are externally delivered. HTTP delivery is not search indexing, impressions, subscribers, AI citations or unique visitors. See [SEO discovery status](SEO_DISCOVERY_STATUS.md).
 
 ## Content cadence
 

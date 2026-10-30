@@ -1,5 +1,11 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-30 — Post-Pages independent SEO audit and truthful release evidence
+
+- Changed the read-only external SEO workflow to run after a **successful completed** GitHub Pages deployment, not concurrently with it. It retains daily/manual and source-change checks, canonical HTTPS/TLS/robots/RSS/sitemap coverage, and no write token or secrets.
+- Added workflow regression tests for event ordering and read-only permissions. Reconciled the editorial evidence log to nine source articles, nine RSS items and 12 sitemap URLs while explicitly marking the three new article URLs' independent live verification pending until a new audit succeeds.
+- Rechecked official Claude OSS, GitHub Copilot maintainer/cloud experience and AWS Activate/Pioneer eligibility; no application, grant, credits or external adoption is claimed. No site content, DNS, Supabase, backend or paid services changed.
+
 ## 2026-10-30 — International GitHub README and original architecture graphics
 
 - Rebuilt the root GitHub README as an accessible, practical project landing: honest pre-launch disclosures, featured original engineering guides, public vs private vs future product map, verified developer quickstart, contribution paths, security/IP rights and links to the actual website, RSS, changelog and delivery evidence.
