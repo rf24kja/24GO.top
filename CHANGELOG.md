@@ -1,5 +1,10 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-30 — Keep validation visible across language switches
+
+- Fixed an accessibility edge case after the keyboard export release: switching the Draft Lab UI locale, changing another field, or changing a select could clear the live validation message while leaving an invalid field marked. Active errors now persist with the correct localized explanation until the offending control is corrected.
+- Added a simulated browser regression test, with no article mutation, storage, HTTP requests, identity/auth changes or deployment configuration changes.
+
 ## 2026-10-30 — Accessible field validation and explicit Markdown export shortcut
 
 - Added Ctrl+S (Windows/Linux) / Command+S (Mac) for the browser-only Draft Lab. It dispatches the existing validated **local .md download** action, not autosave or server publishing; a visible explanation is translated across all eight interface languages.
