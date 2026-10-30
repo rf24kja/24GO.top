@@ -2,6 +2,8 @@
 
 ## 2026-10-30 — Post-Pages independent SEO audit and truthful release evidence
 
+- **Follow-up evidence:** [independent live SEO run #40986751453](https://github.com/rf24kja/24GO.top/actions/runs/40986751453) passed all 12 deployed sitemap URLs, including nine engineering articles, robots, RSS, canonical and redirects. This is delivery evidence only; indexing and human traffic remain unmeasured.
+
 - Changed the read-only external SEO workflow to run after a **successful completed** GitHub Pages deployment, not concurrently with it. It retains daily/manual and source-change checks, canonical HTTPS/TLS/robots/RSS/sitemap coverage, and no write token or secrets.
 - Added workflow regression tests for event ordering and read-only permissions. Reconciled the editorial evidence log to nine source articles, nine RSS items and 12 sitemap URLs while explicitly marking the three new article URLs' independent live verification pending until a new audit succeeds.
 - Rechecked official Claude OSS, GitHub Copilot maintainer/cloud experience and AWS Activate/Pioneer eligibility; no application, grant, credits or external adoption is claimed. No site content, DNS, Supabase, backend or paid services changed.
