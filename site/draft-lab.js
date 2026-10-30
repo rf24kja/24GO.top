@@ -1,6 +1,6 @@
 'use strict';
 
-import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, parseDraftFile, MAX_DRAFT_FILE_BYTES, formatDraftSelection, createDraftImportGate, invalidDraftField } from './draft-lab-logic.js';
+import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, parseDraftFile, readDraftFileStrict, MAX_DRAFT_FILE_BYTES, formatDraftSelection, createDraftImportGate, invalidDraftField } from './draft-lab-logic.js';
 import { renderMarkdownPreview,renderPreviewOutline } from './draft-lab-preview.js';
 import { applyUiLanguage,uiText } from './draft-lab-i18n.js';
 
@@ -120,19 +120,14 @@ field('importDraft').addEventListener('click', () => {
   field('importDraftFile').click();
 });
 
-field('importDraftFile').addEventListener('change', async event => {
-  const input = event.currentTarget;
-  const file = input.files?.[0];
+// Same race-safe, confirmation-gated import for the native picker and desktop
+// drag-and-drop. Both stay on this device; neither path uploads data.
+async function openLocalDraft(file,input=null) {
   if (!file) return;
   const ticket=importGate.begin();
   try {
-    if (!file.name.toLowerCase().endsWith('.md') || file.size > MAX_DRAFT_FILE_BYTES) {
-      throw new TypeError('Unsupported file');
-    }
-    // Reading a user-selected local file does not make a network request.
-    const reopened = parseDraftFile(await file.text());
+    const reopened=await readDraftFileStrict(file);
     // A previous file or any newer typing/formatting/clear invalidates this result.
-    // Do not disturb an active, more recent file selection or its status.
     if (!importGate.isLatest(ticket)) return;
     if (!importGate.canApply(ticket)) {
       message(ui('importInterrupted'),true);
@@ -156,9 +151,37 @@ field('importDraftFile').addEventListener('change', async event => {
   } catch {
     if (importGate.isLatest(ticket)) message(ui('openError'),true);
   } finally {
-    // An outdated read must not clear the newer file picker's selection.
-    if (importGate.isLatest(ticket)) input.value = '';
+    // An outdated read must not clear the newer native file picker.
+    if (input && importGate.isLatest(ticket)) input.value = '';
   }
+}
+field('importDraftFile').addEventListener('change', event => {
+  const input=event.currentTarget;
+  return openLocalDraft(input.files?.[0],input);
+});
+const dropZone=field('draftDropZone');
+const hasDraggedFile=event=>Array.from(event.dataTransfer?.types||[]).includes('Files');
+for(const type of ['dragenter','dragover']){
+  dropZone.addEventListener(type,event=>{
+    if(!hasDraggedFile(event))return;
+    event.preventDefault();
+    dropZone.dataset.dragging='true';
+    if(event.dataTransfer)event.dataTransfer.dropEffect='copy';
+  });
+}
+dropZone.addEventListener('dragleave',event=>{
+  if(!dropZone.contains(event.relatedTarget))delete dropZone.dataset.dragging;
+});
+dropZone.addEventListener('drop',event=>{
+  if(!hasDraggedFile(event))return;
+  event.preventDefault();
+  delete dropZone.dataset.dragging;
+  const files=event.dataTransfer?.files;
+  if(!files||files.length!==1){
+    message(ui('openError'),true);
+    return;
+  }
+  return openLocalDraft(files[0]);
 });
 
 field('downloadDraft').addEventListener('click', () => {
