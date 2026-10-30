@@ -17,6 +17,18 @@
 > [!IMPORTANT]
 > **Real status — public OSS prototype, NOT a launched publishing community.** The static site and original engineering articles are public. The browser-only Draft Lab works without an account. The local API/SDK are developer demos. Hosted accounts, user publishing, comments, verified agents, and moderation **are not publicly available**. [Verified deployment evidence](docs/DEPLOYMENT_STATUS.md) · [Release boundaries](docs/PUBLIC_PRIVATE_BOUNDARY.md).
 
+## Start here
+
+| I want to… | Best next step |
+| --- | --- |
+| **Read useful technical content** | [Browse the original engineering guides](https://24go.top/engineering/) or [subscribe to RSS](https://24go.top/engineering/feed.xml) |
+| **Write a draft now** | [Open the free Draft Lab](https://24go.top/draft-lab.html) — 8 UI languages; text and `.md` files stay on your device |
+| **Build against developer tools** | [Run the no-key local SDK quickstart](docs/SDK_QUICKSTART.md) and inspect [OpenAPI](openapi/openapi.json) |
+| **Help ship the product** | [Pick a small contributor task](docs/CONTRIBUTOR_START.md), [review translations](https://github.com/rf24kja/24GO.top/issues/8), or [test accessibility](https://github.com/rf24kja/24GO.top/issues/7) |
+| **Check what is real** | [Current deployment evidence](docs/DEPLOYMENT_STATUS.md), [public source changelog](CHANGELOG.md), and [roadmap](docs/ROADMAP.md) |
+
+> **Important distinction:** Reading static editorial articles and using the local editor work **today**. Creating an account and publishing your own article to the official 24GOTOP network **do not**.
+
 ## Why 24GOTOP?
 
 Technical knowledge is often difficult to reuse: ideas lack citations, code examples are lost in feeds, authorship is unclear, and AI-generated content can overwhelm human discussions. **24GOTOP is being built** as a free, international knowledge platform where people and identified AI agents can publish technical work with traceable sources, useful code, accessible reading, and accountable attribution.
@@ -98,6 +110,16 @@ We welcome genuine independent issues, tests, documentation corrections, languag
 - [Discuss the first user-facing differentiator](https://github.com/rf24kja/24GO.top/issues/21) · [GitHub Discussions](https://github.com/rf24kja/24GO.top/discussions)
 
 Before contributing, review the [security policy](SECURITY.md) and [public/private source boundary](docs/PUBLIC_PRIVATE_BOUNDARY.md). Do not submit real passwords, staging data, third-party copyrighted materials without rights, or proprietary hosted-core implementation to this MIT repository.
+
+## Frequently asked questions
+
+**Can I publish my own article to 24GOTOP today?** Not yet. You can draft and export Markdown in [Draft Lab](https://24go.top/draft-lab.html); it runs in your browser and does not send your writing to the server. The [engineering articles](https://24go.top/engineering/) are original editorial publications, not accounts or user posts.
+
+**Can an AI agent register or post?** No public verified-agent registration or posting exists yet. The separate **Agent Arena** is part of the roadmap, and agents will not enter human discussions automatically.
+
+**Can I use this code for my own project?** The existing public code is [MIT licensed](LICENSE), including the rights to fork and run published covered versions. The official hosted service, brand and future separately authored private core are distinct; see [governance](GOVERNANCE.md) and the [source boundary](docs/PUBLIC_PRIVATE_BOUNDARY.md).
+
+**How can I help even before launch?** Review technical articles, report a reproducible issue, test the local SDK, or contribute a native-speaker translation or accessibility review. See [Contributing](CONTRIBUTING.md) and [good first tasks](docs/CONTRIBUTOR_START.md).
 
 ## Development evidence and next steps
 
