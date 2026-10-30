@@ -525,3 +525,60 @@ test('multiple dropped files and invalid bytes never overwrite an unsaved draft'
  assert.equal(app.elements.postTitle.value,'Author has not exported this draft');
  assert.match(app.elements.formStatus.textContent,/Import cancelled/);
 });
+
+
+test('dropping a file outside the import area cannot navigate away or replace an unsaved draft',()=>{
+ const app=build();
+ const currentTitle='Keep this original technical draft';
+ const currentBody='Long enough technical body that must survive an accidental file drop.';
+ app.elements.postTitle.value=currentTitle;
+ app.elements.postBody.value=currentBody;
+ const outside={
+  target:app.elements.postBody,
+  dataTransfer:{types:['Files'],files:[{name:'notes.md'}]},
+  prevented:false,preventDefault(){this.prevented=true;}
+ };
+ app.elements.draftDropZone.dataset.dragging='true';
+ app.document.listeners.dragover(outside);
+ assert.equal(outside.prevented,true,'prevent browser file navigation on dragover');
+ assert.equal(app.elements.draftDropZone.dataset.dragging,undefined,
+  'clear misleading import-zone hover state when leaving the zone');
+ outside.prevented=false;
+ app.document.listeners.drop(outside);
+ assert.equal(outside.prevented,true,'never navigate away on misplaced file drop');
+ assert.equal(app.elements.postTitle.value,currentTitle);
+ assert.equal(app.elements.postBody.value,currentBody);
+ assert.equal(app.beforeUnload().prevented,true);
+ assert.match(app.elements.formStatus.textContent,/Drop one saved Draft Lab/);
+});
+
+test('ordinary text drags are unaffected by the file-navigation guard',()=>{
+ const app=build();
+ const event={
+  target:app.elements.postBody,
+  dataTransfer:{types:['text/plain'],files:[]},
+  prevented:false,preventDefault(){this.prevented=true;}
+ };
+ app.document.listeners.dragover(event);
+ app.document.listeners.drop(event);
+ assert.equal(event.prevented,false);
+ assert.equal(app.elements.formStatus.textContent,'');
+});
+
+test('a valid import-zone drop remains supported and does not show misplaced-drop warning',async()=>{
+ const app=build();
+ const bytes=new TextEncoder().encode(formatDraft(sample));
+ const file={name:'24gotop-saved.md',size:bytes.byteLength,
+  async arrayBuffer(){return bytes.buffer;}};
+ const event={target:app.elements.draftDropZone,
+  dataTransfer:{types:['Files'],files:[file]},
+  prevented:false,preventDefault(){this.prevented=true;}};
+ await app.elements.draftDropZone.listeners.drop(event);
+ app.document.listeners.drop(event); // Native drop bubbles after the target handler.
+ assert.equal(event.prevented,true);
+ assert.equal(app.elements.postTitle.value,sample.title);
+ assert.equal(app.elements.postBody.value,sample.body);
+ assert.match(app.elements.formStatus.textContent,/Markdown draft opened locally/);
+ assert.doesNotMatch(app.elements.formStatus.textContent,/Drop one saved Draft Lab/);
+ assert.equal(app.beforeUnload().prevented,false);
+});

@@ -47,7 +47,7 @@ The production identity and moderation architecture is not ready yet. This proto
 - **Clipboard permission denied:** show an error; Markdown download remains available independently of clipboard permissions.
 - **Accidental erase:** confirm Clear only for a non-empty text/source draft; Cancel leaves the draft untouched.
 - **Downloads:** browser download prompts and storage permissions vary by platform; validate with real testers. A download request is not proof the file was saved.
-- **Import:** the file picker only accepts our own structured export format, rejects invalid or oversized data, and asks before replacing current text. Browser file access permissions differ across devices. See [Returning Author Pilot](RETURNING_AUTHOR_PILOT.md).
+- **Import:** the file picker and marked drop target accept only our own structured export format, reject invalid or oversized data, and ask before replacing current text. **Misplaced file drops anywhere outside the marked zone are cancelled** so the browser cannot navigate away to a dragged local file and discard an in-memory draft. Text and link drags still work normally. A dropped file is never automatically opened outside the zone, uploaded or saved; this remains a source-tested best-effort guard that needs real browser/mobile QA. See [Returning Author Pilot](RETURNING_AUTHOR_PILOT.md).
 - **No backend:** never ask users to register or submit API keys.
 - Revert the Draft Lab PR to remove it. Existing Node publishing API remains unchanged.
 

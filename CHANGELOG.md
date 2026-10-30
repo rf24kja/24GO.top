@@ -1,5 +1,11 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-31 — Prevent accidental file-drop navigation in Draft Lab
+
+- Block native file dragover/drop navigation **outside** the explicitly marked Draft Lab .md import zone. A misplaced local file no longer instructs the browser to replace the editor page; existing in-memory drafts remain untouched. Show the already localized import-area hint.
+- Keep file drops **inside** the marked zone routed to the existing strict UTF-8 parser, 64 KiB limit, latest-import race gate and replacement confirmation. Preserve normal text/link drag-and-drop editing.
+- Added local DOM integration regression coverage for outside-zone file drops, normal text drags and valid import-zone drops. This does **not** add autosave, browser storage, uploads, public publishing or any backend permission. Actual browser/mobile QA remains necessary.
+
 ## 2026-10-31 — Explain staging-only authentication and public product boundary
 
 - Documented why the separate Vercel/Supabase **existing-account staging identity** page has a login while the canonical `24go.top` static public site does not. Clarified the private `24GO.online` repository name is not a public product domain, and distinguished **READY deployment** from a verified, secure public publishing release.

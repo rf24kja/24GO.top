@@ -184,6 +184,25 @@ dropZone.addEventListener('drop',event=>{
   return openLocalDraft(files[0]);
 });
 
+
+/*
+ * A native file drop anywhere else on the page can navigate the browser to
+ * that file and lose an in-memory draft. Keep the intended drop-zone import,
+ * but cancel the browser's default file-navigation action everywhere.
+ * Ordinary text/link drags remain untouched.
+ */
+const insideDropZone=target=>target===dropZone||
+  Boolean(target&&dropZone.contains(target));
+for(const type of ['dragover','drop']){
+  document.addEventListener(type,event=>{
+    if(!hasDraggedFile(event))return;
+    event.preventDefault();
+    if(insideDropZone(event.target))return;
+    delete dropZone.dataset.dragging;
+    if(type==='drop')message(ui('dropHint'));
+  });
+}
+
 field('downloadDraft').addEventListener('click', () => {
   if (!readyToExport()) return;
   // Only the direct click initiates a local browser download. No upload or API.
