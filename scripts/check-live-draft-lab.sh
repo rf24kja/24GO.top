@@ -57,6 +57,17 @@ require 'hreflang="ru" href="https://24go.top/ru/"' "$tmp/home.html" 'language a
 require "const requestedUi=new URL(window.location?.href" "$tmp/editor.js" 'allowlisted editor interface deep link'
 require 'href="./draft-lab.html"' "$tmp/home.html" 'public Draft Lab navigation'
 require 'Hosted public publishing is not live' "$tmp/home.html" 'truthful launch disclosure'
+# Article proposal is a public GitHub issue and human-reviewed PR path,
+# not the restricted hosted publishing service. Verify actual Pages delivery.
+download "$origin/contribute.html" "$tmp/contribute.html"
+download "$origin/contribute.css" "$tmp/contribute.css"
+require 'href="./contribute.html">Propose an article' "$tmp/home.html" 'discoverable contributor path'
+require 'href="./contribute.html" lang="en"' "$tmp/draft.html" 'safe editor-to-proposal navigation'
+require 'https://github.com/rf24kja/24GO.top/issues/new?template=article_proposal.yml' "$tmp/contribute.html" 'public GitHub issue template'
+require 'Creating a proposal does not guarantee acceptance or publication.' "$tmp/contribute.html" 'manual moderation disclosure'
+require 'GitHub issues and pull requests are public.' "$tmp/contribute.html" 'public privacy warning'
+require 'contribution-steps' "$tmp/contribute.css" 'mobile-friendly contribution steps'
+
 require 'id="formatLink"' "$tmp/draft.html" 'Link editor control'
 require 'does not publish, upload or automatically save your writing' "$tmp/draft.html" 'no-backend warning'
 require "['formatQuote','quote'],['formatCode','code'],['formatLink','link']" "$tmp/editor.js" 'wired toolbar action'
@@ -87,6 +98,7 @@ require "window.addEventListener('popstate'" "$tmp/search.js" 'restored navigati
 require 'id="engineering-filter"' "$tmp/shared-search.html" 'public query URL serves readable article directory'
 download "$origin/engineering/feed.xml" "$tmp/feed.xml"
 download "$origin/sitemap.xml" "$tmp/sitemap.xml"
+require '<loc>https://24go.top/contribute.html</loc>' "$tmp/sitemap.xml" 'public proposal page sitemap'
 download "$origin/robots.txt" "$tmp/robots.txt"
 require 'Sitemap: https://24go.top/sitemap.xml' "$tmp/robots.txt" 'canonical sitemap discovery'
 for article in \

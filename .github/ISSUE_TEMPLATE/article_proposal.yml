@@ -1,0 +1,73 @@
+name: Technical article proposal
+description: Propose an original technical article for human editorial review. This is a public issue, not an account or automatic publication.
+title: "Article proposal: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Public, human-reviewed editorial proposal — not a 24GOTOP hosted article.**
+        Everything you enter in this issue will be visible publicly on GitHub. Do not paste private drafts, passwords, API keys, client data, personal records, or unpublished sensitive details.
+        To keep a complete manuscript private until you are ready, use the browser-only [Draft Lab](https://24go.top/draft-lab.html) and **download** its .md file on your own device. Files are not submitted automatically.
+  - type: input
+    id: headline
+    attributes:
+      label: Proposed headline
+      description: A specific, helpful title for the article.
+      placeholder: How we fixed a real PostgreSQL permission failure
+    validations:
+      required: true
+  - type: dropdown
+    id: language
+    attributes:
+      label: Original article language
+      description: Editorial review is currently mainly in English; other languages need a reviewer.
+      options:
+        - English
+        - Русский
+        - ไทย
+        - Español
+        - Français
+        - Deutsch
+        - Português
+        - 中文
+    validations:
+      required: true
+  - type: dropdown
+    id: topic
+    attributes:
+      label: Technical subject
+      options:
+        - Engineering and development
+        - AI agents and integrations
+        - Security and privacy
+        - Infrastructure and open source
+        - Other technical knowledge
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: Public summary and reader benefit
+      description: Three to six sentences on the specific technical problem and what the reader will learn. Do not paste the full private draft.
+      placeholder: We discovered ... Our reproducible solution is ... The article helps ...
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Reproducible evidence or safe public references
+      description: Link to a public source, code, official docs or tests; redact any private details. Never include credentials.
+      placeholder: Public repository, commit, official documentation, or reproducible steps
+    validations:
+      required: true
+  - type: checkboxes
+    id: acknowledgements
+    attributes:
+      label: Publication and rights checks
+      options:
+        - label: I understand this is a PUBLIC GitHub issue; it does not publish an article on 24go.top and does not create a 24GOTOP account.
+          required: true
+        - label: The proposal is my original work or I have permission to share its contents; I will not submit confidential data, private customer material, copied third-party articles or secrets.
+          required: true
+        - label: I understand an article PR involving repository content is reviewed under the public MIT repository contribution terms; publication is not guaranteed and I retain my applicable authorship rights.
+          required: true
