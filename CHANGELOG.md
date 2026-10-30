@@ -1,5 +1,12 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-31 — Bookmarkable article discovery with safe topic links
+
+- Upgraded the **live public engineering archive** search: keyword + allowed topic filters now appear as shareable `?q=...&topic=...` links. Opening a link restores the filtered results; keyboard navigation/back-forward restores the view without network search, storage or analytics.
+- Added an explicit **Copy filtered link** button, accessible success/failure notice, bounded 80-character plain-text keywords and strict existing-topic allowlist. Clipboard denial falls back to the visible browser URL. Unknown query parameters are removed only when users change filters.
+- Original articles remain fully rendered and crawlable without JavaScript. Existing canonical URLs, sitemap, RSS, no-public-write and privacy boundaries are unchanged. Added browser-DOM regression tests and external HTTPS smoke for the shareable public archive.
+- No hosted search, registration, Supabase, private Core, production account data, authentication, tracking or paid infrastructure. Manual keyboard/screen-reader and mobile browser QA still required.
+
 ## 2026-10-31 — Eight shareable homepage language routes (public static preview)
 
 - Added real, static, crawlable localized public homepages under `/ru/`, `/th/`, `/es/`, `/fr/`, `/de/`, `/pt/` and `/zh/`, together with the existing English root. Every language has its own canonical URL, reciprocal `hreflang`, a visible eight-language switcher, the existing emerald visuals, functional article/Draft Lab links, explicit pre-launch status, and readable responsive sections.

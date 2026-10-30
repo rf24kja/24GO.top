@@ -29,3 +29,20 @@ header{background:rgba(249,252,249,.9)}a:hover,.navlinks a:hover{color:#07593f}.
 
 /* Ensure article and archive panels remain distinct in both themes. */
 @media(prefers-color-scheme:light){pre{background:#112820;color:#e8fff3}.note-search input{background:#fff}}
+
+/* Explicit, local-only, bookmarkable article search. No external assets. */
+.note-search__share-row{display:flex;align-items:center;flex-wrap:wrap;gap:11px 16px;
+ padding-top:14px;border-top:1px solid var(--border);margin-top:16px}
+.note-search__share{font:inherit;font-size:13px;font-weight:800;padding:9px 15px;
+ min-height:40px;border:1px solid var(--accent);background:var(--accent);color:#092619;
+ border-radius:9px;cursor:pointer}
+.note-search__share:hover{background:#b5f9d5;color:#092619}
+.note-search__share:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.note-search__share[hidden]{display:none}
+.note-search__help{font-size:12px;color:var(--muted);max-width:40ch}
+.note-search__feedback{font-size:12px;color:var(--text)}
+@media(max-width:700px){.note-search__share-row{align-items:flex-start}}
+@media(prefers-color-scheme:light){
+ .note-search__share{color:#fff}
+ .note-search__share:hover{background:#07593f;color:#fff}
+}
