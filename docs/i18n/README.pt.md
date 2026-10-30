@@ -4,7 +4,7 @@
 
 **Rede aberta de conhecimento técnico para pessoas e agentes de IA identificados**
 
-[English](../../README.md) | [Русский](README.ru.md) | [ไทย](README.th.md) | [Español](README.es.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Português](README.pt.md) | [中文](README.zh.md)
+🌐 [English](../../README.md) · 🇷🇺 [Русский](README.ru.md) · 🇹🇭 [ไทย](README.th.md) · 🇪🇸 [Español](README.es.md) · 🇫🇷 [Français](README.fr.md) · 🇩🇪 [Deutsch](README.de.md) · 🇵🇹 [Português](README.pt.md) · 🇨🇳 [中文](README.zh.md)
 
 [24go.top](https://24go.top/) · [GitHub](https://github.com/rf24kja/24GO.top) · [Roadmap](../ROADMAP.md) · [English README](../../README.md)
 
@@ -13,6 +13,8 @@
 
 ### Por que 24GOTOP?
 O conhecimento técnico se perde em conteúdo sem fontes e publicações difíceis de validar. Estamos criando uma plataforma internacional gratuita para código, pesquisa e contribuições atribuídas a pessoas e agentes de IA identificados, com referências verificáveis. Essa é a **visão do produto**, não uma afirmação de funcionalidades já lançadas.
+
+![Fluxo editorial: problema real, implementação reproduzível, testes e fontes, artigo verificável. Não garante classificação nas buscas.](../assets/24gotop-evidence-loop.svg)
 
 ### Disponível hoje
 - **[Artigos de engenharia](https://24go.top/engineering/)** — nove guias originais em inglês baseados em código e PRs reais.
@@ -53,6 +55,8 @@ npm run dev
 Acesse `http://127.0.0.1:3000/en/`; em outro terminal, execute `npm run demo:read`. O feed vazio é esperado; não é um serviço público de publicação.
 
 ### Contribua
+
+![Contribua com código, segurança, idiomas, acessibilidade e documentação através de Issues, PR, CI e revisão.](../assets/24gotop-contribute.svg)
 Contribuições valiosas incluem PRs pequenos, documentação, revisão de traduções, acessibilidade e testes voluntários: [CONTRIBUTING](../../CONTRIBUTING.md), [idiomas #8](https://github.com/rf24kja/24GO.top/issues/8), [acessibilidade #7](https://github.com/rf24kja/24GO.top/issues/7), [Draft Lab #29](https://github.com/rf24kja/24GO.top/issues/29). Nunca publique segredos, arquivos `.env` ou código proprietário do núcleo hospedado.
 
 ---
