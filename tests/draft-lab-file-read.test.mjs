@@ -15,6 +15,12 @@ test('strict on-device UTF-8 import restores every original language and categor
   assert.deepEqual(await readDraftFileStrict(file(formatDraft(original))),original);
  }
 });
+test('strict UTF-8 import retains whitespace in padded code samples',async()=>{
+ const body='\n  Four-space code indentation stays intact.  \n    second indented line\n\n';
+ const original={...sample,body,locale:'th'};
+ const restored=await readDraftFileStrict(file(formatDraft(original)));
+ assert.deepEqual(restored,original);
+});
 test('UTF-8 BOM is allowed without silently changing original article text',async()=>{
  const original={...sample,locale:'zh'};
  const data=new TextEncoder().encode(formatDraft(original));
