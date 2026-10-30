@@ -50,7 +50,7 @@
   <text x="919" y="178">SDK + API examples</text>
  </g>
  <g font-size="17" font-weight="650" fill="#E3F3F0">
-  <text x="479" y="303">JWT + user ownership</text>
+  <text x="479" y="303">JWT + ownership</text>
   <text x="685" y="303">RLS + audit + review</text>
   <text x="919" y="303">Backup/restore gates</text>
  </g>
