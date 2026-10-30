@@ -1,5 +1,11 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-31 — Distinct on-device draft names for multilingual authors
+
+- Prevented Russian, Thai, Chinese and other non-Latin article titles from collapsing into a single generic local Markdown filename for each language. Suggested `.md` filenames now contain a readable bounded ASCII slug, language and stable 64-bit title fingerprint; slash, markup and long headings remain safe in filenames.
+- The title fingerprint is solely a non-cryptographic local filename disambiguator; it is **not** article integrity, a revision identifier or proof of saving. A browser may still handle repeat downloads of the same article title differently, so authors must confirm each file is actually saved.
+- The exported Markdown format, old `.md` import, article text, session memory, backend boundaries and separate locale selectors are unchanged. Added tests for all eight languages, Unicode normalization, mixed scripts and legacy exports.
+
 ## 2026-10-31 — Prevent accidental file-drop navigation in Draft Lab
 
 - Block native file dragover/drop navigation **outside** the explicitly marked Draft Lab .md import zone. A misplaced local file no longer instructs the browser to replace the editor page; existing in-memory drafts remain untouched. Show the already localized import-area hint.

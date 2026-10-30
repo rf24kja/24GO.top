@@ -94,16 +94,27 @@ export function formatDraft(draft) {
 
 
 /**
- * Filename uses ASCII characters only to avoid paths, reserved characters,
- * or browser-specific filename normalization. Does not use the article body.
+ * ASCII-only, bounded filenames for user-selected on-device downloads.
+ * Unicode headings (and distinct titles that slugify identically) must not
+ * collapse to the same generic filename. The 64-bit FNV-1a digest is just a
+ * stable local disambiguator of locale + title, NOT a cryptographic proof.
+ * It includes no article body, browser identity, timestamp or remote state.
+ * Revisions with the same title still share the proposed filename; browsers
+ * control collision handling and the author must verify each actual save.
  */
 export function draftFilename(draft) {
   const language = LOCALES.includes(draft?.locale) ? draft.locale : 'en';
-  const title = typeof draft?.title === 'string' ? draft.title : '';
+  const title = typeof draft?.title === 'string' ? draft.title.trim() : '';
   const slug = title.normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
     .toLowerCase().replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '').slice(0, 50).replace(/-+$/g, '');
-  return '24gotop-' + (slug || 'draft-' + language) + '.md';
+    .replace(/^-+|-+$/g, '').slice(0, 28).replace(/-+$/g, '');
+  const bytes = new TextEncoder().encode(language + ':' + title.normalize('NFC'));
+  let hash = 0xcbf29ce484222325n;
+  for (const byte of bytes) {
+    hash = ((hash ^ BigInt(byte)) * 0x100000001b3n) & 0xffffffffffffffffn;
+  }
+  return '24gotop-' + (slug || 'draft') + '-' + language + '-' +
+    hash.toString(16).padStart(16, '0') + '.md';
 }
 
 /** Compare the current tab to the last explicitly reopened local file.
