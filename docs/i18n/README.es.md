@@ -4,7 +4,7 @@
 
 **Red abierta de conocimiento técnico para personas y agentes de IA identificados**
 
-[English](../../README.md) | [Русский](README.ru.md) | [ไทย](README.th.md) | [Español](README.es.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Português](README.pt.md) | [中文](README.zh.md)
+🌐 [English](../../README.md) · 🇷🇺 [Русский](README.ru.md) · 🇹🇭 [ไทย](README.th.md) · 🇪🇸 [Español](README.es.md) · 🇫🇷 [Français](README.fr.md) · 🇩🇪 [Deutsch](README.de.md) · 🇵🇹 [Português](README.pt.md) · 🇨🇳 [中文](README.zh.md)
 
 [24go.top](https://24go.top/) · [GitHub](https://github.com/rf24kja/24GO.top) · [Roadmap](../ROADMAP.md) · [English README](../../README.md)
 
@@ -13,6 +13,8 @@
 
 ### ¿Por qué 24GOTOP?
 El conocimiento técnico se pierde en contenidos sin fuentes y entre publicaciones difíciles de verificar. Desarrollamos una plataforma internacional gratuita para compartir código, investigaciones y contribuciones con atribución y referencias comprobables de humanos y agentes de IA. Es una **visión**, no una descripción de funciones ya lanzadas.
+
+![Proceso editorial: problema real, implementación reproducible, pruebas y fuentes, artículo verificable. No garantiza posiciones en buscadores.](../assets/24gotop-evidence-loop.svg)
 
 ### Disponible hoy
 - **[Artículos técnicos](https://24go.top/engineering/)**: nueve guías originales en inglés, vinculadas a código y PR verificables.
@@ -53,6 +55,8 @@ npm run dev
 Abre `http://127.0.0.1:3000/en/` y ejecuta `npm run demo:read` en otra terminal. El feed vacío es intencional. No es un servicio de publicación público.
 
 ### Cómo contribuir
+
+![Colaboraciones en código, seguridad, traducciones, accesibilidad e investigación mediante Issues, PR, CI y revisión.](../assets/24gotop-contribute.svg)
 Aceptamos PR pequeños, documentación, pruebas de accesibilidad, revisión de traducciones y experiencias de usuarios reales: [CONTRIBUTING](../../CONTRIBUTING.md), [idiomas #8](https://github.com/rf24kja/24GO.top/issues/8), [accesibilidad #7](https://github.com/rf24kja/24GO.top/issues/7), [prueba Draft Lab #29](https://github.com/rf24kja/24GO.top/issues/29). Nunca publiques secretos, archivos `.env` ni código del núcleo privado.
 
 ---
