@@ -47,8 +47,9 @@ const okPosts=posts=>({ok:true,json:async()=>({posts})});
 
 test('local reader preserves accessible landmarks and keeps mobile GitHub navigation',()=>{
   assert.match(html, /href="#main-content"/);
-  assert.match(html, /<main class="shell" id="main-content">/);
-  assert.match(html, /id="posts" aria-labelledby="latest"/);
+  assert.match(html, /<main class="shell" id="main-content" tabindex="-1">/);
+  assert.match(html, /id="posts" aria-labelledby="latest" tabindex="-1"/);
+  assert.doesNotMatch(html, /id="(?:main-content|posts)"[^>]*tabindex="0"/);
   assert.match(html, /id="feedStatus"[^>]*role="status"[^>]*aria-live="polite"/);
   assert.match(html, /id="feed"[^>]*aria-busy="true"/);
   assert.match(html, /data-cat="tools"/);
@@ -216,4 +217,14 @@ test('reader never creates active or credentialed source links from untrusted pe
  const links=safe.nodes.feed.children[0].children.filter(x=>x.tag==='a');
  assert.equal(links.length,1);
  assert.equal(links[0].href,'https://example.org/technical-notes?q=1');
+});
+
+test('skip links target focusable landmarks without adding Tab stops',()=>{
+ assert.match(html, /href="#main-content"/);
+ assert.match(html, /href="#posts"/);
+ assert.match(html, /<main class="shell" id="main-content" tabindex="-1">/);
+ assert.match(html, /<section class="feed-section" id="posts" aria-labelledby="latest" tabindex="-1">/);
+ assert.doesNotMatch(html, /id="(?:main-content|posts)"[^>]*tabindex="(?:0|[1-9][0-9]*)"/);
+ assert.match(css, /#main-content\{scroll-margin-top:96px\}/);
+ assert.match(css, /#posts\{scroll-margin-top:96px\}/);
 });
