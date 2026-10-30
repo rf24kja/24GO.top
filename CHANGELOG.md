@@ -1,5 +1,11 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-30 — Searchable engineering article topics (public UX)
+
+- Added keyboard-accessible, responsive topic filters to the existing 9-article engineering archive: Security, Writing UX, Infrastructure, Publishing and Discovery. Filter chips combine with local keyword search; Clear filters resets both and restores keyboard focus. Live article counts and pressed states are announced without external requests or trackers.
+- Every original article remains in static, crawlable HTML when JavaScript is off; topic filtering is a progressive enhancement, not fake indexing or user publication. Existing canonical URLs, RSS and JSON Feed are unchanged.
+- Added synthetic browser tests for combined search, topic change, Reset, Escape and error/no-JavaScript fallback, plus page-structure assertions. No user data, cookies, storage, signup, API credentials, paid services or private hosted code touched.
+
 ## 2026-10-30 — Keep validation visible across language switches
 
 - Fixed an accessibility edge case after the keyboard export release: switching the Draft Lab UI locale, changing another field, or changing a select could clear the live validation message while leaving an invalid field marked. Active errors now persist with the correct localized explanation until the offending control is corrected.
