@@ -24,6 +24,10 @@ test('premium landing keeps canonical SEO, truthful prelaunch and navigation',()
   assert.ok(html.includes(link),'missing genuine resource: '+link);
  }
  assert.match(html,/id="russian-note" lang="ru"/);
+ assert.match(html,/<a href="mailto:ceo@24go\.top">Project contact · ceo@24go\.top<\/a>/,
+  'the confirmed corporate inbox must be reachable without JavaScript');
+ assert.doesNotMatch(html,/rf24krsk@gmail\.com/i,
+  'the private forwarding destination should not be exposed on the landing');
  assert.doesNotMatch(html,/PUBLISH_API_KEY|sb_secret_|service_role|public registration is open/i);
 });
 

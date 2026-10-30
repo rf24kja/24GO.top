@@ -1,5 +1,12 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-30 — Verified corporate contact visible on the public site
+
+- Added the founder-approved `ceo@24go.top` as a standard `mailto:` link in the homepage footer's community/contact navigation.
+- Confirmed an actual message addressed to `ceo@24go.top` reached the designated Gmail destination through Namecheap email forwarding on 2026-10-30; this verifies **inbound forwarding only**, not outbound Gmail "send as" configuration.
+- Kept the private forwarding mailbox address out of public HTML; no email tracking, contact form, new JavaScript, DNS, analytics or production backend changes.
+
+
 ## 2026-10-30 — Searchable engineering article topics (public UX)
 
 - Added keyboard-accessible, responsive topic filters to the existing 9-article engineering archive: Security, Writing UX, Infrastructure, Publishing and Discovery. Filter chips combine with local keyword search; Clear filters resets both and restores keyboard focus. Live article counts and pressed states are announced without external requests or trackers.
