@@ -17,7 +17,7 @@ test('real GitHub proposal issue form requests only non-sensitive public editori
  for(const field of ['headline','language','topic','summary','evidence','acknowledgements'])
   assert.ok(form.includes('id: '+field),'missing required field '+field);
  assert.match(form,/type: checkboxes/);
- assert.equal((form.match(/required: true/g)||[]).length,7);
+ assert.equal((form.match(/required: true/g)||[]).length,8);
  for(const language of ['English','Русский','ไทย','Español','Français','Deutsch','Português','中文'])
   assert.ok(form.includes('- '+language),language);
  assert.match(form,/PUBLIC GitHub issue/);
@@ -49,7 +49,7 @@ test('public visitor can discover proposal path; it never silently submits edito
  assert.match(draft,/href="\.\/contribute\.html" lang="en"/);
  assert.match(articles,/href="\.\.\/contribute\.html">How to propose an original article/);
  assert.match(draft,/does not publish, upload or automatically save your writing/);
- assert.match(docs,/public.*proposal.*not.*article/i);
+ assert.match(docs,/A GitHub issue is a \*proposal\*, not an article/);
  assert.match(docs,/Human review and the published state/);
  assert.match(docs,/npm run feed:check/);
  assert.match(docs,/Rights|rights/i);
