@@ -53,6 +53,12 @@ These examples are **editorial hypotheses**, not keyword volume estimates. Avoid
 - Run a real-reader usability pilot on the Draft Lab (Issue #29) and collect anonymized, opt-in corrections; use feedback to inform content/UX instead of assuming traffic guarantees.
 - Assess a simple privacy-respecting analytics strategy before deploying cookies or trackers; minimize collection and preserve opt-out.
 
+## Additional interoperable format — JSON Feed 1.1 (source PR; deployment pending)
+
+- A standards-based `/engineering/feed.json` is deterministically built from the already reviewed RSS and each canonical article's `Article` JSON-LD. Every item contains the true title, author, publication time, canonical HTML URL and short summary. It intentionally does not pretend to expose full article text or a new public publishing API.
+- `npm run feed:check` rejects stale JSON or drift in editorial source metadata; `npm run feed:write` rebuilds the file after reviewing an article. The homepage and archive advertise the feed; a read-only HTTPS audit will check it after Pages.
+- This improves general feed reader and programmatic accessibility, **not Google rank or any guarantee of AI citations**. Google states SEO fundamentals and original, helpful content matter, not special AI markup or llms.txt.
+
 ## Why not GEO hacks?
 
 Google's [official AI-search guidance](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide) says ordinary SEO fundamentals and unique, valuable content remain important. There is **no special AI SEO schema or file required** to become eligible for Google's AI features, and even eligible pages are not guaranteed to be crawled, indexed or cited. `llms.txt` is optional documentation, not a ranking lever. Avoid manufactured citations, forced content chunking, fake awards and mass-produced SEO articles. See [Google Article structured data](https://developers.google.com/search/docs/appearance/structured-data/article) for supported `Article` properties and consistency requirements.
