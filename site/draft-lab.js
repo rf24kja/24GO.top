@@ -1,6 +1,6 @@
 'use strict';
 
-import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, parseDraftFile, readDraftFileStrict, MAX_DRAFT_FILE_BYTES, formatDraftSelection, createDraftImportGate, invalidDraftField } from './draft-lab-logic.js';
+import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, readDraftFileStrict, formatDraftSelection, createDraftImportGate, invalidDraftField } from './draft-lab-logic.js';
 import { renderMarkdownPreview,renderPreviewOutline } from './draft-lab-preview.js';
 import { applyUiLanguage,uiText } from './draft-lab-i18n.js';
 
