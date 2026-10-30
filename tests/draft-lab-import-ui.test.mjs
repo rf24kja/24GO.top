@@ -25,7 +25,7 @@ function build({uiHref='https://24go.top/draft-lab.html'}={}) {
     'postTitle','postBody','postLocale','postCategory','postSource','formStatus',
     'previewHeading','previewBody','previewLocale','previewCategory','bodyCount',
     'previewSource','draftSafety','articleOutline','articleOutlineSection','downloadDraft','copyDraft','clearDraft','importDraft','importDraftFile','draftForm',
-    'formatHeading','formatList','formatQuote','formatCode','formatLink','uiLocale','draftDropZone'
+    'formatHeading','formatList','formatQuote','formatCode','formatLink','uiLocale','draftDropZone','homeBrandLink','homeNavLink'
   ];
   const elements = Object.fromEntries(ids.map(id => {
     const el = {
@@ -588,6 +588,9 @@ test('homepage language links select only Draft Lab interface without modifying 
   const app=build({uiHref:'https://24go.top/draft-lab.html?ui='+code});
   assert.equal(app.elements.uiLocale.value,code);
   assert.equal(app.document.documentElement.lang,code);
+  const home=code==='en'?'./':'./'+code+'/';
+  assert.equal(app.elements.homeBrandLink.href,home);
+  assert.equal(app.elements.homeNavLink.href,home);
   assert.equal(app.elements.postLocale.value,'en','article language is separate');
   assert.equal(app.elements.postTitle.value,'');
   assert.equal(app.elements.postBody.value,'');
