@@ -19,7 +19,7 @@ function refreshInterface(){
   // Changing interface language never modifies the author's own draft,
   // article language, selection, source, or reopened-file baseline.
   preview();
-  message('');
+  updateValidationNotice();
 }
 uiLocale.addEventListener('change',refreshInterface);
 // A file selected by the user provides an authoritative in-tab baseline only.
@@ -39,6 +39,12 @@ function clearFieldError(node){
   node.removeAttribute('aria-describedby');
 }
 function clearFieldErrors(){for(const node of Object.values(validatedFields))clearFieldError(node);}
+function updateValidationNotice(){
+  const failed=Object.keys(validatedFields).find(
+    key=>validatedFields[key].getAttribute('aria-invalid')==='true');
+  // Locale changes and unrelated field edits must not hide an active error.
+  message(failed ? ui(validationLabels[failed]) : '',Boolean(failed));
+}
 
 function message(text, isError = false) {
   status.textContent = text;
@@ -73,8 +79,8 @@ function preview() {
 }
 
 for (const control of [title,body,locale,category,source]) {
-  control.addEventListener('input', () => { clearFieldError(control);importGate.changed();message(''); preview(); });
-  control.addEventListener('change', () => { clearFieldError(control);importGate.changed();preview(); });
+  control.addEventListener('input', () => { clearFieldError(control);importGate.changed();preview();updateValidationNotice(); });
+  control.addEventListener('change', () => { clearFieldError(control);importGate.changed();preview();updateValidationNotice(); });
 }
 
 
