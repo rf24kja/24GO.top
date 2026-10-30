@@ -1,6 +1,6 @@
 'use strict';
 
-import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, parseDraftFile, MAX_DRAFT_FILE_BYTES, formatDraftSelection } from './draft-lab-logic.js';
+import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, parseDraftFile, MAX_DRAFT_FILE_BYTES, formatDraftSelection, createDraftImportGate } from './draft-lab-logic.js';
 import { renderMarkdownPreview,renderPreviewOutline } from './draft-lab-preview.js';
 import { applyUiLanguage,uiText } from './draft-lab-i18n.js';
 
@@ -25,6 +25,7 @@ uiLocale.addEventListener('change',refreshInterface);
 // A file selected by the user provides an authoritative in-tab baseline only.
 // Download requests and clipboard copy never silently change this baseline.
 let reopenedFileBaseline = null;
+const importGate=createDraftImportGate();
 
 function currentDraft() {
   return { title:title.value, body:body.value, locale:locale.value,
@@ -64,8 +65,8 @@ function preview() {
 }
 
 for (const control of [title,body,locale,category,source]) {
-  control.addEventListener('input', () => { message(''); preview(); });
-  control.addEventListener('change', preview);
+  control.addEventListener('input', () => { importGate.changed();message(''); preview(); });
+  control.addEventListener('change', () => { importGate.changed();preview(); });
 }
 
 
@@ -75,6 +76,7 @@ for(const [id,action] of [['formatHeading','heading'],['formatList','list'],
   try{
    const edit=formatDraftSelection(body.value,body.selectionStart,body.selectionEnd,action);
    body.setRangeText(edit.replacement,body.selectionStart,body.selectionEnd,'end');
+   importGate.changed();
    body.focus();
    body.setSelectionRange(edit.selectionStart,edit.selectionEnd);
    preview();
@@ -110,12 +112,20 @@ field('importDraftFile').addEventListener('change', async event => {
   const input = event.currentTarget;
   const file = input.files?.[0];
   if (!file) return;
+  const ticket=importGate.begin();
   try {
     if (!file.name.toLowerCase().endsWith('.md') || file.size > MAX_DRAFT_FILE_BYTES) {
       throw new TypeError('Unsupported file');
     }
     // Reading a user-selected local file does not make a network request.
     const reopened = parseDraftFile(await file.text());
+    // A previous file or any newer typing/formatting/clear invalidates this result.
+    // Do not disturb an active, more recent file selection or its status.
+    if (!importGate.isLatest(ticket)) return;
+    if (!importGate.canApply(ticket)) {
+      message(ui('importInterrupted'),true);
+      return;
+    }
     if (hasDraftContent(currentDraft())
       && !window.confirm(ui('replaceConfirm'))) {
       message(ui('replaceCanceled'));
@@ -127,13 +137,14 @@ field('importDraftFile').addEventListener('change', async event => {
     category.value = reopened.category;
     source.value = reopened.source;
     reopenedFileBaseline = { ...reopened };
+    importGate.changed();
     preview();
     message(ui('opened'));
   } catch {
-    message(ui('openError'),true);
+    if (importGate.isLatest(ticket)) message(ui('openError'),true);
   } finally {
-    // Permit re-opening the same file after editing it.
-    input.value = '';
+    // An outdated read must not clear the newer file picker's selection.
+    if (importGate.isLatest(ticket)) input.value = '';
   }
 });
 
@@ -180,6 +191,7 @@ field('clearDraft').addEventListener('click', () => {
   locale.value = 'en';
   category.value = 'guides';
   reopenedFileBaseline = null;
+  importGate.changed();
   preview();
   message(ui('cleared'));
   title.focus();

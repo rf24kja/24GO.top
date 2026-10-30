@@ -1,5 +1,12 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-30 — Draft Lab: preserve user writing during asynchronous .md import (source PR)
+
+- Prevented older slow file reads and a second file picker selection from overwriting newer in-tab edits. Import applies only when it is the latest request **and** the article fields were not edited, formatted or cleared while the file was opening.
+- Added an honest, translated interrupted-import notice in all eight supported UI languages. Changing the interface language alone does not invalidate the import or alter article language; no browser storage, server upload or API requests were introduced.
+- Added pure race-gate and simulated-browser regression tests for typing, formatting, Clear, reordered promises, failing older reads, and unchanged reopened-file baselines. This improves offline author UX; it does not enable public posting, login or SEO indexing.
+
+
 ## 2026-10-30 — Material Design SVG navigation and protected-main runbook (README-only PR)
 
 - Added seven small source-controlled emerald Google Material Design icons (Apache-2.0, copyright/attribution and original source paths preserved) and replaced inconsistent decorative UI emoji with accessible text-labelled icon navigation in all eight README languages. No font package or CDN was installed.

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { LOCALES, CATEGORIES, safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, parseDraftFile, MAX_DRAFT_FILE_BYTES } from '../site/draft-lab-logic.js';
+import { LOCALES, CATEGORIES, safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, parseDraftFile, MAX_DRAFT_FILE_BYTES, createDraftImportGate } from '../site/draft-lab-logic.js';
 
 const valid = {
   title:'Making a secure publishing API',
@@ -137,4 +137,22 @@ test('exit warning compares only current tab to a reopened-file baseline', () =>
   assert.equal(hasUnexportedChanges({...valid,source:'https://example.org/other'},knownFile),true);
   assert.equal(hasUnexportedChanges({...valid,locale:'ru'},knownFile),true);
   assert.equal(hasUnexportedChanges({...valid,title:'',body:'',source:''}),false);
+});
+
+test('file-import gate requires both latest file and unchanged editor version',()=>{
+ const gate=createDraftImportGate();
+ const first=gate.begin();
+ assert.equal(gate.canApply(first),true);
+ const second=gate.begin();
+ assert.equal(gate.isLatest(first),false);
+ assert.equal(gate.canApply(first),false);
+ assert.equal(gate.canApply(second),true);
+ gate.changed();
+ assert.equal(gate.isLatest(second),true);
+ assert.equal(gate.canApply(second),false);
+ const third=gate.begin();
+ assert.equal(gate.canApply(third),true);
+ assert.equal(gate.canApply({importId:third.importId,editorVersion:third.editorVersion-1}),false);
+ assert.equal(gate.canApply(null),false);
+ assert.equal(Object.isFrozen(third),true);
 });

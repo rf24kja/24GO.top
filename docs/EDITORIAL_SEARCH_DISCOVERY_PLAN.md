@@ -66,3 +66,13 @@ Google's [official AI-search guidance](https://developers.google.com/search/docs
 ## Rollback and ownership
 
 Editorial files are public MIT repository content, separate from the founder-owned private hosted core. Content changes use a reviewed public PR with green CI; rollback is a Git revert and a verified Pages redeploy. Do not expose private Supabase configurations, service credentials, staging data or proprietary backend logic in examples.
+
+## Author content preservation and SEO/GEO boundary (2026-10-30 source PR)
+
+The public browser-only Draft Lab now rejects slow asynchronous local Markdown
+file imports when the author has already typed, formatted, cleared or selected
+a newer file. This prevents losing original unpublished work, a prerequisite
+for high-quality source-backed content. It is **not** a search ranking
+mechanism, public user post API, AI discovery protocol or evidence of
+indexing. Existing canonical HTML, human-readable originals, XML sitemap,
+RSS and interoperable JSON Feed remain the public discovery baseline.
