@@ -61,6 +61,10 @@
             <button id="copyDraft" class="secondary" type="button" data-ui="copy">Copy draft</button>
             <button id="clearDraft" class="secondary danger" type="button" data-ui="clear">Clear</button>
           </div>
+          <div id="draftDropZone" class="draft-drop-zone" role="group" aria-labelledby="draftDropHint">
+            <span class="draft-drop-zone__icon" aria-hidden="true">↓</span>
+            <span id="draftDropHint" data-ui="dropHint">Drop one saved Draft Lab .md file here, or use Open saved .md. Nothing is uploaded.</span>
+          </div>
           <p class="tiny" id="saveShortcutHelp" data-ui="shortcutHelp">Keyboard shortcut: Ctrl+S (Windows/Linux) or ⌘+S (Mac) downloads a local .md file; it does not autosave or publish.</p>
           <p id="draftSafety" class="tiny" data-ui="safetyEmpty">No draft content yet. Draft Lab never automatically saves your work.</p>
           <p id="formStatus" role="status" aria-live="polite"></p>
