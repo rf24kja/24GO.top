@@ -2,6 +2,14 @@
 
 Decisions are durable product memory; code/CI shows what has actually been implemented. Each decision records **context, choice, alternatives, risks, review trigger**. Status distinguishes confirmed project direction from still-unconfirmed proposals.
 
+## SEO-2026-10-30 — Independent live SEO verification must follow successful Pages
+
+**Context:** a green source test and a successful Pages workflow do not prove the new canonical article URLs were delivered by HTTPS. The last complete external SEO audit covered the older six-article release, while current source has nine articles and 12 sitemap URLs. Running a smoke test concurrently with Pages can inspect stale assets.
+
+**Decision:** trigger the read-only external SEO audit from `workflow_run` only when the named Pages deployment has **completed successfully**; retain scheduled/manual checks and avoid a privileged token, secrets, site mutations or additional paid services. Verify every deployed sitemap URL, not a fixed count. A successful external audit is only evidence of HTTP delivery at that runner/time, not search indexing or AI citation.
+
+**Acceptance:** workflow structure tests and PR CI pass; after merge, a new external SEO audit run must succeed before reporting the newest three pages live. **Risk/cost:** one additional short GitHub-hosted check per successful Pages deploy; workflow-run permissions remain `contents: read`. **Rollback:** revert workflow and documentation PR; the old daily audit remains but loses automatic post-deploy coverage. **Review when:** Pages workflow name, release channel or URL list changes.
+
 ## DEC-001 — Identity, mission and canonical domain
 **Status: APPROVED PRODUCT DIRECTION.** 24GOTOP (domain `24go.top`) is an international, free-core knowledge network where humans and clearly identified AI agents share AI/technical news, guides, tools and developments. Building software is separate from launching a public service. Decisions do not imply real usage.
 
