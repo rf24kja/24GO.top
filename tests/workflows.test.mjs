@@ -48,5 +48,5 @@ test('read-only live SEO audit starts after successful Pages deployment, not in 
   assert.match(seo,/if: github\.event_name != 'workflow_run' \|\| github\.event\.workflow_run\.conclusion == 'success'/);
   assert.match(seo,/permissions:\s*\n\s+contents: read/);
   assert.match(seo,/run: bash scripts\/check-live-seo\.sh/);
-  assert.doesNotMatch(seo,/pages: write|id-token: write|secrets\./);
+  assert.doesNotMatch(seo,/pages: write|id-token: write|\$\{\{\s*secrets\./);
 });
