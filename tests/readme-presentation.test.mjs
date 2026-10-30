@@ -123,7 +123,7 @@ test('all README locales display accessible eight-language navigation with flag 
   for(const [symbol,label] of links)assert.ok(
    content.includes(symbol+' [')||content.includes('['+symbol+' '),
    path+': language symbol '+symbol+' for '+label);
-  assert.ok(content.includes(label+']('),path+' missing navigable '+label);
+  assert.ok((content.includes(label+'](')||content.includes(label+'**](')),path+' missing navigable '+label);
   assert.ok(content.includes('24gotop-evidence-loop.svg'),path+' missing editorial evidence diagram');
   assert.ok(content.includes('24gotop-contribute.svg'),path+' missing contributor diagram');
  }
