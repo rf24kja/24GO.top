@@ -4,6 +4,10 @@ Thank you for considering a contribution. 24GOTOP was founded and is led by [@rf
 
 **Licensing:** Contributions to this public MIT-licensed repository are, under GitHub's contribution terms, offered under the repository license unless a separate valid agreement applies. Contributors retain rights in their original work unless law or a specific agreement provides otherwise. Do not submit third-party code without permission or imply that source contributors assign copyright to the founder automatically. [Governance](GOVERNANCE.md) · [Brand Policy](BRAND_POLICY.md).
 
+## Original technical article proposals
+
+If you want to contribute an original technical article before the hosted publishing platform launches, start with the [public author guide](https://24go.top/contribute.html) and [editorial contributor checklist](docs/EDITORIAL_CONTRIBUTIONS.md). A GitHub issue is a public **proposal**, not an on-site published article. Keep private manuscript text on your device until you deliberately choose what to disclose; GitHub PRs require editorial review and a successful site deployment.
+
 ## Workflow
 
 1. Look through existing Issues and open a focused issue for major changes.
