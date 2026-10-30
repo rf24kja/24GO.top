@@ -29,7 +29,7 @@ test('vendored Material icons are small, self-contained, decorative and attribut
   assert.match(svg,/<title id="title">[^<]+<\/title>/);
   assert.match(svg,/<desc id="desc">/);
   assert.match(svg,/<path fill="#087f6c" d="[^"]+"\/>/);
-  assert.doesNotMatch(svg,/<script|<foreignObject|<iframe|<image|<style|@import|onload|onclick|onerror|javascript:|<use|<animate|xlink:|https?:\/\//i,
+  assert.doesNotMatch(svg.replace('xmlns="http://www.w3.org/2000/svg"',''),/<script|<foreignObject|<iframe|<image|<style|@import|onload|onclick|onerror|javascript:|<use|<animate|xlink:|https?:\/\//i,
     'no active or remotely loaded assets: '+name);
   assert.ok(sources.includes('`'+name+'.svg`'),'source attribution: '+name);
  }
