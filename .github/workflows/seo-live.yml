@@ -6,6 +6,11 @@ on:
     paths:
       - ".github/workflows/seo-live.yml"
       - "scripts/check-live-seo.sh"
+  # Verify the actual public release only after Pages finishes deploying.
+  # workflow_run checks out the default branch; it never handles PR secrets.
+  workflow_run:
+    workflows: ["Deploy pre-launch landing"]
+    types: [completed]
   workflow_dispatch:
   schedule:
     # Daily independent GitHub-hosted runner check; no crawler/index claim.
@@ -16,6 +21,7 @@ permissions:
 
 jobs:
   check-public-site:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     name: Check public DNS, TLS, canonical and content
     runs-on: ubuntu-latest
     timeout-minutes: 7
