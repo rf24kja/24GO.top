@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { runInNewContext } from 'node:vm';
 import {
   safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent,
-  parseDraftFile, MAX_DRAFT_FILE_BYTES, hasUnexportedChanges, formatDraftSelection, createDraftImportGate
+  parseDraftFile, MAX_DRAFT_FILE_BYTES, hasUnexportedChanges, formatDraftSelection, createDraftImportGate, invalidDraftField
 } from '../site/draft-lab-logic.js';
 import {uiText,applyUiLanguage} from '../site/draft-lab-i18n.js';
 
@@ -34,8 +34,12 @@ function build() {
       setRangeText(replacement,start,end){this.value=this.value.slice(0,start)+replacement+this.value.slice(end);},
       setSelectionRange(start,end){this.selectionStart=start;this.selectionEnd=end;},
       addEventListener(type,callback){this.listeners[type]=callback;},
+      attributes:{},
+      setAttribute(name,value){this.attributes[name]=value;},
+      removeAttribute(name){delete this.attributes[name];},
+      getAttribute(name){return this.attributes[name]??null;},
       click(){this.clicked=true;},
-      focus(){}
+      focus(){this.focused=true;}
     };
     return [id,el];
   }));
@@ -45,6 +49,8 @@ function build() {
   let confirm = true;
   const window = {listeners:{}, confirm(){return confirm;}, addEventListener(type, callback){this.listeners[type]=callback;}};
   const document = {
+    listeners:{},
+    addEventListener(type,callback){this.listeners[type]=callback;},
     documentElement:{lang:'en'},
     getElementById(id){return elements[id];},
     querySelectorAll(){return [];}
@@ -52,7 +58,7 @@ function build() {
   runInNewContext(source, {
     document, window, navigator:{}, URL, Blob, setTimeout,
     safeSourceUrl,validateDraft,formatDraft,draftFilename,hasDraftContent,
-    parseDraftFile,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,createDraftImportGate,
+    parseDraftFile,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,createDraftImportGate,invalidDraftField,
     uiText,applyUiLanguage,
     renderMarkdownPreview(container, text) { container.textContent = text; },
     renderPreviewOutline(container,text) { container.textContent=text;return /^#{1,3} /m.test(text)?1:0; }
@@ -60,7 +66,7 @@ function build() {
   // node --test starts multiple test files concurrently.
   },{timeout:5000});
   return {
-    elements,
+    elements, document,
     setConfirm(value){confirm=value;},
     beforeUnload() {
       const event = {prevented:false, returnValue:undefined, preventDefault(){this.prevented=true;}};
@@ -343,4 +349,80 @@ test('local formatting and explicit Clear invalidate slow import; UI language sw
  assert.equal(app.beforeUnload().prevented,false);
  assert.equal(app.elements.formStatus.textContent,uiText('ru','opened'));
  assert.equal(app.elements.formStatus.dataset.error,'false');
+});
+
+
+test('exact failing field receives keyboard focus and accessible error, not unrelated source',async()=>{
+ const app=build(),el=app.elements;
+ const valid={...sample};
+ const values={postTitle:valid.title,postBody:valid.body,
+  postLocale:valid.locale,postCategory:valid.category,postSource:valid.source};
+ for(const [key,value] of Object.entries(values))el[key].value=value;
+ const cases=[
+  ['postTitle','x','invalidTitle'],
+  ['postBody','short','invalidBody'],
+  ['postLocale','not-a-language','invalidLocale'],
+  ['postCategory','untrusted-category','invalidCategory'],
+  ['postSource','javascript:alert(1)','invalidSource']
+ ];
+ for(const [id,bad,key] of cases){
+  const baseline=el[id].value;
+  el[id].value=bad;
+  for(const control of Object.values(el))control.focused=false;
+  await el.copyDraft.listeners.click();
+  assert.equal(el[id].focused,true,id+' receives focus');
+  assert.equal(el[id].attributes['aria-invalid'],'true',id+' invalid state');
+  assert.equal(el[id].attributes['aria-describedby'],'formStatus',id+' screen reader help');
+  assert.equal(el.formStatus.textContent,uiText('en',key));
+  assert.equal(el.formStatus.dataset.error,'true');
+  for(const [other] of cases)if(other!==id)
+   assert.equal(el[other].attributes['aria-invalid'],undefined,other+' must not be invalid');
+  el[id].value=baseline;
+  el[id].listeners.input();
+  assert.equal(el[id].attributes['aria-invalid'],undefined,'corrected error clears immediately');
+  assert.equal(el[id].attributes['aria-describedby'],undefined,'corrected association cleared');
+ }
+});
+
+test('oversized title and body focus the correct control, including programmatic values',async()=>{
+ const app=build(),el=app.elements;
+ el.postTitle.value='x'.repeat(161);
+ el.postBody.value=sample.body;
+ await el.copyDraft.listeners.click();
+ assert.equal(el.postTitle.focused,true);
+ assert.equal(el.postTitle.attributes['aria-invalid'],'true');
+ el.postTitle.value=sample.title;el.postTitle.listeners.input();
+ el.postBody.value='x'.repeat(12001);
+ await el.copyDraft.listeners.click();
+ assert.equal(el.postBody.focused,true);
+ assert.equal(el.postBody.attributes['aria-invalid'],'true');
+});
+
+test('Ctrl+S / Cmd+S routes only the explicit local export, never browser writes',()=>{
+ const app=build();
+ const shortcut=app.document.listeners.keydown;
+ assert.equal(typeof shortcut,'function');
+ for(const modifiers of [{ctrlKey:true,metaKey:false},{ctrlKey:false,metaKey:true}]){
+  app.elements.downloadDraft.clicked=false;
+  const e={key:'s',repeat:false,altKey:false,shiftKey:false,...modifiers,
+   preventDefault(){this.prevented=true;}};
+  shortcut(e);
+  assert.equal(e.prevented,true,'browser Save As suppressed for local export');
+  assert.equal(app.elements.downloadDraft.clicked,true,'uses same validated Download action');
+ }
+ for(const props of [
+  {key:'s',ctrlKey:false,metaKey:false},
+  {key:'s',ctrlKey:true,shiftKey:true},
+  {key:'s',ctrlKey:true,altKey:true},
+  {key:'s',ctrlKey:true,repeat:true},
+  {key:'a',ctrlKey:true},
+  {key:'s',metaKey:false}
+ ]){
+  app.elements.downloadDraft.clicked=false;
+  const e={key:'s',repeat:false,ctrlKey:false,metaKey:false,
+    shiftKey:false,altKey:false,...props,preventDefault(){this.prevented=true;}};
+  shortcut(e);
+  assert.equal(e.prevented,undefined);
+  assert.equal(app.elements.downloadDraft.clicked,false);
+ }
 });
