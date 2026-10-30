@@ -426,3 +426,33 @@ test('Ctrl+S / Cmd+S routes only the explicit local export, never browser writes
   assert.equal(app.elements.downloadDraft.clicked,false);
  }
 });
+
+
+test('language switch translates an active field error without modifying the draft',async()=>{
+ const app=build(),el=app.elements;
+ el.postTitle.value=sample.title;
+ el.postBody.value=sample.body;
+ el.postCategory.value=sample.category;
+ el.postSource.value=sample.source;
+ el.postLocale.value='unknown';
+ await el.copyDraft.listeners.click();
+ assert.equal(el.formStatus.textContent,uiText('en','invalidLocale'));
+ assert.equal(el.postLocale.attributes['aria-invalid'],'true');
+ assert.equal(el.postLocale.attributes['aria-describedby'],'formStatus');
+
+ el.uiLocale.value='ru';el.uiLocale.listeners.change();
+ assert.equal(el.postLocale.value,'unknown','the author content locale is unchanged');
+ assert.equal(el.formStatus.textContent,uiText('ru','invalidLocale'));
+ assert.equal(el.formStatus.dataset.error,'true');
+ assert.equal(el.postLocale.attributes['aria-invalid'],'true');
+
+ el.postSource.value='https://example.org/changed';el.postSource.listeners.input();
+ assert.equal(el.formStatus.textContent,uiText('ru','invalidLocale'),
+  'unrelated edits cannot hide the still-active field error');
+
+ el.postLocale.value='en';el.postLocale.listeners.change();
+ assert.equal(el.postLocale.attributes['aria-invalid'],undefined);
+ assert.equal(el.postLocale.attributes['aria-describedby'],undefined);
+ assert.equal(el.formStatus.textContent,'');
+ assert.equal(el.formStatus.dataset.error,'false');
+});
