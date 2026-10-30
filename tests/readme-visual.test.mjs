@@ -10,8 +10,8 @@ const readme=read('../README.md');
 test('README embeds a self-contained premium product hero with an accessible description',()=>{
  assert.match(readme,/src="\.\/docs\/assets\/24gotop-readme-hero\.svg"/);
  assert.match(svg,/<svg\b[^>]*width="1400"[^>]*height="560"[^>]*viewBox="0 0 1400 560"/);
- assert.match(svg,/<title id="hero-title">24GOTOP/);
- assert.match(svg,/<desc id="hero-desc">/);
+ assert.match(svg,/<title id="title">24GOTOP/);
+ assert.match(svg,/<desc id="desc">/);
  assert.match(svg,/OPEN SOURCE · <tspan[^>]*>MIT<\/tspan>/);
  for(const label of ['Engineering articles','Markdown Draft Lab','Open developer SDK','PRE-LAUNCH']){
   assert.ok(svg.includes(label),label+' missing');
