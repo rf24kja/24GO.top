@@ -7,6 +7,7 @@ const read = path => readFileSync(fileURLToPath(new URL(path, import.meta.url)),
 const readme = read('../README.md');
 const register = read('../docs/DEPLOYMENT_STATUS.md');
 const landing = read('../site/index.html');
+const progress = read('../site/progress.html');
 
 test('README explains staging login without suggesting a public account release', () => {
  assert.match(readme, /Why can I see a sign-in page on a staging Vercel address/);
@@ -37,4 +38,11 @@ test('deployment register distinguishes the three release boundaries and real ev
 test('public landing still has no staging sign-in CTA', () => {
  assert.doesNotMatch(landing, /24gotop-staging-auth\.vercel\.app|staging\.24go\.top|href=["'][^"']*\/login["']/i);
  assert.match(landing, /Hosted public publishing is not live|Hosted public publishing is not live\.|Hosted public publishing is not live/);
+});
+
+test('public development page explains staging without exposing a public login link', () => {
+ assert.match(progress, /Why is sign-in separate\?/);
+ assert.match(progress, /New registrations and public writing are blocked/);
+ assert.match(progress, /#staging-identity-versus-public-login--31-october-2026/);
+ assert.doesNotMatch(progress, /href=["'][^"']*(?:staging\.24go\.top|24gotop-staging-auth\.vercel\.app)/);
 });
