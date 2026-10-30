@@ -21,6 +21,9 @@ test('archive publishes 9 crawlable articles, discoverable topic controls and a 
  assert.match(html,/id="engineering-search-status" role="status" aria-live="polite"/);
  assert.match(html,/id="engineering-no-results" hidden/);
  assert.match(html,/type="button" id="engineering-reset" hidden/);
+ assert.match(html,/id="engineering-share" hidden/);
+ assert.match(html,/id="engineering-share-status" role="status" aria-live="polite"/);
+ assert.match(style,/\.note-search__share\[hidden\]\{display:none\}/);
  const tags=[...html.matchAll(/<article class="card" data-note-card data-note-topic="([^"]+)">/g)];
  assert.deepEqual(tags.map(x=>x[1]),cardTopics);
  assert.match(html,/<aside class="card">/);
@@ -42,9 +45,11 @@ function button(topic){
   setAttribute(name,value){this.attributes[name]=value;}
  };
 }
-function setUp({missing=false,badTopic=false}={}){
+function setUp({missing=false,badTopic=false,query='',clipboard='ok'}={}){
  const listeners={},status={textContent:''},empty={hidden:true},
   reset={hidden:true,focused:false,addEventListener(name,fn){listeners['reset-'+name]=fn;}};
+ const share={hidden:true,listeners:{},addEventListener(name,fn){this.listeners[name]=fn;}};
+ const shareStatus={textContent:''};
  const form={hidden:true,addEventListener(name,fn){listeners['form-'+name]=fn;}};
  const input={value:'',focused:false,addEventListener(name,fn){listeners[name]=fn;},
    focus(){this.focused=true;}};
@@ -62,10 +67,20 @@ function setUp({missing=false,badTopic=false}={}){
   },
   getElementById(id){return ({
    'engineering-filter':input,'engineering-search-status':status,
-   'engineering-no-results':empty,'engineering-reset':reset})[id];}
+   'engineering-no-results':empty,'engineering-reset':reset,
+   'engineering-share':share,'engineering-share-status':shareStatus})[id];}
  };
- runInNewContext(code,{document},{timeout:1000});
- return {form,input,status,empty,reset,cards,topics,listeners,
+ const copied=[];
+ const location={href:'https://24go.top/engineering/'+query};
+ const window={location,listeners:{},history:{
+  replaceState(_state,_title,url){location.href=new URL(url,location.href).href;}
+ },addEventListener(name,callback){this.listeners[name]=callback;}};
+ const navigator=clipboard==='none'?{}:{clipboard:{async writeText(value){
+  if(clipboard==='fail')throw Error('clipboard unavailable');
+  copied.push(value);
+ }}};
+ runInNewContext(code,{document,window,navigator,URL},{timeout:1000});
+ return {form,input,status,empty,reset,share,shareStatus,cards,topics,listeners,window,location,copied,
   clickTopic:t=>topics.find(x=>x.dataset.engineeringTopic===t).listeners.click()};
 }
 test('search works with all topics and Escape clears only query',()=>{
@@ -116,4 +131,66 @@ test('archive remains static and readable on startup failure or JS disabled',()=
   assert.equal(app.form.hidden,true);
   assert.ok(app.cards.every(card=>!card.hidden));
  }
+});
+
+test('opening a shared URL restores bounded query and allowed topic without running a request',()=>{
+ const app=setUp({query:'?q=postgreSQL&topic=infrastructure'});
+ assert.equal(app.form.hidden,false);
+ assert.equal(app.input.value,'postgreSQL');
+ assert.deepEqual(app.cards.map(x=>x.hidden),[true,true,false]);
+ assert.equal(app.status.textContent,'1 of 3 articles');
+ assert.equal(app.share.hidden,false);
+ assert.equal(app.topics[3].attributes['aria-pressed'],'true');
+});
+
+test('filter edits update a bookmarkable URL without adding history entries',()=>{
+ const app=setUp({query:'?utm_campaign=foo#latest-heading'});
+ app.clickTopic('security');
+ assert.equal(app.location.href,'https://24go.top/engineering/?topic=security#latest-heading');
+ app.input.value='javascript sdk';app.listeners.input();
+ assert.equal(app.location.href,
+  'https://24go.top/engineering/?q=javascript+sdk&topic=security#latest-heading');
+ assert.equal(app.share.hidden,false);
+ app.listeners.keydown({key:'Escape'});
+ assert.equal(app.location.href,'https://24go.top/engineering/?topic=security#latest-heading');
+ app.listeners['reset-click']();
+ assert.equal(app.location.href,'https://24go.top/engineering/#latest-heading');
+ assert.equal(app.share.hidden,true);
+});
+
+test('untrusted deep links never select unknown categories or inject HTML',()=>{
+ for(const query of [
+  '?q=%3Cscript%3Ealert(1)%3C%2Fscript%3E&topic=__proto__',
+  '?topic=../../security',
+  '?q='+encodeURIComponent('x'.repeat(500))+'&topic=constructor',
+  '?topic=SECURITY'
+ ]){
+  const app=setUp({query});
+  assert.equal(app.topics[0].attributes['aria-pressed'],'true');
+  assert.ok(app.input.value.length<=80);
+  assert.ok(app.cards.every(card=>typeof card.hidden==='boolean'));
+  assert.equal(app.form.hidden,false);
+ }
+});
+
+test('copy filtered link is explicit, accessible and gracefully handles denied clipboard',async()=>{
+ const app=setUp({query:'?topic=security&q=api'});
+ await app.share.listeners.click();
+ assert.deepEqual(app.copied,['https://24go.top/engineering/?q=api&topic=security']);
+ assert.equal(app.shareStatus.textContent,'Filtered article link copied.');
+ const denied=setUp({query:'?topic=security',clipboard:'fail'});
+ await denied.share.listeners.click();
+ assert.match(denied.shareStatus.textContent,/Clipboard unavailable/);
+ const missing=setUp({query:'?topic=security',clipboard:'none'});
+ await missing.share.listeners.click();
+ assert.match(missing.shareStatus.textContent,/address bar/);
+});
+
+test('browser navigation restores the URL state without altering article data',()=>{
+ const app=setUp({query:'?topic=security'});
+ app.location.href='https://24go.top/engineering/?q=PostgreSQL&topic=infrastructure';
+ app.window.listeners.popstate();
+ assert.equal(app.input.value,'PostgreSQL');
+ assert.deepEqual(app.cards.map(x=>x.hidden),[true,true,false]);
+ assert.equal(app.status.textContent,'1 of 3 articles');
 });
