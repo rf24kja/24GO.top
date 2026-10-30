@@ -79,10 +79,11 @@ function build() {
       input.files=[file];
       return input.listeners.change({currentTarget:input});
     },
-    drop(file) {
+    drop(file) {return this.dropFiles([file]);},
+    dropFiles(files) {
       const el=elements.draftDropZone;
       return el.listeners.drop({
-       dataTransfer:{types:['Files'],files:[file]},
+       dataTransfer:{types:['Files'],files},
        preventDefault(){this.prevented=true;}
       });
     },
@@ -475,4 +476,52 @@ test('language switch translates an active field error without modifying the dra
  assert.equal(el.postLocale.attributes['aria-describedby'],undefined);
  assert.equal(el.formStatus.textContent,'');
  assert.equal(el.formStatus.dataset.error,'false');
+});
+
+
+test('desktop file drop opens the original multilingual draft without upload',async()=>{
+ const app=build();
+ const original={...sample,locale:'th',title:'อธิบายโค้ดที่ทดสอบได้'};
+ const bytes=new TextEncoder().encode(formatDraft(original));
+ const dragged={name:'24gotop-saved.md',size:bytes.byteLength,
+  arrayBuffer:async()=>bytes.buffer};
+ let prevented=false;
+ app.elements.draftDropZone.listeners.dragover({
+  dataTransfer:{types:['text/plain'],dropEffect:'none'},
+  preventDefault(){prevented=true;}
+ });
+ assert.equal(prevented,false,'non-file drag must retain normal text selection');
+ const event={dataTransfer:{types:['Files'],dropEffect:'none'},
+  preventDefault(){prevented=true;}};
+ app.elements.draftDropZone.listeners.dragenter(event);
+ assert.equal(prevented,true);
+ assert.equal(app.elements.draftDropZone.dataset.dragging,'true');
+ await app.drop(dragged);
+ assert.equal(app.elements.draftDropZone.dataset.dragging,undefined);
+ assert.equal(app.elements.postTitle.value,original.title);
+ assert.equal(app.elements.postLocale.value,original.locale);
+ assert.equal(app.elements.postSource.value,original.source);
+ assert.match(app.elements.formStatus.textContent,/Nothing was uploaded/);
+ assert.equal(app.beforeUnload().prevented,false);
+});
+test('multiple dropped files and invalid bytes never overwrite an unsaved draft',async()=>{
+ const app=build();
+ app.elements.postTitle.value='Author has not exported this draft';
+ app.elements.postBody.value='Reproducible local research with substantial unsaved edits.';
+ app.elements.postBody.listeners.input();
+ const bytes=new TextEncoder().encode(formatDraft(sample));
+ const good={name:'24gotop-saved.md',size:bytes.byteLength,
+  arrayBuffer:async()=>bytes.buffer};
+ await app.dropFiles([good,good]);
+ assert.equal(app.elements.postTitle.value,'Author has not exported this draft');
+ assert.equal(app.elements.formStatus.dataset.error,'true');
+ const badBytes=Uint8Array.from([0xff,0xfe,0x80]);
+ await app.drop({name:'24gotop-damaged.md',size:badBytes.length,
+  arrayBuffer:async()=>badBytes.buffer});
+ assert.equal(app.elements.postTitle.value,'Author has not exported this draft');
+ assert.equal(app.beforeUnload().prevented,true);
+ app.setConfirm(false);
+ await app.drop(good);
+ assert.equal(app.elements.postTitle.value,'Author has not exported this draft');
+ assert.match(app.elements.formStatus.textContent,/Import cancelled/);
 });
