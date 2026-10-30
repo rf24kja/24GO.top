@@ -1,5 +1,11 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-30 — Live, accessible Markdown article section outline
+
+- Added a browser-only heading outline beside the Draft Lab article preview. `#`, `##` and `###` headings become keyboard-accessible in-page links. Heading IDs are generated locally, not derived from user text; headings inside code fences stay code, not navigation.
+- Outline updates as the author types or switches any of the eight UI languages. Navigation uses fixed DOM elements with author labels inserted only via `textContent`, and it remains hidden when no supported headings exist. No article content, saved-file baseline or download data is modified; there are no network requests, automatic saves or hosted publication.
+- Added pure renderer and simulated-browser regression tests, eight localized accessibility strings, responsive CSS, usage documentation and a post-Pages real HTTPS asset check. Native-language and real mobile/screen-reader QA remain pending.
+
 ## 2026-10-30 — Refined GitHub README visuals, infographic storytelling and language flags
 
 - Replaced the public GitHub README graphite/emerald hero artwork with a more readable source-controlled banner focused on the **actually available** editorial articles, browser-only Draft Lab and local OSS SDK examples; retained the pre-launch disclosure.
