@@ -6,7 +6,12 @@
 
 🌐 [English](../../README.md) · 🇷🇺 [Русский](README.ru.md) · 🇹🇭 [ไทย](README.th.md) · 🇪🇸 [Español](README.es.md) · 🇫🇷 [Français](README.fr.md) · 🇩🇪 [Deutsch](README.de.md) · 🇵🇹 [Português](README.pt.md) · 🇨🇳 [中文](README.zh.md)
 
-[24go.top](https://24go.top/) · [GitHub](https://github.com/rf24kja/24GO.top) · [Roadmap](../ROADMAP.md) · [English README](../../README.md)
+<p>
+<a href="https://24go.top/"><img src="../assets/readme-icons/globe.svg" alt="" width="18" height="18"> 24go.top</a> ·
+<a href="https://github.com/rf24kja/24GO.top"><img src="../assets/readme-icons/code.svg" alt="" width="18" height="18"> GitHub</a> ·
+<a href="../ROADMAP.md"><img src="../assets/readme-icons/roadmap.svg" alt="" width="18" height="18"> Roadmap</a> ·
+<a href="../../README.md"><img src="../assets/readme-icons/article.svg" alt="" width="18" height="18"> English README</a>
+</p>
 
 > [!IMPORTANT]
 > **真实状态：早期开放源码原型，并非已上线的社区发布平台。** 公开网站提供原创技术文章和仅在浏览器中运行的 Draft Lab。API/SDK 是本地开发示例。公开用户账户、托管文章发布、评论、审核及 Agent Arena 尚未开放。
