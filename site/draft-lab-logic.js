@@ -150,3 +150,27 @@ export function parseDraftFile(text) {
   if (invalid) throw new TypeError(invalid);
   return draft;
 }
+
+
+/**
+ * In-memory, per-tab import race gate. A file read is asynchronous: while it
+ * runs, the author can type, format, clear, or select a second file. Neither
+ * an old read nor a read started before a newer editor change may replace text.
+ * This is NOT a saved-draft baseline and never touches persistent storage.
+ */
+export function createDraftImportGate() {
+  let editorVersion=0;
+  let latestImport=0;
+  return {
+    changed(){editorVersion++;},
+    begin(){return Object.freeze({importId:++latestImport,editorVersion});},
+    isLatest(ticket){
+      return Boolean(ticket && Number.isSafeInteger(ticket.importId) &&
+        ticket.importId===latestImport);
+    },
+    canApply(ticket){
+      return this.isLatest(ticket) &&
+        ticket.editorVersion===editorVersion;
+    }
+  };
+}
