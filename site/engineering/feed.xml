@@ -10,7 +10,7 @@
 <description>Evidence-led JavaScript example for safe URL validation, fixed DOM link nodes, untrusted author labels and hostile scheme rejection.</description>
 <pubDate>Thu, 29 Oct 2026 23:07:00 GMT</pubDate>
 </item>
-<item><title>How to verify a GitHub Pages deployment—not just green CI</title>
+<item><title>How to verify a GitHub Pages deployment—not just a green CI badge</title>
 <link>https://24go.top/engineering/verify-github-pages-deploy-not-just-ci.html</link>
 <guid isPermaLink="true">https://24go.top/engineering/verify-github-pages-deploy-not-just-ci.html</guid>
 <description>A real failed-and-passed external HTTPS smoke test, its GitHub Actions scheduling race and a safe read-only post-Pages workflow.</description>

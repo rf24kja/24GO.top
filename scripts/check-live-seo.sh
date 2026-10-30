@@ -46,6 +46,19 @@ probe '/robots.txt' robots 'Sitemap: https://24go.top/sitemap.xml'
 probe '/sitemap.xml' sitemap '<loc>https://24go.top/engineering/'
 probe '/engineering/' index '<h1>Engineering notes</h1>'
 probe '/engineering/feed.xml' feed '<rss version="2.0">'
+probe '/engineering/feed.json' jsonfeed '"version": "https://jsonfeed.org/version/1.1"'
+# Cross-check deployed RSS permalinks against the JSON alternative.
+if ! grep -Fq -- 'href="./feed.json"' "$tmp/index"; then
+  echo '::error::Engineering archive does not advertise the JSON Feed'
+  failures=$((failures+1))
+fi
+while IFS= read -r url; do
+  [[ -z "$url" ]] && continue
+  if ! grep -Fq -- '"url": "'"$url"'"' "$tmp/jsonfeed"; then
+    echo "::error::RSS item absent from deployed JSON Feed: $url"
+    failures=$((failures+1))
+  fi
+done < <(grep -oE '<guid isPermaLink="true">[^<]+' "$tmp/feed" | sed 's/^<guid isPermaLink="true">//')
 # Every canonical URL in the actual sitemap must be fetchable, correct and
 # render its own canonical tag. New reviewed articles need no script edits.
 mapfile -t listed_urls < <(grep -oE '<loc>[^<]+' "$tmp/sitemap" | sed 's/^<loc>//')

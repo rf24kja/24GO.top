@@ -13,6 +13,7 @@
 - [Publishing lifecycle](https://24go.top/engineering/submit-is-not-publish.html): Why review is not publication.
 - [Draft Lab case study](https://24go.top/engineering/why-draft-lab-first.html): A browser-only editor and its limits.
 - [RSS feed](https://24go.top/engineering/feed.xml): Editorial note updates.
+- [JSON Feed 1.1](https://24go.top/engineering/feed.json): Programmatic article summaries, canonical links, original dates and bylines; full text remains on original HTML pages.
 
 - [JavaScript SDK API key safety](https://24go.top/engineering/javascript-sdk-api-key-leak-prevention.html): Loopback-bound development tokens and tests for remote-host leakage.
 

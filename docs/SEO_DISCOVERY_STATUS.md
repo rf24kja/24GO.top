@@ -2,6 +2,10 @@
 
 **All 12 current sitemap URLs, including nine engineering articles, were independently reachable over canonical HTTPS from a GitHub-hosted runner on 2026-10-30; Google/Bing indexing is NOT confirmed.** This proves HTTP delivery at that time, not search traffic or AI citations.
 
+## Additional JSON Feed 1.1 (source PR; post-merge HTTPS verification pending)
+
+Proposed public `/engineering/feed.json` is a standard alternative to RSS for programmatic readers. It derives real article URLs, bylines and dates from source-controlled RSS and `Article` JSON-LD, with a source parity CI gate. Its actual public delivery, Google/Bing indexing, rankings, visitors or AI search citations are **not claimed** until independently verified.
+
 ## Source-verified assets
 - Canonical policy: https://24go.top (**owner settings and live routing independently verified on 2026-10-29**).
 - Public root `site/robots.txt`, XML sitemap `site/sitemap.xml`, optional `site/llms.txt` (not an SEO ranking mechanism).

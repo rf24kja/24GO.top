@@ -1,0 +1,145 @@
+{
+  "version": "https://jsonfeed.org/version/1.1",
+  "title": "24GOTOP Engineering Notes",
+  "home_page_url": "https://24go.top/engineering/",
+  "feed_url": "https://24go.top/engineering/feed.json",
+  "description": "Original, source-backed engineering articles about building 24GOTOP. The hosted publishing community is not yet launched.",
+  "language": "en",
+  "items": [
+    {
+      "id": "https://24go.top/engineering/safe-markdown-citation-links-without-xss.html",
+      "url": "https://24go.top/engineering/safe-markdown-citation-links-without-xss.html",
+      "title": "How to render Markdown citation links without introducing XSS",
+      "summary": "Evidence-led JavaScript example for safe URL validation, fixed DOM link nodes, untrusted author labels and hostile scheme rejection.",
+      "content_text": "Evidence-led JavaScript example for safe URL validation, fixed DOM link nodes, untrusted author labels and hostile scheme rejection.\n\nRead full original article: https://24go.top/engineering/safe-markdown-citation-links-without-xss.html",
+      "date_published": "2026-10-29T23:07:00Z",
+      "language": "en",
+      "authors": [
+        {
+          "name": "24GOTOP Engineering",
+          "url": "https://github.com/rf24kja/24GO.top"
+        }
+      ]
+    },
+    {
+      "id": "https://24go.top/engineering/verify-github-pages-deploy-not-just-ci.html",
+      "url": "https://24go.top/engineering/verify-github-pages-deploy-not-just-ci.html",
+      "title": "How to verify a GitHub Pages deployment—not just a green CI badge",
+      "summary": "A real failed-and-passed external HTTPS smoke test, its GitHub Actions scheduling race and a safe read-only post-Pages workflow.",
+      "content_text": "A real failed-and-passed external HTTPS smoke test, its GitHub Actions scheduling race and a safe read-only post-Pages workflow.\n\nRead full original article: https://24go.top/engineering/verify-github-pages-deploy-not-just-ci.html",
+      "date_published": "2026-10-29T23:06:00Z",
+      "language": "en",
+      "authors": [
+        {
+          "name": "24GOTOP Engineering",
+          "url": "https://github.com/rf24kja/24GO.top"
+        }
+      ]
+    },
+    {
+      "id": "https://24go.top/engineering/multilingual-markdown-editor-without-losing-drafts.html",
+      "url": "https://24go.top/engineering/multilingual-markdown-editor-without-losing-drafts.html",
+      "title": "How to localize a Markdown editor without losing drafts",
+      "summary": "Source-backed guide to eight-language UI controls, independent document language and preventing data loss when changing the editor interface.",
+      "content_text": "Source-backed guide to eight-language UI controls, independent document language and preventing data loss when changing the editor interface.\n\nRead full original article: https://24go.top/engineering/multilingual-markdown-editor-without-losing-drafts.html",
+      "date_published": "2026-10-29T23:05:00Z",
+      "language": "en",
+      "authors": [
+        {
+          "name": "24GOTOP Engineering",
+          "url": "https://github.com/rf24kja/24GO.top"
+        }
+      ]
+    },
+    {
+      "id": "https://24go.top/engineering/javascript-sdk-api-key-leak-prevention.html",
+      "url": "https://24go.top/engineering/javascript-sdk-api-key-leak-prevention.html",
+      "title": "Prevent API key leaks in JavaScript SDKs: why HTTPS alone is not enough",
+      "summary": "A real open-source Node.js SDK example: stop local publishing credentials from leaking to remote hosts, including HTTPS endpoints and misleading hostnames.",
+      "content_text": "A real open-source Node.js SDK example: stop local publishing credentials from leaking to remote hosts, including HTTPS endpoints and misleading hostnames.\n\nRead full original article: https://24go.top/engineering/javascript-sdk-api-key-leak-prevention.html",
+      "date_published": "2026-10-29T13:00:00Z",
+      "language": "en",
+      "authors": [
+        {
+          "name": "24GOTOP Engineering",
+          "url": "https://github.com/rf24kja/24GO.top"
+        }
+      ]
+    },
+    {
+      "id": "https://24go.top/engineering/discoverable-technical-articles.html",
+      "url": "https://24go.top/engineering/discoverable-technical-articles.html",
+      "title": "Publishing technical articles for people and AI search: a practical discovery checklist",
+      "summary": "An evidence-led checklist for canonical URLs, crawlable HTML, XML sitemaps, RSS and OpenAI search crawler access. No promises of indexing or a launched publishing platform.",
+      "content_text": "An evidence-led checklist for canonical URLs, crawlable HTML, XML sitemaps, RSS and OpenAI search crawler access. No promises of indexing or a launched publishing platform.\n\nRead full original article: https://24go.top/engineering/discoverable-technical-articles.html",
+      "date_published": "2026-10-29T12:00:00Z",
+      "language": "en",
+      "authors": [
+        {
+          "name": "24GOTOP Engineering",
+          "url": "https://github.com/rf24kja/24GO.top"
+        }
+      ]
+    },
+    {
+      "id": "https://24go.top/engineering/postgres-insert-returning-least-privilege.html",
+      "url": "https://24go.top/engineering/postgres-insert-returning-least-privilege.html",
+      "title": "INSERT succeeds, RETURNING fails: a least-privilege lesson",
+      "summary": "PostgreSQL 17 permission testing: an insert-only role should not acquire SELECT merely to satisfy an INSERT RETURNING test.",
+      "content_text": "PostgreSQL 17 permission testing: an insert-only role should not acquire SELECT merely to satisfy an INSERT RETURNING test.\n\nRead full original article: https://24go.top/engineering/postgres-insert-returning-least-privilege.html",
+      "date_published": "2026-10-26T14:00:00Z",
+      "language": "en",
+      "authors": [
+        {
+          "name": "24GOTOP Engineering",
+          "url": "https://github.com/rf24kja/24GO.top"
+        }
+      ]
+    },
+    {
+      "id": "https://24go.top/engineering/submit-is-not-publish.html",
+      "url": "https://24go.top/engineering/submit-is-not-publish.html",
+      "title": "Submit for review is not publish",
+      "summary": "Why review snapshots, idempotent moderation handoff and authenticated moderator decisions must be separate from public release; code is prelaunch and production remains blocked.",
+      "content_text": "Why review snapshots, idempotent moderation handoff and authenticated moderator decisions must be separate from public release; code is prelaunch and production remains blocked.\n\nRead full original article: https://24go.top/engineering/submit-is-not-publish.html",
+      "date_published": "2026-10-26T12:00:00Z",
+      "language": "en",
+      "authors": [
+        {
+          "name": "24GOTOP Engineering",
+          "url": "https://github.com/rf24kja/24GO.top"
+        }
+      ]
+    },
+    {
+      "id": "https://24go.top/engineering/markdown-preview-safety.html",
+      "url": "https://24go.top/engineering/markdown-preview-safety.html",
+      "title": "Preview Markdown without executing author HTML",
+      "summary": "A source-backed look at restricted Markdown preview blocks, safe DOM text insertion, regression tests and the limitations before public publishing.",
+      "content_text": "A source-backed look at restricted Markdown preview blocks, safe DOM text insertion, regression tests and the limitations before public publishing.\n\nRead full original article: https://24go.top/engineering/markdown-preview-safety.html",
+      "date_published": "2026-10-26T07:00:00Z",
+      "language": "en",
+      "authors": [
+        {
+          "name": "24GOTOP Engineering",
+          "url": "https://github.com/rf24kja/24GO.top"
+        }
+      ]
+    },
+    {
+      "id": "https://24go.top/engineering/why-draft-lab-first.html",
+      "url": "https://24go.top/engineering/why-draft-lab-first.html",
+      "title": "Why we built a Draft Lab before opening public writes",
+      "summary": "How we test the author experience without publishing unauthenticated content, and which safety controls are still missing.",
+      "content_text": "How we test the author experience without publishing unauthenticated content, and which safety controls are still missing.\n\nRead full original article: https://24go.top/engineering/why-draft-lab-first.html",
+      "date_published": "2026-10-26T00:00:00Z",
+      "language": "en",
+      "authors": [
+        {
+          "name": "rf24kja",
+          "url": "https://github.com/rf24kja"
+        }
+      ]
+    }
+  ]
+}
