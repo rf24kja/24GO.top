@@ -21,7 +21,18 @@ Each file includes real translated narrative, currently available static resourc
 
 - [Hero / brand banner](assets/24gotop-readme-hero.svg): self-contained SVG, graphite and emerald, independent of live external image hosts. Describes pre-launch status.
 - [Product map](assets/24gotop-platform-map.svg): an accessible text-alternative diagram with clear **available**, **private and gated**, and **planned** boundaries. The image is not a security proof or product launch evidence.
+- [Author journey](assets/24gotop-writer-journey.svg): four available browser-only steps (write, preview, download, reopen) deliberately separated from future authenticated moderation and hosting; it must never imply the local file is published automatically.
 - SVGs have fixed viewBoxes, title/description elements and no JavaScript, external images, foreign objects, arbitrary fonts or animations. Markdown captions and status tables remain readable when images are disabled or GitHub doesn't display the SVG.
+
+## README information architecture and source-of-truth checks
+
+The main README is the authoritative English overview. It should help three audiences in their first minute: **readers** (technical articles and RSS), **authors** (what browser-only Draft Lab can and cannot do), and **developers** (no-key local API, SDK, source, tests and safe contributions). Keep the first screen concise; place deep detail in navigable sections and linked documentation.
+
+When new content or features are added, update the root overview, current-vs-future capability table, all necessary image text alternatives, the appropriate localized short summaries, source-backed article links and relevant tests. The new author-journey diagram is not a substitute for textual steps and warnings.
+
+The optional README FAQ should never give private hosted-core deployment instructions, promise user registration or claim tested AI agents. A documented **P0 gate** is not a shipped product capability. The public developer server uses a deliberately local-only shared development key in its optional write demo; no hosted write path may be derived from it.
+
+Structural checks in `tests/readme-presentation.test.mjs` cover all eight locale pages, repository-relative links, diagram accessibility and safety, actual article URLs, public/private boundaries, and the real workflow. Tests cannot substitute for native-language proof-reading or human evaluation of GitHub's rendered SVG contrast.
 
 ## Contribution rules
 
