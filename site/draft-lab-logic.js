@@ -108,7 +108,7 @@ export function draftFilename(draft) {
   const slug = title.normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
     .toLowerCase().replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '').slice(0, 28).replace(/-+$/g, '');
-  const bytes = new TextEncoder().encode(language + '\\0' + title.normalize('NFC'));
+  const bytes = new TextEncoder().encode(language + ':' + title.normalize('NFC'));
   let hash = 0xcbf29ce484222325n;
   for (const byte of bytes) {
     hash = ((hash ^ BigInt(byte)) * 0x100000001b3n) & 0xffffffffffffffffn;
