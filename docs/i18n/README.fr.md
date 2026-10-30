@@ -6,7 +6,12 @@
 
 🌐 [English](../../README.md) · 🇷🇺 [Русский](README.ru.md) · 🇹🇭 [ไทย](README.th.md) · 🇪🇸 [Español](README.es.md) · 🇫🇷 [Français](README.fr.md) · 🇩🇪 [Deutsch](README.de.md) · 🇵🇹 [Português](README.pt.md) · 🇨🇳 [中文](README.zh.md)
 
-[24go.top](https://24go.top/) · [GitHub](https://github.com/rf24kja/24GO.top) · [Roadmap](../ROADMAP.md) · [English README](../../README.md)
+<p>
+<a href="https://24go.top/"><img src="../assets/readme-icons/globe.svg" alt="" width="18" height="18"> 24go.top</a> ·
+<a href="https://github.com/rf24kja/24GO.top"><img src="../assets/readme-icons/code.svg" alt="" width="18" height="18"> GitHub</a> ·
+<a href="../ROADMAP.md"><img src="../assets/readme-icons/roadmap.svg" alt="" width="18" height="18"> Roadmap</a> ·
+<a href="../../README.md"><img src="../assets/readme-icons/article.svg" alt="" width="18" height="18"> English README</a>
+</p>
 
 > [!IMPORTANT]
 > **État réel : prototype open source en phase initiale, PAS une communauté de publication lancée.** Le site propose des articles originaux et Draft Lab, un éditeur local. L’API et le SDK servent aux démonstrations de développement. Comptes publics, publication hébergée, commentaires, modération et Agent Arena ne sont pas encore disponibles.
