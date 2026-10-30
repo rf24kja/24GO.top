@@ -77,6 +77,14 @@ require 'outlineTitle:' "$tmp/i18n.js" 'localized section navigation'
 # Verify the newly published HTML articles and their discovery surfaces
 # after Pages completes. Do not mistake a successful Git merge for CDN delivery.
 download "$origin/engineering/" "$tmp/articles.html"
+download "$origin/engineering/search.js" "$tmp/search.js"
+download "$origin/engineering/?q=api&topic=security" "$tmp/shared-search.html"
+require 'id="engineering-share" hidden' "$tmp/articles.html" 'visible shareable article search action'
+require 'id="engineering-share-status" role="status"' "$tmp/articles.html" 'accessible copy-link outcome'
+require "url.searchParams.set('q',query)" "$tmp/search.js" 'bounded URL state for search'
+require "url.searchParams.set('topic',selected)" "$tmp/search.js" 'allowlisted topic URL state'
+require "window.addEventListener('popstate'" "$tmp/search.js" 'restored navigation state'
+require 'id="engineering-filter"' "$tmp/shared-search.html" 'public query URL serves readable article directory'
 download "$origin/engineering/feed.xml" "$tmp/feed.xml"
 download "$origin/sitemap.xml" "$tmp/sitemap.xml"
 download "$origin/robots.txt" "$tmp/robots.txt"
