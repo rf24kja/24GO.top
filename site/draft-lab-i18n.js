@@ -2,6 +2,7 @@
 // or translations of the user's article. English is the explicit fallback.
 export const UI_LOCALES=Object.freeze(['en','ru','th','es','fr','de','pt','zh']);
 const EN={
+ outlineTitle:"Article sections",outlineLabel:"Jump to a section of this draft",
  skip:"Skip to editor",
  formatGroup:"Insert Markdown formatting",
  invalidTitle:"Enter a title between 5 and 160 characters.",
@@ -51,6 +52,7 @@ const EN={
  clearCanceled:'Draft kept. Nothing was erased.',cleared:'Draft cleared from this browser tab.'
 };
 const RU={
+ outlineTitle:"Разделы статьи",outlineLabel:"Перейти к разделу черновика",
  skip:"К редактору",
  formatGroup:"Форматирование Markdown",
  invalidTitle:"Введите название длиной от 5 до 160 символов.",
@@ -99,6 +101,7 @@ const RU={
  clearCanceled:'Черновик оставлен без изменений.',cleared:'Черновик очищен в этой вкладке.'
 };
 const TH={
+ outlineTitle:"หัวข้อในบทความ",outlineLabel:"ข้ามไปยังหัวข้อในฉบับร่าง",
  skip:"ข้ามไปยังตัวแก้ไข",
  formatGroup:"จัดรูปแบบ Markdown",
  invalidTitle:"กรุณากรอกชื่อเรื่อง 5–160 อักขระ",
@@ -146,6 +149,7 @@ const TH={
  clearCanceled:'เก็บร่างเดิมไว้',cleared:'ล้างร่างในแท็บนี้แล้ว'
 };
 const ES={
+ outlineTitle:"Secciones del artículo",outlineLabel:"Ir a una sección del borrador",
  skip:"Ir al editor",
  formatGroup:"Dar formato Markdown",
  invalidTitle:"Escribe un título de entre 5 y 160 caracteres.",
@@ -193,6 +197,7 @@ const ES={
  clearCanceled:'Borrador conservado.',cleared:'Borrador borrado de esta pestaña.'
 };
 const FR={
+ outlineTitle:"Sections de l’article",outlineLabel:"Accéder à une section du brouillon",
  skip:"Aller à l’éditeur",
  formatGroup:"Mise en forme Markdown",
  invalidTitle:"Saisissez un titre de 5 à 160 caractères.",
@@ -240,6 +245,7 @@ const FR={
  clearCanceled:'Brouillon conservé.',cleared:'Brouillon effacé de cet onglet.'
 };
 const DE={
+ outlineTitle:"Artikelabschnitte",outlineLabel:"Zu einem Abschnitt des Entwurfs springen",
  skip:"Zum Editor springen",
  formatGroup:"Markdown formatieren",
  invalidTitle:"Geben Sie einen Titel mit 5 bis 160 Zeichen ein.",
@@ -287,6 +293,7 @@ const DE={
  clearCanceled:'Entwurf beibehalten.',cleared:'Entwurf aus diesem Tab gelöscht.'
 };
 const PT={
+ outlineTitle:"Seções do artigo",outlineLabel:"Ir para uma seção do rascunho",
  skip:"Ir para o editor",
  formatGroup:"Formatação Markdown",
  invalidTitle:"Informe um título de 5 a 160 caracteres.",
@@ -334,6 +341,7 @@ const PT={
  clearCanceled:'Rascunho mantido.',cleared:'Rascunho apagado desta aba.'
 };
 const ZH={
+ outlineTitle:"文章章节",outlineLabel:"跳转到草稿章节",
  skip:"跳转到编辑器",
  formatGroup:"Markdown 格式工具",
  invalidTitle:"请输入 5–160 个字符的标题。",

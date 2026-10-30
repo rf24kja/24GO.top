@@ -47,6 +47,10 @@ require 'export const UI_STRINGS' "$tmp/i18n.js" 'eight-language offline diction
 require 'const RU={' "$tmp/i18n.js" 'Russian locale bundle'
 require 'const TH={' "$tmp/i18n.js" 'Thai locale bundle'
 require 'const ZH={' "$tmp/i18n.js" 'Chinese locale bundle'
+require 'id="articleOutlineSection"' "$tmp/draft.html" 'article section outline'
+require 'renderPreviewOutline(field(' "$tmp/editor.js" 'live outline rendering'
+require 'export function renderPreviewOutline' "$tmp/preview.js" 'safe outline DOM builder'
+require 'outlineTitle:' "$tmp/i18n.js" 'localized section navigation'
 # Verify the newly published HTML articles and their discovery surfaces
 # after Pages completes. Do not mistake a successful Git merge for CDN delivery.
 download "$origin/engineering/" "$tmp/articles.html"

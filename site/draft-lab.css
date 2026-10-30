@@ -60,3 +60,17 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 .interface-picker select{width:auto;max-width:100%;min-width:190px;min-height:44px;padding:8px 12px}
 [lang="th"] .eyebrow,[lang="zh"] .eyebrow{letter-spacing:.035em}
 @media(max-width:550px){.interface-picker{align-items:stretch}.interface-picker select{width:100%}}
+
+/* In-page outline is derived from the same restricted Markdown headings.
+   No sticky overlays; full keyboard reach and safe wrapping on mobile. */
+.article-outline{border:1px solid var(--border);border-radius:12px;
+ padding:14px 18px;margin:16px 0;background:var(--field)}
+.article-outline h4{font-size:14px;letter-spacing:.01em;margin:0 0 10px;color:var(--text)}
+.article-outline ol{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.article-outline li{min-width:0;overflow-wrap:anywhere}
+.article-outline li.outline-level-2{padding-inline-start:14px}
+.article-outline li.outline-level-3{padding-inline-start:28px}
+.article-outline a{display:block;border-radius:6px;padding:5px 8px;
+ text-decoration:none;color:var(--accent);font-size:14px;line-height:1.5}
+.article-outline a:hover{text-decoration:underline;background:var(--secondary-hover)}
+.preview-content h4,.preview-content h5,.preview-content h6{scroll-margin-top:24px}
