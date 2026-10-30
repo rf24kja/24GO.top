@@ -88,7 +88,10 @@ export function formatDraft(draft) {
   ];
   const safeSource = safeSourceUrl(draft.source);
   if (safeSource) result.push('Original source: ' + safeSource);
-  result.push('',draft.body.trim(),'','---','Unpublished draft · Generated in the 24GOTOP static Draft Lab.');
+  // The article body is author-owned source: do not trim leading indentation,
+  // deliberate blank lines, or trailing whitespace. The footer delimiter is
+  // stripped separately by parseDraftFile, so round-trips remain lossless.
+  result.push('',draft.body,'','---','Unpublished draft · Generated in the 24GOTOP static Draft Lab.');
   return result.join('\n');
 }
 
