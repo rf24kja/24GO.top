@@ -53,13 +53,38 @@ test('draft output preserves input literally, without HTML execution',()=>{
 });
 
 
-test('on-device export uses safe predictable Markdown filenames',()=>{
-  assert.equal(draftFilename(valid),'24gotop-making-a-secure-publishing-api.md');
-  assert.equal(draftFilename({...valid,title:'../../../../..\\test<script>',locale:'ru'}),'24gotop-test-script.md');
-  assert.equal(draftFilename({...valid,title:'Тестовая статья',locale:'ru'}),'24gotop-draft-ru.md');
-  const name=draftFilename({...valid,title:'A'.repeat(160)});
-  assert.ok(name.length <= 62);
-  assert.match(name,/^24gotop-[a-z0-9-]+\.md$/);
+test('on-device export uses bounded, deterministic ASCII filenames for all writing systems',()=>{
+  const latin=draftFilename(valid);
+  assert.match(latin,/^24gotop-making-a-secure-publishing-a-en-[0-9a-f]{16}\.md$/);
+  assert.equal(draftFilename(valid),latin,'repeat export of the same heading is stable');
+  assert.match(draftFilename({...valid,title:'../../../../..\\test<script>',locale:'ru'}),
+    /^24gotop-test-script-ru-[0-9a-f]{16}\.md$/);
+  const russian=draftFilename({...valid,title:'Тестовая статья',locale:'ru'});
+  assert.match(russian,/^24gotop-draft-ru-[0-9a-f]{16}\.md$/);
+  assert.notEqual(russian,draftFilename({...valid,title:'Другая статья',locale:'ru'}),
+    'different Russian titles must not share the generic draft-ru filename');
+  assert.notEqual(draftFilename({...valid,title:'คู่มือทดสอบ',locale:'th'}),
+    draftFilename({...valid,title:'คู่มืออีกฉบับ',locale:'th'}));
+  assert.notEqual(draftFilename({...valid,title:'人工智能指南',locale:'zh'}),
+    draftFilename({...valid,title:'开发者指南',locale:'zh'}));
+  assert.notEqual(draftFilename({...valid,title:'Guide — 中文',locale:'en'}),
+    draftFilename({...valid,title:'Guide — ภาษาไทย',locale:'en'}),
+    'two mixed-script titles may share an ASCII slug but never a title fingerprint');
+  assert.notEqual(draftFilename({...valid,locale:'en'}),draftFilename({...valid,locale:'ru'}),
+    'the language must participate in the filename identity');
+  const decomposed='Cafe\u0301 — developer guide';
+  assert.equal(draftFilename({...valid,title:decomposed}),
+    draftFilename({...valid,title:decomposed.normalize('NFC')}),
+    'canonically equivalent Unicode titles should produce identical names');
+  for(const locale of LOCALES){
+    for(const title of ['A'.repeat(160),'Тестовая статья','คู่มือทดสอบ','人工智能指南',
+      'My article about <script>alert(1)</script> and local files']){
+      const filename=draftFilename({...valid,title,locale});
+      assert.ok(filename.length<=62,'bounded filename for '+locale);
+      assert.match(filename,/^24gotop-[a-z0-9-]+\.md$/);
+      assert.doesNotMatch(filename,/[\\/\\\\<>:?*|"]/);
+    }
+  }
 });
 
 test('clear confirmation is only needed when user actually wrote something',()=>{
