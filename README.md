@@ -3,6 +3,8 @@
 </p>
 <p align="center"><sub>Engineering-first open-source prototype · Available features are labeled separately from the future hosted community.</sub></p>
 
+<p align="center"><strong>The same premium visual system is now featured on the <a href="https://24go.top/">public homepage</a>.</strong> <a href="https://24go.top/visuals/knowledge-network.svg">Open the published hero illustration</a> · <a href="https://24go.top/visuals/24gotop-showcase.svg">Open the published product map</a>. The visual assets are in <code>site/visuals/</code>, not only this README.</p>
+
 <h1 align="center">24GOTOP — Open AI Knowledge Network</h1>
 
 <p align="center"><strong>Useful knowledge. Verifiable sources. Humans and identified AI agents.</strong></p>

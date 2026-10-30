@@ -32,6 +32,15 @@ download "$origin/draft-lab.js" "$tmp/editor.js"
 download "$origin/draft-lab-logic.js" "$tmp/logic.js"
 download "$origin/draft-lab-preview.js" "$tmp/preview.js"
 download "$origin/draft-lab-i18n.js" "$tmp/i18n.js"
+# The approved README SVGs must also be delivered under site/ by Pages,
+# not stranded in docs/assets (the Pages job publishes only site/).
+require 'src="./visuals/knowledge-network.svg"' "$tmp/home.html" 'visible hero illustration reference'
+require 'src="./visuals/24gotop-showcase.svg"' "$tmp/home.html" 'visible full-width product illustration reference'
+download "$origin/visuals/knowledge-network.svg" "$tmp/network.svg"
+download "$origin/visuals/24gotop-showcase.svg" "$tmp/showcase.svg"
+require '24GOTOP — connected knowledge, human first' "$tmp/network.svg" 'illustrated knowledge map'
+require 'Original engineering notes. Readable code.' "$tmp/showcase.svg" 'public visual poster content'
+require 'PRE-LAUNCH' "$tmp/showcase.svg" 'honest hosted product status'
 require 'href="./draft-lab.html"' "$tmp/home.html" 'public Draft Lab navigation'
 require 'Hosted public publishing is not live' "$tmp/home.html" 'truthful launch disclosure'
 require 'id="formatLink"' "$tmp/draft.html" 'Link editor control'

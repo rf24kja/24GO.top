@@ -1,5 +1,13 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-31 — Visible homepage graphics published, not only README
+
+- Added a prominent original emerald/graphite orbital product illustration directly to the **real public homepage**, including on narrow/mobile screens. Kept honest PUBLIC / BROWSER / LOCAL / PLANNED distinctions, working CTAs and visible keyboard focus.
+- Published the already-reviewed premium README overview SVG as a **separate actual GitHub Pages asset** under `site/visuals/`, and displayed it in a full-width responsive product overview below the homepage hero. The Pages workflow uploads only `site/`, so assets in `docs/assets/` alone never appeared on the site.
+- Replaced three decorative single-character symbols with original self-contained vector pictograms, while retaining readable card titles and links. Added tests for SVG safety, responsive mobile styles, source-to-deployment asset paths, and no staged sign-in CTA.
+- Strengthened the post-deploy canonical HTTPS smoke to download **both graphics from https://24go.top/visuals/** and require unique visual identifiers, not merely check for a green deployment job.
+- No public registration, authenticated publishing, private hosted Core, Supabase, Vercel, DNS, third-party image CDN or new billing. Real-browser screenshot and screen-reader QA remain separate checks.
+
 ## 2026-10-31 — Draft Lab preserves whitespace in exported article bodies
 
 - Replaced body-wide trimming during local Markdown export with exact body text preservation, including leading indentation and trailing blank lines.
