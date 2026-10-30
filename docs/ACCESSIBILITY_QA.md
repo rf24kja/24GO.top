@@ -26,6 +26,20 @@ These assertions are not a substitute for manual screen-reader, visual contrast 
 6. Test 200% browser zoom and `prefers-reduced-motion`, focus contrast in the dark theme, English and Russian locale routes. Also review Thai and other languages if fluent.
 7. Re-run in a real browser after publishing any changes. Automated checks alone cannot establish WCAG conformance.
 
+## Source change: reliable fragment focus targets (2026-10-31)
+
+The **development-only** local reader's `#main-content` and `#posts`
+landmarks now have `tabindex="-1"`. Browser fragment navigation from
+**Skip to main content**, **Discover**, and **Explore posts** can move focus
+to noninteractive landmarks without adding unnecessary Tab-order stops.
+The existing sticky-header scroll offsets and visible focus rules remain.
+
+**Manual verification still required:** open `/en/` and `/ru/`, Tab to
+Skip and press Enter, then continue Tab; repeat with Discover and Explore,
+NVDA/VoiceOver, 320px/390px and 200% zoom. Check focus follows the target
+and does not unexpectedly return to the header. Automated markup tests do
+not establish real browser accessibility or WCAG compliance.
+
 ## Reporting results
 
 Add results to [Issue #7](https://github.com/rf24kja/24GO.top/issues/7), including browser/version, OS, viewport, language, exact steps and reproducible issues. Do not upload identifiable screen-reader recordings, private posts, API keys or personal data.
