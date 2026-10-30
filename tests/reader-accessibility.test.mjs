@@ -23,7 +23,7 @@ function fakeNode(tag='div') {
 }
 
 function runReader(locale='en') {
-  const ids=['headline','intro','explore','latest','developerTitle','developerDescription','locale','localeLabel','categoryTabs','rss','feed','feedStatus'];
+  const ids=['headline','intro','explore','latest','developerTitle','developerDescription','locale','localeLabel','categoryTabs','rss','feed','feedStatus','homeLink'];
   const nodes=Object.fromEntries(ids.map(id=>[id,fakeNode()]));
   const buttons=['','news','models','tools','guides'].map(cat=>{
     const button=fakeNode('button');button.dataset.cat=cat;return button;
