@@ -42,6 +42,16 @@ function runReader(locale='en') {
   return {nodes,buttons,requests,location};
 }
 
+test('brand keeps the selected reader language instead of resetting to English',()=>{
+ assert.match(html, /id="homeLink" href="\/en\/"/);
+ for(const locale of ['en','ru','th','es','fr','de','pt','zh']){
+  const app=runReader(locale);
+  assert.equal(app.nodes.homeLink.href,'/'+locale+'/',locale);
+ }
+ const unknown=runReader('xx');
+ assert.equal(unknown.nodes.homeLink.href,'/en/');
+});
+
 const settle=()=>new Promise(resolve=>setImmediate(resolve));
 const okPosts=posts=>({ok:true,json:async()=>({posts})});
 
