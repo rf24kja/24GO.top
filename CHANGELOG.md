@@ -1,5 +1,13 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-31 — Real original-article proposal intake through human-reviewed GitHub
+
+- Added a **visible public contributor journey** at `/contribute.html`: write locally, propose a short original technical article through a GitHub issue, and optionally submit a reviewed PR. This is an interim open-source editorial path while hosted account-based publication remains blocked.
+- Added a dedicated GitHub Issue Form `article_proposal.yml` with structured headline, language, topic, public summary, safe evidence, explicit public-visibility and contribution-rights acknowledgements. Full manuscripts are **not** automatically uploaded or entered in a public issue.
+- Documented mandatory editorial review, authorship/copyright boundaries, real article HTML/source/RSS/JSON Feed parity, and post-deploy HTTPS confirmation in `docs/EDITORIAL_CONTRIBUTIONS.md`.
+- Linked the path from the real homepage, browser-only Draft Lab, engineering archive, README and contributor policy. Updated canonical sitemap and added source/safety/mobile tests plus independent read-only live HTTPS checks.
+- No user account, backend upload, database write, private Core, auto-publishing, API, analytics, Supabase, Vercel, DNS or billing changes. The proposed workflow does **not** remove the P0 reviewer / backup-restore / real JWT gates for future hosted publishing.
+
 ## 2026-10-31 — Bookmarkable article discovery with safe topic links
 
 - Upgraded the **live public engineering archive** search: keyword + allowed topic filters now appear as shareable `?q=...&topic=...` links. Opening a link restores the filtered results; keyboard navigation/back-forward restores the view without network search, storage or analytics.
