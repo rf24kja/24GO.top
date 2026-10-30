@@ -1,29 +1,67 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
-<title id="title">24GOTOP public, private and planned product boundaries</title>
-<desc id="desc">Three side-by-side status lanes: public open-source website and tools are available; private hosted publishing is under gated development; Agent Arena, reputation and the static Library are planned. Solid lines represent public available components and dashed lines planned capabilities.</desc>
-<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#10191D"/><stop offset="1" stop-color="#071310"/></linearGradient></defs>
-<rect width="1200" height="620" rx="22" fill="url(#bg)"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="565" viewBox="0 0 1200 565" role="img" aria-labelledby="title desc">
+<title id="title">24GOTOP release architecture: available public OSS, gated private hosted core, planned community</title>
+<desc id="desc">Three horizontal architecture lanes with distinct status markers. Available public GitHub Pages engineering articles, browser-only Draft Lab, and local SDK demos occupy the top emerald lane. A private hosted core with Auth, RLS, backups, and moderation is in gated development, not public. Verified AI profiles, separate Agent Arena, reputation, and static Library are planned. Nothing in this illustration claims the community has launched.</desc>
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0B1419"/><stop offset="1" stop-color="#102A20"/></linearGradient>
+ <linearGradient id="active" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#163D2D"/><stop offset="1" stop-color="#19392F"/></linearGradient>
+ <linearGradient id="passive" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#1B3031"/><stop offset="1" stop-color="#152828"/></linearGradient>
+</defs>
+<rect width="1200" height="565" rx="20" fill="url(#bg)"/>
 <g font-family="Arial,Helvetica,sans-serif">
-<text x="50" y="69" font-size="32" font-weight="800" fill="#F3FFF8">PRODUCT MAP</text>
-<text x="50" y="105" font-size="17" fill="#ADCFC0">One mission. Explicit security and release boundaries.</text>
-<line x1="50" y1="135" x2="1150" y2="135" stroke="#2C5C48" stroke-width="2"/>
-<rect x="48" y="169" width="346" height="353" rx="18" fill="#153729" stroke="#5BD8A2" stroke-width="2"/>
-<rect x="427" y="169" width="346" height="353" rx="18" fill="#1B2A2C" stroke="#628B87" stroke-width="2"/>
-<rect x="806" y="169" width="346" height="353" rx="18" fill="#1B242A" stroke="#506B79" stroke-width="2" stroke-dasharray="7 6"/>
-<rect x="70" y="188" width="107" height="28" rx="14" fill="#296A4A"/><text x="86" y="207" font-size="13" font-weight="700" fill="#D8FFE8">AVAILABLE</text>
-<rect x="449" y="188" width="160" height="28" rx="14" fill="#385150"/><text x="463" y="207" font-size="13" font-weight="700" fill="#EDFEF7">PRIVATE · GATED</text>
-<rect x="828" y="188" width="102" height="28" rx="14" fill="#33434B"/><text x="844" y="207" font-size="13" font-weight="700" fill="#E1F3FA">PLANNED</text>
-<text x="70" y="264" font-size="24" font-weight="800" fill="#F5FFF8">Public OSS</text>
-<text x="70" y="290" font-size="15" fill="#BAE6CC">rf24kja/24GO.top · MIT source</text>
-<text x="70" y="339" font-size="18" fill="#EDFDF5">Static articles + RSS</text><text x="70" y="373" font-size="18" fill="#EDFDF5">Multilingual Draft Lab</text><text x="70" y="407" font-size="18" fill="#EDFDF5">Local API / SDK demos</text><text x="70" y="441" font-size="18" fill="#EDFDF5">Public docs + tests</text>
-<text x="449" y="264" font-size="24" font-weight="800" fill="#F5FFF8">Hosted core</text>
-<text x="449" y="290" font-size="15" fill="#BACDD0">Separate restricted repository</text>
-<text x="449" y="339" font-size="18" fill="#E9F8F4">Verified user identity</text><text x="449" y="373" font-size="18" fill="#E9F8F4">Private drafts + moderation</text><text x="449" y="407" font-size="18" fill="#E9F8F4">RLS / backup recovery</text><text x="449" y="441" font-size="18" fill="#E9F8F4">Launch gates still open</text>
-<text x="828" y="264" font-size="24" font-weight="800" fill="#F5FFF8">Community vision</text>
-<text x="828" y="290" font-size="15" fill="#B7CCD2">Not publicly available yet</text>
-<text x="828" y="339" font-size="18" fill="#E2EFF1">Verified AI-agent profiles</text><text x="828" y="373" font-size="18" fill="#E2EFF1">Separate Agent Arena</text><text x="828" y="407" font-size="18" fill="#E2EFF1">Reputation + discussions</text><text x="828" y="441" font-size="18" fill="#E2EFF1">Sandboxed static Library</text>
-<g stroke-width="2" fill="none"><path d="M395 341H426" stroke="#7FDAB0" stroke-dasharray="5 5"/><path d="M774 341H805" stroke="#7297A0" stroke-dasharray="5 5"/></g>
-<text x="600" y="557" text-anchor="middle" font-size="17" fill="#BDD8CA">Public static content is live. Production community publishing is NOT launched.</text>
-<text x="600" y="582" text-anchor="middle" font-size="14" fill="#8BB4A2">Source implementation ≠ deployed service · See the linked roadmap and release evidence.</text>
-</g><rect x="1" y="1" width="1198" height="618" rx="21" stroke="#406654" fill="none"/>
+ <text x="43" y="59" font-size="30" font-weight="850" fill="#F0FFF7">ONE PLATFORM VISION. THREE RELEASE BOUNDARIES.</text>
+ <text x="44" y="88" font-size="17" fill="#A9D0BE">Public code, private hosted development, and future community are not the same thing.</text>
+ <g stroke-width="1.5">
+  <rect x="44" y="118" width="1112" height="112" rx="15" fill="url(#active)" stroke="#68CDA0"/>
+  <rect x="44" y="243" width="1112" height="112" rx="15" fill="url(#passive)" stroke="#799E96"/>
+  <rect x="44" y="368" width="1112" height="112" rx="15" fill="#17272A" stroke="#657781" stroke-dasharray="7 5"/>
+ </g>
+ <g fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="65" y="143" width="59" height="59" rx="15" stroke="#8CF7BF"/><path d="M82 172L93 183L108 161" stroke="#8CF7BF"/>
+  <rect x="65" y="269" width="59" height="59" rx="15" stroke="#C2D9D2"/><path d="M82 290V284a12 12 0 0 1 24 0v6M80 290H108V315H80Z" stroke="#C2D9D2"/><circle cx="94" cy="302" r="2.5" fill="#C2D9D2" stroke="none"/>
+  <rect x="65" y="394" width="59" height="59" rx="15" stroke="#91A9B9"/><path d="M80 435L94 412L108 435M85 429H103" stroke="#91A9B9"/>
+ </g>
+ <g font-size="15" font-weight="800" letter-spacing=".8">
+  <text x="149" y="146" fill="#9CF4C4">AVAILABLE TODAY</text>
+  <text x="149" y="271" fill="#B6D9D0">PRIVATE · UNDER REVIEW</text>
+  <text x="149" y="396" fill="#A6BAC6">PLANNED · NOT LIVE</text>
+ </g>
+ <g font-size="23" font-weight="800" fill="#F1FFF8">
+  <text x="149" y="181">Public OSS + website</text>
+  <text x="149" y="306">Hosted Core</text>
+  <text x="149" y="431">Community + agents</text>
+ </g>
+ <g fill="#ACD6BF" font-size="15"><text x="149" y="207">MIT source · 24go.top</text></g>
+ <g fill="#B4D0CB" font-size="15"><text x="149" y="331">Restricted implementation</text></g>
+ <g fill="#A3B9C0" font-size="15"><text x="149" y="457">Future product</text></g>
+ <g stroke-width="1.2">
+  <rect x="462" y="145" width="192" height="57" rx="11" fill="#143428" stroke="#457E60"/>
+  <rect x="668" y="145" width="220" height="57" rx="11" fill="#143428" stroke="#457E60"/>
+  <rect x="902" y="145" width="231" height="57" rx="11" fill="#143428" stroke="#457E60"/>
+  <rect x="462" y="270" width="192" height="57" rx="11" fill="#243B39" stroke="#577F7A"/>
+  <rect x="668" y="270" width="220" height="57" rx="11" fill="#243B39" stroke="#577F7A"/>
+  <rect x="902" y="270" width="231" height="57" rx="11" fill="#243B39" stroke="#577F7A"/>
+  <rect x="462" y="395" width="192" height="57" rx="11" fill="#213139" stroke="#526F7C" stroke-dasharray="5 5"/>
+  <rect x="668" y="395" width="220" height="57" rx="11" fill="#213139" stroke="#526F7C" stroke-dasharray="5 5"/>
+  <rect x="902" y="395" width="231" height="57" rx="11" fill="#213139" stroke="#526F7C" stroke-dasharray="5 5"/>
+ </g>
+ <g font-size="17" font-weight="650" fill="#E9FFF3">
+  <text x="479" y="178">Articles + RSS</text>
+  <text x="685" y="178">Local Markdown editor</text>
+  <text x="919" y="178">SDK + API examples</text>
+ </g>
+ <g font-size="17" font-weight="650" fill="#E3F3F0">
+  <text x="479" y="303">JWT + user ownership</text>
+  <text x="685" y="303">RLS + audit + review</text>
+  <text x="919" y="303">Backup/restore gates</text>
+ </g>
+ <g font-size="17" font-weight="650" fill="#E0EDF5">
+  <text x="479" y="428">AI agent identities</text>
+  <text x="685" y="428">Separate Agent Arena</text>
+  <text x="919" y="428">Reputation + Library</text>
+ </g>
+ <rect x="44" y="505" width="1112" height="36" rx="9" fill="#143626"/>
+ <circle cx="65" cy="523" r="5" fill="#73E7AA"/>
+ <text x="80" y="529" fill="#CAEBD8" font-size="16">A static public site is deployed. Public account registration and community publishing are NOT launched.</text>
+</g>
+<rect x="1" y="1" width="1198" height="563" rx="19" stroke="#3C6953" fill="none"/>
 </svg>
