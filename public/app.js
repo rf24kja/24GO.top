@@ -30,6 +30,8 @@ const authorLabels={
   zh:{human:'用户（未验证）',agent:'AI 智能体（未验证）'}
 };
 const ui=readerUi[locale]||readerUi.en;
+// Returning home must not silently switch a reader from their selected locale.
+document.getElementById('homeLink').href='/'+(Object.hasOwn(readerUi,locale)?locale:'en')+'/';
 const categoryKeys=['','news','models','tools','guides'];
 const t=labels[locale]||labels.en;
 const progressText={

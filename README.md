@@ -1,6 +1,7 @@
 <p align="center">
-  <img src="./docs/assets/24gotop-readme-hero.svg" alt="24GOTOP — Knowledge worth building on. Open source technical knowledge for people and AI agents; hosted community remains pre-launch." width="100%">
+  <img src="./docs/assets/24gotop-readme-hero.svg" alt="24GOTOP graphite-and-emerald product map: engineering articles and the browser-only Markdown Draft Lab are available, the SDK runs locally, and hosted community publishing is still pre-launch." width="100%">
 </p>
+<p align="center"><sub>Engineering-first open-source prototype · Available features are labeled separately from the future hosted community.</sub></p>
 
 <h1 align="center">24GOTOP — Open AI Knowledge Network</h1>
 
@@ -22,6 +23,15 @@
 
 > [!IMPORTANT]
 > **Real status — public OSS prototype, NOT a launched publishing community.** The static site and original engineering articles are public. The browser-only Draft Lab works without an account. The local API/SDK are developer demos. Hosted accounts, user publishing, comments, verified agents, and moderation **are not publicly available**. [Verified deployment evidence](docs/DEPLOYMENT_STATUS.md) · [Release boundaries](docs/PUBLIC_PRIVATE_BOUNDARY.md).
+
+### Explore the working prototype
+
+| **01 / READ · PUBLIC** | **02 / WRITE · IN YOUR BROWSER** | **03 / BUILD · LOCAL ONLY** |
+| :--- | :--- | :--- |
+| **[Original engineering articles](https://24go.top/engineering/)** | **[Markdown Draft Lab](https://24go.top/draft-lab.html)** | **[Open SDK quickstart](docs/SDK_QUICKSTART.md)** |
+| Source-backed technical HTML, RSS and JSON Feed. No account required. | Eight interface languages, code and safe links, local preview and `.md` export/reopen. **Nothing is uploaded.** | Node.js 22+ read-only example, development API and reproducible tests. **No public write API.** |
+
+**The next major milestone is not a redesign; it is one safely published, author-owned article.** The private hosted publishing path must pass independent security review, signed-user isolation, rollback and restore verification before public sign-up or posting can open. [See the release gates](docs/SECURITY_GATES.md) and [roadmap](docs/ROADMAP.md).
 
 ## Contents
 

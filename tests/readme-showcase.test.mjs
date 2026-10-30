@@ -66,8 +66,8 @@ test('original GitHub README SVG graphics are self-contained, accessible and fre
   assert.match(svg,/<title id="title">/);
   assert.match(svg,/<desc id="desc">/);
   assert.match(svg,/role="img" aria-labelledby="title desc"/);
-  assert.match(svg,/viewBox="0 0 1200/);
-  assert.match(svg,/#(?:0B1115|0B1419|A5FFCE|42DDA4|68CDA0|8CF7BF)/);
+  assert.match(svg,file==='24gotop-readme-hero.svg' ? /viewBox="0 0 1400 560"/ : /viewBox="0 0 1200 565"/);
+  assert.match(svg,/#(?:050E13|09221D|A6FFD6|0B1419|68CDA0|8CF7BF)/);
   assert.ok(svg.length<16000,'no bloated or binary graphics');
   assert.doesNotMatch(svg,/<script\b|<foreignObject\b|<image\b|<iframe\b|<style\b|@import|url\(https?:|javascript:|onload=|onclick=|<animate\b|<use\b/i);
  }
