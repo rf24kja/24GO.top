@@ -40,7 +40,7 @@ test('README gives truthful public, in-browser and local developer entry points'
  ])assert.ok(readme.includes(link),'missing '+link);
  assert.match(readme,/PUBLIC ·?/);
  assert.match(readme,/browser-only/i);
- assert.match(readme,/Hosted public publishing is not live|Hosted community publishing: pre-launch/i);
+ assert.match(readme,/NOT a launched publishing community/i);
  assert.match(readme,/MIT licensed|MIT license/i);
  assert.match(svg,/>LIVE<\/text>/);
  assert.match(svg,/>LOCAL<\/text>/);
