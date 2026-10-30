@@ -129,12 +129,15 @@ export function renderMarkdownPreview(container, markdown, doc = document) {
     throw new TypeError('A DOM container and document are required');
   }
   const nodes = [];
+  let headingIndex=0;
   for (const block of parsePreviewBlocks(markdown)) {
     let node;
     switch (block.type) {
       case 'heading':
         // The article title is already an H3; keep a meaningful heading hierarchy.
         node = doc.createElement('h' + (block.level + 3));
+        // Static generated IDs, never derived from untrusted heading text.
+        node.id='draft-section-'+(++headingIndex);
         setInline(node,block.text,doc);
         break;
       case 'rule':
@@ -166,4 +169,28 @@ export function renderMarkdownPreview(container, markdown, doc = document) {
     nodes.push(node);
   }
   container.replaceChildren(...nodes);
+}
+
+/**
+ * A read-only accessible outline of the *same* supported headings as preview.
+ * Links point to generated local DOM IDs. Raw author text is never HTML.
+ * No network, browser storage, automatic save or publication.
+ */
+export function renderPreviewOutline(container,markdown,doc=document) {
+ if(!container || typeof container.replaceChildren!=='function' ||
+   !doc || typeof doc.createElement!=='function')throw new TypeError('Outline DOM required');
+ const headings=parsePreviewBlocks(markdown).filter(block=>block.type==='heading');
+ if(!headings.length){container.replaceChildren();return 0;}
+ const list=doc.createElement('ol');
+ headings.forEach((block,index)=>{
+  const item=doc.createElement('li');
+  item.className='outline-level-'+block.level;
+  const link=doc.createElement('a');
+  link.setAttribute('href','#draft-section-'+(index+1));
+  link.textContent=block.text;
+  item.append(link);
+  list.append(item);
+ });
+ container.replaceChildren(list);
+ return headings.length;
 }
