@@ -23,6 +23,10 @@ if(['en','ru','th','es','fr','de','pt','zh'].includes(requestedUi)){
 }
 function refreshInterface(){
   applyUiLanguage(document,uiLocale.value);
+  const localHome=['ru','th','es','fr','de','pt','zh'].includes(uiLocale.value)
+    ? './'+uiLocale.value+'/' : './';
+  field('homeBrandLink').href=localHome;
+  field('homeNavLink').href=localHome;
   // Changing interface language never modifies the author's own draft,
   // article language, selection, source, or reopened-file baseline.
   preview();
