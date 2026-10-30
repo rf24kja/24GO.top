@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { runInNewContext } from 'node:vm';
 import {
   safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent,
-  parseDraftFile, MAX_DRAFT_FILE_BYTES, hasUnexportedChanges, formatDraftSelection, createDraftImportGate, invalidDraftField
+  parseDraftFile, readDraftFileStrict, MAX_DRAFT_FILE_BYTES, hasUnexportedChanges, formatDraftSelection, createDraftImportGate, invalidDraftField
 } from '../site/draft-lab-logic.js';
 import {uiText,applyUiLanguage} from '../site/draft-lab-i18n.js';
 
@@ -25,7 +25,7 @@ function build() {
     'postTitle','postBody','postLocale','postCategory','postSource','formStatus',
     'previewHeading','previewBody','previewLocale','previewCategory','bodyCount',
     'previewSource','draftSafety','articleOutline','articleOutlineSection','downloadDraft','copyDraft','clearDraft','importDraft','importDraftFile','draftForm',
-    'formatHeading','formatList','formatQuote','formatCode','formatLink','uiLocale'
+    'formatHeading','formatList','formatQuote','formatCode','formatLink','uiLocale','draftDropZone'
   ];
   const elements = Object.fromEntries(ids.map(id => {
     const el = {
@@ -39,7 +39,8 @@ function build() {
       removeAttribute(name){delete this.attributes[name];},
       getAttribute(name){return this.attributes[name]??null;},
       click(){this.clicked=true;},
-      focus(){this.focused=true;}
+      focus(){this.focused=true;},
+      contains(){return false;}
     };
     return [id,el];
   }));
@@ -58,7 +59,7 @@ function build() {
   runInNewContext(source, {
     document, window, navigator:{}, URL, Blob, setTimeout,
     safeSourceUrl,validateDraft,formatDraft,draftFilename,hasDraftContent,
-    parseDraftFile,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,createDraftImportGate,invalidDraftField,
+    parseDraftFile,readDraftFileStrict,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,createDraftImportGate,invalidDraftField,
     uiText,applyUiLanguage,
     renderMarkdownPreview(container, text) { container.textContent = text; },
     renderPreviewOutline(container,text) { container.textContent=text;return /^#{1,3} /m.test(text)?1:0; }
@@ -78,9 +79,18 @@ function build() {
       input.files=[file];
       return input.listeners.change({currentTarget:input});
     },
+    drop(file) {return this.dropFiles([file]);},
+    dropFiles(files) {
+      const el=elements.draftDropZone;
+      return el.listeners.drop({
+       dataTransfer:{types:['Files'],files},
+       preventDefault(){this.prevented=true;}
+      });
+    },
     async import(content, filename='24gotop-saved.md', size=Buffer.byteLength(content,'utf8')) {
       const input=elements.importDraftFile;
-      input.files=[{name:filename,size,async text(){return content;}}];
+      const bytes=new TextEncoder().encode(content);
+      input.files=[{name:filename,size,async arrayBuffer(){return bytes.buffer;}}];
       await input.listeners.change({currentTarget:input});
     }
   };
@@ -273,10 +283,21 @@ function deferred(){
  return {promise,resolve,reject};
 }
 
+function delayedFile(name,promise){
+ const file={name,size:0,
+  arrayBuffer:async()=>{
+   const bytes=new TextEncoder().encode(await promise);
+   file.size=bytes.byteLength;
+   return bytes.buffer;
+  }
+ };
+ return file;
+}
+
 test('typing during a slow file read preserves every newer edit and the unsaved warning',async()=>{
  const app=build();
  const future=deferred();
- const pending=app.startImport({name:'24gotop-a.md',size:4000,text:()=>future.promise});
+ const pending=app.startImport(delayedFile('24gotop-a.md',future.promise));
  app.elements.postTitle.value='Fresh hand-written title';
  app.elements.postBody.value='A newer technical explanation written while the file was opening.';
  app.elements.postBody.listeners.input();
@@ -293,8 +314,8 @@ test('typing during a slow file read preserves every newer edit and the unsaved 
 test('newer file selection wins regardless of read completion order',async()=>{
  const app=build();
  const old=deferred(),newer=deferred();
- const first=app.startImport({name:'24gotop-old.md',size:4000,text:()=>old.promise});
- const second=app.startImport({name:'24gotop-new.md',size:4000,text:()=>newer.promise});
+ const first=app.startImport(delayedFile('24gotop-old.md',old.promise));
+ const second=app.startImport(delayedFile('24gotop-new.md',newer.promise));
  // An old rejected or successful read cannot clear the new selection's status.
  old.reject(new Error('old file unreadable'));
  await first;
@@ -311,8 +332,8 @@ test('newer file selection wins regardless of read completion order',async()=>{
 test('slow first import cannot overwrite already opened second file',async()=>{
  const app=build();
  const old=deferred(),newer=deferred();
- const first=app.startImport({name:'24gotop-old.md',size:4000,text:()=>old.promise});
- const second=app.startImport({name:'24gotop-new.md',size:4000,text:()=>newer.promise});
+ const first=app.startImport(delayedFile('24gotop-old.md',old.promise));
+ const second=app.startImport(delayedFile('24gotop-new.md',newer.promise));
  const winning={...sample,title:'A replacement selected after the first file'};
  newer.resolve(formatDraft(winning));await second;
  old.resolve(formatDraft(sample));await first;
@@ -324,7 +345,7 @@ test('slow first import cannot overwrite already opened second file',async()=>{
 test('local formatting and explicit Clear invalidate slow import; UI language switch does not',async()=>{
  const app=build();
  const first=deferred();
- const importA=app.startImport({name:'24gotop-old.md',size:4000,text:()=>first.promise});
+ const importA=app.startImport(delayedFile('24gotop-old.md',first.promise));
  app.elements.postBody.value='An existing local technical paragraph with enough content for editing.';
  app.elements.postBody.selectionStart=0;app.elements.postBody.selectionEnd=0;
  app.elements.formatHeading.listeners.click();
@@ -334,14 +355,14 @@ test('local formatting and explicit Clear invalidate slow import; UI language sw
  assert.match(app.elements.formStatus.textContent,/draft changed while/i);
 
  const second=deferred();
- const importB=app.startImport({name:'24gotop-old.md',size:4000,text:()=>second.promise});
+ const importB=app.startImport(delayedFile('24gotop-old.md',second.promise));
  app.elements.clearDraft.listeners.click();
  second.resolve(formatDraft(sample));await importB;
  assert.equal(app.elements.postBody.value,'');
  assert.match(app.elements.formStatus.textContent,/draft changed while/i);
 
  const third=deferred();
- const importC=app.startImport({name:'24gotop-valid.md',size:4000,text:()=>third.promise});
+ const importC=app.startImport(delayedFile('24gotop-valid.md',third.promise));
  app.elements.uiLocale.value='ru';
  app.elements.uiLocale.listeners.change();
  third.resolve(formatDraft(sample));await importC;
@@ -455,4 +476,52 @@ test('language switch translates an active field error without modifying the dra
  assert.equal(el.postLocale.attributes['aria-describedby'],undefined);
  assert.equal(el.formStatus.textContent,'');
  assert.equal(el.formStatus.dataset.error,'false');
+});
+
+
+test('desktop file drop opens the original multilingual draft without upload',async()=>{
+ const app=build();
+ const original={...sample,locale:'th',title:'อธิบายโค้ดที่ทดสอบได้'};
+ const bytes=new TextEncoder().encode(formatDraft(original));
+ const dragged={name:'24gotop-saved.md',size:bytes.byteLength,
+  arrayBuffer:async()=>bytes.buffer};
+ let prevented=false;
+ app.elements.draftDropZone.listeners.dragover({
+  dataTransfer:{types:['text/plain'],dropEffect:'none'},
+  preventDefault(){prevented=true;}
+ });
+ assert.equal(prevented,false,'non-file drag must retain normal text selection');
+ const event={dataTransfer:{types:['Files'],dropEffect:'none'},
+  preventDefault(){prevented=true;}};
+ app.elements.draftDropZone.listeners.dragenter(event);
+ assert.equal(prevented,true);
+ assert.equal(app.elements.draftDropZone.dataset.dragging,'true');
+ await app.drop(dragged);
+ assert.equal(app.elements.draftDropZone.dataset.dragging,undefined);
+ assert.equal(app.elements.postTitle.value,original.title);
+ assert.equal(app.elements.postLocale.value,original.locale);
+ assert.equal(app.elements.postSource.value,original.source);
+ assert.match(app.elements.formStatus.textContent,/Nothing was uploaded/);
+ assert.equal(app.beforeUnload().prevented,false);
+});
+test('multiple dropped files and invalid bytes never overwrite an unsaved draft',async()=>{
+ const app=build();
+ app.elements.postTitle.value='Author has not exported this draft';
+ app.elements.postBody.value='Reproducible local research with substantial unsaved edits.';
+ app.elements.postBody.listeners.input();
+ const bytes=new TextEncoder().encode(formatDraft(sample));
+ const good={name:'24gotop-saved.md',size:bytes.byteLength,
+  arrayBuffer:async()=>bytes.buffer};
+ await app.dropFiles([good,good]);
+ assert.equal(app.elements.postTitle.value,'Author has not exported this draft');
+ assert.equal(app.elements.formStatus.dataset.error,'true');
+ const badBytes=Uint8Array.from([0xff,0xfe,0x80]);
+ await app.drop({name:'24gotop-damaged.md',size:badBytes.length,
+  arrayBuffer:async()=>badBytes.buffer});
+ assert.equal(app.elements.postTitle.value,'Author has not exported this draft');
+ assert.equal(app.beforeUnload().prevented,true);
+ app.setConfirm(false);
+ await app.drop(good);
+ assert.equal(app.elements.postTitle.value,'Author has not exported this draft');
+ assert.match(app.elements.formStatus.textContent,/Import cancelled/);
 });

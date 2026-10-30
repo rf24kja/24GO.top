@@ -33,3 +33,14 @@ test('the quiet 48px architectural grid and light/dark theme never require track
  assert.doesNotMatch(css+"\n"+shared,/@import|url\(https?:\/\//);
  assert.doesNotMatch(js,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|localStorage|sessionStorage|innerHTML/);
 });
+
+test('local drop target is labelled, translated and never a server upload',()=>{
+ assert.match(html,/id="draftDropZone" class="draft-drop-zone" role="group" aria-labelledby="draftDropHint"/);
+ assert.match(html,/id="draftDropHint" data-ui="dropHint"/);
+ assert.match(js,/readDraftFileStrict\(file\)/);
+ assert.match(js,/addEventListener\('drop'/);
+ assert.match(js,/files\.length!==1/);
+ assert.match(css,/\.draft-drop-zone\[data-dragging="true"\]/);
+ assert.match(css,/@media\(prefers-contrast:more\)\{\.draft-drop-zone/);
+ assert.doesNotMatch(js,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|localStorage|sessionStorage|innerHTML/);
+});

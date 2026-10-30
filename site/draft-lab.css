@@ -74,3 +74,13 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
  text-decoration:none;color:var(--accent);font-size:14px;line-height:1.5}
 .article-outline a:hover{text-decoration:underline;background:var(--secondary-hover)}
 .preview-content h4,.preview-content h5,.preview-content h6{scroll-margin-top:24px}
+
+/* On-device Markdown drop target: a visible enhancement, never an upload area. */
+.draft-drop-zone{display:flex;gap:12px;align-items:center;min-height:76px;
+ margin-top:14px;padding:14px 17px;border:2px dashed var(--input-border);
+ border-radius:12px;background:var(--field);color:var(--muted);font-size:13px;
+ line-height:1.5;overflow-wrap:anywhere}
+.draft-drop-zone__icon{font-size:24px;color:var(--accent);flex:none;line-height:1}
+.draft-drop-zone[data-dragging="true"]{border-style:solid;border-color:var(--accent);
+ background:var(--secondary-hover);color:var(--text)}
+@media(prefers-contrast:more){.draft-drop-zone{border-width:3px}}

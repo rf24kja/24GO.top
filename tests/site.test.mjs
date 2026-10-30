@@ -103,11 +103,12 @@ test('saved Markdown can be reopened through an explicit browser-only action',()
   assert.match(draftHtml, /id="importDraft"[^>]*type="button"/);
   assert.match(draftHtml, /id="importDraftFile"[^>]*type="file"[^>]*accept="\.md,text\/markdown"/);
   assert.match(draftHtml, /Opening or refreshing|Closing or refreshing/);
-  assert.match(draftJs, /parseDraftFile\(await file\.text\(\)\)/);
-  assert.match(draftJs, /file\.size > MAX_DRAFT_FILE_BYTES/);
+  assert.match(draftJs, /readDraftFileStrict\(file\)/);
+  assert.match(logic, /new TextDecoder\('utf-8',\{fatal:true\}\)/);
+  assert.match(logic, /file\.size>MAX_DRAFT_FILE_BYTES/);
   assert.match(draftJs, /window\.confirm\(ui\('replaceConfirm'\)\)/);
   assert.match(readFileSync(fileURLToPath(new URL('../site/draft-lab-i18n.js',import.meta.url)),'utf8'),/Opening this file replaces your current unsaved draft/);
-  assert.match(draftJs, /input\.value = ''/);
+  assert.match(draftJs, /if \(input && importGate\.isLatest\(ticket\)\) input\.value = ''/);
   assert.match(logic, /export function parseDraftFile/);
   assert.doesNotMatch(draftJs, /\bfetch\s*\(|XMLHttpRequest|sendBeacon|localStorage|sessionStorage|innerHTML/);
   assert.doesNotMatch(draftHtml,/PUBLISH_API_KEY|sb_secret_/);

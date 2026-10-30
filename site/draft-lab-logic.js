@@ -187,3 +187,31 @@ export function createDraftImportGate() {
     }
   };
 }
+
+
+/**
+ * Read a user-selected Draft Lab export without sending it anywhere.
+ * Blob.text() replaces invalid UTF-8 byte sequences; that would silently
+ * corrupt code, citations and original-language text. Decode fatally.
+ * The caller must still check createDraftImportGate after the await.
+ */
+export async function readDraftFileStrict(file){
+ if(!file||typeof file!=='object'||typeof file.name!=='string'||
+    !/\.md$/i.test(file.name)||file.name.length>255||
+    /[\\/\u0000-\u001f\u007f]/.test(file.name)||
+    !Number.isSafeInteger(file.size)||file.size<0||
+    file.size>MAX_DRAFT_FILE_BYTES||typeof file.arrayBuffer!=='function')
+  throw new TypeError('Unsupported draft file');
+ let bytes;
+ try{bytes=await file.arrayBuffer();}
+ catch{throw new TypeError('Could not read draft file');}
+ // Native File.arrayBuffer() always returns exactly the selected bytes.
+ // Do not trust spoofed/malformed File-like results.
+ if(Object.prototype.toString.call(bytes)!=='[object ArrayBuffer]'||
+    bytes.byteLength!==file.size||bytes.byteLength>MAX_DRAFT_FILE_BYTES)
+  throw new TypeError('Invalid draft file length');
+ let content;
+ try{content=new TextDecoder('utf-8',{fatal:true}).decode(bytes);}
+ catch{throw new TypeError('Draft file is not valid UTF-8');}
+ return parseDraftFile(content);
+}
