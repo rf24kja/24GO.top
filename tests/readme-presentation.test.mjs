@@ -36,7 +36,7 @@ test('all eight README entry points link to real localized files and official us
 });
 
 test('showcase SVG diagrams are safe, accessible, lightweight and self-contained',()=>{
- const used=['docs/assets/24gotop-readme-hero.svg','docs/assets/24gotop-platform-map.svg','docs/assets/24gotop-writer-journey.svg'];
+ const used=['docs/assets/24gotop-readme-hero.svg','docs/assets/24gotop-platform-map.svg','docs/assets/24gotop-writer-journey.svg','docs/assets/24gotop-evidence-loop.svg','docs/assets/24gotop-contribute.svg'];
  for(const name of used){
   const svg=read(name);
   assert.ok(svg.length<40000,'keep README media lightweight: '+name);
@@ -112,4 +112,58 @@ test('new workflow infographic separates shipped and unshipped steps without req
  assert.match(svg,/<desc id="desc">/);
  assert.match(svg,/stroke-dasharray/);
  assert.doesNotMatch(svg,/<script|<foreignObject|<image |<animate|onload|href="https?:/i);
+});
+
+test('all README locales display accessible eight-language navigation with flag or globe markers',()=>{
+ const links=[
+  ['🌐','English'],['🇷🇺','Русский'],['🇹🇭','ไทย'],['🇪🇸','Español'],
+  ['🇫🇷','Français'],['🇩🇪','Deutsch'],['🇵🇹','Português'],['🇨🇳','中文']
+ ];
+ for(const [path,content] of all){
+  for(const [symbol,label] of links)assert.ok(
+   content.includes(symbol+' [')||content.includes('['+symbol+' '),
+   path+': language symbol '+symbol+' for '+label);
+  assert.ok(content.includes(label+']('),path+' missing navigable '+label);
+  assert.ok(content.includes('24gotop-evidence-loop.svg'),path+' missing editorial evidence diagram');
+  assert.ok(content.includes('24gotop-contribute.svg'),path+' missing contributor diagram');
+ }
+ assert.ok(publicREADME.indexOf('24gotop-evidence-loop.svg')<publicREADME.indexOf('## Original engineering articles'),
+  'evidence graphic belongs to the product rationale, before the article index');
+ assert.ok(publicREADME.indexOf('24gotop-contribute.svg')>publicREADME.indexOf('## Contribute and improve the product'),
+  'contributor guide visual should be near real contribution links');
+});
+
+test('visuals accurately distinguish live components, future releases and evidence',()=>{
+ const hero=read('docs/assets/24gotop-readme-hero.svg');
+ const map=read('docs/assets/24gotop-platform-map.svg');
+ const evidence=read('docs/assets/24gotop-evidence-loop.svg');
+ const contributions=read('docs/assets/24gotop-contribute.svg');
+ assert.match(hero,/Hosted community publishing: pre-launch/);
+ for(const marker of ['Public OSS + website','Hosted Core','Community + agents',
+   'AVAILABLE TODAY','PRIVATE · UNDER REVIEW','PLANNED · NOT LIVE',
+   'NOT launched'])
+  assert.ok(map.includes(marker),'architecture truthfulness: '+marker);
+ for(const marker of ['PROBLEM','IMPLEMENT','VERIFY','PUBLISH',
+   'Tests + sources','Canonical, RSS, links','unverified outcomes'])
+  assert.ok(evidence.includes(marker),'editorial proof diagram: '+marker);
+ for(const marker of ['Code &amp; security','Languages &amp; UX','Research &amp; docs',
+   'Find an issue','Focused PR','Tests + CI','Review + feedback'])
+  assert.ok(contributions.includes(marker),'contributor guide: '+marker);
+ for(const text of [hero,map,evidence,contributions]){
+  assert.doesNotMatch(text,/<script\b|<foreignObject\b|<image\b|<iframe\b|<animate\b|@import|data:/i);
+  assert.doesNotMatch(text,/\bon\w+=|href="https?:/i);
+ }
+});
+
+test('README visual landmarks link only to local revision-controlled SVGs',()=>{
+ const top=publicREADME.indexOf('24gotop-readme-hero.svg');
+ const evidence=publicREADME.indexOf('24gotop-evidence-loop.svg');
+ const journey=publicREADME.indexOf('24gotop-writer-journey.svg');
+ const map=publicREADME.indexOf('24gotop-platform-map.svg');
+ const contribute=publicREADME.indexOf('24gotop-contribute.svg');
+ assert.ok(top>=0&&top<evidence&&evidence<journey&&journey<map&&map<contribute,
+  'editorial image order should match the narrative without crowding the first screen');
+ assert.match(publicREADME,/📚 \*\*Read articles\*\*/);
+ assert.match(publicREADME,/✍️ \*\*Try Draft Lab\*\*/);
+ assert.match(publicREADME,/🧩 \*\*Build against developer tools\*\*/);
 });
