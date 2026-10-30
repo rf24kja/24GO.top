@@ -54,3 +54,10 @@ The production identity and moderation architecture is not ready yet. This proto
 ## Next step
 
 Use real feedback to scope accessible formatting (including code blocks), content source attribution, and the future authenticated Draft → Review → Publish lifecycle. The security gates in Issue #2 remain mandatory.
+
+
+## Keyboard and accessible validation checkpoint (2026-10-30, public source PR)
+
+**Implemented source behavior (subject to CI and Pages checks):** pressing Ctrl+S or ⌘+S in the Draft Lab invokes the existing **Download .md** button; this is an explicit one-time local file download, never autosave, publishing or remote upload. A visible explanation is translated in all eight interface languages. Save-key interception is limited to Ctrl/Cmd+S without Alt/Shift/repeated keydown, and does not alter other shortcuts.
+
+On failed Download or Copy, validation uses the same field constraints as the Markdown exporter and focuses **the actual invalid control** (including too-long title/body and incorrect language/category), marks `aria-invalid` and points `aria-describedby` at the existing live status. Editing the offending field or replacing/clearing the draft removes stale invalid markers. Do not infer that synthetic keyboard tests prove full screen-reader compatibility: Issue #29 still requires real volunteer and 320px mobile sessions; no volunteer outcomes are asserted.

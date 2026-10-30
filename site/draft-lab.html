@@ -55,12 +55,13 @@
           <input id="postSource" name="source" type="url" placeholder="https://example.org/research">
           <p class="tiny" data-ui="importHint">Only files previously exported by Draft Lab can be reopened. Imported text stays in this browser tab; original files remain on your device. Export again to keep new changes.</p>
           <div class="buttons">
-            <button id="downloadDraft" class="primary" type="button" data-ui="download">Download .md</button>
+            <button id="downloadDraft" class="primary" type="button" aria-keyshortcuts="Control+S Meta+S" data-ui="download">Download .md</button>
             <button id="importDraft" class="secondary" type="button" data-ui="open">Open saved .md</button>
             <input id="importDraftFile" type="file" accept=".md,text/markdown" hidden>
             <button id="copyDraft" class="secondary" type="button" data-ui="copy">Copy draft</button>
             <button id="clearDraft" class="secondary danger" type="button" data-ui="clear">Clear</button>
           </div>
+          <p class="tiny" id="saveShortcutHelp" data-ui="shortcutHelp">Keyboard shortcut: Ctrl+S (Windows/Linux) or ⌘+S (Mac) downloads a local .md file; it does not autosave or publish.</p>
           <p id="draftSafety" class="tiny" data-ui="safetyEmpty">No draft content yet. Draft Lab never automatically saves your work.</p>
           <p id="formStatus" role="status" aria-live="polite"></p>
         </form>

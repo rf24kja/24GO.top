@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { LOCALES, CATEGORIES, safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, parseDraftFile, MAX_DRAFT_FILE_BYTES, createDraftImportGate } from '../site/draft-lab-logic.js';
+import { LOCALES, CATEGORIES, safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, parseDraftFile, MAX_DRAFT_FILE_BYTES, createDraftImportGate, invalidDraftField } from '../site/draft-lab-logic.js';
 
 const valid = {
   title:'Making a secure publishing API',
@@ -155,4 +155,24 @@ test('file-import gate requires both latest file and unchanged editor version',(
  assert.equal(gate.canApply({importId:third.importId,editorVersion:third.editorVersion-1}),false);
  assert.equal(gate.canApply(null),false);
  assert.equal(Object.isFrozen(third),true);
+});
+
+test('validation identity never depends on translated error strings',()=>{
+ const draft={title:'A valid technical article title',
+   body:'A meaningful reproducible technical article body that is long enough.',
+   locale:'en',category:'guides',source:'https://example.org'};
+ assert.equal(invalidDraftField(draft),null);
+ const cases=[
+  [{...draft,title:'x'},'title'],
+  [{...draft,title:'x'.repeat(161)},'title'],
+  [{...draft,body:'short'},'body'],
+  [{...draft,body:'x'.repeat(12001)},'body'],
+  [{...draft,locale:'unknown'},'locale'],
+  [{...draft,category:'unknown'},'category'],
+  [{...draft,source:'javascript:alert(1)'},'source']
+ ];
+ for(const [input,field] of cases){
+  assert.equal(invalidDraftField(input),field);
+  assert.ok(validateDraft(input).length>10);
+ }
 });

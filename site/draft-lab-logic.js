@@ -55,13 +55,26 @@ export function formatDraftSelection(value,start,end,action){
  return {replacement,selectionStart,selectionEnd:selectionStart+(selected?0:content.length)};
 }
 
-export function validateDraft({ title, body, locale, category, source }) {
-  if (typeof title !== 'string' || title.trim().length < 5 || title.length > 160) return 'Enter a title between 5 and 160 characters.';
-  if (typeof body !== 'string' || body.trim().length < 20 || body.length > 12000) return 'Write between 20 and 12,000 characters.';
-  if (!LOCALES.includes(locale)) return 'Choose a supported language.';
-  if (!CATEGORIES.includes(category)) return 'Choose a supported category.';
-  if (safeSourceUrl(source) === null) return 'Use a valid HTTP or HTTPS source link without credentials.';
-  return '';
+const DRAFT_ERRORS=Object.freeze({
+ title:'Enter a title between 5 and 160 characters.',
+ body:'Write between 20 and 12,000 characters.',
+ locale:'Choose a supported language.',
+ category:'Choose a supported category.',
+ source:'Use a valid HTTP or HTTPS source link without credentials.'
+});
+
+/** A stable validation field identity, not a language-dependent error string. */
+export function invalidDraftField({title,body,locale,category,source}){
+ if(typeof title!=='string'||title.trim().length<5||title.length>160)return 'title';
+ if(typeof body!=='string'||body.trim().length<20||body.length>12000)return 'body';
+ if(!LOCALES.includes(locale))return 'locale';
+ if(!CATEGORIES.includes(category))return 'category';
+ if(safeSourceUrl(source)===null)return 'source';
+ return null;
+}
+export function validateDraft(draft){
+ const key=invalidDraftField(draft);
+ return key===null?'':DRAFT_ERRORS[key];
 }
 
 export function formatDraft(draft) {
