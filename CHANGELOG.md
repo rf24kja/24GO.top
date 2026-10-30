@@ -1,5 +1,12 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-30 — Local Markdown drop and corruption-safe multilingual import
+
+- Added a visible, responsive drag-and-drop area for exactly one **previously exported** Draft Lab `.md` file; the native file picker remains available for keyboard and mobile users. The drop target does not transmit, store or execute file contents.
+- Both entry points share the existing confirmed-replacement and in-memory file-race guard. Import now reads raw file bytes and decodes **strict UTF-8** instead of lossy `File.text()`; malformed bytes, misleading file lengths, non-ArrayBuffer reads and dangerous file paths are refused before any editor changes. Valid UTF-8 BOM and all eight original article languages still round-trip.
+- Localized guidance for eight languages, high-contrast light/dark styling and regression tests for drop, invalid/multiple files, pending imports, encoding, unsaved changes and keyboard fallback. No accounts, cookies, tracking, storage, backend or public article publishing.
+
+
 ## 2026-10-30 — Verified corporate contact visible on the public site
 
 - Added the founder-approved `ceo@24go.top` as a standard `mailto:` link in the homepage footer's community/contact navigation.
