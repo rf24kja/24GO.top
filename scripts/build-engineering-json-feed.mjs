@@ -20,7 +20,7 @@ export function buildEngineeringFeed(rss,readArticle){
   const url=value(block,'link');
   const file=url.slice(root.length);
   if(!url.startsWith(root)||!/^[a-z0-9-]+\.html$/.test(file)||
-     seen.has(file)||value(block,'guid isPermaLink="true"')!==url)
+     seen.has(file)||block.match(/<guid isPermaLink="true">([^<]+)<\/guid>/)?.[1]!==url)
     throw Error('Noncanonical or duplicate RSS item');
   seen.add(file);
   const html=readArticle(file);
