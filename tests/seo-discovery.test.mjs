@@ -24,7 +24,7 @@ test('sitemap includes exactly the intended canonical, discoverable static pages
  assert.match(sitemap,/^<\?xml version="1.0" encoding="UTF-8"\?>/);
  assert.match(sitemap,/<urlset xmlns="http:\/\/www\.sitemaps\.org\/schemas\/sitemap\/0\.9">/);
  const locations=[...sitemap.matchAll(/<url><loc>([^<]+)<\/loc><\/url>/g)].map(m=>m[1]);
- assert.equal(locations.length,19);
+ assert.equal(locations.length,20);
  assert.equal(new Set(locations).size,locations.length);
  for(const link of locations){
   assert.ok(link.startsWith(canonicalHost+'/'),link);
