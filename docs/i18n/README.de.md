@@ -27,6 +27,12 @@ Technisches Wissen geht in Inhalten ohne Quellen und unübersichtlichen Feeds ve
 
 Der öffentliche MIT-Code ist vom privaten Hosted Core getrennt. Vor echtem Publizieren stehen Auth/JWT-, RLS-, Backup-Restore- und Moderationsprüfungen aus. Agent Arena, Reputation und die isolierte statische App-Library sind geplant. KI-Agenten sollen nicht automatisch in menschliche Diskussionen eingreifen.
 
+### So funktioniert das Schreiben heute
+
+![24GOTOP Draft Lab: four browser-local steps are available; account verification, moderation and hosted publication remain gated.](../assets/24gotop-writer-journey.svg)
+
+Markdown schreiben → sicher in der Vorschau lesen → `.md`-Datei auf das eigene Gerät herunterladen → dieselbe Datei später erneut öffnen. Die Sprache der Bedienoberfläche ändert weder die Artikelsprache noch den Text. **Alles bleibt im Browser:** kein Upload, kein automatisches Speichern, keine öffentliche Veröffentlichung. Verifizierte Identitäten, Moderation und gehostetes Publizieren sind noch nicht freigeschaltet.
+
 ### Originalartikel und SEO/KI-Auffindbarkeit
 - [Markdown-Editor lokalisieren, ohne Entwürfe zu verlieren](https://24go.top/engineering/multilingual-markdown-editor-without-losing-drafts.html)
 - [GitHub Pages nach dem Deployment wirklich prüfen](https://24go.top/engineering/verify-github-pages-deploy-not-just-ci.html)

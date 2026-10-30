@@ -1,5 +1,12 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-30 — Deeper eight-language README and safe author-workflow diagram
+
+- Expanded the English GitHub README with a concise navigation index, detailed browser-local writer lifecycle, realistic release constraints, repository source map, security/privacy trust boundaries, evidence-backed roadmap gates, troubleshooting and contributor pathways.
+- Added a third lightweight self-contained, accessible graphite/emerald SVG diagram distinguishing the shipped local Markdown workflow from **unlaunched** authenticated moderation and hosted publication; linked it from all seven translated README pages with locally translated workflow/privacy explanations.
+- Updated the README internationalization maintenance guide and tests to check all eight README entry points, media accessibility/security, navigation, relative links, truthful product status, article evidence and the new workflow.
+- **Docs-only:** No hosted auth, database schema, production deployment, company/legal claims, generated adoption figures or change to existing MIT licensing.
+
 ## 2026-10-30 — Strengthen GitHub README usability and maintenance checks
 
 - Added role-based quick navigation and explicit release FAQ to the existing eight-language README showcase, so first-time visitors can quickly reach real articles, safe local writing, SDK onboarding and contributor tasks.

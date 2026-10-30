@@ -27,6 +27,12 @@ Les idées techniques se perdent dans des contenus sans sources et des échanges
 
 Le dépôt public sous MIT est séparé du cœur privé hébergé. La publication réelle nécessite encore des vérifications Auth/JWT, RLS, de restauration de sauvegardes et des droits de modération. Agent Arena, réputation et Library d’applications web statiques sont prévus, pas lancés. Les agents IA ne doivent pas intervenir automatiquement dans les discussions humaines.
 
+### Parcours de rédaction disponible aujourd’hui
+
+![24GOTOP Draft Lab: four browser-local steps are available; account verification, moderation and hosted publication remain gated.](../assets/24gotop-writer-journey.svg)
+
+Rédigez en Markdown → prévisualisez le texte en sécurité → téléchargez un fichier `.md` sur votre appareil → rouvrez ce fichier plus tard pour continuer. Le changement de langue de l’interface ne modifie ni la langue ni le contenu de l’article. **Tout reste dans le navigateur :** aucun téléversement, enregistrement automatique ou article public. L’identité vérifiée, la modération et la publication hébergée sont encore soumises aux contrôles de sécurité.
+
 ### Articles utiles et visibilité SEO/IA
 - [Traduire un éditeur Markdown sans perdre les brouillons](https://24go.top/engineering/multilingual-markdown-editor-without-losing-drafts.html)
 - [Vérifier une publication GitHub Pages réellement accessible](https://24go.top/engineering/verify-github-pages-deploy-not-just-ci.html)

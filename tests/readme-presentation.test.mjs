@@ -36,7 +36,7 @@ test('all eight README entry points link to real localized files and official us
 });
 
 test('showcase SVG diagrams are safe, accessible, lightweight and self-contained',()=>{
- const used=['docs/assets/24gotop-readme-hero.svg','docs/assets/24gotop-platform-map.svg'];
+ const used=['docs/assets/24gotop-readme-hero.svg','docs/assets/24gotop-platform-map.svg','docs/assets/24gotop-writer-journey.svg'];
  for(const name of used){
   const svg=read(name);
   assert.ok(svg.length<40000,'keep README media lightweight: '+name);
@@ -69,4 +69,47 @@ test('public README uses status-aware descriptions, credible calls to action, ho
   'https://24go.top/engineering/verify-github-pages-deploy-not-just-ci.html',
   'https://24go.top/engineering/safe-markdown-citation-links-without-xss.html'
  ])assert.ok(publicREADME.includes(url),'source-backed engineering evidence '+url);
+});
+
+test('deep README gives usable instructions without implying hosted publication is live',()=>{
+ for(const heading of [
+  '## Contents','## The author workflow available now','## Repository map',
+  '## Security, privacy and trust boundaries',
+  '## Verified progress and upcoming release gates',
+  '## Frequently asked questions'
+ ])assert.ok(publicREADME.includes(heading),'missing README section: '+heading);
+ for(const step of [
+  '**Write locally.**','**Preview safely.**','**Download your work.**','**Continue later.**'
+ ])assert.ok(publicREADME.includes(step),'missing practical author step '+step);
+ assert.match(publicREADME,/interface language.*independently among English, Russian, Thai, Spanish, French, German, Portuguese and Chinese/);
+ assert.match(publicREADME,/If you close the tab before exporting, unsaved changes may be lost/);
+ assert.match(publicREADME,/A future author flow requires a verifiably authenticated account/);
+ assert.match(publicREADME,/An accepted submission is not a published article/);
+ assert.match(publicREADME,/12 canonical sitemap URLs/);
+ for(const path of ['site/','public/','src/','packages/sdk/','openapi/','examples/','tests/','docs/'])
+  assert.ok(publicREADME.includes(']( '+path+')')||publicREADME.includes(']('+path+')'),'source route: '+path);
+ assert.doesNotMatch(publicREADME,/\bpublic community launched\b|\bproduction API ready\b|\bwe have 1000 users\b/i);
+});
+
+test('all eight languages include a plain-language local workflow and a separate gated publication boundary',()=>{
+ for(const [name,markdown] of all){
+  assert.match(markdown,/24gotop-writer-journey\.svg/,'missing author image: '+name);
+  assert.match(markdown,/\.md/,'no local file contract: '+name);
+  assert.match(markdown,/MIT/,'must preserve legitimate public code licensing: '+name);
+  assert.match(markdown,/24go\.top\/engineering\//,'must show actual editorial content: '+name);
+ }
+ assert.match(read('docs/i18n/README.ru.md'),/Всё происходит локально в браузере/);
+ assert.match(read('docs/i18n/README.th.md'),/ไม่มีการอัปโหลด/);
+ assert.match(read('docs/i18n/README.zh.md'),/不自动保存/);
+});
+
+test('new workflow infographic separates shipped and unshipped steps without requiring scripts',()=>{
+ const svg=read('docs/assets/24gotop-writer-journey.svg');
+ for(const marker of ['THE WRITING JOURNEY','AVAILABLE','PLANNED / GATED','Write Markdown',
+  'Preview safely','Download .md','Reopen locally','Verified author identity',
+  'Moderation + security checks','Hosted public publication','Not launched'])
+  assert.ok(svg.includes(marker),'unsubstantiated workflow step '+marker);
+ assert.match(svg,/<desc id="desc">/);
+ assert.match(svg,/stroke-dasharray/);
+ assert.doesNotMatch(svg,/<script|<foreignObject|<image |<animate|onload|href="https?:/i);
 });

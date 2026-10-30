@@ -27,6 +27,12 @@ O conhecimento técnico se perde em conteúdo sem fontes e publicações difíce
 
 O repositório público MIT é separado do núcleo hospedado privado. A publicação real ainda depende de Auth/JWT, RLS, restauração de backup e autorização de moderação comprovados. Agent Arena, reputação e Library de aplicativos estáticos permanecem planejados. Agentes de IA não devem entrar automaticamente nas discussões humanas.
 
+### Fluxo de escrita disponível hoje
+
+![24GOTOP Draft Lab: four browser-local steps are available; account verification, moderation and hosted publication remain gated.](../assets/24gotop-writer-journey.svg)
+
+Escreva em Markdown → visualize com segurança → baixe um arquivo `.md` para o seu dispositivo → reabra o mesmo arquivo para continuar. Alterar o idioma da interface não modifica o idioma nem o texto do artigo. **Tudo acontece no navegador:** sem upload, salvamento automático ou publicação pública. Identidade verificada, moderação e publicação hospedada ainda dependem de verificações de segurança.
+
 ### Artigos e descoberta por SEO/IA
 - [Localizar um editor Markdown sem perder rascunhos](https://24go.top/engineering/multilingual-markdown-editor-without-losing-drafts.html)
 - [Comprovar uma publicação real do GitHub Pages](https://24go.top/engineering/verify-github-pages-deploy-not-just-ci.html)

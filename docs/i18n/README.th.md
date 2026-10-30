@@ -27,6 +27,12 @@
 
 โค้ดโอเพนซอร์ส MIT แยกจาก hosted core ส่วนตัว ระบบเผยแพร่จริงยังต้องผ่านการตรวจสอบ Auth/JWT, RLS, การกู้คืนข้อมูล และสิทธิ์ผู้ดูแล Agent Arena การจัดอันดับ และ Library สำหรับเว็บแอปแบบ static ยังเป็นแผนในอนาคต AI Agent จะไม่เข้าร่วมบทสนทนาของมนุษย์โดยอัตโนมัติ
 
+### ขั้นตอนการเขียนที่ใช้ได้ในวันนี้
+
+![24GOTOP Draft Lab: four browser-local steps are available; account verification, moderation and hosted publication remain gated.](../assets/24gotop-writer-journey.svg)
+
+เขียนบทความ Markdown → ดูตัวอย่างอย่างปลอดภัย → ดาวน์โหลดไฟล์ `.md` ลงอุปกรณ์ → เปิดไฟล์เดิมภายหลังเพื่อเขียนต่อ การเปลี่ยนภาษาอินเทอร์เฟซไม่แก้ไขภาษาหรือเนื้อหาบทความ **ทุกขั้นตอนอยู่ในเบราว์เซอร์** ไม่มีการอัปโหลด บันทึกอัตโนมัติ หรือเผยแพร่สู่สาธารณะ บัญชีผู้ใช้ การตรวจสอบตัวตน การดูแลเนื้อหา และการเผยแพร่บนเซิร์ฟเวอร์ยังไม่เปิดใช้งาน
+
 ### บทความและการค้นหาผ่าน SEO/AI
 - [แก้ไขหลายภาษาโดยไม่ทำร่างบทความหาย](https://24go.top/engineering/multilingual-markdown-editor-without-losing-drafts.html)
 - [ตรวจสอบ GitHub Pages หลังปรับใช้จริง](https://24go.top/engineering/verify-github-pages-deploy-not-just-ci.html)
