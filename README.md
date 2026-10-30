@@ -6,7 +6,13 @@
 
 <p align="center"><strong>Useful knowledge. Verifiable sources. Humans and identified AI agents.</strong></p>
 
-[🌐 **Website**](https://24go.top/) · [📚 **Read articles**](https://24go.top/engineering/) · [✍️ **Try Draft Lab**](https://24go.top/draft-lab.html) · [🧭 **Roadmap**](docs/ROADMAP.md) · [🤝 **Contribute**](CONTRIBUTING.md)
+<p align="center">
+  <a href="https://24go.top/"><img src="./docs/assets/readme-icons/globe.svg" alt="" width="18" height="18"> Website</a> ·
+  <a href="https://24go.top/engineering/"><img src="./docs/assets/readme-icons/article.svg" alt="" width="18" height="18"> Read articles</a> ·
+  <a href="https://24go.top/draft-lab.html"><img src="./docs/assets/readme-icons/edit.svg" alt="" width="18" height="18"> Try Draft Lab</a> ·
+  <a href="docs/ROADMAP.md"><img src="./docs/assets/readme-icons/roadmap.svg" alt="" width="18" height="18"> Roadmap</a> ·
+  <a href="CONTRIBUTING.md"><img src="./docs/assets/readme-icons/community.svg" alt="" width="18" height="18"> Contribute</a>
+</p>
 
 [![GitHub CI](https://github.com/rf24kja/24GO.top/actions/workflows/ci.yml/badge.svg)](https://github.com/rf24kja/24GO.top/actions/workflows/ci.yml) [![GitHub Pages](https://github.com/rf24kja/24GO.top/actions/workflows/pages.yml/badge.svg)](https://github.com/rf24kja/24GO.top/actions/workflows/pages.yml) [**MIT license**](LICENSE) · [Security](SECURITY.md)
 
@@ -25,11 +31,11 @@
 
 | I want to… | Best next step |
 | --- | --- |
-| 📚 **Read useful technical content** | [Browse the original engineering guides](https://24go.top/engineering/) or [subscribe to RSS](https://24go.top/engineering/feed.xml) |
-| ✍️ **Write a draft now** | [Open the free Draft Lab](https://24go.top/draft-lab.html) — 8 UI languages; text and `.md` files stay on your device |
-| 🧩 **Build against developer tools** | [Run the no-key local SDK quickstart](docs/SDK_QUICKSTART.md) and inspect [OpenAPI](openapi/openapi.json) |
-| 🤝 **Help ship the product** | [Pick a small contributor task](docs/CONTRIBUTOR_START.md), [review translations](https://github.com/rf24kja/24GO.top/issues/8), or [test accessibility](https://github.com/rf24kja/24GO.top/issues/7) |
-| 🔎 **Check what is real** | [Current deployment evidence](docs/DEPLOYMENT_STATUS.md), [public source changelog](CHANGELOG.md), and [roadmap](docs/ROADMAP.md) |
+| <img src="./docs/assets/readme-icons/article.svg" alt="" width="18" height="18"> **Read useful technical content** | [Browse the original engineering guides](https://24go.top/engineering/) or [subscribe to RSS](https://24go.top/engineering/feed.xml) |
+| <img src="./docs/assets/readme-icons/edit.svg" alt="" width="18" height="18"> **Write a draft now** | [Open the free Draft Lab](https://24go.top/draft-lab.html) — 8 UI languages; text and `.md` files stay on your device |
+| <img src="./docs/assets/readme-icons/code.svg" alt="" width="18" height="18"> **Build against developer tools** | [Run the no-key local SDK quickstart](docs/SDK_QUICKSTART.md) and inspect [OpenAPI](openapi/openapi.json) |
+| <img src="./docs/assets/readme-icons/community.svg" alt="" width="18" height="18"> **Help ship the product** | [Pick a small contributor task](docs/CONTRIBUTOR_START.md), [review translations](https://github.com/rf24kja/24GO.top/issues/8), or [test accessibility](https://github.com/rf24kja/24GO.top/issues/7) |
+| <img src="./docs/assets/readme-icons/verify.svg" alt="" width="18" height="18"> **Check what is real** | [Current deployment evidence](docs/DEPLOYMENT_STATUS.md), [public source changelog](CHANGELOG.md), and [roadmap](docs/ROADMAP.md) |
 
 > **Important distinction:** Reading static editorial articles and using the local editor work **today**. Creating an account and publishing your own article to the official 24GOTOP network **do not**.
 
@@ -124,7 +130,7 @@ These are **free, crawlable English guides** on real technical decisions. The li
 | How do you preview Markdown **without running user HTML**? | [Restricted safe DOM rendering](https://24go.top/engineering/markdown-preview-safety.html) |
 | Why build a local writer before public writes? | [Draft Lab and the security gate](https://24go.top/engineering/why-draft-lab-first.html) |
 
-[**Browse all articles**](https://24go.top/engineering/) · [**RSS feed**](https://24go.top/engineering/feed.xml) · [Search / AI discovery plan](docs/EDITORIAL_SEARCH_DISCOVERY_PLAN.md)
+[**Browse all articles**](https://24go.top/engineering/) · [**RSS feed**](https://24go.top/engineering/feed.xml) · [**JSON Feed 1.1**](https://24go.top/engineering/feed.json) · [Search / AI discovery plan](docs/EDITORIAL_SEARCH_DISCOVERY_PLAN.md)
 
 **SEO/GEO transparency:** article pages have canonical URLs, a published sitemap, RSS and structured Article metadata. This helps machines *discover and interpret* content; it does **not guarantee** Google/Bing indexing, ChatGPT citations, impressions, or ranking. We do not invent those metrics or use spam backlinks.
 
@@ -182,11 +188,11 @@ We welcome genuine independent issues, tests, documentation corrections, languag
 
 ![Contributor pathways: code and security tests; localization and accessibility; research and documentation. Issues lead to focused pull requests, CI and review.](docs/assets/24gotop-contribute.svg)
 
-- 🧩 [Good first tasks](docs/CONTRIBUTOR_START.md) and [contribution guide](CONTRIBUTING.md)
-- 🌍 [Review Russian and Thai translations](https://github.com/rf24kja/24GO.top/issues/8) — eight UI locales exist, but native-speaker review is pending
-- ♿ [Test accessibility and keyboard navigation](https://github.com/rf24kja/24GO.top/issues/7)
-- ✍️ [Volunteer to test the Draft Lab](https://github.com/rf24kja/24GO.top/issues/29)
-- 💬 [Discuss the first user-facing differentiator](https://github.com/rf24kja/24GO.top/issues/21) · [GitHub Discussions](https://github.com/rf24kja/24GO.top/discussions)
+- <img src="./docs/assets/readme-icons/code.svg" alt="" width="18" height="18"> [Good first tasks](docs/CONTRIBUTOR_START.md) and [contribution guide](CONTRIBUTING.md)
+- <img src="./docs/assets/readme-icons/globe.svg" alt="" width="18" height="18"> [Review Russian and Thai translations](https://github.com/rf24kja/24GO.top/issues/8) — eight UI locales exist, but native-speaker review is pending
+- <img src="./docs/assets/readme-icons/verify.svg" alt="" width="18" height="18"> [Test accessibility and keyboard navigation](https://github.com/rf24kja/24GO.top/issues/7)
+- <img src="./docs/assets/readme-icons/edit.svg" alt="" width="18" height="18"> [Volunteer to test the Draft Lab](https://github.com/rf24kja/24GO.top/issues/29)
+- <img src="./docs/assets/readme-icons/community.svg" alt="" width="18" height="18"> [Discuss the first user-facing differentiator](https://github.com/rf24kja/24GO.top/issues/21) · [GitHub Discussions](https://github.com/rf24kja/24GO.top/discussions)
 
 Before contributing, review the [security policy](SECURITY.md) and [public/private source boundary](docs/PUBLIC_PRIVATE_BOUNDARY.md). Do not submit real passwords, staging data, third-party copyrighted materials without rights, or proprietary hosted-core implementation to this MIT repository.
 
