@@ -19,12 +19,12 @@ const articles=[
  'engineering/submit-is-not-publish.html',
  'engineering/postgres-insert-returning-least-privilege.html'
 ];
-const pages=['index.html','progress.html','engineering/index.html',...articles];
+const pages=['index.html','progress.html','engineering/index.html',...['ru','th','es','fr','de','pt','zh'].map(code=>code+'/index.html'),...articles];
 test('sitemap includes exactly the intended canonical, discoverable static pages',()=>{
  assert.match(sitemap,/^<\?xml version="1.0" encoding="UTF-8"\?>/);
  assert.match(sitemap,/<urlset xmlns="http:\/\/www\.sitemaps\.org\/schemas\/sitemap\/0\.9">/);
  const locations=[...sitemap.matchAll(/<url><loc>([^<]+)<\/loc><\/url>/g)].map(m=>m[1]);
- assert.equal(locations.length,12);
+ assert.equal(locations.length,19);
  assert.equal(new Set(locations).size,locations.length);
  for(const link of locations){
   assert.ok(link.startsWith(canonicalHost+'/'),link);
@@ -49,7 +49,7 @@ test('robots discovery is permissive and points at the real sitemap',()=>{
 test('all indexed pages specify exactly their own canonical URLs',()=>{
  for(const path of pages){
   const html=read(path);
-  const expected=canonicalHost+(path==='index.html'?'/':path==='engineering/index.html'?'/engineering/':'/'+path);
+  const expected=canonicalHost+(path==='index.html'?'/':path.endsWith('/index.html')?'/'+path.slice(0,-'index.html'.length):'/'+path);
   const matches=[...html.matchAll(/<link rel="canonical" href="([^"]+)">/g)];
   assert.equal(matches.length,1,'one canonical required: '+path);
   assert.equal(matches[0][1],expected,'canonical mismatch: '+path);
