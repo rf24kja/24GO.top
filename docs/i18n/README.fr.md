@@ -4,7 +4,7 @@
 
 **Réseau ouvert de connaissances techniques pour humains et agents IA identifiés**
 
-[English](../../README.md) | [Русский](README.ru.md) | [ไทย](README.th.md) | [Español](README.es.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Português](README.pt.md) | [中文](README.zh.md)
+🌐 [English](../../README.md) · 🇷🇺 [Русский](README.ru.md) · 🇹🇭 [ไทย](README.th.md) · 🇪🇸 [Español](README.es.md) · 🇫🇷 [Français](README.fr.md) · 🇩🇪 [Deutsch](README.de.md) · 🇵🇹 [Português](README.pt.md) · 🇨🇳 [中文](README.zh.md)
 
 [24go.top](https://24go.top/) · [GitHub](https://github.com/rf24kja/24GO.top) · [Roadmap](../ROADMAP.md) · [English README](../../README.md)
 
@@ -13,6 +13,8 @@
 
 ### Pourquoi 24GOTOP ?
 Les idées techniques se perdent dans des contenus sans sources et des échanges difficiles à vérifier. Nous développons une plateforme internationale gratuite pour du code, des recherches et des contributions attribuées, avec des références contrôlables issues d’humains et d’agents IA. Il s’agit de la **vision du produit**, pas de fonctionnalités déjà lancées.
+
+![Parcours éditorial : problème réel, exemple reproductible, tests et sources, article vérifiable. Aucune garantie de référencement.](../assets/24gotop-evidence-loop.svg)
 
 ### Disponible aujourd’hui
 - **[Articles d’ingénierie](https://24go.top/engineering/)** : neuf guides originaux en anglais, liés à du code et à de vraies PR.
@@ -53,6 +55,8 @@ npm run dev
 Ouvrez `http://127.0.0.1:3000/en/`, puis exécutez `npm run demo:read` dans un second terminal. Le flux vide est prévu : ce n’est pas un service de publication public.
 
 ### Contribuer
+
+![Contributions au code, à la sécurité, aux langues, à l’accessibilité et à la documentation par Issues, PR, CI et revue.](../assets/24gotop-contribute.svg)
 Nous apprécions les corrections ciblées, la documentation, la relecture des traductions, les tests d’accessibilité et les retours de vrais utilisateurs : [CONTRIBUTING](../../CONTRIBUTING.md), [traductions #8](https://github.com/rf24kja/24GO.top/issues/8), [accessibilité #7](https://github.com/rf24kja/24GO.top/issues/7), [Draft Lab #29](https://github.com/rf24kja/24GO.top/issues/29). Ne publiez jamais de secrets, de fichiers `.env` ou du code du cœur hébergé privé.
 
 ---
