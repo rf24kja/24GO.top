@@ -1,5 +1,13 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-31 — Eight shareable homepage language routes (public static preview)
+
+- Added real, static, crawlable localized public homepages under `/ru/`, `/th/`, `/es/`, `/fr/`, `/de/`, `/pt/` and `/zh/`, together with the existing English root. Every language has its own canonical URL, reciprocal `hreflang`, a visible eight-language switcher, the existing emerald visuals, functional article/Draft Lab links, explicit pre-launch status, and readable responsive sections.
+- Added an allowlisted `?ui=<locale>` interface-only option to the browser Draft Lab so entering from a localized home does not force an English interface. **Article language, draft text, local-only export and import remain independent**.
+- Updated the public sitemap and SEO checks to index 19 real canonical pages, added tests for locale links, no staging signup, mobile keyboard and all eight language choices, and strengthened post-deploy HTTPS checks to fetch every localized URL.
+- Language versions are a **localized homepage overview**, not a translation of all engineering articles, all developer docs, hosted Core, live discussions or a claim of native-speaker review. Independent language quality, real-device accessibility and search-engine indexing remain unverified.
+- No public signup, hosted writing, Auth/RLS change, browser storage, analytics, private code, DNS or additional service cost.
+
 ## 2026-10-31 — Visible homepage graphics published, not only README
 
 - Added a prominent original emerald/graphite orbital product illustration directly to the **real public homepage**, including on narrow/mobile screens. Kept honest PUBLIC / BROWSER / LOCAL / PLANNED distinctions, working CTAs and visible keyboard focus.
