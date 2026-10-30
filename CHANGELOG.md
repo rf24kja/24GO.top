@@ -4,6 +4,7 @@
 
 - Documented why the separate Vercel/Supabase **existing-account staging identity** page has a login while the canonical `24go.top` static public site does not. Clarified the private `24GO.online` repository name is not a public product domain, and distinguished **READY deployment** from a verified, secure public publishing release.
 - Added the answer to README FAQ and refreshed the deployment evidence register using verified Vercel project metadata and private staging **source only**; no secrets, user records or token-bearing links.
+- The public `/progress.html` development page now explains why there is no public sign-in CTA and links to the status register; it does not send users to the staging login.
 - Retained the rule against routing general visitors to staging authentication or enabling public signup, writes and moderator publishing before independently reviewed Auth/JWT RLS, restore and AAL2 gates. Documentation-only change; no Vercel, DNS, Supabase, production, CI or staging config mutations.
 
 ## 2026-10-31 — Premium README hero and reader keyboard focus
