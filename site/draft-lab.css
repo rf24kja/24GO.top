@@ -84,3 +84,8 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 .draft-drop-zone[data-dragging="true"]{border-style:solid;border-color:var(--accent);
  background:var(--secondary-hover);color:var(--text)}
 @media(prefers-contrast:more){.draft-drop-zone{border-width:3px}}
+
+/* Public proposal path: external GitHub review, never an editor upload action. */
+.editorial-actions{display:flex;flex-direction:column;gap:9px;align-items:flex-start;max-width:325px}
+.editorial-actions .feedback{max-width:100%;overflow-wrap:anywhere}
+@media(max-width:760px){.editorial-actions{width:100%;max-width:none}}
