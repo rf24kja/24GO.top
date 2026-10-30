@@ -1,5 +1,10 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-30 — Strengthen GitHub README usability and maintenance checks
+
+- Added role-based quick navigation and explicit release FAQ to the existing eight-language README showcase, so first-time visitors can quickly reach real articles, safe local writing, SDK onboarding and contributor tasks.
+- Introduced automated checks across all eight README entry points for relative links, multilingual navigation, source-backed article references, honest product status and lightweight accessible self-contained SVG diagrams. No runtime feature or hosted publishing behavior changed.
+
 ## 2026-10-30 — Post-Pages independent SEO audit and truthful release evidence
 
 - **Follow-up evidence:** [independent live SEO run #40986751453](https://github.com/rf24kja/24GO.top/actions/runs/40986751453) passed all 12 deployed sitemap URLs, including nine engineering articles, robots, RSS, canonical and redirects. This is delivery evidence only; indexing and human traffic remain unmeasured.
