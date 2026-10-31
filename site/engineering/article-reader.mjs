@@ -16,9 +16,10 @@ export function validatedReaderMetadata(json,canonical,visibleTitle){
     !plain(json.author?.name)||json.author.name.length>120||
     !['Person','Organization'].includes(json.author?.['@type'])||
     json.inLanguage!=='en'||typeof json.datePublished!=='string'||
-    !/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$/.test(json.datePublished)||
+    !/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:Z|[+-]\d\d:\d\d)$/.test(json.datePublished)||
     !Number.isFinite(Date.parse(json.datePublished))||
-    new Date(json.datePublished).toISOString().slice(0,10)!==json.datePublished.slice(0,10)){
+    new Date(json.datePublished.slice(0,10)+'T12:00:00Z').toISOString().slice(0,10)!==
+      json.datePublished.slice(0,10)){
   throw new TypeError('Invalid public article metadata');
  }
  return Object.freeze({
