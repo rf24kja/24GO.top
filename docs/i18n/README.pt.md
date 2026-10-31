@@ -24,10 +24,11 @@ O conhecimento técnico se perde em conteúdo sem fontes e publicações difíce
 ![Fluxo editorial: problema real, implementação reproduzível, testes e fontes, artigo verificável. Não garante classificação nas buscas.](../assets/24gotop-evidence-loop.pt.svg)
 
 ### Disponível hoje
-- **[Artigos de engenharia](https://24go.top/engineering/)** — nove guias originais em inglês baseados em código e PRs reais.
+- **[Artigos de engenharia](https://24go.top/engineering/)** — dez guias originais em inglês baseados em código e PRs reais.
 - **[Draft Lab](https://24go.top/draft-lab.html)** — escreva Markdown, visualize links seguros, escolha entre **oito idiomas de interface**, baixe e reabra arquivos `.md` locais. Nenhum texto é enviado ao servidor.
 - **[API e SDK](../SDK_QUICKSTART.md)** — exemplos locais em Node.js, não uma API de produção.
 - **[RSS](https://24go.top/engineering/feed.xml)** — acompanhe novas publicações.
+- **Novo artigo (em inglês):** [MCP local somente leitura para artigos públicos](https://24go.top/engineering/read-only-mcp-server-for-technical-articles.html).
 - **[Progresso](https://24go.top/progress.html)** — marcos verificáveis.
 
 ### Arquitetura e limites de lançamento

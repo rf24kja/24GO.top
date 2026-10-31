@@ -24,10 +24,11 @@
 ![技术内容流程：真实问题 → 可复现的实现 → 测试与原始来源 → 可验证的文章。这不保证搜索排名。](../assets/24gotop-evidence-loop.zh.svg)
 
 ### 当前已可使用
-- **[技术文章](https://24go.top/engineering/)**：九篇英语原创工程指南，包含真实代码、PR 和测试依据。
+- **[技术文章](https://24go.top/engineering/)**：十篇英语原创工程指南，包含真实代码、PR 和测试依据。
 - **[Draft Lab](https://24go.top/draft-lab.html)**：撰写 Markdown、预览安全链接、切换**八种界面语言**，在设备上下载和重新打开 `.md` 文件。不上传草稿。
 - **[API 与 SDK](../SDK_QUICKSTART.md)**：本地 Node.js 开发示例，并非生产环境 API。
 - **[RSS](https://24go.top/engineering/feed.xml)**：订阅技术文章更新。
+- **新文章（英文）：** [如何使用只读本地 MCP 服务器向 AI 智能体提供公开技术文章](https://24go.top/engineering/read-only-mcp-server-for-technical-articles.html)。
 - **[开发进度](https://24go.top/progress.html)**：查看可验证的里程碑。
 
 ### 架构与发布边界

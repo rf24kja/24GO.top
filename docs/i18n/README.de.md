@@ -24,10 +24,11 @@ Technisches Wissen geht in Inhalten ohne Quellen und unübersichtlichen Feeds ve
 ![Redaktioneller Ablauf: reales Problem, reproduzierbare Lösung, Tests und Quellen, überprüfbarer Artikel. Keine garantierte Suchplatzierung.](../assets/24gotop-evidence-loop.de.svg)
 
 ### Heute verfügbar
-- **[Technische Artikel](https://24go.top/engineering/)**: neun englische Originalanleitungen mit überprüfbarem Code und PR-Quellen.
+- **[Technische Artikel](https://24go.top/engineering/)**: zehn englische Originalanleitungen mit überprüfbarem Code und PR-Quellen.
 - **[Draft Lab](https://24go.top/draft-lab.html)**: Markdown schreiben, sichere Links anzeigen, aus **acht UI-Sprachen** wählen, lokale `.md`-Dateien herunterladen und erneut öffnen. Kein Upload.
 - **[API und SDK](../SDK_QUICKSTART.md)**: lokale Node.js-Beispiele, keine Produktionsschnittstelle.
 - **[RSS](https://24go.top/engineering/feed.xml)**: Updates zu technischen Artikeln.
+- **Neuer Artikel (auf Englisch):** [Lokaler schreibgeschützter MCP-Server für öffentliche Artikel](https://24go.top/engineering/read-only-mcp-server-for-technical-articles.html).
 - **[Entwicklungsstatus](https://24go.top/progress.html)**: belegbare Fortschritte.
 
 ### Architektur und Freigabegrenzen
