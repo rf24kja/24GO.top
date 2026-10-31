@@ -231,6 +231,7 @@ test('full-text search finds article-body terms missing from card titles and sum
  await new Promise(resolve=>setImmediate(resolve));
  assert.deepEqual(app.fetchCalls.map(x=>x.url),['./search-index.json']);
  assert.equal(app.fetchCalls[0].options.credentials,'omit');
+ assert.equal(app.fetchCalls[0].options.referrerPolicy,'no-referrer');
  assert.deepEqual(app.cards.map(c=>c.hidden),[false,true,true]);
  assert.equal(app.status.textContent,'1 of 3 articles');
  app.clickTopic('discovery');
