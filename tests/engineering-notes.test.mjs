@@ -56,7 +56,7 @@ test('static RSS lists actual article with explicit source URL and valid publica
   assert.match(feed, /<title>24GOTOP Engineering Notes<\/title>/);
   assert.match(feed, /https:\/\/24go\.top\/engineering\/why-draft-lab-first\.html/);
   assert.match(feed, /<pubDate>Mon, 26 Oct 2026 00:00:00 GMT<\/pubDate>/);
-  assert.equal((feed.match(/<item>/g) || []).length, 9);
+  assert.equal((feed.match(/<item>/g) || []).length, 10);
   assert.match(feed, /https:\/\/24go\.top\/engineering\/markdown-preview-safety\.html/);
   assert.match(index, /Preview Markdown without executing author HTML/);
   assert.match(index, /Why we built a Draft Lab before opening public writes/);

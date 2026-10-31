@@ -75,7 +75,7 @@ test('article SEO and public prototype distinctions survive design convergence',
   assert.match(html,/<link rel="stylesheet" href="\.\/notes\.css">/);
  }
  const catalogue=read('engineering/index.html');
- assert.equal((catalogue.match(/<article class="card" data-note-card data-note-topic="[^"]+" data-note-file="[a-z0-9-]+\.html">/g)||[]).length,9);
+ assert.equal((catalogue.match(/<article class="card" data-note-card data-note-topic="[^"]+" data-note-file="[a-z0-9-]+\.html">/g)||[]).length,10);
  assert.match(catalogue,/data-engineering-search hidden/);
  const editor=read('draft-lab.html');
  assert.match(editor,/name="robots" content="noindex,follow"/);
