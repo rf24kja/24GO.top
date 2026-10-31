@@ -11,7 +11,7 @@
 <link rel="canonical" href="https://24go.top/engineering/read-only-mcp-server-for-technical-articles.html">
 <link rel="stylesheet" href="./notes.css"><link rel="stylesheet" href="../interior.css"><link rel="alternate" type="application/rss+xml" title="24GOTOP engineering notes" href="./feed.xml">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"How to expose published technical articles to AI agents with a read-only MCP server","description":"Build a local read-only MCP server for a trusted technical-article corpus, with allowlisted canonical URLs, bounded tool inputs, no database permissions and real stdio tests.","datePublished":"2026-10-31T05:45:00Z","dateModified":"2026-10-31T05:45:00Z","inLanguage":"en","author":{"@type":"Organization","name":"24GOTOP Engineering","url":"https://github.com/rf24kja/24GO.top"},"publisher":{"@type":"Organization","name":"24GOTOP"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://24go.top/engineering/read-only-mcp-server-for-technical-articles.html"},"isAccessibleForFree":true}</script>
-</head><body><a class="skip" href="#main-content">Skip to article content</a>
+<script type="module" src="./article-reader.mjs"></script></head><body><a class="skip" href="#main-content">Skip to article content</a>
 <header class="interior-header"><nav class="wrap interior-nav" aria-label="Main navigation"><a class="interior-brand" href="../" aria-label="24GOTOP home">24GO<span>TOP</span><span class="interior-brand__dot" aria-hidden="true"></span></a><div class="interior-links"><a href="../">Home</a><a href="./">Articles</a><a href="../draft-lab.html">Draft Lab</a><a href="../progress.html">Development</a><a href="https://github.com/rf24kja/24GO.top">GitHub ↗</a></div></nav></header>
 <main class="wrap" id="main-content" tabindex="-1"><article class="article">
 <span class="eyebrow">Engineering note · <time datetime="2026-10-31">31 October 2026</time> · MCP &amp; agent integrations</span>
@@ -20,11 +20,11 @@
 <p class="details">By <a href="https://github.com/rf24kja/24GO.top">24GOTOP Engineering</a> · <a href="https://github.com/rf24kja/24GO.top/pull/116">Merged implementation PR #116</a> · <a href="https://github.com/rf24kja/24GO.top/blob/main/packages/mcp/stdio.mjs">Runnable source</a> · <a href="https://github.com/rf24kja/24GO.top/blob/main/tests/mcp-public-articles.test.mjs">Process and security tests</a></p>
 <div class="note" role="note"><strong>Release boundary:</strong> This is a local, read-only MCP server. It is not a remotely hosted MCP endpoint, verified AI-agent login, autonomous publishing workflow, or production community API. Hosted account-based publishing remains blocked on independent security review and database recovery proof.</div>
 
-<h2>Why not point agents directly at our application database?</h2>
+<h2 id="section-why-not-point-agents-directly-at-our-application-database">Why not point agents directly at our application database?</h2>
 <p>The source-backed engineering archive already ships published HTML, RSS and a generated JSON Feed. Its content is intended for anonymous readers. Exposing those reviewed artifacts is much simpler to reason about than constructing an agent privilege model around unpublished drafts, author identity, moderation decisions or future personal data.</p>
 <p>Our <a href="https://github.com/rf24kja/24GO.top/pull/116">public MCP PR #116</a> chose a <em>stdio</em> transport: a compatible local host explicitly starts a Node.js process and exchanges JSON-RPC messages over its standard input and output. The server itself performs no network fetches, does not load environment credentials, and does not connect to PostgreSQL or Supabase. An authorized host must decide whether, when and how to start that executable.</p>
 
-<h2>The corpus is an allowlist, not a file browser</h2>
+<h2 id="section-the-corpus-is-an-allowlist-not-a-file-browser">The corpus is an allowlist, not a file browser</h2>
 <p>The server reads only three types of repository-owned artifacts: the committed engineering JSON Feed, the static full-text search index, and HTML pages identified by canonical URLs already present in that feed. Before returning a record, <code>loadPublishedCorpus()</code> checks the index version, matching article counts, duplicate paths, and a strictly shaped article filename. A URL does not become an allowed read target merely because a tool caller supplies it.</p>
 <pre><code>const origin = 'https://24go.top/engineering/';
 const file = item.url.slice(origin.length);
@@ -35,11 +35,11 @@ if (!item.url.startsWith(origin) ||
 }</code></pre>
 <p>The actual implementation also verifies the corresponding indexed file and disallows duplicates. This exact-match design prevents requests such as <code>file:///etc/passwd</code>, path traversal, and external domains from being converted into arbitrary reads. Importantly, a local MCP client does not receive a generalized filesystem or shell tool.</p>
 
-<h2>Three intentionally small tools</h2>
+<h2 id="section-three-intentionally-small-tools">Three intentionally small tools</h2>
 <p><strong><code>list_articles</code></strong> returns published titles, canonical URLs, language, summary and date. <strong><code>search_articles</code></strong> looks through reviewed titles, summaries and indexed body text; it accepts a bounded keyword and a maximum result limit. <strong><code>read_article</code></strong> requires an exact public canonical URL and returns a plain-text representation of that published article. A client can also enumerate and read the same approved articles through MCP Resources.</p>
 <p>Tool input schemas reject extra fields and restrict lengths and result counts. Search is not a semantic ranking service: it is deterministic case-insensitive substring search over a committed static index. That simplicity makes the observed result straightforward to verify, but it is not a promise of advanced retrieval quality or remotely accessible discovery.</p>
 
-<h2>Run the actual implementation</h2>
+<h2 id="section-run-the-actual-implementation">Run the actual implementation</h2>
 <p>Clone the public source and use Node.js 22 or newer. No API key, paid model account or production database is required for the local article server:</p>
 <pre><code>git clone https://github.com/rf24kja/24GO.top.git
 cd 24GO.top
@@ -48,15 +48,15 @@ npm test
 npm run mcp:articles</code></pre>
 <p>The last command starts a stdio process intended for an MCP-capable host, not an HTTP server that opens a web page. Follow the <a href="https://github.com/rf24kja/24GO.top/blob/main/docs/PUBLIC_ARTICLE_MCP.md">local client configuration guide</a> for the right executable path and working directory. The process emits JSON-RPC protocol frames to stdout; regular diagnostic chatter must not corrupt that channel. Host-specific setup and real third-party host interoperability still require separate verification.</p>
 
-<h2>How we tested the boundary</h2>
+<h2 id="section-how-we-tested-the-boundary">How we tested the boundary</h2>
 <p>The Node integration suite starts the real child process, sends a modern MCP <code>server/discover</code> request, lists tool definitions, invokes an actual list operation, and exercises compatibility with older client initialization. It tests <code>search_articles</code> using a phrase found in a published article body, then checks that the returned URL is one of the approved articles and that <code>read_article</code> can retrieve its text.</p>
 <p>Negative tests try arbitrary URLs, traversal, unknown methods, malformed input, oversized queries and a fictional <code>publish_article</code> tool. Those requests cannot obtain private content or cause a write through this MCP surface. The protocol implementation supports the <code>2026-07-28</code> discovery path and a legacy initialization route. These are tested source-level properties, not evidence of remote deployment or an independent audit of every possible MCP host.</p>
 
-<h2>Untrusted content remains untrusted after retrieval</h2>
+<h2 id="section-untrusted-content-remains-untrusted-after-retrieval">Untrusted content remains untrusted after retrieval</h2>
 <p>An article can contain code snippets, third-party quotations and potentially misleading instructions. We expose it as plain reference text with its source URL; a consuming AI agent should still treat retrieved article text as data, not as higher-priority operating instructions. Source allowlisting is necessary, but it does not make every statement within a technical article correct or safe to execute.</p>
 <p>Separately, <a href="https://github.com/rf24kja/24GO.top/issues/24">the public/private architecture boundary</a> keeps future author accounts, moderation controls and hosted business logic outside this public MIT code path. In the release train, independent reviewer approval, real provider-signed authors, row-level security isolation and recoverable backups remain gates before any write permission can be added.</p>
 
-<h2>What developers can reuse</h2>
+<h2 id="section-what-developers-can-reuse">What developers can reuse</h2>
 <p>Start with already reviewed public documents, keep the approved corpus explicit, make tools read-only by construction, validate the exact identifier rather than trusting supplied paths, and test a real protocol process—not just helper functions. If the product later requires authenticated agent publication, design it as a separate service with identities, authority boundaries, budgets and moderation rather than quietly expanding this anonymous reader.</p>
 <p>See the <a href="https://github.com/rf24kja/24GO.top/blob/main/packages/mcp/stdio.mjs">MCP source</a>, <a href="https://github.com/rf24kja/24GO.top/blob/main/tests/mcp-public-articles.test.mjs">executable regression tests</a>, <a href="https://github.com/rf24kja/24GO.top/pull/116">merged PR</a>, and <a href="../progress.html">public progress record</a>. Feedback on client compatibility and threat models is welcome through the repository issues. No public user article publishing has been launched as a result of this integration.</p>
 <aside class="article-report" aria-label="Report a problem with this article">

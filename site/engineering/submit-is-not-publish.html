@@ -10,7 +10,7 @@
 <link rel="canonical" href="https://24go.top/engineering/submit-is-not-publish.html">
 <link rel="stylesheet" href="./notes.css"><link rel="stylesheet" href="../interior.css"><link rel="alternate" type="application/rss+xml" title="24GOTOP engineering notes" href="./feed.xml">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Submit for review is not publish","description":"Why submitting a technical article for review is not publication, and how 24GOTOP is testing identity, version snapshots, moderation and public release as separate security boundaries.","datePublished":"2026-10-26T12:00:00Z","inLanguage":"en","author":{"@type":"Organization","name":"24GOTOP Engineering","url":"https://github.com/rf24kja/24GO.top"},"publisher":{"@type":"Organization","name":"24GOTOP"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://24go.top/engineering/submit-is-not-publish.html"},"isAccessibleForFree":true}</script>
-</head><body><a class="skip" href="#main-content">Skip to article content</a><header class="interior-header"><nav class="wrap interior-nav" aria-label="Main navigation"><a class="interior-brand" href="../" aria-label="24GOTOP home">24GO<span>TOP</span><span class="interior-brand__dot" aria-hidden="true"></span></a><div class="interior-links"><a href="../">Home</a><a href="./">Articles</a><a href="../draft-lab.html">Draft Lab</a><a href="../progress.html">Development</a><a href="https://github.com/rf24kja/24GO.top">GitHub ↗</a></div></nav></header>
+<script type="module" src="./article-reader.mjs"></script></head><body><a class="skip" href="#main-content">Skip to article content</a><header class="interior-header"><nav class="wrap interior-nav" aria-label="Main navigation"><a class="interior-brand" href="../" aria-label="24GOTOP home">24GO<span>TOP</span><span class="interior-brand__dot" aria-hidden="true"></span></a><div class="interior-links"><a href="../">Home</a><a href="./">Articles</a><a href="../draft-lab.html">Draft Lab</a><a href="../progress.html">Development</a><a href="https://github.com/rf24kja/24GO.top">GitHub ↗</a></div></nav></header>
 <main class="wrap" id="main-content" tabindex="-1"><article class="article">
 <span class="eyebrow">Engineering note · 26 October 2026 · Publishing security</span>
 <h1>Submit for review is not publish</h1>
@@ -18,11 +18,11 @@
 <p class="details">24GOTOP engineering · <a href="https://github.com/rf24kja/24GO.top/issues/38">Public security test plan #38</a> · <a href="https://github.com/rf24kja/24GO.top/issues/29">Draft Lab author pilot #29</a> · <a href="https://github.com/rf24kja/24GO.top/blob/main/docs/PUBLIC_PRIVATE_BOUNDARY.md">OSS/hosted-core boundary</a></p>
 <div class="note" role="note"><strong>Release status:</strong> 24GOTOP is not a live community publishing service. The public repository contains an MIT-licensed local prototype and a browser-only Draft Lab. Private staging work on author-owned drafts and review intake is not deployed publicly; real two-user Auth/JWT verification, moderator MFA/identity binding, full publication transactions, and backup/restore are still open gates.</div>
 
-<h2>What can go wrong between Save and Publish?</h2>
+<h2 id="section-what-can-go-wrong-between-save-and-publish">What can go wrong between Save and Publish?</h2>
 <p>Consider two people editing separate posts. An API accepts a JSON body with an author ID, and a queue consumer copies it into a moderation table. The queue reports success, but the author ID was never checked against a signed session. A subsequent moderation decision changes an internal status without creating a durable public article. The interface might report "published" even though nothing can be read at a stable URL.</p>
 <p>These are not hypothetical capabilities we are claiming to have discovered in other products; they are failure cases we want our own project to reject. An author deserves more than a green HTTP status code.</p>
 
-<h2>Model the lifecycle as distinct trust boundaries</h2>
+<h2 id="section-model-the-lifecycle-as-distinct-trust-boundaries">Model the lifecycle as distinct trust boundaries</h2>
 <ol>
 <li><strong>Draft ownership:</strong> the server validates a current identity and proves that the user owns the specific draft. A client-supplied author label is not sufficient.</li>
 <li><strong>Immutable submission:</strong> submitting version <code>n</code> must preserve the exact reviewed title, locale, source and full body even if the author later edits version <code>n+1</code>.</li>
@@ -32,7 +32,7 @@
 <li><strong>Reader safety:</strong> article text is untrusted. Rendering, links, localization and embedded code need a reviewed policy before the URL is safe for readers.</li>
 </ol>
 
-<h2>A small example: why a retry key matters</h2>
+<h2 id="section-a-small-example-why-a-retry-key-matters">A small example: why a retry key matters</h2>
 <p>Suppose the same review task is delivered twice following a network timeout. If each attempt generates a new moderation post ID, one author may receive two conflicting decisions. Our proposed invariant is a one-to-one mapping from an immutable <code>submission_id</code> to a single moderation item, protected by database uniqueness and a single transactional operation.</p>
 <pre><code>submission A, version 3
   → stable review identity A
@@ -42,7 +42,7 @@
 <p>A second worker should return the existing intake identity instead of silently duplicating it. If inserting the mapping fails, any associated moderator-queue insert should roll back as well. These behaviors are meaningful only when tested under actual concurrent transactions, not just mocked HTTP responses.</p>
 <p>Source-level tests for private intake proposals have been exercised in disposable PostgreSQL 17 CI. This is evidence of the isolated SQL design, <strong>not</strong> evidence that any consumer is running, real accounts were used, or production publishing works.</p>
 
-<h2>What is publicly reproducible today?</h2>
+<h2 id="section-what-is-publicly-reproducible-today">What is publicly reproducible today?</h2>
 <p>The public 24GOTOP repository offers an independently testable local Node.js prototype, an experimental JavaScript SDK and a browser-only writing interface. The <a href="./why-draft-lab-first.html">Draft Lab origin story</a> explains why we did not connect an unfinished identity system to public writes; our <a href="./markdown-preview-safety.html">Markdown preview security note</a> shows one safe way to display article-like content without executing the author's HTML.</p>
 <pre><code>git clone https://github.com/rf24kja/24GO.top.git
 cd 24GO.top
@@ -51,7 +51,7 @@ npm test
 npm run dev</code></pre>
 <p>The repository's read-only SDK example can be run separately with <code>npm run demo:read</code>. An empty local feed is expected; it is not a claim of successful real-user onboarding.</p>
 
-<h2>What we will not claim yet</h2>
+<h2 id="section-what-we-will-not-claim-yet">What we will not claim yet</h2>
 <ul>
 <li>No announced "launched" service, public writer accounts, uploaded articles, functional comments or permanent user-facing article URLs.</li>
 <li>No signed, live two-user cross-account proof merely from SQL tests that simulate claims.</li>
@@ -61,7 +61,7 @@ npm run dev</code></pre>
 </ul>
 <p>See the <a href="https://github.com/rf24kja/24GO.top/issues/38">public cross-user and race-condition test plan</a> for specific security questions. The official founder-led hosted core is developed separately; public MIT-covered code retains its existing license and independent fork rights.</p>
 
-<h2>Three focused requests for feedback</h2>
+<h2 id="section-three-focused-requests-for-feedback">Three focused requests for feedback</h2>
 <p>We are looking for engineers who can help us answer concrete questions: Should a revised article require a brand-new moderation decision? What rejection/audit information should an author see without exposing moderator identity? And what is the simplest multilingual permalink strategy that preserves attribution and correct canonical URLs?</p>
 <p>Join the <a href="https://github.com/rf24kja/24GO.top/issues/38">existing security Issue</a> for reproducible security test cases, or the <a href="https://github.com/rf24kja/24GO.top/issues/29">voluntary Draft Lab pilot</a> to test writing UX. Comments should describe actual observations or proposed acceptance criteria—not promotional replies or synthetic feedback.</p>
 <blockquote>Trustworthy publishing is not the speed of a button. It is the guarantee that a draft, a reviewer decision and a public page all mean what their labels say.</blockquote>

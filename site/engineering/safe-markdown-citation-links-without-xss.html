@@ -10,7 +10,7 @@
 <title>Safe Markdown citation links without XSS: a browser example — 24GOTOP</title>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"How to render Markdown citation links without introducing XSS","description":"A source-backed guide to rendering citation hyperlinks without executing user-controlled Markdown.","datePublished":"2026-10-30T06:07:00+07:00","dateModified":"2026-10-30T06:07:00+07:00","inLanguage":"en","author":{"@type":"Organization","name":"24GOTOP Engineering","url":"https://github.com/rf24kja/24GO.top"},"publisher":{"@type":"Organization","name":"24GOTOP"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://24go.top/engineering/safe-markdown-citation-links-without-xss.html"},"isAccessibleForFree":true}</script>
 <link rel="stylesheet" href="./notes.css"><link rel="stylesheet" href="../interior.css"><link rel="alternate" type="application/rss+xml" title="24GOTOP engineering notes" href="./feed.xml">
-</head><body><a class="skip" href="#main-content">Skip to article content</a>
+<script type="module" src="./article-reader.mjs"></script></head><body><a class="skip" href="#main-content">Skip to article content</a>
 <header class="interior-header"><nav class="wrap interior-nav" aria-label="Main navigation"><a class="interior-brand" href="../" aria-label="24GOTOP home">24GO<span>TOP</span><span class="interior-brand__dot" aria-hidden="true"></span></a><div class="interior-links"><a href="../">Home</a><a href="./">Articles</a><a href="../draft-lab.html">Draft Lab</a><a href="../progress.html">Development</a><a href="https://github.com/rf24kja/24GO.top">GitHub ↗</a></div></nav></header>
 <main class="wrap" id="main-content" tabindex="-1"><article class="article">
 <span class="eyebrow">Engineering guide · 30 October 2026 · Web security</span>
@@ -18,10 +18,10 @@
 <p class="lead">A technical article needs hyperlinks to repositories, standards and documentation. But a user-supplied Markdown link can contain unexpected schemes, HTML-like labels and credentials embedded in a URL. We extended the browser-only 24GOTOP Draft Lab to support a deliberately small link syntax and tested the failure cases first.</p>
 <p class="details">By <a href="https://github.com/rf24kja/24GO.top">24GOTOP Engineering</a> · <time datetime="2026-10-30">30 October 2026</time> · <a href="https://github.com/rf24kja/24GO.top/pull/78">Merged PR #78</a> · <a href="https://github.com/rf24kja/24GO.top/blob/main/tests/draft-lab-preview.test.mjs">Regression tests</a></p>
 <div class="note" role="note"><strong>Scope:</strong> this is a limited author-side preview, not a general-purpose CommonMark implementation or a public publishing backend. It does not support embedded images, rich HTML or arbitrary URL schemes. No user-generated content is sent to the server.</div>
-<h2>What should a citation link accept?</h2>
+<h2 id="section-what-should-a-citation-link-accept">What should a citation link accept?</h2>
 <p>Our initial preview treated all Markdown syntax as plain text, an intentional safety-first choice documented in <a href="./markdown-preview-safety.html">the original DOM preview design</a>. Later, authors needed references in the text they were writing. We chose a narrow <code>[label](https://example.org/path)</code> syntax instead of permitting arbitrary HTML.</p>
 <p>The preview recognizes a bounded link label and URL. The target must be an actual HTTP or HTTPS URL with a hostname, without embedded usernames or passwords. Parentheses, backslashes, whitespace and nested Markdown are excluded from the supported form. Unsupported syntax remains visible as text; the parser does not attempt to repair it into a risky link.</p>
-<h2>Validate the URL before creating an anchor</h2>
+<h2 id="section-validate-the-url-before-creating-an-anchor">Validate the URL before creating an anchor</h2>
 <p>The <a href="https://github.com/rf24kja/24GO.top/blob/main/site/draft-lab-preview.js">public renderer</a> includes a dedicated URL gate. It uses the platform <code>URL</code> parser and then checks the exact protocol, hostname and credential fields:</p>
 <pre><code>export function safeCitationUrl(raw) {
   if (typeof raw !== 'string' || raw.length &gt; 1500) return null;
@@ -33,7 +33,7 @@
   } catch { return null; }
 }</code></pre>
 <p>Do not rely only on a string prefix such as <code>startsWith('http')</code>. Scheme-like strings and unusual URL syntax are easy to misread. The normalized URL object gives you explicit components to check. The restrictive Markdown tokenizer further rules out input shapes we have not chosen to support.</p>
-<h2>Build DOM nodes, never concatenate untrusted HTML</h2>
+<h2 id="section-build-dom-nodes-never-concatenate-untrusted-html">Build DOM nodes, never concatenate untrusted HTML</h2>
 <p>For every accepted link, the editor creates a fixed <code>a</code> element, sets its visible label with <code>textContent</code> and its validated destination with <code>setAttribute</code>. The renderer does not interpolate the raw label into an HTML string or assign user content to <code>innerHTML</code>.</p>
 <pre><code>const link = document.createElement('a');
 link.textContent = label;
@@ -43,14 +43,14 @@ link.setAttribute('target', '_blank');
 link.setAttribute('referrerpolicy', 'no-referrer');</code></pre>
 <p>Those attributes address different concerns. <code>noopener</code> prevents a new page from controlling its opener; <code>noreferrer</code> and the referrer policy limit referral information; <code>ugc</code> describes the link as user-generated. None of these makes a malicious external website trustworthy. A reader still chooses whether to follow it.</p>
 <p>The page's surrounding text is added as text nodes. Inline code and fenced code are treated separately, so an author can discuss a malicious URL or show a code sample containing Markdown syntax without accidentally creating a link in the preview.</p>
-<h2>Adversarial test cases worth keeping</h2>
+<h2 id="section-adversarial-test-cases-worth-keeping">Adversarial test cases worth keeping</h2>
 <p>Our <a href="https://github.com/rf24kja/24GO.top/blob/main/tests/draft-lab-preview.test.mjs">tests</a> exercise meaningful security cases: a Markdown label resembling an image with an event handler; a <code>javascript:</code> destination; credential-bearing <code>https://user:password@host</code> URLs; and link-looking syntax inside a code fence. When the parser rejects a link, the text stays noninteractive, and no unsafe anchor is created.</p>
 <p>The companion <a href="https://github.com/rf24kja/24GO.top/blob/main/tests/draft-lab-formatting.test.mjs">formatting tests</a> verify that the editor's Link button wraps a selected single-line label, highlights a placeholder HTTPS destination for editing, and rejects oversized or multiline selections without losing the original article body.</p>
 <p>This is a testable design contract, <strong>not</strong> an assertion that every possible Markdown or URL edge case is covered. In a hosted publishing platform, additional controls would include strict content security policy, vetted rendering libraries, moderation decisions, safe external redirects where needed and real-browser adversarial testing.</p>
-<h2>Why this matters for technical SEO and AI citations</h2>
+<h2 id="section-why-this-matters-for-technical-seo-and-ai-citations">Why this matters for technical SEO and AI citations</h2>
 <p>Original technical documentation should make sources inspectable. A real hyperlink lets a human or browsing assistant follow the cited specification, GitHub PR or regression test. A visible source title without a usable link is harder to independently verify, but a link is valuable only if it is safely represented and not an implied endorsement.</p>
 <p>Google's <a href="https://developers.google.com/search/docs/appearance/ai-features">official AI-search guidance</a> emphasizes crawlable, useful visible content and ordinary SEO fundamentals. It does not promise AI-feature placement merely because a page has links, special AI markup or an optional text index. We use explicit links for reader utility and provenance, not to simulate authority or engineer artificial backlinks.</p>
-<h2>How to reproduce the implementation</h2>
+<h2 id="section-how-to-reproduce-the-implementation">How to reproduce the implementation</h2>
 <ol>
 <li>Review <a href="https://github.com/rf24kja/24GO.top/pull/78">public PR #78</a> for the DOM rendering and URL-validation changes.</li>
 <li>Clone <a href="https://github.com/rf24kja/24GO.top">the repository</a>, run <code>npm run check</code> and <code>npm test</code> on Node.js 22+, then inspect the exact safe/unsafe test cases.</li>

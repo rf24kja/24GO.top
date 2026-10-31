@@ -24,7 +24,7 @@ test('every new article has meaningful visible evidence and matching Google Arti
   assert.ok(page.includes('https://github.com/rf24kja/24GO.top/pull/'+pr),'source-backed PR: '+leaf);
   assert.ok(page.includes('https://github.com/rf24kja/24GO.top/blob/main/'),'tested public code: '+leaf);
   assert.ok(page.includes('not')||page.includes('NOT'),'honest limitations: '+leaf);
-  assert.doesNotMatch(page,/<iframe\b|<form\b|<script\s+(?!type="application\/ld\+json")|sb_secret_|PUBLISH_API_KEY|service_role/i);
+  assert.doesNotMatch(page,/<iframe\b|<form\b|<script\s+(?!type="application\/ld\+json"|type="module" src="\.\/article-reader\.mjs")|sb_secret_|PUBLISH_API_KEY|service_role/i);
   assert.doesNotMatch(page,/<meta name="robots" content="noindex/i);
   const markup=page.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)||[];
   assert.equal(markup.length,1,'one JSON-LD object: '+leaf);

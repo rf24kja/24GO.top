@@ -75,7 +75,7 @@ test('engineering article directory, RSS and optional machine index agree',()=>{
  assert.ok(!rss.includes('www.24go.top'));
  assert.match(read('engineering/discoverable-technical-articles.html'),/Google Search Console/);
  assert.match(read('engineering/discoverable-technical-articles.html'),/OAI-SearchBot/);
- assert.doesNotMatch(read('engineering/discoverable-technical-articles.html'),/<script\b(?! type="application\/ld\+json">)|sb_secret_|PUBLISH_API_KEY|service_role/i);
+ assert.doesNotMatch(read('engineering/discoverable-technical-articles.html'),/<script\b(?! type="application\/ld\+json">| type="module" src="\.\/article-reader\.mjs">)|sb_secret_|PUBLISH_API_KEY|service_role/i);
 });
 
 
