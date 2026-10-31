@@ -6,6 +6,7 @@
 <title>Propose a technical article — 24GOTOP</title>
 <link rel="canonical" href="https://24go.top/contribute.html">
 <link rel="stylesheet" href="./engineering/notes.css"><link rel="stylesheet" href="./interior.css"><link rel="stylesheet" href="./contribute.css">
+<script type="module" src="./contribute-board.js"></script>
 </head><body><a class="skip" href="#main-content">Skip to article proposal guide</a>
 <header class="interior-header"><nav class="wrap interior-nav" aria-label="Main navigation">
 <a class="interior-brand" href="./" aria-label="24GOTOP home">24GO<span>TOP</span><span class="interior-brand__dot" aria-hidden="true"></span></a>
@@ -36,6 +37,18 @@
 <div class="contribution-panel"><h3>Available today</h3><ul><li>Local writing, preview, Markdown download and reopen.</li><li>Public GitHub proposal with human review.</li><li>OSS documentation and code contributions through PRs.</li><li>Approved engineering articles on the static public website.</li></ul></div>
 <div class="contribution-panel"><h3>Not yet available</h3><ul><li>No 24GOTOP account or hosted article submission.</li><li>No automatic publication or guaranteed review timeframe.</li><li>No verified AI-agent editorial access or production publishing API.</li><li>No promise that every submitted idea will be published.</li></ul></div></div>
 <p class="contribution-rights"><strong>Rights and credit:</strong> Authors retain their underlying rights unless otherwise agreed. Public repository contributions fall under its existing MIT licensing context and GitHub contribution terms; do not submit content you cannot license. Proposals do not transfer ownership of the official 24GOTOP platform. <a href="https://github.com/rf24kja/24GO.top/blob/main/CONTRIBUTING.md">Contributor policy</a> · <a href="https://github.com/rf24kja/24GO.top/blob/main/GOVERNANCE.md">Governance</a>.</p>
+</section>
+<section class="contribution-board" aria-labelledby="proposal-board-heading">
+<span class="eyebrow">REAL COMMUNITY ACTIVITY / GITHUB</span>
+<h2 id="proposal-board-heading">Public editorial proposals</h2>
+<p>See real article proposals made through our GitHub issue form. An open issue is a discussion, not a published article; a closed issue does not necessarily mean publication.</p>
+<p class="contribution-small">Privacy: selecting <strong>Load proposals</strong> contacts GitHub's public API. GitHub receives the network request and may process your IP address. No editor text, cookies or account information is sent by 24GOTOP. Nothing loads automatically.</p>
+<div class="contribution-board__actions">
+<button id="loadProposals" type="button" class="contribution-action">Load public proposals</button>
+<a href="https://github.com/rf24kja/24GO.top/issues?q=is%3Aissue+%22Article+proposal%3A%22" rel="noopener noreferrer">Browse GitHub directly ↗</a>
+</div>
+<p id="proposalBoardStatus" class="contribution-small" role="status" aria-live="polite">Not loaded. You control when the GitHub request starts.</p>
+<ol id="proposalBoardItems" class="contribution-board__items" aria-label="Recent public editorial proposals"></ol>
 </section>
 <section class="contribution-footer" aria-label="Other ways to help"><h2>Prefer to test the editor instead?</h2><p>Testing accessibility and reporting real usability issues is valuable, too. Share only sanitized observations, not your private article text.</p><a href="https://github.com/rf24kja/24GO.top/issues/29" class="contribution-action">Volunteer for the Draft Lab usability pilot ↗</a></section>
 </main>
