@@ -40,8 +40,20 @@
 <h3 id="reading-list-heading">Saved articles · on this device</h3>
 <p>Save published articles for later with the button on each card. Only public article links are stored in this browser, unencrypted. Clearing browser data removes them. Nothing is sent to 24GOTOP.</p>
 <p id="reading-list-status" role="status" aria-live="polite">Saved public articles: 0</p>
+<div class="reading-list__search">
+<label for="reading-list-filter">Find in saved articles</label>
+<input id="reading-list-filter" type="search" maxlength="80" autocomplete="off" placeholder="Filter saved titles">
+<span id="reading-list-filter-status" class="reading-list__filter-status">0 saved links shown.</span>
+</div>
 <ul id="reading-list-items"></ul>
+<div class="reading-list__actions">
+<button type="button" id="reading-list-copy">Copy shown links</button>
+<button type="button" id="reading-list-export">Export saved links .json</button>
+<button type="button" id="reading-list-import">Import saved links .json</button>
+<input type="file" accept=".json,application/json" id="reading-list-file" hidden>
 <button type="button" id="reading-list-clear" class="reading-list__clear" hidden>Clear saved links</button>
+</div>
+<p id="reading-list-feedback" role="status" aria-live="polite"></p>
 </section>
 <p class="note-search__empty" id="engineering-no-results" hidden>No matching articles. Try a different keyword.</p>
 <div class="cards" id="engineering-list"><article class="card" data-note-card data-note-topic="security" data-note-file="read-only-mcp-server-for-technical-articles.html"><span class="tag">31 October 2026 · MCP &amp; AI agent security</span><h3><a href="./read-only-mcp-server-for-technical-articles.html">How to expose published technical articles to AI agents with a read-only MCP server</a></h3><p>Read-only local MCP tools over a fixed public corpus, with canonical URL allowlists, adversarial tests and no agent write privileges.</p><a href="./read-only-mcp-server-for-technical-articles.html">Read the MCP engineering guide ↗</a></article>
