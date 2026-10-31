@@ -32,7 +32,7 @@
     if(typeof fetch!=='function')return;
     try{
       const response=await fetch('./search-index.json',
-        {credentials:'omit',cache:'default'});
+        {credentials:'omit',referrerPolicy:'no-referrer',cache:'default'});
       if(!response.ok)throw Error('Static search index unavailable');
       const data=await response.json();
       if(data?.version!==1||!Array.isArray(data.articles)||
