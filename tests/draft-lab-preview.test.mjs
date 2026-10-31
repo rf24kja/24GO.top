@@ -184,3 +184,76 @@ test('indented code preview is safe fixed PRE/CODE text, not interpreted markup'
   '<img src=x onerror=alert(1)>\nconsole.log("© 文档");');
  assert.ok(documentMock.created.every(node=>!('innerHTML' in node)));
 });
+
+
+test('bounded Markdown tables parse two language-safe columns, alignment and escaped pipes',()=>{
+ const markdown=[
+  'Intro paragraph.','',
+  '| Field | Result |','| :--- | ---: |',
+  '| PostgreSQL | 17 |','| escaped \| pipe | <img onerror=evil()> |',
+  '','After the table.'
+ ].join('\n');
+ assert.deepEqual(parsePreviewBlocks(markdown),[
+  {type:'paragraph',text:'Intro paragraph.'},
+  {type:'table',headers:['Field','Result'],align:['left','right'],
+   rows:[['PostgreSQL','17'],['escaped | pipe','<img onerror=evil()>']]},
+  {type:'paragraph',text:'After the table.'}
+ ]);
+ assert.deepEqual(parsePreviewBlocks('| Field | Result |\n| ------ | --- |\n| 中文 | ภาษาไทย |'),[
+  {type:'table',headers:['Field','Result'],align:['left','left'],rows:[['中文','ภาษาไทย']]}
+ ]);
+});
+
+test('invalid Markdown table syntax stays literal and code fences have priority',()=>{
+ const invalid=['| One | Two |','| -- | --- |','| A | B |'].join('\n');
+ assert.equal(parsePreviewBlocks(invalid).some(x=>x.type==='table'),false);
+ const mark=String.fromCharCode(96).repeat(3);
+ const fenced=mark+'md\n| A | B |\n| --- | --- |\n| x | y |\n'+mark;
+ assert.deepEqual(parsePreviewBlocks(fenced),[{
+  type:'code',language:'md',text:'| A | B |\n| --- | --- |\n| x | y |'
+ }]);
+ const mismatch='| A | B |\n| --- | --- |\n| only one |\nNext line';
+ assert.deepEqual(parsePreviewBlocks(mismatch),[
+  {type:'table',headers:['A','B'],align:['left','left'],rows:[]},
+  {type:'paragraph',text:'| only one | Next line'}
+ ]);
+});
+
+test('table preview renders semantic headers/cells without interpreting malicious markup',()=>{
+ const nodes=[];
+ const doc={
+  createElement(tag){
+   const node={tag,children:[],textContent:'',attributes:{},
+    append(...children){this.children.push(...children);},
+    setAttribute(key,value){this.attributes[key]=value;}};
+   nodes.push(node);return node;
+  },
+  createTextNode(value){return {tag:'#text',textContent:value};}
+ };
+ const container={children:[],replaceChildren(...items){this.children=items;}};
+ const article='| Payload | Details |\n| :---: | ---: |\n'+
+  '| <script>alert(1)</script> | [Source](https://example.org/docs) |\n'+
+  '| <img src=x onerror=evil()> | [bad](javascript:alert(1)) |';
+ renderMarkdownPreview(container,article,doc);
+ assert.deepEqual(container.children.map(x=>x.tag),['div']);
+ const wrapper=container.children[0];
+ assert.equal(wrapper.attributes.role,'region');
+ assert.equal(wrapper.attributes.tabindex,'0');
+ assert.equal(wrapper.children[0].tag,'table');
+ assert.equal(wrapper.children[0].children[0].tag,'thead');
+ assert.equal(wrapper.children[0].children[1].tag,'tbody');
+ const header=wrapper.children[0].children[0].children[0].children;
+ assert.equal(header[0].attributes.scope,'col');
+ assert.equal(header[0].className,'table-align-center');
+ assert.equal(header[1].className,'table-align-right');
+ const rows=wrapper.children[0].children[1].children;
+ assert.equal(rows.length,2);
+ assert.equal(rows[0].children[0].textContent,'<script>alert(1)</script>');
+ assert.equal(rows[1].children[0].textContent,'<img src=x onerror=evil()>');
+ assert.equal(rows[1].children[1].textContent,'[bad](javascript:alert(1))');
+ const link=nodes.find(x=>x.tag==='a');
+ assert.equal(link.attributes.href,'https://example.org/docs');
+ assert.equal(link.attributes.rel,'noopener noreferrer ugc');
+ assert.ok(nodes.every(x=>!('innerHTML' in x)));
+ assert.ok(nodes.every(x=>!['script','img','iframe'].includes(x.tag)));
+});
