@@ -80,6 +80,9 @@
             <select id="savedBrowserDraft" aria-label="Choose saved article" data-ui-label="vaultSelectLabel"></select>
             <button id="openBrowserDraft" type="button" class="secondary" data-ui="vaultOpen">Open selected</button>
             <button id="deleteBrowserDraft" type="button" class="secondary danger" data-ui="vaultDelete">Delete selected</button>
+            <button id="exportDraftLibrary" type="button" class="secondary" data-ui="backupExport">Export library .json</button>
+            <button id="restoreDraftLibrary" type="button" class="secondary" data-ui="backupImport">Restore library .json</button>
+            <input id="draftLibraryFile" type="file" accept=".json,application/json" hidden>
           </div>
           <p id="vaultCount" class="tiny" role="status" aria-live="polite"></p>
         </section>

@@ -1,5 +1,10 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-31 — Portable manual draft library backup and restore
+
+- Extend the browser-only Draft Lab with export of all eight opt-in locally saved drafts to an unencrypted JSON backup, plus explicit confirmed local restore into a **strictly empty** browser library. Validate format, UUIDs, timestamps, article fields, duplicates and byte limits before one atomic localStorage write; reject corrupt and unsafe files without deleting or changing existing drafts or the active editor. Add eight-language controls and privacy warnings, a compact regression suite and post-Pages HTTPS delivery assertions. No backend upload, analytics, autosave, credentials, changes to hosted Core or external services.
+
+
 ## 2026-10-31 — Repair SEO HTTPS audit deployment race
 
 - Remove parallel push-triggered live SEO audits. A new release-specific HTML assertion observed the *previous* CDN version before Pages finished (#41208632019 FAIL), while post-Pages audit (#41208664348) correctly passed. Require completed successful Pages on main before externally checking live SEO content, retaining manual and daily read-only audits. Regression test ensures premature push triggers are not restored. No SEO assertions relaxed, no DNS, private Core or backend change.

@@ -9,7 +9,7 @@ import {
 } from '../site/draft-lab-logic.js';
 import {uiText,applyUiLanguage} from '../site/draft-lab-i18n.js';
 import {buildArticleProposalUrl} from '../site/draft-lab-proposal.js';
-import {createDraftVault,MAX_SAVED_DRAFTS,VAULT_KEY} from '../site/draft-lab-vault.js';
+import {createDraftVault,MAX_SAVED_DRAFTS,MAX_VAULT_BACKUP_BYTES,VAULT_KEY} from '../site/draft-lab-vault.js';
 
 const source = readFileSync(fileURLToPath(new URL('../site/draft-lab.js', import.meta.url)), 'utf8')
   .replace(/^import .* from '.\/draft-lab-logic\.js';\n/m, '')
@@ -30,7 +30,7 @@ function build({uiHref='https://24go.top/draft-lab.html'}={}) {
     'previewHeading','previewBody','previewLocale','previewCategory','bodyCount',
     'previewSource','draftSafety','articleOutline','articleOutlineSection','downloadDraft','copyDraft','clearDraft','importDraft','importDraftFile','draftForm',
     'formatHeading','formatList','formatQuote','formatCode','formatTable','formatLink','uiLocale','draftDropZone','homeBrandLink','homeNavLink','proposeDraft',
-    'saveBrowserDraft','savedBrowserDraft','openBrowserDraft','deleteBrowserDraft','vaultCount'
+    'saveBrowserDraft','savedBrowserDraft','openBrowserDraft','deleteBrowserDraft','vaultCount','exportDraftLibrary','restoreDraftLibrary','draftLibraryFile'
   ];
   const elements = Object.fromEntries(ids.map(id => {
     const el = {
@@ -76,7 +76,7 @@ function build({uiHref='https://24go.top/draft-lab.html'}={}) {
     safeSourceUrl,validateDraft,formatDraft,draftFilename,hasDraftContent,
     parseDraftFile,readDraftFileStrict,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,createDraftImportGate,invalidDraftField,
     uiText,applyUiLanguage,buildArticleProposalUrl,
-    createDraftVault,MAX_SAVED_DRAFTS,VAULT_KEY,
+    createDraftVault,MAX_SAVED_DRAFTS,MAX_VAULT_BACKUP_BYTES,VAULT_KEY,TextDecoder,
     renderMarkdownPreview(container, text) { container.textContent = text; },
     renderPreviewOutline(container,text) { container.textContent=text;return /^#{1,3} /m.test(text)?1:0; }
   // Keep a bounded sandbox timeout, with enough CI runner headroom when

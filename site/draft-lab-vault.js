@@ -3,6 +3,8 @@
 import {validateDraft} from './draft-lab-logic.js';
 export const VAULT_KEY='24gotop.manual-drafts.v1';
 export const MAX_SAVED_DRAFTS=8;
+export const MAX_VAULT_BACKUP_BYTES=600000;
+const BACKUP_FORMAT='24gotop-manual-drafts-backup';
 const MAX_JSON_LENGTH=150000;
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const fields=['title','body','locale','category','source'];
@@ -37,11 +39,42 @@ function writeVault(storage,entries){
  if(raw.length>MAX_JSON_LENGTH)error('vault_full');
  try{storage.setItem(VAULT_KEY,raw);}catch{error('vault_unavailable');}
 }
+// Decode and validate the entire file before the single storage write.
+function decodeBackup(text){
+ if(typeof text!=='string'||text.length>MAX_VAULT_BACKUP_BYTES)
+  error('vault_invalid');
+ let doc;
+ try{doc=JSON.parse(text);}catch{error('vault_invalid');}
+ if(!doc||doc.format!==BACKUP_FORMAT||doc.version!==1||
+   !Array.isArray(doc.entries)||doc.entries.length<1||
+   doc.entries.length>MAX_SAVED_DRAFTS)error('vault_invalid');
+ const raw=JSON.stringify({v:1,entries:doc.entries});
+ if(raw.length>MAX_JSON_LENGTH)error('vault_invalid');
+ let records;
+ try{records=readVault({getItem(){return raw;}});}
+ catch{error('vault_invalid');}
+ return records.map(({id,updatedAt,draft})=>({
+  id,updatedAt,draft:exactDraft(draft)
+ }));
+}
 export function createDraftVault(storage,{newId=()=>globalThis.crypto.randomUUID(),
   now=()=>new Date()}={}){
  if(!storage||typeof storage.getItem!=='function'||
    typeof storage.setItem!=='function')error('vault_unavailable');
  return Object.freeze({
+  exportBackup(){
+   const entries=readVault(storage);
+   if(!entries.length)error('vault_missing');
+   return JSON.stringify({format:BACKUP_FORMAT,version:1,entries:
+    entries.map(({id,updatedAt,draft})=>({id,updatedAt,draft:exactDraft(draft)}))
+   },null,2)+'\n';
+  },
+  restoreBackup(text){
+   const entries=decodeBackup(text);
+   if(readVault(storage).length)error('vault_conflict');
+   writeVault(storage,entries);
+   return entries.length;
+  },
   list(){
    return readVault(storage).map(({id,updatedAt,draft})=>({
     id,updatedAt,title:draft.title,locale:draft.locale
