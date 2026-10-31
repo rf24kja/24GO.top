@@ -11,6 +11,10 @@
   <url><loc>https://24go.top/contribute.html</loc></url>
   <url><loc>https://24go.top/progress.html</loc></url>
   <url><loc>https://24go.top/engineering/</loc></url>
+  <url><loc>https://24go.top/engineering/topics/security.html</loc></url>
+  <url><loc>https://24go.top/engineering/topics/writing.html</loc></url>
+  <url><loc>https://24go.top/engineering/topics/infrastructure.html</loc></url>
+  <url><loc>https://24go.top/engineering/topics/publishing.html</loc></url>
   <url><loc>https://24go.top/engineering/read-only-mcp-server-for-technical-articles.html</loc></url>
   <url><loc>https://24go.top/engineering/safe-markdown-citation-links-without-xss.html</loc></url>
   <url><loc>https://24go.top/engineering/verify-github-pages-deploy-not-just-ci.html</loc></url>

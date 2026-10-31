@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1411">
+<meta name="description" content="Build a local technical editor that preserves author drafts, supports multiple languages, and previews Markdown safely.">
+<meta property="og:type" content="website"><meta property="og:title" content="Writing and editing UX — 24GOTOP">
+<meta property="og:description" content="Build a local technical editor that preserves author drafts, supports multiple languages, and previews Markdown safely.">
+<meta property="og:url" content="https://24go.top/engineering/topics/writing.html">
+<title>Writing and editing UX — Engineering guides | 24GOTOP</title>
+<link rel="canonical" href="https://24go.top/engineering/topics/writing.html">
+<link rel="stylesheet" href="../notes.css"><link rel="stylesheet" href="../../interior.css">
+</head><body>
+<a class="skip" href="#main-content">Skip to reading path</a>
+<header class="interior-header"><nav class="wrap interior-nav" aria-label="Main navigation">
+<a class="interior-brand" href="../../" aria-label="24GOTOP home">24GO<span>TOP</span><span class="interior-brand__dot" aria-hidden="true"></span></a>
+<div class="interior-links"><a href="../../">Home</a><a href="../">Articles</a><a href="../../draft-lab.html">Draft Lab</a><a href="../../progress.html">Development</a><a href="https://github.com/rf24kja/24GO.top">GitHub ↗</a></div>
+</nav></header>
+<main class="wrap" id="main-content" tabindex="-1">
+<nav class="topic-breadcrumb" aria-label="Breadcrumb"><a href="../">Engineering notes</a><span aria-hidden="true"> / </span><span aria-current="page">Writing and editing UX</span></nav>
+<span class="eyebrow">Original source-backed technical notes · Curated path</span>
+<h1>Writing and editing UX</h1>
+<p class="lead">A practical path for authors and frontend developers who need useful editing features before a hosted publishing backend is safe to launch.</p>
+<div class="note" role="note"><strong>Pre-launch transparency:</strong> these links lead to actual published engineering articles, not user submissions or a launched hosted community. There is no automated agent publishing in this collection.</div>
+<section class="topic-guide" aria-labelledby="reading-heading">
+<h2 id="reading-heading">Read these notes in order</h2>
+<p>Begin with the trust boundary around Markdown preview, then see how user-controlled article text stays separate from the selected interface language and local draft lifecycle.</p>
+<ol class="topic-guide__steps">
+<li><span class="topic-order">01</span><div><h3><a href="../markdown-preview-safety.html">Preview Markdown without running untrusted HTML</a></h3><p>Learn why a code-and-citation editor needs bounded formatting and DOM text nodes rather than injecting author markup.</p></div></li>
+<li><span class="topic-order">02</span><div><h3><a href="../multilingual-markdown-editor-without-losing-drafts.html">Localize controls without changing author content</a></h3><p>Follow the separation between eight interface translations, the document language, imported-file baselines and safe local saves.</p></div></li>
+</ol>
+</section>
+<section class="topic-questions" aria-labelledby="questions-heading">
+<h2 id="questions-heading">What to check in your own project</h2>
+<ul><li>Does changing the interface language ever rewrite the article&#39;s original text?</li>
+<li>Can the preview accidentally execute a code example or a pasted HTML fragment?</li>
+<li>What survives closing the page, and which actions require a manual download or backup?</li></ul>
+<p>Try the browser-only Draft Lab to inspect a working prototype; it does not publish or upload your writing.</p>
+</section>
+<nav class="topic-explore" aria-label="Other reading paths">
+<h2>Explore another engineering path</h2>
+<ul><li><a href="./security.html">Security engineering</a></li><li><a href="./infrastructure.html">Infrastructure and release verification</a></li><li><a href="./publishing.html">Publication and moderation lifecycle</a></li></ul>
+<p><a href="../">All original engineering articles</a> · <a href="../feed.xml">RSS</a> · <a href="https://github.com/rf24kja/24GO.top">Inspect the source</a></p>
+</nav>
+</main><footer class="interior-footer"><div class="wrap">24GOTOP · Open engineering notes · <a href="../">All articles</a></div></footer>
+</body></html>
