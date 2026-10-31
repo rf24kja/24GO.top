@@ -8,12 +8,14 @@ import {
   parseDraftFile, readDraftFileStrict, MAX_DRAFT_FILE_BYTES, hasUnexportedChanges, formatDraftSelection, countDraftWords, createDraftImportGate, invalidDraftField
 } from '../site/draft-lab-logic.js';
 import {uiText,applyUiLanguage} from '../site/draft-lab-i18n.js';
+import {appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS} from '../site/draft-lab-guidance.js';
 import {buildArticleProposalUrl} from '../site/draft-lab-proposal.js';
 import {createDraftVault,MAX_SAVED_DRAFTS,MAX_VAULT_BACKUP_BYTES,VAULT_KEY} from '../site/draft-lab-vault.js';
 
 const source = readFileSync(fileURLToPath(new URL('../site/draft-lab.js', import.meta.url)), 'utf8')
   .replace(/^import .* from '.\/draft-lab-logic\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-preview\.js';\n/m, '')
+  .replace(/^import .* from '.\/draft-lab-guidance\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-i18n\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-proposal\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-vault\.js';\n/m, '');
@@ -27,7 +29,8 @@ const sample = {
 function build({uiHref='https://24go.top/draft-lab.html'}={}) {
   const ids = [
     'postTitle','postBody','postLocale','postCategory','postSource','formStatus',
-    'previewHeading','previewBody','previewLocale','previewCategory','bodyCount','bodyWordCount',
+    'previewHeading','previewBody','previewLocale','previewCategory','bodyCount','bodyWordCount','draftReadingTime','guidanceScore',
+    'guideTitleState','guideBodyState','guideHeadingsState','guideStepsState','guideSourceState','guideCompleteState','draftTemplate','insertTemplate',
     'previewSource','draftSafety','articleOutline','articleOutlineSection','downloadDraft','copyDraft','clearDraft','importDraft','importDraftFile','draftForm',
     'formatBold','formatItalic','formatInlineCode','formatHeading','formatList','formatOrderedList','formatQuote','formatCode','formatTable','formatLink','uiLocale','draftDropZone','homeBrandLink','homeNavLink','proposeDraft',
     'saveBrowserDraft','savedBrowserDraft','openBrowserDraft','deleteBrowserDraft','vaultCount','exportDraftLibrary','restoreDraftLibrary','draftLibraryFile'
@@ -54,6 +57,7 @@ function build({uiHref='https://24go.top/draft-lab.html'}={}) {
   elements.uiLocale.value='en';
   elements.postLocale.value='en';
   elements.postCategory.value='guides';
+  elements.draftTemplate.value='guide';
   let confirm = true;
   const window = {listeners:{}, location:{href:uiHref}, confirm(){return confirm;}, addEventListener(type, callback){this.listeners[type]=callback;}};
   const browserItems=new Map();
@@ -75,7 +79,7 @@ function build({uiHref='https://24go.top/draft-lab.html'}={}) {
     document, window, navigator:{}, URL, Blob, setTimeout,
     safeSourceUrl,validateDraft,formatDraft,draftFilename,hasDraftContent,
     parseDraftFile,readDraftFileStrict,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,countDraftWords,createDraftImportGate,invalidDraftField,
-    uiText,applyUiLanguage,buildArticleProposalUrl,
+    uiText,applyUiLanguage,appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS,buildArticleProposalUrl,
     createDraftVault,MAX_SAVED_DRAFTS,MAX_VAULT_BACKUP_BYTES,VAULT_KEY,TextDecoder,
     renderMarkdownPreview(container, text) { container.textContent = text; },
     renderPreviewOutline(container,text) { container.textContent=text;return /^#{1,3} /m.test(text)?1:0; }
@@ -789,4 +793,44 @@ test('numbered list button and multilingual word meter update locally without st
   'fake DOM has no attributes; real static HTML explicitly sets aria-live=off');
  assert.equal(app.beforeUnload().prevented,true);
  assert.equal(app.localStorage.getItem(VAULT_KEY),null,'toolbar does not automatically store drafts');
+});
+
+test('article guide and case study add translated structure without overwriting a saved author',()=>{
+ const app=build();
+ app.elements.postBody.value='Original source text must stay unchanged.';
+ app.elements.postLocale.value='ru';
+ app.elements.draftTemplate.value='guide';
+ app.elements.insertTemplate.listeners.click();
+ const next=app.elements.postBody.value;
+ assert.ok(next.startsWith('Original source text must stay unchanged.\n\n## Проблема'));
+ assert.match(next,/> TODO: /);
+ assert.equal(app.elements.draftReadingTime.textContent.startsWith('Approx. reading time: '),true);
+ assert.match(app.elements.formStatus.textContent,/locally/);
+ assert.equal(app.beforeUnload().prevented,true);
+ assert.equal(app.localStorage.getItem(VAULT_KEY),null);
+ app.elements.draftTemplate.value='caseStudy';
+ app.elements.insertTemplate.listeners.click();
+ assert.ok(app.elements.postBody.value.startsWith(next));
+ assert.match(app.elements.postBody.value,/## Контекст/);
+ assert.equal(app.elements.postLocale.value,'ru');
+});
+
+test('guidance is local and never blocks export or edits an established file baseline',()=>{
+ const app=build();
+ app.elements.postTitle.value='A valid reproducible guide';
+ app.elements.postBody.value='## Results\n\nReview the technical evidence, then publish responsibly.\n\n- Verify results';
+ app.elements.postSource.value='https://example.org/docs';
+ app.elements.postBody.listeners.input();
+ assert.match(app.elements.guidanceScore.textContent,/Suggestions met: [0-6] \/ 6/);
+ assert.equal(app.elements.guideCompleteState.dataset.passed,'true');
+ assert.equal(app.elements.guideSourceState.dataset.passed,'true');
+ const before=app.elements.postBody.value;
+ app.elements.postBody.value='x'.repeat(12000);
+ app.elements.insertTemplate.listeners.click();
+ assert.equal(app.elements.postBody.value,'x'.repeat(12000));
+ assert.equal(app.elements.formStatus.dataset.error,'true');
+ app.elements.postBody.value=before;
+ app.elements.postBody.listeners.input();
+ assert.equal(app.elements.postBody.value,before);
+ assert.equal(app.beforeUnload().prevented,true);
 });
