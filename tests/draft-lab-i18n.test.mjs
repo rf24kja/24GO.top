@@ -83,3 +83,16 @@ test('translation is progressive, offline, and does not change export format or 
  assert.doesNotMatch(code,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|sessionStorage|innerHTML/);
  assert.match(html,/does not publish, upload or automatically save your writing/);
 });
+
+test('authoring controls have translated labels and are wired to local-only logic',()=>{
+ for(const language of UI_LOCALES){
+  assert.equal(typeof uiText(language,'orderedList'),'string');
+  assert.ok(uiText(language,'orderedList').length>2);
+  assert.equal(typeof uiText(language,'wordCount'),'string');
+  assert.ok(uiText(language,'wordCount').trim().length>3);
+ }
+ assert.match(html,/id="formatOrderedList"[^>]+data-ui-label="orderedList"/);
+ assert.match(html,/id="bodyWordCount" aria-live="off"/);
+ assert.match(code,/countDraftWords\(body\.value,locale\.value\)/);
+ assert.match(code,/\['formatOrderedList','orderedList'\]/);
+});
