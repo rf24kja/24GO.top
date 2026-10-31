@@ -10,7 +10,7 @@ import {
 import {uiText,applyUiLanguage} from '../site/draft-lab-i18n.js';
 import {appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS} from '../site/draft-lab-guidance.js';
 import {captureDraftRevision,compareDraftRevisions,revisionSummary} from '../site/draft-lab-revisions.js';
-import {createEditorialReviewPack,readEditorialReviewPackFile} from '../site/draft-lab-review-pack.js';
+import {createEditorialReviewPack,readEditorialReviewPackFile,verifyEditorialReviewPack} from '../site/draft-lab-review-pack.js';
 import {buildArticleProposalUrl} from '../site/draft-lab-proposal.js';
 import {createDraftVault,MAX_SAVED_DRAFTS,MAX_VAULT_BACKUP_BYTES,VAULT_KEY} from '../site/draft-lab-vault.js';
 
@@ -925,4 +925,57 @@ test('clearing a draft removes only temporary revision checkpoint, never saved b
  assert.equal(app.elements.revisionCopy.disabled,true);
  assert.equal(app.elements.revisionLines.children.length,0);
  assert.equal(app.elements.postBody.value,'');
+});
+
+
+test('export of an unpublished author review package requires explicit consent and never saves to vault',async()=>{
+ const app=build();
+ Object.assign(app.elements.postTitle,{value:sample.title});
+ Object.assign(app.elements.postBody,{value:sample.body});
+ app.elements.postLocale.value=sample.locale;
+ app.elements.postCategory.value=sample.category;
+ app.elements.postSource.value=sample.source;
+ app.setConfirm(false);
+ await app.elements.downloadReviewPack.listeners.click();
+ assert.equal(app.downloads.length,0,'declined review hand-off must not download');
+ app.setConfirm(true);
+ await app.elements.downloadReviewPack.listeners.click();
+ assert.equal(app.downloads.length,1);
+ assert.equal(app.downloads[0].name,'24gotop-editorial-review-pack.json');
+ const raw=await app.downloads[0].blob.text();
+ const valid=await verifyEditorialReviewPack(raw);
+ assert.equal(valid.draft.body,sample.body);
+ assert.equal(app.localStorage.getItem(VAULT_KEY),null);
+ assert.match(app.elements.formStatus.textContent,/Review package download requested/);
+});
+
+test('selected review package verification never replaces the current unsaved author text',async()=>{
+ const app=build();
+ app.elements.postTitle.value='Private unsaved article';
+ app.elements.postBody.value='Original unsaved body that must not be replaced with imported text.';
+ const pkg=await createEditorialReviewPack(sample);
+ const encoded=new TextEncoder().encode(pkg);
+ const input=app.elements.reviewPackFile;
+ input.files=[{name:'review.json',size:encoded.length,
+  async arrayBuffer(){return Uint8Array.from(encoded).buffer;}}];
+ await input.listeners.change({currentTarget:input});
+ assert.equal(app.elements.postTitle.value,'Private unsaved article');
+ assert.equal(app.elements.postBody.value,'Original unsaved body that must not be replaced with imported text.');
+ assert.match(app.elements.formStatus.textContent,/Valid local review package/);
+ assert.equal(input.value,'');
+ assert.equal(app.localStorage.getItem(VAULT_KEY),null);
+});
+test('tampered review file fails closed and never modifies the editor',async()=>{
+ const app=build();
+ app.elements.postBody.value='My private content should stay untouched.';
+ const pkg=JSON.parse(await createEditorialReviewPack(sample));
+ pkg.document=pkg.document.replace('The first paragraph','A replaced paragraph');
+ const encoded=new TextEncoder().encode(JSON.stringify(pkg));
+ const input=app.elements.reviewPackFile;
+ input.files=[{name:'tampered.json',size:encoded.length,
+  async arrayBuffer(){return Uint8Array.from(encoded).buffer;}}];
+ await input.listeners.change({currentTarget:input});
+ assert.equal(app.elements.postBody.value,'My private content should stay untouched.');
+ assert.match(app.elements.formStatus.textContent,/Invalid, damaged/);
+ assert.equal(app.elements.formStatus.dataset.error,'true');
 });
