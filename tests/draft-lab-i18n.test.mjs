@@ -80,6 +80,6 @@ test('translation is progressive, offline, and does not change export format or 
  assert.match(code,/preview\(\)/);
  assert.match(code,/hasUnexportedChanges\(currentDraft\(\), reopenedFileBaseline\)/);
  assert.doesNotMatch(i18n,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|localStorage|sessionStorage|indexedDB|innerHTML|document\.cookie/);
- assert.doesNotMatch(code,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|localStorage|sessionStorage|innerHTML/);
+ assert.doesNotMatch(code,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|sessionStorage|innerHTML/);
  assert.match(html,/does not publish, upload or automatically save your writing/);
 });

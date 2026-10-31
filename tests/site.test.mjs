@@ -59,11 +59,12 @@ test('draft lab is discoverable, labeled experimental, and provides accessible f
   assert.match(draftCss, /@media\(max-width:860px\)/);
 });
 
-test('draft lab never submits, stores, or executes user-created HTML', () => {
-  assert.doesNotMatch(draftJs, /\bfetch\s*\(|localStorage|sessionStorage|XMLHttpRequest|sendBeacon|innerHTML/);
+test('draft lab never uploads drafts or executes user-created HTML', () => {
+  assert.doesNotMatch(draftJs, /\bfetch\s*\(|sessionStorage|XMLHttpRequest|sendBeacon|innerHTML/);
   assert.match(draftJs, /\.textContent/);
   assert.match(draftJs, /navigator\.clipboard\?\.writeText/);
   assert.match(draftJs, /preventDefault\(\)/);
+  assert.match(draftJs, /field\('saveBrowserDraft'\)\.addEventListener\('click'/);
   assert.doesNotMatch(draftHtml, /<form[^>]+action=/);
   assert.doesNotMatch(draftHtml, /PUBLISH_API_KEY|sb_secret_/);
 });
@@ -79,7 +80,7 @@ test('Draft Lab provides private Markdown export and loss-prevention controls',(
   assert.match(draftJs,/anchor\.download = draftFilename\(draft\)/);
   assert.match(draftJs,/window\.confirm\(/);
   assert.match(logic,/export function draftFilename/);
-  assert.doesNotMatch(draftJs,/\bfetch\s*\(|localStorage|sessionStorage|XMLHttpRequest|sendBeacon|innerHTML/);
+  assert.doesNotMatch(draftJs,/\bfetch\s*\(|sessionStorage|XMLHttpRequest|sendBeacon|innerHTML/);
   assert.doesNotMatch(draftHtml,/PUBLISH_API_KEY|sb_secret_/);
 });
 
@@ -110,7 +111,7 @@ test('saved Markdown can be reopened through an explicit browser-only action',()
   assert.match(readFileSync(fileURLToPath(new URL('../site/draft-lab-i18n.js',import.meta.url)),'utf8'),/Opening this file replaces your current unsaved draft/);
   assert.match(draftJs, /if \(input && importGate\.isLatest\(ticket\)\) input\.value = ''/);
   assert.match(logic, /export function parseDraftFile/);
-  assert.doesNotMatch(draftJs, /\bfetch\s*\(|XMLHttpRequest|sendBeacon|localStorage|sessionStorage|innerHTML/);
+  assert.doesNotMatch(draftJs, /\bfetch\s*\(|XMLHttpRequest|sendBeacon|sessionStorage|innerHTML/);
   assert.doesNotMatch(draftHtml,/PUBLISH_API_KEY|sb_secret_/);
 });
 

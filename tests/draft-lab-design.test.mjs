@@ -17,7 +17,7 @@ test('editor shares honest prototype navigation and keyboard skip with the redes
  assert.match(html,/No backend/);
  assert.match(html,/id="formStatus" role="status" aria-live="polite"/);
 });
-test('the quiet 48px architectural grid and light/dark theme never require tracking code',()=>{
+test('the quiet 48px architectural grid and light/dark theme require no remote tracking',()=>{
  const shared=read("interior.css");
  assert.match(shared,/body::before\{[^}]+pointer-events:none/);
  assert.match(shared,/background-size:48px 48px/);
@@ -31,7 +31,8 @@ test('the quiet 48px architectural grid and light/dark theme never require track
  assert.match(css, /--panel-copy:#244239/);
  assert.match(css, /--notice-bg:#e7f6ed/);
  assert.doesNotMatch(css+"\n"+shared,/@import|url\(https?:\/\//);
- assert.doesNotMatch(js,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|localStorage|sessionStorage|innerHTML/);
+ assert.doesNotMatch(js,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|sessionStorage|innerHTML/);
+ assert.match(js,/field\('saveBrowserDraft'\)\.addEventListener\('click'/);
 });
 
 test('local drop target is labelled, translated and never a server upload',()=>{
@@ -42,5 +43,5 @@ test('local drop target is labelled, translated and never a server upload',()=>{
  assert.match(js,/files\.length!==1/);
  assert.match(css,/\.draft-drop-zone\[data-dragging="true"\]/);
  assert.match(css,/@media\(prefers-contrast:more\)\{\.draft-drop-zone/);
- assert.doesNotMatch(js,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|localStorage|sessionStorage|innerHTML/);
+ assert.doesNotMatch(js,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|sessionStorage|innerHTML/);
 });
