@@ -1,16 +1,14 @@
 name: External SEO availability audit
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/seo-live.yml"
-      - "scripts/check-live-seo.sh"
-  # Verify the actual public release only after Pages finishes deploying.
-  # workflow_run checks out the default branch; it never handles PR secrets.
+  # Do not run concurrently with a source push. Pages might still serve
+  # the previous HTML, making a correct release fail its new content probe.
+  # Evidence: push audit #41208632019 failed while Pages #41208631961
+  # was deploying; completed-Pages audit #41208664348 then passed.
   workflow_run:
     workflows: ["Deploy pre-launch landing"]
     types: [completed]
+    branches: [main]
   workflow_dispatch:
   schedule:
     # Daily independent GitHub-hosted runner check; no crawler/index claim.

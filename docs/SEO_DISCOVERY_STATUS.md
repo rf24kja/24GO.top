@@ -1,5 +1,12 @@
 # Public crawlability and indexing — verified 2026-10-31
 
+## Correct release ordering for live SEO verification (2026-10-31)
+
+The public internal-link release [#132](https://github.com/rf24kja/24GO.top/pull/132) demonstrated a genuine CDN race. A `push`-triggered SEO audit [#41208632019](https://github.com/rf24kja/24GO.top/actions/runs/41208632019) started while [Pages #41208631961](https://github.com/rf24kja/24GO.top/actions/runs/41208631961) was still deploying and correctly detected that the **old** public HTML lacked the newly required related-reading links. After Pages completed, the automatically triggered [SEO audit #41208664348](https://github.com/rf24kja/24GO.top/actions/runs/41208664348) **PASS** fetched the new public HTML; the separate Draft Lab smoke also passed. These outcomes are retained, not erased or relabeled as synthetic failures.
+
+To avoid a false release verdict caused by ordering, the authoritative live SEO audit is now scheduled on successful `workflow_run` completion of **Deploy pre-launch landing** on `main`, plus deliberate manual and daily checks. Its URL/HTML/canonical/related-navigation assertions remain unchanged. CI tests reject reintroducing the pre-deploy `push` path. A workflow-only change does not trigger a new Pages deployment; the next static release tests the corrected scheduling in situ. This is live *availability evidence*, not Search Console indexing or AI citation measurement.
+
+
 ## Crawlable contextual article navigation (2026-10-31)
 
 The ten **existing** source-reviewed engineering notes now have an accessible static `Continue reading` section after each article's main researched body. It links to exactly two other verified notes (first the closest topic match, then a neighboring published note in RSS order), plus the full archive. This is an aid to readers and a clean internal link graph; it is not a ranking guarantee or synthetic popularity claim. Links remain ordinary HTML when scripts are disabled, and are outside the `<article>` block so the independently validated full-text index remains unchanged.
