@@ -18,8 +18,7 @@ const decode=text=>text.replace(/&(#x[0-9a-fA-F]+|#[0-9]+|amp|lt|gt|quot|apos|nb
  const n=e.startsWith('#x')?parseInt(e.slice(2),16):parseInt(e.slice(1),10);
  return n>0&&n<=0x10ffff&&!(n>=0xd800&&n<=0xdfff)?String.fromCodePoint(n):' ';
 });
-export function loadPublishedCorpus(){
- const feed=JSON.parse(read('feed.json')),idx=JSON.parse(read('search-index.json'));
+export function validatePublishedCorpus(feed,idx){
  if(feed?.version!=='https://jsonfeed.org/version/1.1'||
    feed.home_page_url!==origin||
    feed.feed_url!==origin+'feed.json'||feed.language!=='en'||
@@ -49,6 +48,11 @@ export function loadPublishedCorpus(){
   return {url:item.url,title:item.title,summary:item.summary,language:item.language||'en',
    date:item.date_published,text:byFile.get(file),file};
  });
+}
+export function loadPublishedCorpus(){
+ return validatePublishedCorpus(
+  JSON.parse(read('feed.json')),JSON.parse(read('search-index.json'))
+ );
 }
 const toolDefs=[
  {name:'search_articles',description:'Search the reviewed public engineering archive by all query words, with deterministic relevance; returns public article links only. This is NOT the hosted user-post service.',inputSchema:{type:'object',properties:{query:{type:'string',maxLength:80},limit:{type:'integer',minimum:1,maximum:20}},required:['query'],additionalProperties:false}},
