@@ -63,6 +63,22 @@ test('browser snapshots are not uploaded and reject invalid article data',()=>{
   assert.throws(()=>vault.save(broken),/vault_invalid/);
  assert.equal(items.size,0);
 });
+test('manual vault refuses malformed citations and multiline titles without modifying existing entries',()=>{
+ const {vault,items}=setup();
+ const known=vault.save(a);
+ const before=items.get(VAULT_KEY);
+ for(const bad of [
+  {...a,source:'https://example.org/a\n@other.example'},
+  {...a,source:'https://example.org/'+'😀'.repeat(300)},
+  {...a,title:'Valid heading\nCategory: tools'},
+  {...a,title:'Valid heading\u0000hidden'}
+ ]){
+  assert.throws(()=>vault.save(bad),/vault_invalid/);
+  assert.equal(items.get(VAULT_KEY),before);
+ }
+ assert.deepEqual(vault.load(known.id).draft,a);
+});
+
 test('when local storage is blocked, the editor receives a safe failure',()=>{
  const denied={getItem(){throw Error('private storage blocked');},
  setItem(){throw Error('quota exceeded');}};

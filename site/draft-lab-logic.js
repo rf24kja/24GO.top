@@ -4,12 +4,17 @@ export const LOCALES = Object.freeze(['en','ru','th','es','fr','de','pt','zh']);
 export const CATEGORIES = Object.freeze(['news','models','tools','guides']);
 
 export function safeSourceUrl(input) {
-  if (typeof input !== 'string') return null;
+  if (typeof input !== 'string' || input.length > 2000) return null;
+  // WHATWG URL parsing strips C0 controls and surrounding whitespace:
+  // never turn an invalid author citation into a different valid link.
+  if (/[\u0000-\u001f\u007f]/u.test(input)) return null;
   const value = input.trim();
   if (!value) return '';
+  if (value !== input) return null;
   try {
     const url = new URL(value);
-    if (!['http:','https:'].includes(url.protocol) || url.username || url.password || url.href.length > 2000) return null;
+    if (!['http:','https:'].includes(url.protocol) || !url.hostname ||
+        url.username || url.password || url.href.length > 2000) return null;
     return url.href;
   } catch {
     return null;
@@ -87,7 +92,8 @@ const DRAFT_ERRORS=Object.freeze({
 
 /** A stable validation field identity, not a language-dependent error string. */
 export function invalidDraftField({title,body,locale,category,source}){
- if(typeof title!=='string'||title.trim().length<5||title.length>160)return 'title';
+ if(typeof title!=='string'||title.trim().length<5||title.length>160||
+    /[\u0000-\u001f\u007f\u2028\u2029]/u.test(title))return 'title';
  if(typeof body!=='string'||body.trim().length<20||body.length>12000)return 'body';
  if(!LOCALES.includes(locale))return 'locale';
  if(!CATEGORIES.includes(category))return 'category';

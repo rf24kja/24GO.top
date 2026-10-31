@@ -1,5 +1,9 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-01 — Preserve citations and headings in portable Draft Lab
+
+- Reject control-bearing and space-normalized source URLs before WHATWG parsing silently changes the requested citation; bound input and serialized URL lengths. Reject multiline/control-bearing heading fields that could invalidate the exported Markdown envelope. Shared validation covers local .md export, reopen and optional manual browser vault. Add synthetic security/regression tests for Unicode, malformed headings and untouched existing saved drafts. This is an OSS browser-only editor hardening: no hosted publishing, Supabase or production Auth changes.
+
 ## 2026-10-31 — Richer private-on-device Markdown editing
 
 - Add Bold, Italic and Inline code tools to the public Draft Lab (eight interface languages). Render supported inline Markdown using safe fixed `strong`, `em`, and `code` DOM elements while preserving plain-text HTML and the existing safe citation link rules. No upload, autosave, cloud account, backend or public publishing. Small source-only rollback; the existing Markdown export remains unchanged.
