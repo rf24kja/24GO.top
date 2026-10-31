@@ -96,3 +96,9 @@ header{background:rgba(249,252,249,.9)}a:hover,.navlinks a:hover{color:#07593f}.
 @media(max-width:700px){.topic-index__grid{grid-template-columns:1fr}
 .topic-guide__steps>li{padding:15px 16px}
 .topic-explore ul{display:block}.topic-explore ul li{margin:8px 0}}
+/* Explicit copy of currently matched canonical article references.
+   No tracking, persistence, downloads or extra network requests. */
+.note-search__export{background:transparent;color:var(--accent)}
+.note-search__export:hover{background:var(--accent);color:#092619}
+@media(prefers-color-scheme:light){.note-search__export{color:var(--accent)}
+ .note-search__export:hover{background:var(--accent);color:#fff}}
