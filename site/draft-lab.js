@@ -4,7 +4,7 @@ import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftConte
 import { renderMarkdownPreview,renderPreviewOutline } from './draft-lab-preview.js';
 import { applyUiLanguage,uiText } from './draft-lab-i18n.js';
 import { buildArticleProposalUrl } from './draft-lab-proposal.js';
-import {createDraftVault,MAX_SAVED_DRAFTS,VAULT_KEY} from './draft-lab-vault.js';
+import {createDraftVault,MAX_SAVED_DRAFTS,MAX_VAULT_BACKUP_BYTES,VAULT_KEY} from './draft-lab-vault.js';
 
 // Browser-only draft editor: no automatic network or analytics.
  // Browser persistence is optional, manual and never activated by typing.
@@ -64,10 +64,12 @@ function refreshBrowserDrafts(selectId=null){
   field('openBrowserDraft').disabled=!picker.value;
   field('deleteBrowserDraft').disabled=!picker.value;
   field('vaultCount').textContent=ui('vaultCount')+rows.length+'/'+MAX_SAVED_DRAFTS;
+  field('exportDraftLibrary').disabled=!rows.length;
  }catch{
   field('openBrowserDraft').disabled=true;
   field('deleteBrowserDraft').disabled=true;
   field('vaultCount').textContent=ui('vaultUnavailable');
+  field('exportDraftLibrary').disabled=true;
  }
 }
 function vaultError(error){
@@ -330,6 +332,52 @@ window.addEventListener('storage',event=>{
     updateSafetyNotice();
     message(ui('vaultConflict'),true);
   }
+});
+
+// Explicit, offline library transfer. The backup JSON is unencrypted;
+// never submit file contents to the server or replace the active editor.
+// Restores are deliberately all-or-nothing and require an empty library.
+field('exportDraftLibrary').addEventListener('click',()=>{
+ if(!window.confirm(ui('backupExportConfirm')))return;
+ try{
+  const backup=getDraftVault().exportBackup();
+  const blob=new Blob([backup],{type:'application/json;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const anchor=document.createElement('a');
+  anchor.href=url;
+  anchor.download='24gotop-drafts-backup.json';
+  document.body.append(anchor);
+  anchor.click();
+  anchor.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),10000);
+  message(ui('backupExported'));
+ }catch{
+  message(ui('backupInvalid'),true);
+ }
+});
+field('restoreDraftLibrary').addEventListener('click',()=>{
+ field('draftLibraryFile').click();
+});
+field('draftLibraryFile').addEventListener('change',async event=>{
+ const input=event.currentTarget,file=input.files?.[0];
+ if(!file)return;
+ try{
+  if(!/\.json$/i.test(file.name)||!Number.isSafeInteger(file.size)||
+    file.size<10||file.size>MAX_VAULT_BACKUP_BYTES)
+   throw new TypeError('Invalid backup file');
+  const buffer=await file.arrayBuffer();
+  if(buffer.byteLength!==file.size||buffer.byteLength>MAX_VAULT_BACKUP_BYTES)
+   throw new TypeError('Invalid backup size');
+  const text=new TextDecoder('utf-8',{fatal:true}).decode(buffer);
+  if(!window.confirm(ui('backupRestoreConfirm')))return;
+  const restored=getDraftVault().restoreBackup(text);
+  refreshBrowserDrafts();
+  message(ui('backupRestored')+' ('+restored+')');
+ }catch(error){
+  message(ui(error?.message==='vault_conflict'?'backupConflict':'backupInvalid'),true);
+ }finally{
+  input.value='';
+ }
 });
 
 field('downloadDraft').addEventListener('click', () => {

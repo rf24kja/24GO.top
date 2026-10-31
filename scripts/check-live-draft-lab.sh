@@ -32,6 +32,12 @@ download "$origin/draft-lab.js" "$tmp/editor.js"
 download "$origin/draft-lab-logic.js" "$tmp/logic.js"
 download "$origin/draft-lab-preview.js" "$tmp/preview.js"
 download "$origin/draft-lab-i18n.js" "$tmp/i18n.js"
+download "$origin/draft-lab-vault.js" "$tmp/vault.js"
+require 'id="exportDraftLibrary"' "$tmp/draft.html" 'whole library export control'
+require 'id="restoreDraftLibrary"' "$tmp/draft.html" 'whole library restore control'
+require 'exportBackup(){' "$tmp/vault.js" 'portable complete draft library export'
+require 'restoreBackup(text){' "$tmp/vault.js" 'atomic, empty-vault local restore'
+require "new TextDecoder('utf-8',{fatal:true})" "$tmp/editor.js" 'strict offline backup decoder'
 # The approved README SVGs must also be delivered under site/ by Pages,
 # not stranded in docs/assets (the Pages job publishes only site/).
 require 'src="./visuals/knowledge-network.svg"' "$tmp/home.html" 'visible hero illustration reference'
