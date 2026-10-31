@@ -121,3 +121,26 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 .preview-content :not(pre)>code{font:0.91em/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--text);background:var(--code-bg);border:1px solid var(--border);padding:0.08em 0.35em;border-radius:5px;overflow-wrap:anywhere}
 .preview-content strong{font-weight:750;color:var(--text)}
 .preview-content em{font-style:italic}
+/* Local author workflow: structure starters + nonblocking editorial checklist. */
+.draft-starters{border:1px solid var(--border);border-radius:12px;margin:17px 0;padding:16px;background:var(--field)}
+.draft-starters h3{font-size:18px;margin:0 0 7px}
+.draft-starters p{margin:5px 0 9px;line-height:1.5}
+.draft-starters__controls{display:flex;align-items:end;flex-wrap:wrap;gap:10px}
+.draft-starters__controls label{flex-basis:100%;margin:4px 0 0}
+.draft-starters__controls select{flex:1 1 185px;min-width:0;width:auto}
+.draft-starters__controls button{min-height:46px;flex:0 1 auto}
+.draft-guidance{border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin:16px 0;background:var(--field)}
+.draft-guidance h4{font-size:16px;margin:0 0 6px}
+.draft-guidance p{margin:4px 0 11px;line-height:1.5}
+.draft-guidance__score{font-weight:750;color:var(--text)}
+.draft-guidance ul{list-style:none;margin:0;padding:0;display:grid;gap:3px}
+.draft-guidance li{display:flex;gap:12px;justify-content:space-between;align-items:start;
+ border-top:1px solid var(--border);padding:9px 0;font-size:13px;overflow-wrap:anywhere}
+.guidance-state{flex:0 0 auto;border:1px solid var(--border);border-radius:7px;
+ padding:1px 7px;font-size:11px;font-weight:750;color:var(--muted)}
+.guidance-state[data-passed="true"]{border-color:var(--accent);color:var(--accent)}
+@media(max-width:550px){.draft-starters__controls{flex-direction:column;align-items:stretch}
+ .draft-starters__controls label{flex-basis:auto}
+ .draft-starters__controls select,.draft-starters__controls button{width:100%;flex:auto}
+ .draft-guidance li{gap:6px}}
+@media(prefers-contrast:more){.draft-guidance,.draft-starters,.guidance-state{border-width:2px}}
