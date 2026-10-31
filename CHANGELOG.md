@@ -1,5 +1,10 @@
 # 24GOTOP — Public Change Log
 
+## Unreleased — 31 October 2026: public editorial proposal activity
+
+- Add a consent-gated, read-only public proposal board to `/contribute.html`. It renders real issue-form proposals from the project's public GitHub repository, marks open/closed honestly (not published), avoids automatic network calls, and never sends draft content or credentials. Manual proposal flow and private hosted publication gates remain unchanged.
+
+
 ## Unreleased — 31 October 2026: manually saved local draft library
 
 - Add an opt-in device-local, manual draft library directly inside the multilingual Draft Lab: save, reopen and delete up to eight articles without login, storage sync or upload. Warn about unencrypted same-origin browser storage, possible data loss and shared devices. Existing .md export remains the recommended backup. Detect stale saved versions to avoid silent cross-tab overwrites. No private hosted-core or live publishing permission changes.

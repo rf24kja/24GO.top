@@ -34,3 +34,13 @@
 }
 @media(prefers-contrast:more){.contribution-steps li,.contribution-panel{border-width:2px}}
 @media(prefers-reduced-motion:reduce){.contribution-action,.contribution .cta{transition:none}}
+
+/* Deliberately opt-in, read-only public GitHub editorial activity. */
+.contribution-board__actions{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:18px}
+.contribution-board__actions .contribution-action{cursor:pointer;font:inherit;min-height:44px}
+.contribution-board__actions>a{font-weight:650;text-underline-offset:4px}
+.contribution-board__items{list-style:none;margin:14px 0;padding:0;display:grid;gap:12px}
+.contribution-board__items li{padding:15px 18px;border:1px solid var(--border);border-radius:13px;background:var(--panel);overflow-wrap:anywhere}
+.contribution-board__items strong{display:block;margin-bottom:4px}
+.contribution-board__items span{display:block;font-size:13px;color:var(--muted)}
+.contribution-board__items a{font-weight:700;text-underline-offset:4px}

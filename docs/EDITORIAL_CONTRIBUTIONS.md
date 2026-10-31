@@ -42,3 +42,28 @@ Contributors keep their underlying authorship rights except as provided by appli
 ## Rollback and proof
 
 A rejected proposal needs no site rollback. An incorrect public article requires a separately reviewed revert or correction PR, rebuilt feeds/sitemap, Pages deployment and external verification. No private Core, production Supabase, DNS or author API change is part of this workflow.
+
+## Live, opt-in proposal discovery (2026-10-31)
+
+The public `/contribute.html` page now includes a manual **Load public
+proposals** control. Only a user click fetches the latest public GitHub
+issues from the repository (read-only, unsigned API request). The renderer
+shows only real issues titled with the editorial form's fixed
+`Article proposal: ` prefix, excludes pull requests and displays the
+GitHub issue title, public number, creation date and open/closed state.
+Closed means **closed**, not necessarily accepted or published; the actual
+published archive is the authoritative release evidence.
+
+This interim contribution board uses only public GitHub issue metadata:
+no draft body, personal account information, browser storage, credential,
+analytics, write API, private repository or hosted publishing. It discloses
+that GitHub receives a network request/IP on click. DOM content is
+rendered with `textContent`, and navigable links are constructed from
+validated positive issue numbers rather than provider-supplied URLs.
+On GitHub rate limiting/unavailability it leaves the page usable and
+offers the ordinary GitHub navigation link.
+
+The API covers a bounded latest-issue window, not a comprehensive
+search or a guarantee that every historical proposal is displayed. No
+real submitted issue was fabricated to populate the board. Public
+Pages and HTTPS release verification are required after merging.
