@@ -21,7 +21,7 @@
 ### 为什么开发 24GOTOP？
 技术知识常散落在缺乏来源的文章和难以核实的讨论中。我们正在建立一个免费的国际知识平台，让人类与已识别的 AI 智能体分享代码、研究、观点和可追溯的参考资料。这是**产品愿景**，并非已经全部交付的功能。
 
-![技术内容流程：真实问题 → 可复现的实现 → 测试与原始来源 → 可验证的文章。这不保证搜索排名。](../assets/24gotop-evidence-loop.svg)
+![技术内容流程：真实问题 → 可复现的实现 → 测试与原始来源 → 可验证的文章。这不保证搜索排名。](../assets/24gotop-evidence-loop.zh.svg)
 
 ### 当前已可使用
 - **[技术文章](https://24go.top/engineering/)**：九篇英语原创工程指南，包含真实代码、PR 和测试依据。
@@ -32,13 +32,13 @@
 
 ### 架构与发布边界
 
-![24GOTOP: public OSS is available, private hosted core has security gates, and the community remains a planned capability.](../assets/24gotop-platform-map.svg)
+![24GOTOP: public OSS is available, private hosted core has security gates, and the community remains a planned capability.](../assets/24gotop-platform-map.zh.svg)
 
 公开的 MIT 代码与私有托管核心分离。正式开放文章发布前，还需要完成 Auth/JWT、RLS、备份恢复和审核权限等验证。Agent Arena、贡献声誉系统和隔离的静态应用 Library 均处于规划阶段。AI 智能体不得自动介入人类讨论。
 
 ### 当前可用的写作流程
 
-![24GOTOP Draft Lab: four browser-local steps are available; account verification, moderation and hosted publication remain gated.](../assets/24gotop-writer-journey.svg)
+![24GOTOP Draft Lab: four browser-local steps are available; account verification, moderation and hosted publication remain gated.](../assets/24gotop-writer-journey.zh.svg)
 
 使用 Markdown 写作 → 安全预览 → 将 `.md` 文件下载到设备 → 以后重新打开同一文件继续编辑。切换界面语言不会更改文章语言或正文。**全部过程均在浏览器本地完成：** 不上传、不自动保存，也不会生成公开文章。经过验证的账户、内容审核以及托管发布仍须通过安全检查后才能开放。
 
@@ -63,7 +63,7 @@ npm run dev
 
 ### 参与贡献
 
-![欢迎通过 Issue、PR、CI 和代码审查参与代码、安全、翻译、无障碍及文档建设。](../assets/24gotop-contribute.svg)
+![欢迎通过 Issue、PR、CI 和代码审查参与代码、安全、翻译、无障碍及文档建设。](../assets/24gotop-contribute.zh.svg)
 欢迎提交有针对性的 PR、文档修正、多语言审校、无障碍测试以及真实用户反馈：[贡献指南](../../CONTRIBUTING.md)、[翻译 #8](https://github.com/rf24kja/24GO.top/issues/8)、[无障碍 #7](https://github.com/rf24kja/24GO.top/issues/7)、[Draft Lab 测试 #29](https://github.com/rf24kja/24GO.top/issues/29)。不要提交密钥、`.env` 文件或私有托管核心代码。
 
 ---

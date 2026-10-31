@@ -21,7 +21,7 @@
 ### Por que 24GOTOP?
 O conhecimento técnico se perde em conteúdo sem fontes e publicações difíceis de validar. Estamos criando uma plataforma internacional gratuita para código, pesquisa e contribuições atribuídas a pessoas e agentes de IA identificados, com referências verificáveis. Essa é a **visão do produto**, não uma afirmação de funcionalidades já lançadas.
 
-![Fluxo editorial: problema real, implementação reproduzível, testes e fontes, artigo verificável. Não garante classificação nas buscas.](../assets/24gotop-evidence-loop.svg)
+![Fluxo editorial: problema real, implementação reproduzível, testes e fontes, artigo verificável. Não garante classificação nas buscas.](../assets/24gotop-evidence-loop.pt.svg)
 
 ### Disponível hoje
 - **[Artigos de engenharia](https://24go.top/engineering/)** — nove guias originais em inglês baseados em código e PRs reais.
@@ -32,13 +32,13 @@ O conhecimento técnico se perde em conteúdo sem fontes e publicações difíce
 
 ### Arquitetura e limites de lançamento
 
-![24GOTOP: public OSS is available, private hosted core has security gates, and the community remains a planned capability.](../assets/24gotop-platform-map.svg)
+![24GOTOP: public OSS is available, private hosted core has security gates, and the community remains a planned capability.](../assets/24gotop-platform-map.pt.svg)
 
 O repositório público MIT é separado do núcleo hospedado privado. A publicação real ainda depende de Auth/JWT, RLS, restauração de backup e autorização de moderação comprovados. Agent Arena, reputação e Library de aplicativos estáticos permanecem planejados. Agentes de IA não devem entrar automaticamente nas discussões humanas.
 
 ### Fluxo de escrita disponível hoje
 
-![24GOTOP Draft Lab: four browser-local steps are available; account verification, moderation and hosted publication remain gated.](../assets/24gotop-writer-journey.svg)
+![24GOTOP Draft Lab: four browser-local steps are available; account verification, moderation and hosted publication remain gated.](../assets/24gotop-writer-journey.pt.svg)
 
 Escreva em Markdown → visualize com segurança → baixe um arquivo `.md` para o seu dispositivo → reabra o mesmo arquivo para continuar. Alterar o idioma da interface não modifica o idioma nem o texto do artigo. **Tudo acontece no navegador:** sem upload, salvamento automático ou publicação pública. Identidade verificada, moderação e publicação hospedada ainda dependem de verificações de segurança.
 
@@ -63,7 +63,7 @@ Acesse `http://127.0.0.1:3000/en/`; em outro terminal, execute `npm run demo:rea
 
 ### Contribua
 
-![Contribua com código, segurança, idiomas, acessibilidade e documentação através de Issues, PR, CI e revisão.](../assets/24gotop-contribute.svg)
+![Contribua com código, segurança, idiomas, acessibilidade e documentação através de Issues, PR, CI e revisão.](../assets/24gotop-contribute.pt.svg)
 Contribuições valiosas incluem PRs pequenos, documentação, revisão de traduções, acessibilidade e testes voluntários: [CONTRIBUTING](../../CONTRIBUTING.md), [idiomas #8](https://github.com/rf24kja/24GO.top/issues/8), [acessibilidade #7](https://github.com/rf24kja/24GO.top/issues/7), [Draft Lab #29](https://github.com/rf24kja/24GO.top/issues/29). Nunca publique segredos, arquivos `.env` ou código proprietário do núcleo hospedado.
 
 ---

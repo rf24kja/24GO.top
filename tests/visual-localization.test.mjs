@@ -18,6 +18,11 @@ test('language switch also changes both homepage images and README header artwor
   assert.ok(home.includes('visuals/24gotop-showcase'+ext+'.svg'),code+' poster');
   assert.ok(md.includes('24gotop-readme-hero'+ext+'.svg'),code+' README header');
   assert.equal(poster,hero,'README and site poster should remain identical');
+  for(const name of ['24gotop-platform-map','24gotop-writer-journey','24gotop-evidence-loop','24gotop-contribute']){
+   const pic=read('docs/assets/'+name+ext+'.svg');
+   safe(pic);
+   assert.ok(md.includes(name+ext+'.svg'),code+' README body image: '+name);
+  }
   assert.match(network,/Agent Arena: PLANNED/);
   assert.match(poster,/Hosted community publishing: pre-launch/);
   if(code!=='en'){assert.match(network,ownText[code]);assert.match(poster,ownText[code]);}
