@@ -86,3 +86,23 @@
 .hero-illustration img{object-fit:contain}
 /* Mobile portrait source replaces the wide product map; no fixed-width crop. */
 @media(max-width:620px){.visual-showcase__media{height:auto}.visual-showcase__media img{position:static;inset:auto;width:100%;height:auto;max-width:100%;aspect-ratio:auto;object-fit:contain}.visual-showcase__media:after{display:none}}
+
+
+/* Direct first-party article discovery from all eight static homepages.
+   Native GET navigation works without homepage JavaScript. */
+.hero-search{max-width:640px;min-width:0;margin-top:24px;padding:17px 18px;
+ border:1px solid var(--line);border-radius:15px;background:var(--surface-subtle)}
+.hero-search label{display:block;font-size:13px;line-height:1.45;font-weight:700;color:var(--text);margin-bottom:9px}
+.hero-search__controls{display:flex;gap:9px;align-items:stretch;min-width:0}
+.hero-search input{min-width:0;flex:1 1 200px;min-height:46px;padding:10px 13px;
+ border-radius:10px;border:1px solid var(--line);background:var(--surface-strong);
+ color:var(--text);font:inherit;font-size:14px}
+.hero-search button{flex:0 0 auto;min-height:46px;max-width:100%;padding:9px 15px;
+ border:1px solid transparent;border-radius:10px;background:var(--accent);
+ color:#092118;font:inherit;font-size:13px;font-weight:750;cursor:pointer}
+.hero-search button:hover{filter:brightness(1.08)}
+.hero-search__hint{margin:9px 0 0;color:var(--muted);font-size:11px;line-height:1.55}
+@media(max-width:400px){.hero-search{padding:14px}.hero-search__controls{flex-direction:column}
+ .hero-search button,.hero-search input{width:100%;flex-basis:auto}}
+@media(prefers-color-scheme:light){.hero-search button{color:#fff}}
+@media(prefers-contrast:more){.hero-search,.hero-search input{border-width:2px}}
