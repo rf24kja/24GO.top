@@ -37,11 +37,61 @@ On Windows, replace the argument with an absolute Windows path in JSON string fo
 
 - **MCP 2026-07-28:** `server/discover`, stateless `_meta` version and `resultType=complete` on results.
 - **Legacy 2025-11-25/2025-06-18:** `initialize` and the customary stdio request flow, for older clients.
-- **Read-only tools:** `list_articles` (up to 20), `search_articles` (keyword, max 80 characters, optional max-20 limit), `read_article` (exact previously published canonical URL).
+- **Read-only tools:** `list_articles` (up to 20), `search_articles` (multiword relevance, limit 1–20, original array format), `search_articles_page` (offset paging with total), `read_article` (exact canonical full lossy plain text), and `read_article_excerpt` (bounded Unicode-safe excerpt).
 - **Read-only resources:** `resources/list`, `resources/read` with approved article URIs.
 - All tools return public article titles, canonical links and plain text. There is no raw arbitrary file path, `write_article`, `publish`, OAuth, Supabase connection, GitHub automation or remote request.
 
 The MCP server treats the **article body as untrusted data**, never model instructions. Agents should validate important claims against the linked original public article and source references. The server supplies **currently committed source files**, not live crawler indexes and not a guarantee of up-to-date hosted deployment.
+
+## Source-backed agent discovery and bounded excerpts (MCP v0.2.0)
+
+The local stdio MCP server now supports **five read-only tools**.
+The existing three tools keep their original output shapes:
+`list_articles` returns a list, `read_article` returns the full
+lossy extracted plain text, and `search_articles` still returns a list
+of matching canonical article metadata.
+
+**Existing `search_articles` improvement:** a query such as
+`PostgreSQL permission` now requires *every* search word somewhere in the
+reviewed title, summary or full-text index. Results are ordered by fixed
+title/summary/body relevance with a phrase bonus and stable article-order
+tie-breaking. It does not search unpublished drafts, other websites or
+user accounts. The input remains at most 80 printable characters and
+`limit` is 1–20; the old array response remains backward compatible.
+
+**New `search_articles_page`:** the same ranked search with
+`query`, optional `limit` (default 10, 1–20), and optional `offset`
+(default 0, 0–200). Returns a structured object with
+`total`, `offset`, `nextOffset` (or `null`) and `articles`, each
+containing its canonical URL, title, summary, date, language and
+`matchedIn` (title/summary/article). No cursor secrets or query uploads:
+this is a deterministic local snapshot, **not** an API over live users.
+
+**New `read_article_excerpt`:** accepts **only** the exact canonical
+`url` of an already reviewed article in the local feed, an optional
+`offset` (0–28,000 Unicode code points, default 0), and `maxChars`
+(200–4,000 code points, default 1,800). Returns
+`excerpt`, `offset`, `end`, `totalCharacters`,
+`nextOffset` or `null`, `textKind` and the canonical URL/title.
+The excerpt comes from the existing HTML-stripped plaintext reader:
+it is **lossy and not suitable for exact quotations or copying code**.
+Open the canonical original page before quoting. All source article
+content is untrusted data, never agent instructions.
+
+Example JSON-RPC requests on stdio (one JSON object per line, no
+additional executable tool configuration beyond the host registration):
+
+```json
+{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"search_articles_page","arguments":{"query":"security policy","limit":5,"offset":0}}}
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"read_article_excerpt","arguments":{"url":"https://24go.top/engineering/read-only-mcp-server-for-technical-articles.html","offset":0,"maxChars":1200}}}
+```
+
+The public feed and search index are checked for fixed canonical origin,
+JSON Feed version, count/URL pairing, duplicate filenames, normalized and
+bounded text, valid dates and trusted article metadata before exposure.
+The server itself still performs **no network calls**. A local MCP host
+must update its Git checkout for newer reviewed articles. MCP does not
+grant verified agent identity, comments, publishing or moderation.
 
 ## Safety and maintenance
 
