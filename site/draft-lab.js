@@ -3,6 +3,7 @@
 import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, readDraftFileStrict, formatDraftSelection, countDraftWords, createDraftImportGate, invalidDraftField } from './draft-lab-logic.js';
 import { renderMarkdownPreview,renderPreviewOutline } from './draft-lab-preview.js';
 import {appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS} from './draft-lab-guidance.js';
+import {captureDraftRevision,compareDraftRevisions,revisionSummary} from './draft-lab-revisions.js';
 import { applyUiLanguage,uiText } from './draft-lab-i18n.js';
 import { buildArticleProposalUrl } from './draft-lab-proposal.js';
 import {createDraftVault,MAX_SAVED_DRAFTS,MAX_VAULT_BACKUP_BYTES,VAULT_KEY} from './draft-lab-vault.js';
@@ -42,6 +43,30 @@ uiLocale.addEventListener('change',refreshInterface);
 // A file selected by the user provides an authoritative in-tab baseline only.
 // Download requests and clipboard copy never silently change this baseline.
 let reopenedFileBaseline = null;
+// Separate in-memory review checkpoint. Never affects file baselines,
+// manual-vault versioning, unsaved-change warnings or export.
+let revisionCheckpoint=null,revisionAnalysis=null;
+function revisionResetView(){
+  revisionAnalysis=null;
+  field('revisionCopy').disabled=true;
+  field('revisionFields').replaceChildren();
+  field('revisionLines').replaceChildren();
+  field('revisionCompare').disabled=!revisionCheckpoint;
+  field('revisionClear').disabled=!revisionCheckpoint;
+  field('revisionStatus').textContent=revisionCheckpoint?ui('revisionReady'):ui('revisionEmpty');
+}
+function revisionCapture(draft){
+  revisionCheckpoint=captureDraftRevision(draft);
+  revisionResetView();
+}
+function revisionChanged(){
+  if(revisionAnalysis){
+    revisionAnalysis=null;
+    field('revisionCopy').disabled=true;
+    field('revisionStatus').textContent=ui('revisionStale');
+  }
+}
+
 const importGate=createDraftImportGate();
 let activeSavedId=null,activeSavedVersion=null;
 function getDraftVault(){return createDraftVault(window.localStorage);}
@@ -143,6 +168,7 @@ function preview() {
   node.hidden = !link;
   node.textContent = link ? ui('sourcePrefix') + link : '';
   updateSafetyNotice();
+  revisionChanged();
 }
 
 for (const control of [title,body,locale,category,source]) {
@@ -189,6 +215,51 @@ field('insertTemplate').addEventListener('click',()=>{
  }
 });
 
+field('revisionCapture').addEventListener('click',()=>{
+  try{
+    revisionCapture(currentDraft());
+    message(ui('revisionCaptured'));
+  }catch{message(ui('revisionUnavailable'),true);}
+});
+field('revisionCompare').addEventListener('click',()=>{
+  if(!revisionCheckpoint)return;
+  try{
+    const diff=compareDraftRevisions(revisionCheckpoint,currentDraft());
+    revisionAnalysis=diff;
+    field('revisionFields').replaceChildren();
+    for(const key of diff.changedFields){
+      const li=document.createElement('li');
+      li.textContent=ui('revisionFieldPrefix')+key;
+      field('revisionFields').append(li);
+    }
+    field('revisionLines').replaceChildren();
+    for(const row of diff.entries){
+      const li=document.createElement('li');
+      li.dataset.kind=row.kind;
+      li.textContent=(row.kind==='added'?'+ ':row.kind==='removed'?'- ':'  ')+row.text;
+      field('revisionLines').append(li);
+    }
+    field('revisionStatus').textContent=!diff.changed?ui('revisionSame'):
+      diff.truncated?ui('revisionTruncated'):
+      ui('revisionChanged')+diff.added+' / '+diff.removed;
+    field('revisionCopy').disabled=false;
+  }catch{message(ui('revisionUnavailable'),true);}
+});
+field('revisionClear').addEventListener('click',()=>{
+  revisionCheckpoint=null;
+  revisionResetView();
+  message(ui('revisionCleared'));
+});
+field('revisionCopy').addEventListener('click',async()=>{
+  if(!revisionAnalysis)return;
+  if(!navigator.clipboard?.writeText){
+    message(ui('copyUnavailable'),true);return;
+  }
+  try{
+    await navigator.clipboard.writeText(revisionSummary(revisionAnalysis));
+    message(ui('revisionCopied'));
+  }catch{message(ui('copyError'),true);}
+});
 function readyToExport() {
   clearFieldErrors();
   const invalid=invalidDraftField(currentDraft());
@@ -230,6 +301,7 @@ async function openLocalDraft(file,input=null) {
     category.value = reopened.category;
     source.value = reopened.source;
     reopenedFileBaseline = { ...reopened };
+    revisionCapture(reopened);
     resetSavedSlot();
     clearFieldErrors();
     importGate.changed();
@@ -323,6 +395,7 @@ field('openBrowserDraft').addEventListener('click',()=>{
   source.value=saved.draft.source;
   activeSavedId=saved.id;activeSavedVersion=saved.version;
   reopenedFileBaseline={...saved.draft};
+  revisionCapture(saved.draft);
   clearFieldErrors();
   importGate.changed();
   preview();
@@ -483,6 +556,8 @@ field('clearDraft').addEventListener('click', () => {
   locale.value = 'en';
   category.value = 'guides';
   reopenedFileBaseline = null;
+  revisionCheckpoint=null;
+  revisionResetView();
   resetSavedSlot();
   clearFieldErrors();
   importGate.changed();
@@ -502,3 +577,4 @@ window.addEventListener('beforeunload', event => {
 
 field('draftForm').addEventListener('submit', event => event.preventDefault());
 refreshInterface();
+revisionResetView();

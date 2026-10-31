@@ -129,6 +129,19 @@
             <li><span data-ui="checkComplete">No TODO placeholders</span><span id="guideCompleteState" class="guidance-state">Review</span></li>
           </ul>
         </section>
+        <section class="revision-review" aria-labelledby="revisionHeading">
+          <h4 id="revisionHeading" data-ui="revisionHeading">Compare draft revisions</h4>
+          <p class="hint" data-ui="revisionHint">Create a private checkpoint or open a saved draft, then compare edits. Checkpoints are lost when you close this tab; nothing is uploaded or saved automatically.</p>
+          <div class="revision-review__actions">
+            <button id="revisionCapture" type="button" data-ui="revisionCapture">Set checkpoint</button>
+            <button id="revisionCompare" type="button" data-ui="revisionCompare" disabled>Review changes</button>
+            <button id="revisionCopy" type="button" data-ui="revisionCopy" disabled>Copy change summary</button>
+            <button id="revisionClear" type="button" data-ui="revisionClear" disabled>Clear checkpoint</button>
+          </div>
+          <p id="revisionStatus" class="revision-review__status" role="status" aria-live="polite" data-ui="revisionEmpty">No local checkpoint yet.</p>
+          <ul id="revisionFields" class="revision-review__fields" aria-label="Changed article metadata" data-ui-label="revisionFieldsLabel"></ul>
+          <ol id="revisionLines" class="revision-review__lines" aria-label="Article line changes" data-ui-label="revisionLinesLabel"></ol>
+        </section>
         <section id="articleOutlineSection" class="article-outline" aria-labelledby="articleOutlineTitle" hidden>
           <h4 id="articleOutlineTitle" data-ui="outlineTitle">Article sections</h4>
           <nav id="articleOutline" aria-label="Jump to a section of this draft" data-ui-label="outlineLabel"></nav>

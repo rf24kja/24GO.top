@@ -1,5 +1,10 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-01 — Author-owned offline revision review
+
+- Add explicit in-memory **Set checkpoint / Review changes / Clear checkpoint / Copy change summary** controls to the static Draft Lab, plus automatic local comparison baselines when reopening a saved Markdown file or manually saved browser draft. Show metadata field changes and a bounded safe plain-text line diff. Preserve the author article, portable export, browser vault and data-loss warnings unchanged. Long line-heavy articles surface an incomplete preview notice rather than an unbounded LCS pass.
+- Translate the complete revision workflow across EN/RU/TH/ES/FR/DE/PT/ZH; keep snapshots only in this tab (no upload, remote AI, analytics or autosave). Summary clipboard copies contain no article text. Add regression and post-Pages HTTPS checks. No private hosted Core, database change, cloud storage or public write permission. Rollback: revert the static PR.
+
 ## 2026-11-01 — Portable offline reading library
 
 - Extend the explicit local-only saved-public-article list with a title filter, per-saved-row removal, **Copy shown links** as Markdown, and JSON backup export/import with strict UTF-8, version, kind, byte-size and canonical allowlist validation. An import merges with the latest on-device list only after user confirmation; invalid inputs are rejected entirely. No automatic downloads, tracking, external requests or implicit storage writes.

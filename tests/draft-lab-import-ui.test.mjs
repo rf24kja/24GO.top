@@ -9,6 +9,7 @@ import {
 } from '../site/draft-lab-logic.js';
 import {uiText,applyUiLanguage} from '../site/draft-lab-i18n.js';
 import {appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS} from '../site/draft-lab-guidance.js';
+import {captureDraftRevision,compareDraftRevisions,revisionSummary} from '../site/draft-lab-revisions.js';
 import {buildArticleProposalUrl} from '../site/draft-lab-proposal.js';
 import {createDraftVault,MAX_SAVED_DRAFTS,MAX_VAULT_BACKUP_BYTES,VAULT_KEY} from '../site/draft-lab-vault.js';
 
@@ -16,6 +17,7 @@ const source = readFileSync(fileURLToPath(new URL('../site/draft-lab.js', import
   .replace(/^import .* from '.\/draft-lab-logic\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-preview\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-guidance\.js';\n/m, '')
+  .replace(/^import .* from '.\/draft-lab-revisions\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-i18n\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-proposal\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-vault\.js';\n/m, '');
@@ -26,11 +28,12 @@ const sample = {
   source:'https://example.org/guide'
 };
 
-function build({uiHref='https://24go.top/draft-lab.html'}={}) {
+function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false}={}) {
   const ids = [
     'postTitle','postBody','postLocale','postCategory','postSource','formStatus',
     'previewHeading','previewBody','previewLocale','previewCategory','bodyCount','bodyWordCount','draftReadingTime','guidanceScore',
     'guideTitleState','guideBodyState','guideHeadingsState','guideStepsState','guideSourceState','guideCompleteState','draftTemplate','insertTemplate',
+    'revisionCapture','revisionCompare','revisionCopy','revisionClear','revisionStatus','revisionFields','revisionLines',
     'previewSource','draftSafety','articleOutline','articleOutlineSection','downloadDraft','copyDraft','clearDraft','importDraft','importDraftFile','draftForm',
     'formatBold','formatItalic','formatInlineCode','formatHeading','formatList','formatOrderedList','formatQuote','formatCode','formatTable','formatLink','uiLocale','draftDropZone','homeBrandLink','homeNavLink','proposeDraft',
     'saveBrowserDraft','savedBrowserDraft','openBrowserDraft','deleteBrowserDraft','vaultCount','exportDraftLibrary','restoreDraftLibrary','draftLibraryFile'
@@ -69,17 +72,19 @@ function build({uiHref='https://24go.top/draft-lab.html'}={}) {
   window.localStorage=localStorage;
   const document = {
     listeners:{},
-    createElement(){return {value:'',textContent:''};},
+    createElement(){return {value:'',textContent:'',dataset:{}};},
     addEventListener(type,callback){this.listeners[type]=callback;},
     documentElement:{lang:'en'},
     getElementById(id){return elements[id];},
     querySelectorAll(){return [];}
   };
+  const copied=[];
+  const navigator=allowClipboard?{clipboard:{async writeText(value){copied.push(value);}}}:{};
   runInNewContext(source, {
-    document, window, navigator:{}, URL, Blob, setTimeout,
+    document, window, navigator, URL, Blob, setTimeout,
     safeSourceUrl,validateDraft,formatDraft,draftFilename,hasDraftContent,
     parseDraftFile,readDraftFileStrict,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,countDraftWords,createDraftImportGate,invalidDraftField,
-    uiText,applyUiLanguage,appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS,buildArticleProposalUrl,
+    uiText,applyUiLanguage,appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS,captureDraftRevision,compareDraftRevisions,revisionSummary,buildArticleProposalUrl,
     createDraftVault,MAX_SAVED_DRAFTS,MAX_VAULT_BACKUP_BYTES,VAULT_KEY,TextDecoder,
     renderMarkdownPreview(container, text) { container.textContent = text; },
     renderPreviewOutline(container,text) { container.textContent=text;return /^#{1,3} /m.test(text)?1:0; }
@@ -87,7 +92,7 @@ function build({uiHref='https://24go.top/draft-lab.html'}={}) {
   // node --test starts multiple test files concurrently.
   },{timeout:5000});
   return {
-    elements, document, localStorage,
+    elements, document, localStorage, copied,
     storageEvent(key=VAULT_KEY,storageArea=localStorage){
       window.listeners.storage({key,storageArea});
     },
@@ -833,4 +838,80 @@ test('guidance is local and never blocks export or edits an established file bas
  app.elements.postBody.listeners.input();
  assert.equal(app.elements.postBody.value,before);
  assert.equal(app.beforeUnload().prevented,true);
+});
+
+
+test('revision review captures a local checkpoint without changing the draft or vault',async()=>{
+ const app=build({allowClipboard:true});
+ const body=app.elements.postBody;
+ app.elements.postTitle.value='Unpublished revision example';
+ body.value='## Summary\n\nThe original technical article.';
+ app.elements.revisionCapture.listeners.click();
+ assert.equal(app.elements.revisionCompare.disabled,false);
+ assert.equal(app.elements.revisionClear.disabled,false);
+ assert.equal(app.elements.revisionCopy.disabled,true);
+ assert.equal(app.localStorage.getItem(VAULT_KEY),null);
+ const old=body.value;
+ app.elements.revisionCompare.listeners.click();
+ assert.match(app.elements.revisionStatus.textContent,/Nothing changed/);
+ assert.equal(app.elements.revisionLines.children.length,0);
+ assert.equal(body.value,old);
+ assert.equal(app.elements.revisionCopy.disabled,false);
+ await app.elements.revisionCopy.listeners.click();
+ assert.equal(app.copied.length,1);
+ assert.doesNotMatch(app.copied[0],/original technical article|Unpublished revision example/);
+ assert.equal(app.localStorage.getItem(VAULT_KEY),null);
+});
+
+test('revision lines safely render user Markdown as literal text; later edits stale the review',()=>{
+ const app=build({allowClipboard:true});
+ const body=app.elements.postBody;
+ body.value='## Notes\nold step';
+ app.elements.revisionCapture.listeners.click();
+ body.value='## Notes\n<script>not executable</script>\nnew step';
+ body.listeners.input();
+ app.elements.revisionCompare.listeners.click();
+ const rows=app.elements.revisionLines.children;
+ assert.ok(rows.length>=3);
+ assert.ok(rows.some(row=>row.dataset.kind==='added'&&
+  row.textContent.includes('<script>not executable</script>')));
+ assert.match(app.elements.revisionStatus.textContent,/Body lines added/);
+ assert.equal(app.elements.revisionCopy.disabled,false);
+ body.value+=' at a later time';
+ body.listeners.input();
+ assert.equal(app.elements.revisionCopy.disabled,true);
+ assert.match(app.elements.revisionStatus.textContent,/changed/);
+ assert.equal(app.elements.revisionLines.children.length,rows.length,
+  'review remains visible but is identified as stale, not silently recomputed');
+});
+
+test('opening local Markdown starts revision baseline and clear loses it without deleting files',async()=>{
+ const app=build();
+ await app.import(formatDraft(sample));
+ assert.equal(app.elements.revisionCompare.disabled,false);
+ assert.equal(app.elements.revisionClear.disabled,false);
+ const initialBody=app.elements.postBody.value;
+ app.elements.postBody.value=initialBody+'\nAdditional details.';
+ app.elements.postBody.listeners.input();
+ app.elements.revisionCompare.listeners.click();
+ assert.ok(app.elements.revisionLines.children.some(row=>
+  row.dataset.kind==='added'&&row.textContent.includes('Additional details')));
+ app.elements.revisionClear.listeners.click();
+ assert.equal(app.elements.revisionCompare.disabled,true);
+ assert.equal(app.elements.revisionLines.children.length,0);
+ assert.equal(app.elements.postBody.value,initialBody+'\nAdditional details.');
+ assert.equal(app.beforeUnload().prevented,true);
+});
+
+test('clearing a draft removes only temporary revision checkpoint, never saved browser history',()=>{
+ const app=build();
+ app.elements.postTitle.value=sample.title;
+ app.elements.postBody.value=sample.body;
+ app.elements.revisionCapture.listeners.click();
+ assert.equal(app.elements.revisionCompare.disabled,false);
+ app.elements.clearDraft.listeners.click();
+ assert.equal(app.elements.revisionCompare.disabled,true);
+ assert.equal(app.elements.revisionCopy.disabled,true);
+ assert.equal(app.elements.revisionLines.children.length,0);
+ assert.equal(app.elements.postBody.value,'');
 });
