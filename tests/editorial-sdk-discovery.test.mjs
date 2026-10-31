@@ -83,3 +83,28 @@ test('index anomalies fail closed before returning any result',async()=>{
   });
  }
 });
+
+test('pre-aborted public search never sends requests',async()=>{
+ const controller=new AbortController();
+ controller.abort();
+ const {client,calls}=makeClient();
+ await assert.rejects(client.searchArticles({
+  query:'security',signal:controller.signal
+ }),e=>e.code==='ABORTED');
+ assert.equal(calls.length,0);
+});
+test('numeric response-size preflight refuses a declared oversized stream',async()=>{
+ let cancelled=0;
+ const stream=new ReadableStream({
+  pull(controller){controller.enqueue(new Uint8Array([123]));},
+  cancel(){cancelled++;}
+ });
+ const client=new TopEditorialClient({fetchImpl:async()=>new Response(stream,{
+  headers:{'content-length':String(2*1024*1024+1)}
+ })});
+ await assert.rejects(client.searchArticles({query:'valid'}),e=>{
+  assert.equal(e.code,'RESPONSE_TOO_LARGE');
+  return true;
+ });
+ assert.ok(cancelled>=1);
+});
