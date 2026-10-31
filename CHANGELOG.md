@@ -1,5 +1,10 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-31 — Repair SEO HTTPS audit deployment race
+
+- Remove parallel push-triggered live SEO audits. A new release-specific HTML assertion observed the *previous* CDN version before Pages finished (#41208632019 FAIL), while post-Pages audit (#41208664348) correctly passed. Require completed successful Pages on main before externally checking live SEO content, retaining manual and daily read-only audits. Regression test ensures premature push triggers are not restored. No SEO assertions relaxed, no DNS, private Core or backend change.
+
+
 ## 2026-10-31 — Reviewed related reading paths for every engineering article
 
 - Add two source-verified, topic-aware static internal article links plus archive navigation to all ten published engineering notes. Generate from canonical JSON Feed (validated against RSS/Article JSON-LD) and human-reviewed archive topics, with no remote recommendation API. CI refuses stale/foreign/duplicate links, escapes link titles, and preserves the independently validated full-text search corpus. Accessible responsive styling, source tests and external HTTPS checks for the released links. No user tracking, new article fabrication or private hosted publishing changes.
