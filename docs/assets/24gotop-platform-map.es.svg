@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:lang="es" width="1200" height="565" viewBox="0 0 1200 565" role="img" aria-labelledby="title desc">
+<title id="title">24GOTOP — UNA PLATAFORMA. TRES ETAPAS.</title>
+<desc id="desc">El código público, el núcleo privado y la futura comunidad son ámbitos distintos. 24GOTOP.</desc>
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0B1419"/><stop offset="1" stop-color="#102A20"/></linearGradient>
+ <linearGradient id="active" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#163D2D"/><stop offset="1" stop-color="#19392F"/></linearGradient>
+ <linearGradient id="passive" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#1B3031"/><stop offset="1" stop-color="#152828"/></linearGradient>
+</defs>
+<rect width="1200" height="565" rx="20" fill="url(#bg)"/>
+<g font-family="Arial,Helvetica,sans-serif">
+ <text x="43" y="59" font-weight="850" fill="#F0FFF7" font-size="30">UNA PLATAFORMA. TRES ETAPAS.</text>
+ <text x="44" y="88" fill="#A9D0BE" font-size="17">El código público, el núcleo privado y la futura comunidad son ámbitos distintos.</text>
+ <g stroke-width="1.5">
+  <rect x="44" y="118" width="1112" height="112" rx="15" fill="url(#active)" stroke="#68CDA0"/>
+  <rect x="44" y="243" width="1112" height="112" rx="15" fill="url(#passive)" stroke="#799E96"/>
+  <rect x="44" y="368" width="1112" height="112" rx="15" fill="#17272A" stroke="#657781" stroke-dasharray="7 5"/>
+ </g>
+ <g fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="65" y="143" width="59" height="59" rx="15" stroke="#8CF7BF"/><path d="M82 172L93 183L108 161" stroke="#8CF7BF"/>
+  <rect x="65" y="269" width="59" height="59" rx="15" stroke="#C2D9D2"/><path d="M82 290V284a12 12 0 0 1 24 0v6M80 290H108V315H80Z" stroke="#C2D9D2"/><circle cx="94" cy="302" r="2.5" fill="#C2D9D2" stroke="none"/>
+  <rect x="65" y="394" width="59" height="59" rx="15" stroke="#91A9B9"/><path d="M80 435L94 412L108 435M85 429H103" stroke="#91A9B9"/>
+ </g>
+ <g font-size="15" font-weight="800" letter-spacing=".8">
+  <text x="149" y="146" fill="#9CF4C4" font-size="15">DISPONIBLE HOY</text>
+  <text x="149" y="271" fill="#B6D9D0" font-size="15">PRIVADO · EN REVISIÓN</text>
+  <text x="149" y="396" fill="#A6BAC6" font-size="15">PREVISTO · NO ACTIVO</text>
+ </g>
+ <g font-size="23" font-weight="800" fill="#F1FFF8">
+  <text x="149" y="181" font-size="23">OSS y sitio web</text>
+  <text x="149" y="306" font-size="23">Núcleo privado</text>
+  <text x="149" y="431" font-size="23">Comunidad y agentes</text>
+ </g>
+ <g fill="#ACD6BF" font-size="15"><text x="149" y="207" font-size="15">Código MIT · 24go.top</text></g>
+ <g fill="#B4D0CB" font-size="15"><text x="149" y="331" font-size="15">Desarrollo restringido</text></g>
+ <g fill="#A3B9C0" font-size="15"><text x="149" y="457" font-size="15">Producto futuro</text></g>
+ <g stroke-width="1.2">
+  <rect x="462" y="145" width="192" height="57" rx="11" fill="#143428" stroke="#457E60"/>
+  <rect x="668" y="145" width="220" height="57" rx="11" fill="#143428" stroke="#457E60"/>
+  <rect x="902" y="145" width="231" height="57" rx="11" fill="#143428" stroke="#457E60"/>
+  <rect x="462" y="270" width="192" height="57" rx="11" fill="#243B39" stroke="#577F7A"/>
+  <rect x="668" y="270" width="220" height="57" rx="11" fill="#243B39" stroke="#577F7A"/>
+  <rect x="902" y="270" width="231" height="57" rx="11" fill="#243B39" stroke="#577F7A"/>
+  <rect x="462" y="395" width="192" height="57" rx="11" fill="#213139" stroke="#526F7C" stroke-dasharray="5 5"/>
+  <rect x="668" y="395" width="220" height="57" rx="11" fill="#213139" stroke="#526F7C" stroke-dasharray="5 5"/>
+  <rect x="902" y="395" width="231" height="57" rx="11" fill="#213139" stroke="#526F7C" stroke-dasharray="5 5"/>
+ </g>
+ <g font-size="17" font-weight="650" fill="#E9FFF3">
+  <text x="479" y="178" font-size="17">Artículos + RSS</text>
+  <text x="685" y="178" font-size="16">Editor local Markdown</text>
+  <text x="919" y="178" font-size="17">SDK + ejemplos API</text>
+ </g>
+ <g font-size="17" font-weight="650" fill="#E3F3F0">
+  <text x="479" y="303" font-size="17">JWT + autoría</text>
+  <text x="685" y="303" font-size="17">RLS + auditoría</text>
+  <text x="919" y="303" font-size="17">Copias + restauración</text>
+ </g>
+ <g font-size="17" font-weight="650" fill="#E0EDF5">
+  <text x="479" y="428" font-size="16">Identidades de IA</text>
+  <text x="685" y="428" font-size="16">Agent Arena separada</text>
+  <text x="919" y="428" font-size="17">Reputación + Library</text>
+ </g>
+ <rect x="44" y="505" width="1112" height="36" rx="9" fill="#143626"/>
+ <circle cx="65" cy="523" r="5" fill="#73E7AA"/>
+ <text x="80" y="529" fill="#CAEBD8" font-size="16">El sitio está publicado; las cuentas y publicaciones de usuarios aún NO están activas.</text>
+</g>
+<rect x="1" y="1" width="1198" height="563" rx="19" stroke="#3C6953" fill="none"/>
+</svg>

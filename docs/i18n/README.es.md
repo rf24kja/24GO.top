@@ -1,4 +1,4 @@
-![24GOTOP — open source knowledge network and honest pre-launch status](../assets/24gotop-readme-hero.svg)
+![24GOTOP — open source knowledge network and honest pre-launch status](../assets/24gotop-readme-hero.es.svg)
 
 # 24GOTOP
 
@@ -16,10 +16,12 @@
 > [!IMPORTANT]
 > **Estado real: prototipo de código abierto en fase inicial, NO una comunidad de publicación lanzada.** El sitio está disponible con artículos originales y el editor local Draft Lab. La API y el SDK son demostraciones de desarrollo. Todavía no hay cuentas públicas, publicación alojada, comentarios, moderación ni Agent Arena.
 
+
+**Para agentes de IA:** MCP local de solo lectura de artículos públicos: `npm run mcp:articles`. Herramientas `list_articles`, `search_articles` y `read_article`; sin publicación ni borradores privados. [Guía MCP](../PUBLIC_ARTICLE_MCP.md).
 ### ¿Por qué 24GOTOP?
 El conocimiento técnico se pierde en contenidos sin fuentes y entre publicaciones difíciles de verificar. Desarrollamos una plataforma internacional gratuita para compartir código, investigaciones y contribuciones con atribución y referencias comprobables de humanos y agentes de IA. Es una **visión**, no una descripción de funciones ya lanzadas.
 
-![Proceso editorial: problema real, implementación reproducible, pruebas y fuentes, artículo verificable. No garantiza posiciones en buscadores.](../assets/24gotop-evidence-loop.svg)
+![Proceso editorial: problema real, implementación reproducible, pruebas y fuentes, artículo verificable. No garantiza posiciones en buscadores.](../assets/24gotop-evidence-loop.es.svg)
 
 ### Disponible hoy
 - **[Artículos técnicos](https://24go.top/engineering/)**: nueve guías originales en inglés, vinculadas a código y PR verificables.
@@ -30,13 +32,13 @@ El conocimiento técnico se pierde en contenidos sin fuentes y entre publicacion
 
 ### Arquitectura y límites de lanzamiento
 
-![24GOTOP: public OSS is available, private hosted core has security gates, and the community remains a planned capability.](../assets/24gotop-platform-map.svg)
+![24GOTOP: public OSS is available, private hosted core has security gates, and the community remains a planned capability.](../assets/24gotop-platform-map.es.svg)
 
 El repositorio MIT público es independiente del núcleo privado de alojamiento. Antes de publicar contenido real deben verificarse Auth/JWT, RLS, recuperación de copias y permisos de moderación. Agent Arena, reputación y Library de aplicaciones web estáticas siguen planificados. Los agentes no deben intervenir automáticamente en conversaciones humanas.
 
 ### Flujo de escritura disponible hoy
 
-![24GOTOP Draft Lab: four browser-local steps are available; account verification, moderation and hosted publication remain gated.](../assets/24gotop-writer-journey.svg)
+![24GOTOP Draft Lab: four browser-local steps are available; account verification, moderation and hosted publication remain gated.](../assets/24gotop-writer-journey.es.svg)
 
 Escribe en Markdown → revisa una vista previa segura → descarga un archivo `.md` en tu dispositivo → vuelve a abrir ese archivo para continuar. Cambiar el idioma de la interfaz no modifica el idioma ni el texto del artículo. **Todo ocurre en el navegador:** sin subidas, guardado automático ni publicación pública. La identidad verificada, moderación y publicación alojada siguen pendientes de las comprobaciones de seguridad.
 
@@ -61,7 +63,7 @@ Abre `http://127.0.0.1:3000/en/` y ejecuta `npm run demo:read` en otra terminal.
 
 ### Cómo contribuir
 
-![Colaboraciones en código, seguridad, traducciones, accesibilidad e investigación mediante Issues, PR, CI y revisión.](../assets/24gotop-contribute.svg)
+![Colaboraciones en código, seguridad, traducciones, accesibilidad e investigación mediante Issues, PR, CI y revisión.](../assets/24gotop-contribute.es.svg)
 Aceptamos PR pequeños, documentación, pruebas de accesibilidad, revisión de traducciones y experiencias de usuarios reales: [CONTRIBUTING](../../CONTRIBUTING.md), [idiomas #8](https://github.com/rf24kja/24GO.top/issues/8), [accesibilidad #7](https://github.com/rf24kja/24GO.top/issues/7), [prueba Draft Lab #29](https://github.com/rf24kja/24GO.top/issues/29). Nunca publiques secretos, archivos `.env` ni código del núcleo privado.
 
 ---

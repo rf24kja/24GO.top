@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:lang="pt" width="1200" height="480" viewBox="0 0 1200 480" role="img" aria-labelledby="title desc">
+<title id="title">24GOTOP — JORNADA DE ESCRITA</title>
+<desc id="desc">Dois caminhos distintos; apenas o fluxo local está disponível. 24GOTOP.</desc>
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0B1517"/><stop offset="1" stop-color="#112A22"/></linearGradient>
+<linearGradient id="panel" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#1C4032"/><stop offset="1" stop-color="#153126"/></linearGradient>
+</defs>
+<rect x="0" y="0" width="1200" height="480" rx="22" fill="url(#bg)"/>
+<g font-family="Arial,Helvetica,sans-serif">
+<text x="44" y="55" font-weight="800" fill="#F3FFF7" font-size="30">JORNADA DE ESCRITA</text>
+<text x="45" y="84" fill="#B6D7C6" font-size="17">Dois caminhos distintos; apenas o fluxo local está disponível.</text>
+<rect x="44" y="103" width="116" height="27" rx="13" fill="#235D42"/>
+<text x="61" y="122" font-weight="700" fill="#D3FCE4" font-size="13">DISPONÍVEL</text>
+<g fill="url(#panel)" stroke="#64DBA8" stroke-width="1.5">
+<rect x="45" y="150" width="255" height="108" rx="13"/><rect x="331" y="150" width="255" height="108" rx="13"/>
+<rect x="617" y="150" width="255" height="108" rx="13"/><rect x="903" y="150" width="252" height="108" rx="13"/>
+</g>
+<g font-weight="800" font-size="18" fill="#F3FFF7">
+<text x="66" y="189" font-size="18">1 · Escrever Markdown</text><text x="352" y="189" font-size="16">2 · Revisar com segurança</text>
+<text x="638" y="189" font-size="18">3 · Baixar .md</text><text x="924" y="189" font-size="18">4 · Reabrir arquivo</text>
+</g>
+<g fill="#B6D7C6" font-size="15">
+<text x="66" y="218" font-size="15">Escolher idioma do artigo</text><text x="352" y="218" font-size="15">HTML não executa</text>
+<text x="638" y="218" font-size="15">Salvo no seu aparelho</text><text x="924" y="218" font-size="15">Continuar depois</text>
+</g>
+<g stroke="#89F3BD" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M305 205H324l-7 -6m7 6-7 6"/><path d="M591 205H610l-7 -6m7 6-7 6"/><path d="M877 205H896l-7 -6m7 6-7 6"/>
+</g>
+<text x="45" y="288" fill="#B2EACD" font-size="14">Sem conta · upload · salvamento automático · postagem</text>
+<line x1="44" y1="312" x2="1155" y2="312" stroke="#477569"/>
+<rect x="44" y="333" width="164" height="27" rx="13" fill="#3C5057"/>
+<text x="59" y="351" font-weight="700" fill="#E6F3F5" font-size="10">PLANEJADO / RESTRITO</text>
+<g fill="#182A2C" stroke="#849EA5" stroke-dasharray="6 6" stroke-width="1.5">
+<rect x="45" y="373" width="346" height="59" rx="11"/>
+<rect x="425" y="373" width="346" height="59" rx="11"/>
+<rect x="805" y="373" width="350" height="59" rx="11"/>
+</g>
+<g fill="#E6F3F5" font-size="17" font-weight="700">
+<text x="68" y="409" font-size="17">Autor verificado</text>
+<text x="448" y="409" font-size="17">Moderação e segurança</text>
+<text x="828" y="409" font-size="17">Publicação hospedada</text>
+</g>
+<g stroke="#92AFB0" stroke-width="2" stroke-dasharray="5 5" fill="none"><path d="M396 403H420"/><path d="M776 403H800"/></g>
+<text x="45" y="460" fill="#AACBC1" font-size="14">O futuro serviço exige JWT/RLS, autoria, antispam e restauração testada.</text>
+</g>
+<rect x="1" y="1" width="1198" height="478" rx="21" stroke="#466F5A" fill="none"/>
+</svg>

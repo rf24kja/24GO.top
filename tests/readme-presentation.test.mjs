@@ -47,8 +47,11 @@ test('showcase SVG diagrams are safe, accessible, lightweight and self-contained
   assert.match(svg,/<desc id="desc">[^<]+<\/desc>/);
   assert.doesNotMatch(svg,/<script\b|<foreignObject\b|<image\b|<iframe\b|<a\b|onload=|onclick=|javascript:|https?:\/\/[^"]+\.js|@import/i);
   assert.ok(publicREADME.includes(name),'primary README should display '+name);
-  for(const [,markdown] of all.slice(1))assert.ok(markdown.includes('../assets/'+name.split('/').at(-1)),
+  for(const [path,markdown] of all.slice(1)){
+    const locale=path.match(/README\.([a-z]{2})\.md$/)[1];
+    assert.ok(markdown.includes('../assets/'+name.split('/').at(-1).replace('.svg','.'+locale+'.svg')),
    'translated README should provide same infographic: '+name);
+  }
  }
 });
 
@@ -93,7 +96,7 @@ test('deep README gives usable instructions without implying hosted publication 
 
 test('all eight languages include a plain-language local workflow and a separate gated publication boundary',()=>{
  for(const [name,markdown] of all){
-  assert.match(markdown,/24gotop-writer-journey\.svg/,'missing author image: '+name);
+  assert.match(markdown,/24gotop-writer-journey(?:\.[a-z]{2})?\.svg/,'missing author image: '+name);
   assert.match(markdown,/\.md/,'no local file contract: '+name);
   assert.match(markdown,/MIT/,'must preserve legitimate public code licensing: '+name);
   assert.match(markdown,/24go\.top\/engineering\//,'must show actual editorial content: '+name);
@@ -126,8 +129,8 @@ test('all README locales display accessible eight-language navigation with flag 
    assert.ok(content.includes(label+'](')||content.includes(label+'**]('),
     path+' missing navigable '+label);
   }
-  assert.ok(content.includes('24gotop-evidence-loop.svg'),path+' missing editorial evidence diagram');
-  assert.ok(content.includes('24gotop-contribute.svg'),path+' missing contributor diagram');
+  assert.ok(/24gotop-evidence-loop(?:\.[a-z]{2})?\.svg/.test(content),path+' missing editorial evidence diagram');
+  assert.ok(/24gotop-contribute(?:\.[a-z]{2})?\.svg/.test(content),path+' missing contributor diagram');
  }
  assert.ok(publicREADME.indexOf('24gotop-evidence-loop.svg')<publicREADME.indexOf('## Original engineering articles'),
   'evidence graphic belongs to the product rationale, before the article index');

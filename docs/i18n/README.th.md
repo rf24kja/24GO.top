@@ -1,4 +1,4 @@
-![24GOTOP — open source knowledge network and honest pre-launch status](../assets/24gotop-readme-hero.svg)
+![24GOTOP — open source knowledge network and honest pre-launch status](../assets/24gotop-readme-hero.th.svg)
 
 # 24GOTOP
 
@@ -16,10 +16,12 @@
 > [!IMPORTANT]
 > **สถานะจริง: เป็นโครงการโอเพนซอร์สระยะเริ่มต้น ยังไม่ใช่แพลตฟอร์มเผยแพร่ที่เปิดให้บริการเต็มรูปแบบ** เว็บไซต์สาธารณะ บทความต้นฉบับ และ Draft Lab ที่ทำงานในเบราว์เซอร์ใช้งานได้แล้ว ส่วน API/SDK เป็นตัวอย่างสำหรับการพัฒนาในเครื่อง ยังไม่มีบัญชีผู้ใช้ การเผยแพร่บทความบนเซิร์ฟเวอร์ ความคิดเห็น หรือ Agent Arena สำหรับสาธารณะ
 
+
+**สำหรับ AI agent:** MCP แบบ local อ่านได้เฉพาะบทความสาธารณะด้วย `npm run mcp:articles` มีเครื่องมือ `list_articles`, `search_articles`, `read_article` ไม่สามารถเผยแพร่หรืออ่านร่างส่วนตัวได้ [คู่มือ MCP](../PUBLIC_ARTICLE_MCP.md)
 ### ทำไมต้อง 24GOTOP
 ความรู้ด้านเทคนิคมักกระจัดกระจาย ขาดแหล่งอ้างอิง และตรวจสอบความเป็นเจ้าของได้ยาก เรากำลังพัฒนาชุมชนความรู้ระดับนานาชาติที่เปิดให้เข้าถึงได้ฟรี พร้อมโค้ด แหล่งอ้างอิงที่ตรวจสอบได้ และการมีส่วนร่วมของมนุษย์กับ AI Agent ที่ยืนยันตัวตน นี่คือ **วิสัยทัศน์** ไม่ใช่คำกล่าวว่าระบบทั้งหมดเปิดใช้งานแล้ว
 
-![ขั้นตอนงานเขียนทางเทคนิค: ปัญหาจริง → ตัวอย่างที่ทำซ้ำได้ → การทดสอบและแหล่งอ้างอิง → บทความที่ตรวจสอบได้ ไม่รับประกันผลการค้นหา](../assets/24gotop-evidence-loop.svg)
+![ขั้นตอนงานเขียนทางเทคนิค: ปัญหาจริง → ตัวอย่างที่ทำซ้ำได้ → การทดสอบและแหล่งอ้างอิง → บทความที่ตรวจสอบได้ ไม่รับประกันผลการค้นหา](../assets/24gotop-evidence-loop.th.svg)
 
 ### สิ่งที่ใช้งานได้แล้ว
 - **[บทความด้านวิศวกรรม](https://24go.top/engineering/)** — บทความต้นฉบับภาษาอังกฤษ 9 เรื่อง พร้อมโค้ดและหลักฐานจาก PR จริง
@@ -30,13 +32,13 @@
 
 ### สถาปัตยกรรมและสถานะ
 
-![24GOTOP: public OSS is available, private hosted core has security gates, and the community remains a planned capability.](../assets/24gotop-platform-map.svg)
+![24GOTOP: public OSS is available, private hosted core has security gates, and the community remains a planned capability.](../assets/24gotop-platform-map.th.svg)
 
 โค้ดโอเพนซอร์ส MIT แยกจาก hosted core ส่วนตัว ระบบเผยแพร่จริงยังต้องผ่านการตรวจสอบ Auth/JWT, RLS, การกู้คืนข้อมูล และสิทธิ์ผู้ดูแล Agent Arena การจัดอันดับ และ Library สำหรับเว็บแอปแบบ static ยังเป็นแผนในอนาคต AI Agent จะไม่เข้าร่วมบทสนทนาของมนุษย์โดยอัตโนมัติ
 
 ### ขั้นตอนการเขียนที่ใช้ได้ในวันนี้
 
-![24GOTOP Draft Lab: four browser-local steps are available; account verification, moderation and hosted publication remain gated.](../assets/24gotop-writer-journey.svg)
+![24GOTOP Draft Lab: four browser-local steps are available; account verification, moderation and hosted publication remain gated.](../assets/24gotop-writer-journey.th.svg)
 
 เขียนบทความ Markdown → ดูตัวอย่างอย่างปลอดภัย → ดาวน์โหลดไฟล์ `.md` ลงอุปกรณ์ → เปิดไฟล์เดิมภายหลังเพื่อเขียนต่อ การเปลี่ยนภาษาอินเทอร์เฟซไม่แก้ไขภาษาหรือเนื้อหาบทความ **ทุกขั้นตอนอยู่ในเบราว์เซอร์** ไม่มีการอัปโหลด บันทึกอัตโนมัติ หรือเผยแพร่สู่สาธารณะ บัญชีผู้ใช้ การตรวจสอบตัวตน การดูแลเนื้อหา และการเผยแพร่บนเซิร์ฟเวอร์ยังไม่เปิดใช้งาน
 
@@ -61,7 +63,7 @@ npm run dev
 
 ### ร่วมพัฒนา
 
-![ร่วมพัฒนาโค้ด ความปลอดภัย ภาษา การเข้าถึง และเอกสาร โดยผ่าน Issue, PR, CI และการตรวจทาน](../assets/24gotop-contribute.svg)
+![ร่วมพัฒนาโค้ด ความปลอดภัย ภาษา การเข้าถึง และเอกสาร โดยผ่าน Issue, PR, CI และการตรวจทาน](../assets/24gotop-contribute.th.svg)
 ยินดีรับการปรับปรุงโค้ดและเอกสาร การตรวจสอบภาษาไทย/รัสเซีย การทดสอบการเข้าถึง และความคิดเห็นจากผู้ใช้งานจริง: [CONTRIBUTING](../../CONTRIBUTING.md), [คำแปล #8](https://github.com/rf24kja/24GO.top/issues/8), [Accessibility #7](https://github.com/rf24kja/24GO.top/issues/7), [Draft Lab #29](https://github.com/rf24kja/24GO.top/issues/29) โปรดอย่าเผยแพร่ข้อมูลลับหรือโค้ด hosted core ส่วนตัว
 
 ---

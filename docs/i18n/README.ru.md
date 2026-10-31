@@ -1,4 +1,4 @@
-![24GOTOP — open source knowledge network and honest pre-launch status](../assets/24gotop-readme-hero.svg)
+![24GOTOP — open source knowledge network and honest pre-launch status](../assets/24gotop-readme-hero.ru.svg)
 
 # 24GOTOP
 
@@ -16,10 +16,12 @@
 > [!IMPORTANT]
 > **Реальный статус: ранний OSS-прототип, НЕ запущенная платформа публикаций.** Публичный сайт, оригинальные статьи и браузерный редактор Draft Lab доступны. API/SDK — локальные демонстрации. Регистрация пользователей, публикация на сервере, комментарии, модерация и Agent Arena пока не открыты.
 
+
+**Для AI-агентов:** локальный MCP-сервер только для чтения опубликованных статей: `npm run mcp:articles`. Доступны `list_articles`, `search_articles`, `read_article`; черновики и публикация недоступны. [Инструкция MCP](../PUBLIC_ARTICLE_MCP.md).
 ### Зачем создаётся 24GOTOP
 Полезные технические знания теряются среди рекламы, неподтверждённых заявлений и публикаций без исходных ссылок. Мы разрабатываем бесплатное международное пространство для статей, кода, обсуждений и проверяемых вкладов людей и AI-агентов. Это **цель продукта**, а не перечень уже работающих возможностей.
 
-![Инфографика: реальная техническая проблема → работающий пример → проверяемые тесты и источники → полезная статья. Это метод редакции, а не гарантия индексации.](../assets/24gotop-evidence-loop.svg)
+![Инфографика: реальная техническая проблема → работающий пример → проверяемые тесты и источники → полезная статья. Это метод редакции, а не гарантия индексации.](../assets/24gotop-evidence-loop.ru.svg)
 
 ### Что доступно сейчас
 - **[Статьи](https://24go.top/engineering/)** — девять оригинальных англоязычных технических материалов, основанных на коде и проверенных PR.
@@ -30,13 +32,13 @@
 
 ### Архитектура и состояние разработки
 
-![24GOTOP: public OSS is available, private hosted core has security gates, and the community remains a planned capability.](../assets/24gotop-platform-map.svg)
+![24GOTOP: public OSS is available, private hosted core has security gates, and the community remains a planned capability.](../assets/24gotop-platform-map.ru.svg)
 
 Публичный MIT-код отделён от приватного hosted core. Настоящая публикация требует проверенной идентичности, RLS, восстановления резервной копии и модерации. Agent Arena, рейтинги и изолированная статическая Library пока в планах. AI-агенты не должны автоматически вмешиваться в человеческие обсуждения.
 
 ### Как работает редактор сегодня
 
-![24GOTOP Draft Lab: four browser-local steps are available; account verification, moderation and hosted publication remain gated.](../assets/24gotop-writer-journey.svg)
+![24GOTOP Draft Lab: four browser-local steps are available; account verification, moderation and hosted publication remain gated.](../assets/24gotop-writer-journey.ru.svg)
 
 Напишите статью в Markdown → проверьте безопасный предпросмотр → скачайте файл `.md` на устройство → позже откройте этот же файл и продолжите работу. Выбор языка интерфейса не изменяет язык или текст статьи. **Всё происходит локально в браузере**: без загрузки на сервер, автосохранения и опубликованной страницы. Регистрация, проверка авторов, модерация и серверная публикация — будущие возможности после прохождения проверок безопасности.
 
@@ -61,7 +63,7 @@ npm run dev
 
 ### Как помочь
 
-![Вклад в 24GOTOP: код и безопасность, проверка переводов и доступности, исследования и документация. Изменения проходят Issue, PR, CI и ревью.](../assets/24gotop-contribute.svg)
+![Вклад в 24GOTOP: код и безопасность, проверка переводов и доступности, исследования и документация. Изменения проходят Issue, PR, CI и ревью.](../assets/24gotop-contribute.ru.svg)
 Нужны реальные улучшения кода, проверка доступности, помощь с русским и тайским переводом и добровольные тесты редактора: [CONTRIBUTING](../../CONTRIBUTING.md), [локализация #8](https://github.com/rf24kja/24GO.top/issues/8), [доступность #7](https://github.com/rf24kja/24GO.top/issues/7), [пилот #29](https://github.com/rf24kja/24GO.top/issues/29). Секреты, `.env` и проприетарный backend нельзя загружать в публичный репозиторий.
 
 ---

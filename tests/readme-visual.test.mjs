@@ -12,7 +12,7 @@ test('README embeds a self-contained premium product hero with an accessible des
  assert.match(svg,/<svg\b[^>]*width="1400"[^>]*height="560"[^>]*viewBox="0 0 1400 560"/);
  assert.match(svg,/<title id="title">24GOTOP/);
  assert.match(svg,/<desc id="desc">/);
- assert.match(svg,/OPEN SOURCE · <tspan[^>]*>MIT<\/tspan>/);
+ assert.match(svg,/OPEN SOURCE · MIT/);
  for(const label of ['Engineering articles','Markdown Draft Lab','Open developer SDK','PRE-LAUNCH']){
   assert.ok(svg.includes(label),label+' missing');
  }
@@ -20,16 +20,12 @@ test('README embeds a self-contained premium product hero with an accessible des
  assert.doesNotMatch(svg,/\@font-face|data:image\//i);
 });
 
-test('license badge and primary typography stay within the SVG canvas design budget',()=>{
- const badge=svg.match(/<rect x="(\d+)" y="57" width="(\d+)" height="47" rx="24"/);
- const label=svg.match(/<text x="(\d+)" y="87" font-size="(\d+)"[^>]*>OPEN SOURCE/);
- assert.ok(badge&&label,'expected badge geometry');
- const [x,width,textX,fontSize]=[Number(badge[1]),Number(badge[2]),Number(label[1]),Number(label[2])];
- assert.ok(x>=40&&x+width<1400);
- assert.ok(textX>x+40,'leave icon space');
- assert.ok(x+width-(textX+fontSize*11)>10,'allow width for bold license label and right padding');
- assert.match(svg,/<text x="62" y="244" font-size="133"/);
- assert.match(svg,/<text x="425" y="244" font-size="133"/);
+test('hero uses aligned cards inside the full canvas, not a clipped ornamental collage',()=>{
+ assert.match(svg,/viewBox="0 0 1400 560"/);
+ assert.match(svg,/<rect x="694" y="76" width="310" height="183"/);
+ assert.match(svg,/<rect x="1024" y="277" width="310" height="183"/);
+ assert.match(svg,/<text x="66" y="247" font-size="105"/);
+ assert.doesNotMatch(svg,/<clipPath/);
 });
 
 test('README gives truthful public, in-browser and local developer entry points',()=>{
@@ -42,6 +38,6 @@ test('README gives truthful public, in-browser and local developer entry points'
  assert.match(readme,/browser-only/i);
  assert.match(readme,/NOT a launched publishing community/i);
  assert.match(readme,/MIT licensed|MIT license/i);
- assert.match(svg,/>LIVE<\/text>/);
- assert.match(svg,/>LOCAL<\/text>/);
+ assert.match(svg,/PUBLIC · LIVE/);
+ assert.match(svg,/LOCAL ONLY/);
 });

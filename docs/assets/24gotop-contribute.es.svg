@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:lang="es" width="1200" height="470" viewBox="0 0 1200 470" role="img" aria-labelledby="title desc">
+<title id="title">24GOTOP — TU CONTRIBUCIÓN IMPORTA</title>
+<desc id="desc">Las mejoras revisadas hacen más seguro el proyecto. 24GOTOP.</desc>
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0C161A"/><stop offset="1" stop-color="#122B23"/></linearGradient>
+ <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#1F3B32"/><stop offset="1" stop-color="#152A25"/></linearGradient>
+</defs>
+<rect width="1200" height="470" rx="22" fill="url(#bg)"/>
+<g font-family="Arial,Helvetica,sans-serif">
+ <text x="46" y="62" fill="#F2FFF7" font-weight="800" font-size="30">TU CONTRIBUCIÓN IMPORTA</text>
+ <text x="46" y="91" fill="#A8D3C0" font-size="17">Las mejoras revisadas hacen más seguro el proyecto.</text>
+ <g fill="url(#panel)" stroke="#4A8469" stroke-width="1.5">
+  <rect x="45" y="127" width="348" height="200" rx="16"/>
+  <rect x="427" y="127" width="347" height="200" rx="16"/>
+  <rect x="808" y="127" width="347" height="200" rx="16"/>
+ </g>
+ <g stroke="#8CF4BB" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="70" y="153" width="56" height="52" rx="11"/><path d="M87 168L79 179L87 190M109 168L117 179L109 190M103 166L94 192"/>
+  <circle cx="474" cy="179" r="28"/><path d="M447 179H501M474 151Q495 178 474 207M474 151Q453 178 474 207M474 151V207"/>
+  <rect x="832" y="153" width="59" height="53" rx="10"/><path d="M845 167H877M845 178H877M845 189H869"/>
+ </g>
+ <g font-size="22" font-weight="750" fill="#F4FFF8"><text x="70" y="245" font-size="22">Código y seguridad</text><text x="452" y="245" font-size="22">Idiomas y UX</text><text x="832" y="245" font-size="22">Investigación y docs</text></g>
+ <g fill="#B0D6C2" font-size="16">
+  <text x="70" y="275" font-size="16">Correcciones y tests</text><text x="70" y="298" font-size="16">APIs más seguras</text>
+  <text x="452" y="275" font-size="16">Revisión de idiomas</text><text x="452" y="298" font-size="16">Acceso por teclado</text>
+  <text x="832" y="275" font-size="16">Guías con pruebas</text><text x="832" y="298" font-size="16">Documentación fiel</text>
+ </g>
+ <rect x="45" y="350" width="1110" height="77" rx="14" fill="#0E2C21" stroke="#3A7758"/>
+ <text x="69" y="373" font-weight="750" letter-spacing="1.2" fill="#8DF4C1" font-size="13">FLUJO DE CONTRIBUCIÓN</text>
+ <g fill="#F0FFF8" font-size="18" font-weight="700">
+  <text x="72" y="406" font-size="18">Buscar incidencia</text><text x="333" y="406" font-size="18">PR específico</text>
+  <text x="589" y="406" font-size="18">Tests + CI</text><text x="861" y="406" font-size="18">Revisión y feedback</text>
+ </g>
+ <g stroke="#75E6AD" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" fill="none">
+  <path d="M236 400H310M300 393L310 400L300 407"/>
+  <path d="M461 400H561M551 393L561 400L551 407"/>
+  <path d="M725 400H837M827 393L837 400L827 407"/>
+ </g>
+ <text x="45" y="453" fill="#A7CDBB" font-size="13">Contribuir no otorga propiedad del servicio oficial, dominio o sistemas de producción.</text>
+</g><rect x="1" y="1" width="1198" height="468" rx="21" stroke="#446F58" fill="none"/>
+</svg>

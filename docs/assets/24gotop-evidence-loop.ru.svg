@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:lang="ru" width="1200" height="454" viewBox="0 0 1200 454" role="img" aria-labelledby="title desc">
+<title id="title">24GOTOP — ОТ УТВЕРЖДЕНИЯ К ПРОВЕРЯЕМЫМ ЗНАНИЯМ</title>
+<desc id="desc">Каждая техническая статья должна позволять проверить доказательства. 24GOTOP.</desc>
+<defs>
+ <linearGradient id="background" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#101A1D"/><stop offset="1" stop-color="#071C16"/></linearGradient>
+ <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#1B3731"/><stop offset="1" stop-color="#142923"/></linearGradient>
+ <pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="#5D937A" opacity=".18"/></pattern>
+</defs>
+<rect width="1200" height="454" rx="20" fill="url(#background)"/>
+<rect width="1200" height="454" rx="20" fill="url(#dots)"/>
+<g font-family="Arial,Helvetica,sans-serif">
+ <text x="46" y="61" font-weight="800" fill="#F4FFF8" font-size="29">ОТ УТВЕРЖДЕНИЯ К ПРОВЕРЯЕМЫМ ЗНАНИЯМ</text>
+ <text x="46" y="91" fill="#B2D5C5" font-size="17">Каждая техническая статья должна позволять проверить доказательства.</text>
+ <rect x="1001" y="40" width="153" height="34" rx="17" fill="#173C2D" stroke="#5ED9A5"/>
+ <circle cx="1019" cy="57" r="5" fill="#8BFAC3"/><text x="1034" y="62" fill="#D2FBE5" font-weight="700" font-size="10">СНАЧАЛА ИСТОЧНИК</text>
+ <g fill="url(#tile)" stroke="#4F9372" stroke-width="1.7">
+  <rect x="45" y="143" width="250" height="214" rx="16"/>
+  <rect x="332" y="143" width="250" height="214" rx="16"/>
+  <rect x="619" y="143" width="250" height="214" rx="16"/>
+  <rect x="906" y="143" width="249" height="214" rx="16"/>
+ </g>
+ <g fill="#97FFD0" font-size="13" font-weight="800" letter-spacing="1.5"><text x="66" y="173" font-size="13">01 · ПРОБЛЕМА</text><text x="353" y="173" font-size="13">02 · РЕШЕНИЕ</text><text x="640" y="173" font-size="13">03 · ПРОВЕРКА</text><text x="927" y="173" font-size="13">04 · СТАТЬЯ</text></g>
+ <g stroke="#A0FBD0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none">
+  <circle cx="103" cy="227" r="25"/><path d="M94 217Q103 206 112 217L103 233M103 243V244"/>
+  <path d="M388 209L377 226L388 243M408 209L419 226L408 243M404 207L392 247"/>
+  <path d="M668 228L679 239L704 213"/><circle cx="685" cy="227" r="27"/>
+  <rect x="953" y="200" width="48" height="56" rx="5"/><path d="M964 214H990M964 225H990M964 236H983M964 246H977"/>
+ </g>
+ <g fill="#F2FFF9" font-size="22" font-weight="750">
+  <text x="66" y="285" font-size="22">Реальная задача</text><text x="353" y="285" font-size="22">Рабочий пример</text><text x="640" y="285" font-size="22">Тесты + источники</text><text x="927" y="285" font-size="22">Понятная статья</text>
+ </g>
+ <g fill="#A8CEB9" font-size="15">
+  <text x="66" y="312" font-size="15">Что не работает?</text><text x="353" y="312" font-size="15">Код и ограничения</text>
+  <text x="640" y="312" font-size="15">PR, CI, документация</text><text x="927" y="312" font-size="15">URL, RSS, ссылки</text>
+ </g>
+ <g stroke="#8BECC0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+  <path d="M300 250H325M317 243L325 250L317 257"/><path d="M587 250H612M604 243L612 250L604 257"/><path d="M874 250H899M891 243L899 250L891 257"/>
+ </g>
+ <rect x="45" y="381" width="1110" height="43" rx="12" fill="#102F24" stroke="#396E52"/>
+ <circle cx="69" cy="403" r="5" fill="#79F2B9"/>
+ <text x="87" y="409" fill="#C7EBDA" font-size="16">Оригинальные материалы доступны. Индексация, цитирование ИИ и трафик пока не подтверждены.</text>
+</g><rect x="1" y="1" width="1198" height="452" rx="19" stroke="#426A54" fill="none"/>
+</svg>

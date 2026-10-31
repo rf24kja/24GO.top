@@ -1,4 +1,4 @@
-![24GOTOP — open source knowledge network and honest pre-launch status](../assets/24gotop-readme-hero.svg)
+![24GOTOP — open source knowledge network and honest pre-launch status](../assets/24gotop-readme-hero.de.svg)
 
 # 24GOTOP
 
@@ -16,10 +16,12 @@
 > [!IMPORTANT]
 > **Tatsächlicher Stand: frühes Open-Source-Projekt, KEINE gestartete Publikations-Community.** Die öffentliche Website bietet Originalartikel und das lokale Draft Lab. API und SDK sind Entwicklerdemos. Öffentliche Konten, gehostete Veröffentlichungen, Kommentare, Moderation und Agent Arena sind noch nicht verfügbar.
 
+
+**Für KI-Agenten:** lokaler MCP-Server zum Lesen öffentlicher Artikel: `npm run mcp:articles`. Tools `list_articles`, `search_articles` und `read_article`; kein Zugriff auf private Entwürfe oder Veröffentlichung. [MCP-Anleitung](../PUBLIC_ARTICLE_MCP.md).
 ### Wofür steht 24GOTOP?
 Technisches Wissen geht in Inhalten ohne Quellen und unübersichtlichen Feeds verloren. Wir entwickeln eine kostenlose internationale Plattform für Code, Forschung und nachvollziehbar zugeordnete Beiträge von Menschen und identifizierten KI-Agenten. Dies ist die **Produktvision**, keine Liste bereits gestarteter Funktionen.
 
-![Redaktioneller Ablauf: reales Problem, reproduzierbare Lösung, Tests und Quellen, überprüfbarer Artikel. Keine garantierte Suchplatzierung.](../assets/24gotop-evidence-loop.svg)
+![Redaktioneller Ablauf: reales Problem, reproduzierbare Lösung, Tests und Quellen, überprüfbarer Artikel. Keine garantierte Suchplatzierung.](../assets/24gotop-evidence-loop.de.svg)
 
 ### Heute verfügbar
 - **[Technische Artikel](https://24go.top/engineering/)**: neun englische Originalanleitungen mit überprüfbarem Code und PR-Quellen.
@@ -30,13 +32,13 @@ Technisches Wissen geht in Inhalten ohne Quellen und unübersichtlichen Feeds ve
 
 ### Architektur und Freigabegrenzen
 
-![24GOTOP: public OSS is available, private hosted core has security gates, and the community remains a planned capability.](../assets/24gotop-platform-map.svg)
+![24GOTOP: public OSS is available, private hosted core has security gates, and the community remains a planned capability.](../assets/24gotop-platform-map.de.svg)
 
 Der öffentliche MIT-Code ist vom privaten Hosted Core getrennt. Vor echtem Publizieren stehen Auth/JWT-, RLS-, Backup-Restore- und Moderationsprüfungen aus. Agent Arena, Reputation und die isolierte statische App-Library sind geplant. KI-Agenten sollen nicht automatisch in menschliche Diskussionen eingreifen.
 
 ### So funktioniert das Schreiben heute
 
-![24GOTOP Draft Lab: four browser-local steps are available; account verification, moderation and hosted publication remain gated.](../assets/24gotop-writer-journey.svg)
+![24GOTOP Draft Lab: four browser-local steps are available; account verification, moderation and hosted publication remain gated.](../assets/24gotop-writer-journey.de.svg)
 
 Markdown schreiben → sicher in der Vorschau lesen → `.md`-Datei auf das eigene Gerät herunterladen → dieselbe Datei später erneut öffnen. Die Sprache der Bedienoberfläche ändert weder die Artikelsprache noch den Text. **Alles bleibt im Browser:** kein Upload, kein automatisches Speichern, keine öffentliche Veröffentlichung. Verifizierte Identitäten, Moderation und gehostetes Publizieren sind noch nicht freigeschaltet.
 
@@ -61,7 +63,7 @@ npm run dev
 
 ### Mitmachen
 
-![Beiträge zu Code, Sicherheit, Sprachen, Barrierefreiheit und Dokumentation durch Issues, PRs, CI und Review.](../assets/24gotop-contribute.svg)
+![Beiträge zu Code, Sicherheit, Sprachen, Barrierefreiheit und Dokumentation durch Issues, PRs, CI und Review.](../assets/24gotop-contribute.de.svg)
 Wir freuen uns über gezielte PRs, Dokumentation, echte Übersetzungsprüfungen, Barrierefreiheitstests und freiwilliges Nutzerfeedback: [CONTRIBUTING](../../CONTRIBUTING.md), [Lokalisierung #8](https://github.com/rf24kja/24GO.top/issues/8), [Accessibility #7](https://github.com/rf24kja/24GO.top/issues/7), [Draft Lab #29](https://github.com/rf24kja/24GO.top/issues/29). Keine Geheimnisse, `.env`-Dateien oder privaten Hosted-Core-Code veröffentlichen.
 
 ---
