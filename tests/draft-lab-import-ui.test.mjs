@@ -839,3 +839,79 @@ test('guidance is local and never blocks export or edits an established file bas
  assert.equal(app.elements.postBody.value,before);
  assert.equal(app.beforeUnload().prevented,true);
 });
+
+
+test('revision review captures a local checkpoint without changing the draft or vault',()=>{
+ const app=build({allowClipboard:true});
+ const body=app.elements.postBody;
+ app.elements.postTitle.value='Unpublished revision example';
+ body.value='## Summary\n\nThe original technical article.';
+ app.elements.revisionCapture.listeners.click();
+ assert.equal(app.elements.revisionCompare.disabled,false);
+ assert.equal(app.elements.revisionClear.disabled,false);
+ assert.equal(app.elements.revisionCopy.disabled,true);
+ assert.equal(app.localStorage.getItem(VAULT_KEY),null);
+ const old=body.value;
+ app.elements.revisionCompare.listeners.click();
+ assert.match(app.elements.revisionStatus.textContent,/Nothing changed/);
+ assert.equal(app.elements.revisionLines.children.length,0);
+ assert.equal(body.value,old);
+ assert.equal(app.elements.revisionCopy.disabled,false);
+ await app.elements.revisionCopy.listeners.click();
+ assert.equal(app.copied.length,1);
+ assert.doesNotMatch(app.copied[0],/original technical article|Unpublished revision example/);
+ assert.equal(app.localStorage.getItem(VAULT_KEY),null);
+});
+
+test('revision lines safely render user Markdown as literal text; later edits stale the review',()=>{
+ const app=build({allowClipboard:true});
+ const body=app.elements.postBody;
+ body.value='## Notes\nold step';
+ app.elements.revisionCapture.listeners.click();
+ body.value='## Notes\n<script>not executable</script>\nnew step';
+ body.listeners.input();
+ app.elements.revisionCompare.listeners.click();
+ const rows=app.elements.revisionLines.children;
+ assert.ok(rows.length>=3);
+ assert.ok(rows.some(row=>row.dataset.kind==='added'&&
+  row.textContent.includes('<script>not executable</script>')));
+ assert.match(app.elements.revisionStatus.textContent,/Body lines added/);
+ assert.equal(app.elements.revisionCopy.disabled,false);
+ body.value+=' at a later time';
+ body.listeners.input();
+ assert.equal(app.elements.revisionCopy.disabled,true);
+ assert.match(app.elements.revisionStatus.textContent,/changed/);
+ assert.equal(app.elements.revisionLines.children.length,rows.length,
+  'review remains visible but is identified as stale, not silently recomputed');
+});
+
+test('opening local Markdown starts revision baseline and clear loses it without deleting files',async()=>{
+ const app=build();
+ await app.import(formatDraft(sample));
+ assert.equal(app.elements.revisionCompare.disabled,false);
+ assert.equal(app.elements.revisionClear.disabled,false);
+ const initialBody=app.elements.postBody.value;
+ app.elements.postBody.value=initialBody+'\nAdditional details.';
+ app.elements.postBody.listeners.input();
+ app.elements.revisionCompare.listeners.click();
+ assert.ok(app.elements.revisionLines.children.some(row=>
+  row.dataset.kind==='added'&&row.textContent.includes('Additional details')));
+ app.elements.revisionClear.listeners.click();
+ assert.equal(app.elements.revisionCompare.disabled,true);
+ assert.equal(app.elements.revisionLines.children.length,0);
+ assert.equal(app.elements.postBody.value,initialBody+'\nAdditional details.');
+ assert.equal(app.beforeUnload().prevented,true);
+});
+
+test('clearing a draft removes only temporary revision checkpoint, never saved browser history',()=>{
+ const app=build();
+ app.elements.postTitle.value=sample.title;
+ app.elements.postBody.value=sample.body;
+ app.elements.revisionCapture.listeners.click();
+ assert.equal(app.elements.revisionCompare.disabled,false);
+ app.elements.clearDraft.listeners.click();
+ assert.equal(app.elements.revisionCompare.disabled,true);
+ assert.equal(app.elements.revisionCopy.disabled,true);
+ assert.equal(app.elements.revisionLines.children.length,0);
+ assert.equal(app.elements.postBody.value,'');
+});
