@@ -224,8 +224,9 @@ test('public archive has navigable heading hierarchy for all ten searchable arti
  assert.match(html,/<aside class="card">[\s\S]*?<h3>Help us make this useful<\/h3>/);
  assert.doesNotMatch(html,/<aside class="card">[\s\S]*?<h2>Help us make this useful<\/h2>/);
  assert.match(html,/<section class="topic-index" aria-labelledby="topics-heading">\s*<h2 id="topics-heading">Choose a technical reading path<\/h2>/);
- assert.equal((html.match(/<h2\b/g)||[]).length,2,
-  'the two real sections, reading paths and recent articles, need semantic level-two headings');
+ assert.equal((html.match(/<h2\b/g)||[]).length,3,
+  'reading paths, local agent integration and recent articles each need a semantic level-two heading');
+ assert.match(html,/<section class="agent-discovery" aria-labelledby="agent-discovery-heading">\s*<h2 id="agent-discovery-heading">Read these articles with an AI agent<\/h2>/);
  assert.match(style,/\.card h2,\.card h3\{font-size:21px;margin:7px 0\}/,
   'corrected heading levels must preserve previously reviewed card typography');
 });
