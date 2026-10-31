@@ -1,5 +1,9 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-01 — Search published engineering articles from every homepage
+
+- Add direct, accessible native GET search on eight localized static homepages, routing to the existing English technical-article archive without hosted writes or analytics. Include URL-query privacy disclosure, mobile responsive CSS, eight-route source tests, and post-deployment HTTPS assertions. Preserve the pre-launch disclosure; native translation and real-device accessibility testing remain pending. Rollback is a static source-only PR revert.
+
 ## 2026-11-01 — Read real public engineering articles through source-only SDK
 
 - Add a separate read-only `TopEditorialClient.listArticles()` for the existing published JSON Feed 1.1 at the fixed canonical HTTPS URL, with full-feed validation, allowlisted article links, stable error codes, bounded responses and caller cancellation. Provide a runnable `npm run demo:articles` example and negative tests for tampered links/duplicates. This is public editorial discovery, NOT hosted member publication, private API access, full-body scraping, or an npm release. Rollback is a source-only PR revert; no backend, Auth, DNS or billing change.
