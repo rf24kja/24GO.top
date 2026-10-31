@@ -1,5 +1,9 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-31 — Independent live archive search release verification
+
+- Extend existing read-only GitHub-hosted HTTPS audit to fetch published engineering/search.js and require the shipped all-word search implementation and matching accessible archive help text. A successful Pages workflow without the new JS no longer passes this release-specific probe. No changes to static article content, Auth, telemetry or private Core.
+
 ## 2026-10-31 — Multi-word engineering article discovery
 
 - Upgrade the public, privacy-preserving archive search to find **all words in any order**, across visible titles/summaries and the verified local static article index. Topic filters, bookmarkable URLs, keyboard behavior and no-JavaScript crawlable HTML are preserved. Add tests for mixed card/full-text matching, word-order independence and offline fallback. No remote search API, telemetry, author writes or private Core changes.
