@@ -1,5 +1,9 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-01 — Numbered authoring steps and local multilingual word count
+
+- Add an accessible numbered Markdown list toolbar button and an approximate, privacy-preserving word meter to the existing browser-only Draft Lab. Use locale-aware `Intl.Segmenter` for eight author languages (including unspaced Thai/CJK); older browsers use an explicitly approximate Unicode fallback. Preserve local-only exports, the previous Markdown file format and manual browser drafts. Extend source tests and the post-Pages HTTPS probe to require the newly delivered editor assets. Real-screen/mobile and native-language validation still outstanding. Rollback: revert this public source-only PR; no backend or DNS changes.
+
 ## 2026-11-01 — Repair broken public HTTPS release audit
 
 - Remove an accidentally duplicated partial shell block left after the real end of `scripts/check-live-seo.sh`. The extra block contained a dangling `then` and caused the external read-only audit to fail even when Pages succeeded. Add `bash -n` to the ordinary GitHub Actions PR/main CI before Node tests and regression assertions that the release receipt and homepage probes occur exactly once. Source-only workflow repair; no DNS, Pages artifact, Auth, keys, paid infrastructure or private Core changes. External live verification remains separate from green source checks. Rollback: revert this PR (not recommended without restoring a syntactically valid script).
