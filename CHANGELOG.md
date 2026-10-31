@@ -1,5 +1,9 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-01 — Bound SDK JSON response memory and reject malformed UTF-8
+
+- Replace unbounded local/read-only SDK `Response.json()` with a 2 MiB byte-capped stream and fatal UTF-8 decoder. Reject oversized declared or actual responses before JSON materialization, cancel the stream, return safe stable error codes, and preserve split Unicode sequences. Cover adversarial responses with synthetic Fetch tests. No publishing permission, provider setting, hosted Core or production API change.
+
 ## 2026-11-01 — Preserve citations and headings in portable Draft Lab
 
 - Reject control-bearing and space-normalized source URLs before WHATWG parsing silently changes the requested citation; bound input and serialized URL lengths. Reject multiline/control-bearing heading fields that could invalidate the exported Markdown envelope. Shared validation covers local .md export, reopen and optional manual browser vault. Add synthetic security/regression tests for Unicode, malformed headings and untouched existing saved drafts. This is an OSS browser-only editor hardening: no hosted publishing, Supabase or production Auth changes.
