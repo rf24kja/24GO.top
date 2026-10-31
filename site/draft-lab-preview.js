@@ -40,10 +40,12 @@ function tableAt(lines,index){
 }
 
 
-// Limited user-authored citation links. Never interpret raw HTML or image Markdown.
-const CITATION=/\[([^\[\]\n]{1,200})\]\((https?:\/\/[^<>\s()\\]{1,1500})\)/g;
+// Minimal inline Markdown, not arbitrary HTML: links, bold, italic and code.
+// Fixed DOM element names and textContent keep author text inert.
+const INLINE = /(?<citation>\[(?<label>[^\[\]\n]{1,200})\]\((?<url>https?:\/\/[^<>\s()\\]{1,1500})\))|(?<code>\`(?<inlineCode>[^\`\n]{1,1000})\`)|(?<bold>\*\*(?<strong>[^*\n]{1,1000})\*\*)|(?<italic>\*(?<em>[^*\n]{1,1000})\*)/g;
 export function safeCitationUrl(raw){
- if(typeof raw!=='string'||raw.length>1500)return null;
+ if(typeof raw!=='string'||raw.length>1500||
+    /[\u0000-\u001f\u007f]/u.test(raw))return null;
  try{
   const url=new URL(raw);
   return ['https:','http:'].includes(url.protocol)&&url.hostname&&
@@ -52,22 +54,30 @@ export function safeCitationUrl(raw){
 }
 function setInline(node,text,doc){
  const parts=[];
- let offset=0,hasLink=false;
- for(const match of text.matchAll(CITATION)){
-  const safe=safeCitationUrl(match[2]);
-  if(!safe)continue;
+ let offset=0;
+ for(const match of text.matchAll(INLINE)){
+  if(match.index<offset || (match.index>0&&text[match.index-1]==='\\'))continue;
+  const part=match.groups;
+  const safe=part.citation?safeCitationUrl(part.url):null;
+  if(part.citation&&!safe)continue;
   if(match.index>offset)parts.push(doc.createTextNode(text.slice(offset,match.index)));
-  const link=doc.createElement('a');
-  link.textContent=match[1];
-  link.setAttribute('href',safe);
-  link.setAttribute('rel','noopener noreferrer ugc');
-  link.setAttribute('target','_blank');
-  link.setAttribute('referrerpolicy','no-referrer');
-  parts.push(link);
+  if(part.citation){
+   const link=doc.createElement('a');
+   link.textContent=part.label;
+   link.setAttribute('href',safe);
+   link.setAttribute('rel','noopener noreferrer ugc');
+   link.setAttribute('target','_blank');
+   link.setAttribute('referrerpolicy','no-referrer');
+   parts.push(link);
+  }else{
+   const tag=part.code?'code':part.bold?'strong':'em';
+   const element=doc.createElement(tag);
+   element.textContent=part.code?part.inlineCode:part.bold?part.strong:part.em;
+   parts.push(element);
+  }
   offset=match.index+match[0].length;
-  hasLink=true;
  }
- if(!hasLink){node.textContent=text;return;}
+ if(!parts.length){node.textContent=text;return;}
  if(offset<text.length)parts.push(doc.createTextNode(text.slice(offset)));
  node.append(...parts);
 }
