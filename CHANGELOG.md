@@ -1,5 +1,11 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-01 — Section navigation and responsible public article citations
+
+- Add immutable source-level fragment IDs for headings in all ten original reviewed engineering articles and progressive first-party `article-reader.mjs` reading controls: accessible in-page contents, per-section canonical link copying, Markdown/plain-text/BibTeX citations from matching JSON-LD and canonical metadata, print action and transient scroll progress. No request tracking, account access, storage, remote AI or publication permissions.
+- Clipboard failures expose a selectable manual-copy field. Reader HTML/JS is a sibling of original research prose, so validated RSS and search-index content do not change. Static hash links continue to work with JavaScript disabled.
+- Include source/DOM/security and accessibility-structure tests, mandatory JS syntax check, docs and post-Pages exact-release HTTPS checks. Native-assistive-tech and mobile QA remain to be completed; rollback is a public source-only PR revert and Pages redeploy. No private Core/DB or DNS change.
+
 ## 2026-11-01 — Agent-oriented MCP paging, excerpts, and source validation
 
 - Extend the local, strictly read-only public article MCP with two additional tools: `search_articles_page` provides deterministic multiword relevance, count and offset pagination; `read_article_excerpt` provides Unicode-safe bounded chunks of one allowlisted published HTML article. Preserve the existing three MCP tool names, legacy `search_articles` array response, JSON-RPC stdio transport and source-only distribution. All article bodies are explicitly untrusted and HTML-derived excerpts are lossy; no arbitrary file reads, backend credentials or publish privileges.
