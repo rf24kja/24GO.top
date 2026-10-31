@@ -73,3 +73,15 @@ test('read-only external audit binds exactly to completed Pages SHA and run ID',
  assert.match(script,/PASS exact public Pages release/);
  assert.doesNotMatch(script,/curl[^\n]* -k(?:\s|$)/);
 });
+
+test('live HTTPS audit is one well-formed program, not a duplicate after its success footer',()=>{
+ const script=readFileSync(fileURLToPath(
+   new URL('../scripts/check-live-seo.sh',import.meta.url)),'utf8');
+ const ci=workflows['ci.yml'];
+ assert.match(ci,/run: bash -n scripts\/check-live-seo\.sh/);
+ assert.equal((script.match(/^probe '\/' home /gm)||[]).length,1);
+ assert.equal((script.match(/^probe '\/release\.json' release /gm)||[]).length,1);
+ assert.equal((script.match(/^echo 'NOTE: this does NOT confirm Google\/Bing indexing or AI-search recommendations\.'$/gm)||[]).length,1);
+ assert.ok(script.trimEnd().endsWith("echo 'NOTE: this does NOT confirm Google/Bing indexing or AI-search recommendations.'"));
+ assert.doesNotMatch(script,/^\s*"\$tmp\/release"; then/m);
+});
