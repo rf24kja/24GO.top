@@ -175,3 +175,58 @@ export class TopClient {
     });
   }
 }
+
+/**
+ * Public source-backed editorial articles available without any account.
+ * This is deliberately separate from the LOCAL JSON demo and does not grant
+ * publishing permissions or expose future private hosted-core endpoints.
+ */
+export class TopEditorialClient extends TopClient {
+  constructor({ fetchImpl = globalThis.fetch, timeoutMs = 8000 } = {}) {
+    super({ baseURL: 'https://24go.top', fetchImpl, timeoutMs });
+  }
+
+  async listArticles({ limit = 20, signal } = {}) {
+    if (!Number.isSafeInteger(limit) || limit < 1 || limit > 50) {
+      throw new RangeError('limit must be an integer from 1 to 50');
+    }
+    const feed = await this.request('/engineering/feed.json', { signal });
+    const invalid = () => new TopClientError(
+      '24GOTOP public editorial feed is invalid', null, 'INVALID_FEED'
+    );
+    if (!feed || feed.version !== 'https://jsonfeed.org/version/1.1' ||
+        feed.feed_url !== 'https://24go.top/engineering/feed.json' ||
+        feed.home_page_url !== 'https://24go.top/engineering/' ||
+        feed.language !== 'en' || !Array.isArray(feed.items) ||
+        feed.items.length > 200) throw invalid();
+
+    // Check the entire feed, not just the first `limit` items: a hostile
+    // later entry must not escape validation when consumers page locally.
+    const seen = new Set();
+    const articles = [];
+    for (const item of feed.items) {
+      if (!item || typeof item !== 'object' || Array.isArray(item) ||
+          typeof item.url !== 'string' ||
+          !/^https:\/\/24go\.top\/engineering\/[a-z0-9-]+\.html$/.test(item.url) ||
+          item.id !== item.url || seen.has(item.url) ||
+          typeof item.title !== 'string' || item.title.length < 1 ||
+          item.title.length > 250 || !item.title.trim() ||
+          typeof item.summary !== 'string' || !item.summary.trim() ||
+          item.summary.length > 1500 || item.language !== 'en' ||
+          typeof item.date_published !== 'string' ||
+          !Number.isFinite(Date.parse(item.date_published))) throw invalid();
+      seen.add(item.url);
+      articles.push({
+        url: item.url,
+        title: item.title,
+        summary: item.summary,
+        language: item.language,
+        publishedAt: item.date_published
+      });
+    }
+    return {
+      articles: articles.slice(0, limit),
+      source: 'https://24go.top/engineering/feed.json'
+    };
+  }
+}
