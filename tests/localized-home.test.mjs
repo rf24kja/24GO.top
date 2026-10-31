@@ -69,7 +69,11 @@ test('translated home summaries preserve safe staging boundary and actually usef
   assert.match(page,/<section class="section wrap" aria-labelledby="available-heading">/);
   assert.match(page,/<section class="section wrap localized-roadmap" aria-labelledby="planned-heading">/);
   assert.equal((page.match(/<article class="card">/g)||[]).length,3);
-  assert.doesNotMatch(page,/<form\b|<script\b|<iframe\b|<base\b|onerror=|onclick=/i);
+  // A reviewed, native same-origin GET-only editorial search is permitted;
+  // no executable scripts or publication/upload forms are allowed.
+  assert.equal((page.match(/<form\\b/gi)||[]).length,1,code+' one search form');
+  assert.match(page,/<form class="hero-search" role="search" aria-label="[^"]+" method="get" action="\\.\\.\\/engineering\\/">/);
+  assert.doesNotMatch(page,/<script\\b|<iframe\\b|<base\\b|onerror=|onclick=|enctype=|method="post"/i);
  }
  assert.match(pages.ru,/Знания/);
  assert.match(pages.th,/ความรู้/);
