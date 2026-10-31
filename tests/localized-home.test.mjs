@@ -30,8 +30,8 @@ test('all eight home versions are actual crawlable static Pages routes, not clie
   assert.ok(!/sb_secret_|service_role|PUBLISH_API_KEY|public signup is open/i.test(html));
   if(code!=='en'){
    assert.ok(existsSync(join(root,code,'index.html')),code+' needs a real file');
-   assert.ok(html.includes('src="../visuals/knowledge-network.svg"'),code+' needs actual branded artwork');
-   assert.ok(html.includes('src="../visuals/24gotop-showcase.svg"'),code+' needs published product art');
+   assert.ok(html.includes('src="../visuals/knowledge-network.'+code+'.svg"'),code+' needs actual branded artwork');
+   assert.ok(html.includes('src="../visuals/24gotop-showcase.'+code+'.svg"'),code+' needs published product art');
    assert.ok(html.includes('<main id="main-content" tabindex="-1">'),code+' focus landmark');
    assert.ok(html.includes('href="../engineering/" lang="en"'),code+' external English-only article labeling');
    assert.ok(!html.includes('24gotop-staging-auth.vercel.app'),code+' must not link a private staging login');

@@ -49,7 +49,7 @@ test('eight README files expose decorative Material icons next to actual accessi
      file+' unknown icon path');
   }
   assert.ok(markdown.includes('README.md'),file+' must retain English entry point');
-  assert.ok(markdown.includes('24gotop-readme-hero.svg'),file+' retains product artwork');
+  assert.ok(/24gotop-readme-hero(?:\.[a-z]{2})?\.svg/.test(markdown),file+' retains localized product artwork');
  }
  const en=read('README.md');
  assert.equal((en.match(/readme-icons\//g)||[]).length,15,

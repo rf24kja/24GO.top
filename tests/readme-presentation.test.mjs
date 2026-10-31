@@ -47,7 +47,7 @@ test('showcase SVG diagrams are safe, accessible, lightweight and self-contained
   assert.match(svg,/<desc id="desc">[^<]+<\/desc>/);
   assert.doesNotMatch(svg,/<script\b|<foreignObject\b|<image\b|<iframe\b|<a\b|onload=|onclick=|javascript:|https?:\/\/[^"]+\.js|@import/i);
   assert.ok(publicREADME.includes(name),'primary README should display '+name);
-  for(const [,markdown] of all.slice(1))assert.ok(markdown.includes('../assets/'+name.split('/').at(-1)),
+  for(const [,markdown] of all.slice(1))assert.ok(name.endsWith('readme-hero.svg') ? /24gotop-readme-hero\.[a-z]{2}\.svg/.test(markdown) : markdown.includes('../assets/'+name.split('/').at(-1)),
    'translated README should provide same infographic: '+name);
  }
 });
