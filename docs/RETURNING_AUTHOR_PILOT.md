@@ -46,6 +46,10 @@ Invite five opt-in authors to:
 
 A positive prototype result supports researching secure, authenticated server-side drafts **after** the founder resolves the public/private core boundary and P0 security gates. It does not prove product-market fit, DAU/MAU, paid conversion, or readiness to open public writes.
 
+## 2026-11-01 — Lossless source citation and portable heading gate
+
+The static Draft Lab now rejects source URL values containing raw control characters, URL-parser-erased leading/trailing spaces or URLs which exceed 2,000 characters before or after canonical percent-encoding. Browser `URL()` can silently remove newlines/tabs, and an altered citation must not be presented or exported as the author's original source. Strict validation also rejects title line/paragraph separators and C0/DEL controls, so Markdown headers cannot become malformed or spoofed file metadata. Both file export and optional browser vault share these checks; malicious input is refused without overwriting a stored draft. Existing safe multilingual Markdown round-trips still work. Tests are source-level: actual 320px/mobile and five returning-author sessions remain unverified. Rollback is a small public source/test/docs PR revert without DB, DNS or identity changes.
+
 ## Test & rollback
 
 Node CI covers round-tripping every locale/category, previously exported files, CRLF/BOM, malicious URL data, oversized files and metadata tampering. Manual real-browser file picker, download, focus and screen-reader tests remain necessary. Revert the dedicated Import PR to remove this functionality; no database or production data migration is involved.
