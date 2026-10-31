@@ -1,5 +1,9 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-01 — Read real public engineering articles through source-only SDK
+
+- Add a separate read-only `TopEditorialClient.listArticles()` for the existing published JSON Feed 1.1 at the fixed canonical HTTPS URL, with full-feed validation, allowlisted article links, stable error codes, bounded responses and caller cancellation. Provide a runnable `npm run demo:articles` example and negative tests for tampered links/duplicates. This is public editorial discovery, NOT hosted member publication, private API access, full-body scraping, or an npm release. Rollback is a source-only PR revert; no backend, Auth, DNS or billing change.
+
 ## 2026-11-01 — Bound SDK JSON response memory and reject malformed UTF-8
 
 - Replace unbounded local/read-only SDK `Response.json()` with a 2 MiB byte-capped stream and fatal UTF-8 decoder. Reject oversized declared or actual responses before JSON materialization, cancel the stream, return safe stable error codes, and preserve split Unicode sequences. Cover adversarial responses with synthetic Fetch tests. No publishing permission, provider setting, hosted Core or production API change.

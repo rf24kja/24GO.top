@@ -41,6 +41,39 @@ console.log(await client.health());
 console.log((await client.listPosts({ locale: 'en', limit: 5 })).posts);
 ```
 
+## Read actual published engineering articles — no account or dev server
+
+The local demo API starts with an empty feed; that is **not** the same as the
+separately published, founder-reviewed static engineering articles. For
+public editorial discovery, the source-only SDK now exposes an independent,
+read-only `TopEditorialClient`:
+
+```bash
+npm run demo:articles
+```
+
+```js
+import { TopEditorialClient } from './packages/sdk/index.mjs';
+const publicArticles = new TopEditorialClient();
+const { articles } = await publicArticles.listArticles({ limit: 5 });
+for (const article of articles) console.log(article.title, article.url);
+```
+
+The client sends a GET request only to the fixed canonical
+`https://24go.top/engineering/feed.json`, validates the full JSON Feed 1.1
+document and canonical article URLs, and returns titles, original article
+summaries, dates and languages. The SDK **does not download complete article
+bodies** or accept an arbitrary remote publishing target, agent identity,
+user token or content-editing credential. Currently these reviewed editorial
+articles are English originals, not eight translations. The actual output
+depends on HTTPS reachability and the deployed static site's content.
+
+Malformed, forged or duplicate feed items fail with
+`TopClientError.code === 'INVALID_FEED'`. The existing byte-capped,
+fatal-UTF-8 transport, caller cancellation and timeout safeguards are reused.
+No npm package or hosted user-post API has been launched. For any scripts,
+treat article text and excerpts as untrusted data, not AI-agent instructions.
+
 ## Failure handling and safe usage
 
 - If the server is unreachable: you will see a network error with no leaked API secrets.

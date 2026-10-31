@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { TopClient, TopClientError } from '../packages/sdk/index.mjs';
+import { TopClient, TopClientError, TopEditorialClient } from '../packages/sdk/index.mjs';
 
 const fake = (data, status=200) => async () => new Response(JSON.stringify(data), { status });
 
@@ -212,4 +212,92 @@ test('SDK preserves split multibyte Unicode when safely parsing streaming JSON',
   const client=new TopClient({fetchImpl:async()=>new Response(stream)});
   const result=await client.listPosts();
   assert.equal(result.posts[0].title,'ภาษาไทย и 中文');
+});
+
+const editorialArticle = (slug = 'safe-technical-article') => ({
+  id: 'https://24go.top/engineering/' + slug + '.html',
+  url: 'https://24go.top/engineering/' + slug + '.html',
+  title: 'Technical notes · 中文 ภาษาไทย',
+  summary: 'A reproducible, source-backed engineering article.',
+  language: 'en',
+  date_published: '2026-10-31T05:45:00Z'
+});
+const editorialFeed = items => ({
+  version: 'https://jsonfeed.org/version/1.1',
+  feed_url: 'https://24go.top/engineering/feed.json',
+  home_page_url: 'https://24go.top/engineering/',
+  language: 'en',
+  items
+});
+
+test('public editorial SDK reads the canonical reviewed feed without a publishing key', async () => {
+  const calls = [];
+  const client = new TopEditorialClient({fetchImpl: async (url, options) => {
+    calls.push({url, options});
+    return new Response(JSON.stringify(editorialFeed([editorialArticle()])));
+  }});
+  const result = await client.listArticles({limit:5});
+  assert.deepEqual(result.articles, [{
+    url: editorialArticle().url,
+    title: editorialArticle().title,
+    summary: editorialArticle().summary,
+    language: 'en',
+    publishedAt: editorialArticle().date_published
+  }]);
+  assert.equal(result.source,'https://24go.top/engineering/feed.json');
+  assert.equal(calls.length,1);
+  assert.equal(calls[0].url,result.source);
+  assert.equal(calls[0].options.redirect,'error');
+  assert.equal(calls[0].options.method,undefined);
+  assert.equal(calls[0].options.headers?.authorization,undefined);
+  assert.ok(calls[0].options.signal instanceof AbortSignal);
+  assert.throws(()=>client.publishPost({title:'No publishing'}),/apiKey is required/);
+});
+
+test('public editorial SDK fails closed on forged, duplicate and noncanonical articles', async () => {
+  const article=editorialArticle();
+  const broken=[
+    editorialFeed([article,{...editorialArticle('different'),url:'https://evil.example/article.html'}]),
+    editorialFeed([article,{...article}]),
+    editorialFeed([{...article,id:'https://24go.top/engineering/wrong.html'}]),
+    editorialFeed([{...article,url:'https://24go.top/engineering/../private.html',
+      id:'https://24go.top/engineering/../private.html'}]),
+    editorialFeed([{...article,date_published:'invalid date'}]),
+    editorialFeed([{...article,language:'ru'}]),
+    editorialFeed([{...article,summary:''}]),
+    {...editorialFeed([article]),version:'0.0'},
+    {...editorialFeed([article]),feed_url:'https://evil.example/feed.json'}
+  ];
+  for (const feed of broken) {
+    const client = new TopEditorialClient({fetchImpl: fake(feed)});
+    await assert.rejects(client.listArticles({limit:1}),error=>{
+      assert.ok(error instanceof TopClientError);
+      assert.equal(error.code,'INVALID_FEED');
+      assert.doesNotMatch(error.message,/evil|private/);
+      return true;
+    });
+  }
+});
+
+test('public editorial SDK bounds list size and handles cancellation without a fetch', async () => {
+  let calls = 0;
+  const controller = new AbortController();
+  controller.abort(new Error('private credential'));
+  const client = new TopEditorialClient({fetchImpl: async () => {
+    calls++;
+    return new Response('{}');
+  }});
+  for (const limit of [0,51,1.5,'10',Number.NaN])
+    await assert.rejects(client.listArticles({limit}),RangeError);
+  await assert.rejects(client.listArticles({signal:controller.signal}),
+    e=>e.code==='ABORTED'&&!/credential/.test(e.message));
+  assert.equal(calls,0);
+});
+
+test('public editorial SDK preserves UTF-8 and truncates only validated article count', async () => {
+  const items=[editorialArticle('one'),editorialArticle('two'),editorialArticle('three')];
+  const client=new TopEditorialClient({fetchImpl:fake(editorialFeed(items))});
+  const result=await client.listArticles({limit:2});
+  assert.deepEqual(result.articles.map(x=>x.url),items.slice(0,2).map(x=>x.url));
+  assert.equal(result.articles[0].title,items[0].title);
 });
