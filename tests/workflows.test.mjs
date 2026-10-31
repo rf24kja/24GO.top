@@ -50,3 +50,26 @@ test('read-only live SEO audit starts after successful Pages deployment, not in 
   assert.match(seo,/run: bash scripts\/check-live-seo\.sh/);
   assert.doesNotMatch(seo,/pages: write|id-token: write|\$\{\{\s*secrets\./);
 });
+
+test('Pages embeds immutable checkout commit and run without including backend or secrets',()=>{
+ const pages=workflows['pages.yml'];
+ assert.match(pages,/PAGES_COMMIT: \$\{\{ github\.sha \}\}/);
+ assert.match(pages,/PAGES_RUN_ID: \$\{\{ github\.run_id \}\}/);
+ assert.match(pages,/site\/release\.json/);
+ assert.match(pages,/printf '[^']*"commit"[^']*"pages_run_id"/);
+ assert.ok(pages.indexOf('Embed exact commit')<pages.indexOf('Upload ONLY the static site'));
+ assert.doesNotMatch(pages,/site\/src\/|site\/packages\/|secrets\./);
+});
+
+test('read-only external audit binds exactly to completed Pages SHA and run ID',()=>{
+ const seo=workflows['seo-live.yml'];
+ const script=readFileSync(fileURLToPath(
+   new URL('../scripts/check-live-seo.sh',import.meta.url)),'utf8');
+ assert.match(seo,/EXPECTED_PAGES_SHA:.*github\.event\.workflow_run\.head_sha/);
+ assert.match(seo,/EXPECTED_PAGES_RUN_ID:.*github\.event\.workflow_run\.id/);
+ assert.match(script,/probe '\/release\.json' release/);
+ assert.match(script,/grep -Fxq -- "\$expected_receipt"/);
+ assert.match(script,/release\.json\?audit=\$EXPECTED_PAGES_RUN_ID/);
+ assert.match(script,/PASS exact public Pages release/);
+ assert.doesNotMatch(script,/curl[^\n]* -k(?:\s|$)/);
+});
