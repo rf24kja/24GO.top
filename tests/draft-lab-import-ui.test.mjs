@@ -25,7 +25,7 @@ function build({uiHref='https://24go.top/draft-lab.html'}={}) {
     'postTitle','postBody','postLocale','postCategory','postSource','formStatus',
     'previewHeading','previewBody','previewLocale','previewCategory','bodyCount',
     'previewSource','draftSafety','articleOutline','articleOutlineSection','downloadDraft','copyDraft','clearDraft','importDraft','importDraftFile','draftForm',
-    'formatHeading','formatList','formatQuote','formatCode','formatLink','uiLocale','draftDropZone','homeBrandLink','homeNavLink'
+    'formatHeading','formatList','formatQuote','formatCode','formatTable','formatLink','uiLocale','draftDropZone','homeBrandLink','homeNavLink'
   ];
   const elements = Object.fromEntries(ids.map(id => {
     const el = {
@@ -626,4 +626,20 @@ test('live browser preview receives original article whitespace and matches expo
   'reopening .md must not silently trim the preview');
  assert.equal(fresh.beforeUnload().prevented,false,
   'merely previewing an imported file does not mark it as edited');
+});
+
+test('visible Table toolbar edits draft source, previews and keeps loss protection',()=>{
+ const app=build();
+ app.elements.postTitle.value='Evidence comparison for technical readers';
+ app.elements.postBody.value='The author writes a reproducible summary first.';
+ const start=app.elements.postBody.value.length;
+ app.elements.postBody.selectionStart=start;
+ app.elements.postBody.selectionEnd=start;
+ app.elements.formatTable.listeners.click();
+ assert.match(app.elements.postBody.value,/\| Column \| Value \|\n\| --- \| --- \|\n\| Example \| 123 \|$/);
+ assert.equal(app.elements.postBody.value.slice(
+  app.elements.postBody.selectionStart,app.elements.postBody.selectionEnd),'Column');
+ assert.equal(app.elements.previewBody.textContent,app.elements.postBody.value);
+ assert.equal(app.beforeUnload().prevented,true);
+ assert.match(app.elements.formStatus.textContent,/locally/);
 });

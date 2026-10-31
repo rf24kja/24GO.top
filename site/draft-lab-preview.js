@@ -10,6 +10,36 @@ const QUOTE = /^ {0,3}> ?(.*)$/;
 const LIST = /^ {0,3}([-*+]|\d+[.)])\s+(.+)$/;
 const INDENTED_CODE = /^(?: {4}|\t)/;
 
+// Deliberately bounded GitHub-style pipe tables (2–8 columns, max 50 rows).
+// An invalid divider or inconsistent row remains literal Markdown. Authors'
+ // escaped pipes are cell text, never HTML or dynamically created attributes.
+function splitTableRow(line) {
+ if(typeof line!=='string'||!line.includes('|'))return null;
+ let text=line.trim();
+ if(text.startsWith('|'))text=text.slice(1);
+ if(text.endsWith('|') && !text.endsWith('\\|'))text=text.slice(0,-1);
+ const cells=[],buffer=[];
+ for(let i=0;i<text.length;i++){
+  if(text[i]==='\\'&&text[i+1]==='|'){buffer.push('|');i++;continue;}
+  if(text[i]==='|'){cells.push(buffer.join('').trim());buffer.length=0;}
+  else buffer.push(text[i]);
+ }
+ cells.push(buffer.join('').trim());
+ return cells;
+}
+function tableAt(lines,index){
+ if(index+1>=lines.length)return null;
+ const headers=splitTableRow(lines[index]);
+ const dividers=splitTableRow(lines[index+1]);
+ if(!headers||headers.length<2||headers.length>8||
+    headers.every(value=>!value)||!dividers||dividers.length!==headers.length||
+    !dividers.every(cell=>/^:?-{3,}:?$/.test(cell)))return null;
+ const align=dividers.map(value=>value.startsWith(':')&&value.endsWith(':')?'center':
+   value.endsWith(':')?'right':'left');
+ return {headers,align};
+}
+
+
 // Limited user-authored citation links. Never interpret raw HTML or image Markdown.
 const CITATION=/\[([^\[\]\n]{1,200})\]\((https?:\/\/[^<>\s()\\]{1,1500})\)/g;
 export function safeCitationUrl(raw){
@@ -104,6 +134,21 @@ export function parsePreviewBlocks(input) {
       continue;
     }
 
+    const table=tableAt(lines,index);
+    if(table){
+      index+=2;
+      const rows=[];
+      while(index<lines.length && rows.length<50){
+        if(!lines[index].trim())break;
+        const cells=splitTableRow(lines[index]);
+        if(!cells||cells.length!==table.headers.length)break;
+        rows.push(cells);
+        index++;
+      }
+      blocks.push({type:'table',headers:table.headers,align:table.align,rows});
+      continue;
+    }
+
     if (RULE.test(line)) {
       blocks.push({ type: 'rule' });
       index++;
@@ -142,7 +187,7 @@ export function parsePreviewBlocks(input) {
 
     const paragraph = [];
     while (index < lines.length && lines[index].trim()
-      && (paragraph.length === 0 || !startsBlock(lines[index]))) {
+      && (paragraph.length === 0 || (!startsBlock(lines[index]) && !tableAt(lines,index)))) {
       paragraph.push(lines[index++].trim());
     }
     blocks.push({ type: 'paragraph', text: paragraph.join(' ') });
@@ -183,6 +228,39 @@ export function renderMarkdownPreview(container, markdown, doc = document) {
           node.append(li);
         }
         break;
+      case 'table': {
+        node=doc.createElement('div');
+        node.className='preview-table-scroll';
+        node.setAttribute('role','region');
+        node.setAttribute('aria-label','Markdown table preview — scroll horizontally');
+        node.setAttribute('tabindex','0');
+        const tableNode=doc.createElement('table');
+        const head=doc.createElement('thead');
+        const headerRow=doc.createElement('tr');
+        block.headers.forEach((text,index)=>{
+          const th=doc.createElement('th');
+          th.setAttribute('scope','col');
+          th.className='table-align-'+block.align[index];
+          setInline(th,text,doc);
+          headerRow.append(th);
+        });
+        head.append(headerRow);
+        tableNode.append(head);
+        const tbody=doc.createElement('tbody');
+        block.rows.forEach(row=>{
+          const tr=doc.createElement('tr');
+          row.forEach((text,index)=>{
+            const td=doc.createElement('td');
+            td.className='table-align-'+block.align[index];
+            setInline(td,text,doc);
+            tr.append(td);
+          });
+          tbody.append(tr);
+        });
+        tableNode.append(tbody);
+        node.append(tableNode);
+        break;
+      }
       case 'code': {
         node = doc.createElement('pre');
         const code = doc.createElement('code');

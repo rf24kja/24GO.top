@@ -39,6 +39,16 @@ export function formatDraftSelection(value,start,end,action){
    const prefix=action==='list'?'- ':'> ';
    replacement=content.split(/\r?\n/).map(line=>prefix+line).join('\n');
    innerOffset=prefix.length;
+ }else if(action==='table'){
+   if(selected.length>120||/[\r\n|]/.test(selected))
+     throw new TypeError('Table header must be a single line without pipes');
+   content=selected||'Column';
+   // A table is a block. Separate it from surrounding prose even when
+   // the cursor is in the middle of a paragraph, without dropping text.
+   const before=start>0 && value[start-1]!=='\n'?'\n\n':'';
+   const after=end<value.length && value[end]!=='\n'?'\n\n':'';
+   replacement=before+'| '+content+' | Value |\n| --- | --- |\n| Example | 123 |'+after;
+   innerOffset=before.length+2;
  }else if(action==='code'){
    content ||= '// your code';
    const runs=selected.match(/`+/g)||[];
@@ -47,6 +57,10 @@ export function formatDraftSelection(value,start,end,action){
  }else throw new TypeError('Unsupported Markdown action');
  if(value.length-(end-start)+replacement.length>12000)
    throw new RangeError('Article exceeds 12,000 characters');
+ if(action==='table'){
+   const selectionStart=start+innerOffset;
+   return {replacement,selectionStart,selectionEnd:selectionStart+content.length};
+ }
  if(action==='link'){
    const selectionStart=start+innerOffset;
    return {replacement,selectionStart,selectionEnd:selectionStart+'https://example.org'.length};

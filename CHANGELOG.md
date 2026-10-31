@@ -1,5 +1,11 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-31 — Insert and preview real Markdown tables in Draft Lab
+
+- Added an actual **Table** formatting action and editable two-column Markdown table template, preserving source content and respecting the 12,000-character limit. Block-aware insertion separates the table from adjacent prose rather than corrupting the article.
+- Added a bounded Markdown pipe-table parser with up to 8 columns and 50 body rows, optional left/center/right alignment, escaped pipe handling and safe literal rendering of unknown syntax. Preview builds a keyboard-scrollable `table`/`thead`/`tbody`/`th`/`td` hierarchy; author HTML stays text and HTTP(S) citations pass the existing URL sanitizer.
+- Updated all eight editor interface languages, responsive narrow-screen/light/dark table styling, parser/security/user-interface regressions and canonical HTTPS delivery smoke. Draft Lab remains a **local, no-autosave/no-upload prototype**, not hosted publishing. Real-device keyboard, native translation and screen-reader QA still need human verification.
+
 ## 2026-10-31 — Search inside published engineering articles, not only their titles
 
 - Added a 56 KB static, source-generated full-text index from the nine real published article HTML bodies and canonical JSON Feed. Each index entry is bound to the visible article card; adding or changing an article requires the index to be regenerated before CI can pass.
