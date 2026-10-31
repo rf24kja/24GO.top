@@ -43,8 +43,12 @@ export function formatDraftSelection(value,start,end,action){
    if(selected.length>120||/[\r\n|]/.test(selected))
      throw new TypeError('Table header must be a single line without pipes');
    content=selected||'Column';
-   replacement='| '+content+' | Value |\n| --- | --- |\n| Example | 123 |';
-   innerOffset=2;
+   // A table is a block. Separate it from surrounding prose even when
+   // the cursor is in the middle of a paragraph, without dropping text.
+   const before=start>0 && value[start-1]!=='\n'?'\n\n':'';
+   const after=end<value.length && value[end]!=='\n'?'\n\n':'';
+   replacement=before+'| '+content+' | Value |\n| --- | --- |\n| Example | 123 |'+after;
+   innerOffset=before.length+2;
  }else if(action==='code'){
    content ||= '// your code';
    const runs=selected.match(/`+/g)||[];
