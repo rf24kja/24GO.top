@@ -20,4 +20,9 @@ test('tenth canonical article is safe, searchable and backed by merged MCP sourc
  assert.ok(index.articles.some(x=>x.file===leaf&&x.text.includes('database connection')));
  for(const file of ['engineering/index.html','sitemap.xml','llms.txt','index.html'])assert.ok(read(file).includes(leaf),file);
  assert.ok(!/sb_secret_|service_role|PUBLISH_API_KEY/.test(article));
+ const home=read('index.html');
+ assert.ok(home.includes('npm run mcp:articles'));
+ assert.ok(home.includes('docs/PUBLIC_ARTICLE_MCP.md'));
+ assert.ok(home.includes('no account, hosted write access or remote MCP endpoint'));
+
 });
