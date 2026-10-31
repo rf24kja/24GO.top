@@ -70,6 +70,19 @@
           <p id="draftSafety" class="tiny" data-ui="safetyEmpty">No draft content yet. Draft Lab never automatically saves your work.</p>
           <p id="formStatus" role="status" aria-live="polite"></p>
         </form>
+        <section class="browser-vault" aria-labelledby="browser-vault-heading">
+          <span class="eyebrow" data-ui="vaultTag">OPTIONAL / ON THIS DEVICE</span>
+          <h3 id="browser-vault-heading" data-ui="vaultHeading">Saved drafts in this browser</h3>
+          <p data-ui="vaultDescription">Save up to eight articles manually and reopen them later on this device. Nothing is uploaded. Browser storage is not encrypted, may be accessible on shared devices, and can be cleared. Download .md files as backups.</p>
+          <div class="browser-vault__controls">
+            <button id="saveBrowserDraft" type="button" class="secondary" data-ui="vaultSave">Save current draft here</button>
+            <label for="savedBrowserDraft" data-ui="vaultSelectLabel">Choose saved article</label>
+            <select id="savedBrowserDraft" aria-label="Choose saved article" data-ui-label="vaultSelectLabel"></select>
+            <button id="openBrowserDraft" type="button" class="secondary" data-ui="vaultOpen">Open selected</button>
+            <button id="deleteBrowserDraft" type="button" class="secondary danger" data-ui="vaultDelete">Delete selected</button>
+          </div>
+          <p id="vaultCount" class="tiny" role="status" aria-live="polite"></p>
+        </section>
         <aside class="proposal-bridge" aria-labelledby="proposal-heading">
           <span class="eyebrow" data-ui="proposalTag">03 / CONTRIBUTE</span>
           <h3 id="proposal-heading" data-ui="proposalHeading">Propose this article for human review</h3>

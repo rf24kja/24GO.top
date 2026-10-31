@@ -106,3 +106,13 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 .proposal-bridge__link{display:inline-flex;align-items:center;min-height:46px;margin:5px 0;padding:10px 17px;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none;font-weight:700}
 .proposal-bridge__link:hover{filter:brightness(.88);color:#fff}
 .proposal-bridge__link:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
+
+/* Explicit local browser vault; manual save, not automatic cloud persistence. */
+.browser-vault{margin-top:20px;padding:20px;border:1px solid var(--border);border-radius:14px;background:var(--field)}
+.browser-vault h3{font-size:clamp(17px,2.5vw,21px);margin:8px 0}
+.browser-vault p{line-height:1.55;color:var(--muted)}
+.browser-vault__controls{display:flex;flex-wrap:wrap;align-items:center;gap:9px}
+.browser-vault__controls label{flex-basis:100%;margin:5px 0 0}
+.browser-vault__controls select{flex:1 1 240px;min-width:0;max-width:100%}
+.browser-vault__controls button{min-height:44px}
+@media(max-width:550px){.browser-vault__controls button{flex:1 1 100%}}

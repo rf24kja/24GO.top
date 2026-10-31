@@ -4,8 +4,10 @@ import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftConte
 import { renderMarkdownPreview,renderPreviewOutline } from './draft-lab-preview.js';
 import { applyUiLanguage,uiText } from './draft-lab-i18n.js';
 import { buildArticleProposalUrl } from './draft-lab-proposal.js';
+import {createDraftVault,MAX_SAVED_DRAFTS,VAULT_KEY} from './draft-lab-vault.js';
 
-// Browser-only draft editor: no automatic network, browser persistence or analytics.
+// Browser-only draft editor: no automatic network or analytics.
+ // Browser persistence is optional, manual and never activated by typing.
 // An explicit, confirmed outbound GitHub proposal link transfers only the headline.
 const field = id => document.getElementById(id);
 const title = field('postTitle');
@@ -33,12 +35,47 @@ function refreshInterface(){
   // article language, selection, source, or reopened-file baseline.
   preview();
   updateValidationNotice();
+  refreshBrowserDrafts();
 }
 uiLocale.addEventListener('change',refreshInterface);
 // A file selected by the user provides an authoritative in-tab baseline only.
 // Download requests and clipboard copy never silently change this baseline.
 let reopenedFileBaseline = null;
 const importGate=createDraftImportGate();
+let activeSavedId=null,activeSavedVersion=null;
+function getDraftVault(){return createDraftVault(window.localStorage);}
+function resetSavedSlot(){activeSavedId=null;activeSavedVersion=null;}
+function refreshBrowserDrafts(selectId=null){
+ const picker=field('savedBrowserDraft');
+ const previous=selectId??picker.value;
+ picker.replaceChildren();
+ const empty=document.createElement('option');
+ empty.value='';empty.textContent=ui('vaultChoose');
+ picker.append(empty);
+ try{
+  const rows=getDraftVault().list();
+  for(const item of rows){
+   const option=document.createElement('option');
+   option.value=item.id;
+   option.textContent=item.title+' · '+item.locale.toUpperCase();
+   picker.append(option);
+  }
+  picker.value=rows.some(x=>x.id===previous)?previous:'';
+  field('openBrowserDraft').disabled=!picker.value;
+  field('deleteBrowserDraft').disabled=!picker.value;
+  field('vaultCount').textContent=ui('vaultCount')+rows.length+'/'+MAX_SAVED_DRAFTS;
+ }catch{
+  field('openBrowserDraft').disabled=true;
+  field('deleteBrowserDraft').disabled=true;
+  field('vaultCount').textContent=ui('vaultUnavailable');
+ }
+}
+function vaultError(error){
+ const key=error?.message==='vault_conflict'?'vaultConflict':
+   error?.message==='vault_full'?'vaultFull': 'vaultUnavailable';
+ message(ui(key),true);
+}
+
 
 function currentDraft() {
   return { title:title.value, body:body.value, locale:locale.value,
@@ -159,9 +196,11 @@ async function openLocalDraft(file,input=null) {
     category.value = reopened.category;
     source.value = reopened.source;
     reopenedFileBaseline = { ...reopened };
+    resetSavedSlot();
     clearFieldErrors();
     importGate.changed();
     preview();
+    refreshBrowserDrafts();
     message(ui('opened'));
   } catch {
     if (importGate.isLatest(ticket)) message(ui('openError'),true);
@@ -217,6 +256,57 @@ for(const type of ['dragover','drop']){
     if(type==='drop')message(ui('dropHint'));
   });
 }
+
+// Manual, unencrypted same-origin browser storage. Never autosave or sync.
+field('saveBrowserDraft').addEventListener('click',()=>{
+ if(!readyToExport())return;
+ try{
+  const storage=window.localStorage;
+  if(storage.getItem(VAULT_KEY)===null &&
+     !window.confirm(ui('vaultConsent')))return;
+  const saved=createDraftVault(storage).save(currentDraft(),{
+   id:activeSavedId,version:activeSavedVersion
+  });
+  activeSavedId=saved.id;activeSavedVersion=saved.version;
+  reopenedFileBaseline={...saved.draft};
+  refreshBrowserDrafts(saved.id);
+  updateSafetyNotice();
+  message(ui('vaultSaved'));
+ }catch(error){vaultError(error);}
+});
+field('savedBrowserDraft').addEventListener('change',()=>refreshBrowserDrafts());
+field('openBrowserDraft').addEventListener('click',()=>{
+ const id=field('savedBrowserDraft').value;
+ if(!id)return;
+ if(hasDraftContent(currentDraft()) &&
+    !window.confirm(ui('vaultReplace')))return;
+ try{
+  const saved=getDraftVault().load(id);
+  title.value=saved.draft.title;
+  body.value=saved.draft.body;
+  locale.value=saved.draft.locale;
+  category.value=saved.draft.category;
+  source.value=saved.draft.source;
+  activeSavedId=saved.id;activeSavedVersion=saved.version;
+  reopenedFileBaseline={...saved.draft};
+  clearFieldErrors();
+  importGate.changed();
+  preview();
+  refreshBrowserDrafts(saved.id);
+  message(ui('vaultOpened'));
+ }catch(error){vaultError(error);}
+});
+field('deleteBrowserDraft').addEventListener('click',()=>{
+ const id=field('savedBrowserDraft').value;
+ if(!id||!window.confirm(ui('vaultDeleteConfirm')))return;
+ try{
+  const loaded=getDraftVault().load(id);
+  getDraftVault().remove(id,{version:loaded.version});
+  if(activeSavedId===id)resetSavedSlot();
+  refreshBrowserDrafts();
+  message(ui('vaultDeleted'));
+ }catch(error){vaultError(error);}
+});
 
 field('downloadDraft').addEventListener('click', () => {
   if (!readyToExport()) return;
@@ -289,9 +379,11 @@ field('clearDraft').addEventListener('click', () => {
   locale.value = 'en';
   category.value = 'guides';
   reopenedFileBaseline = null;
+  resetSavedSlot();
   clearFieldErrors();
   importGate.changed();
   preview();
+  refreshBrowserDrafts();
   message(ui('cleared'));
   title.focus();
 });
