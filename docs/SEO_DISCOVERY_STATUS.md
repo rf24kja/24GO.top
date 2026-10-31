@@ -1,5 +1,14 @@
 # Public crawlability and indexing — verified 2026-10-31
 
+## Crawlable contextual article navigation (2026-10-31)
+
+The ten **existing** source-reviewed engineering notes now have an accessible static `Continue reading` section after each article's main researched body. It links to exactly two other verified notes (first the closest topic match, then a neighboring published note in RSS order), plus the full archive. This is an aid to readers and a clean internal link graph; it is not a ranking guarantee or synthetic popularity claim. Links remain ordinary HTML when scripts are disabled, and are outside the `<article>` block so the independently validated full-text index remains unchanged.
+
+The generator reads the verified RSS/Article JSON-LD-backed JSON Feed and the archive's existing topic categories, checks the approved canonical inventory, escapes link text, and refuses duplicates, foreign URLs or stale files. Run `npm run related:write` after reviewing new source articles, then `npm run related:check` (also included in `npm run check`) and `npm test`. Post-Pages external HTTPS smoke checks that every sitemap-listed technical article actually delivers its static related-reading links. No dynamic recommendation engine, agent interaction, tracking, generated articles or backend privileges.
+
+**Rollback:** revert the static article navigation, generator, styles, npm script/tests and source notes in one public commit; restore last green Pages artifact. Indexing, impressions, retention and AI citations must still be measured separately.
+
+
 ## Deterministic source-verified sitemap — 31 October 2026
 
 The public static `sitemap.xml` is now produced by `npm run sitemap:write`, and checked with `npm run sitemap:check` as part of `npm run check`. The generator takes eight reciprocal canonical homepage languages, three explicit public editorial/navigation pages and published engineering RSS entries validated against the exact visible Article JSON-LD, dates, bylines and canonical URLs. It refuses forged domains, repeated URLs, missing canonical/h1, broken reciprocal hreflang and unindexable `noindex` pages; browser-only Draft Lab remains excluded. It does not crawl file-system uploads, invent timestamps, use API credentials or call external services.

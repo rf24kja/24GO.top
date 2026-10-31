@@ -52,3 +52,17 @@ header{background:rgba(249,252,249,.9)}a:hover,.navlinks a:hover{color:#07593f}.
 .article-report strong{display:block;color:var(--text);margin-bottom:4px}
 .article-report p{font-size:14px;line-height:1.65;color:var(--muted);margin:10px 0}
 .article-report a{color:var(--accent);text-underline-offset:3px}
+
+
+/* Static, keyboard-accessible internal reading paths — no client JS needed.
+   Positioned after editorial prose so the full-text index stays unchanged. */
+.related-reading{display:block;max-width:750px;min-height:0;min-width:0;
+ margin-top:38px;padding:24px 26px;border:1px solid var(--border);
+ border-radius:14px;background:var(--panel)}
+.related-reading h2{margin:0 0 14px;font-size:22px;letter-spacing:-.3px}
+.related-reading ul{margin:0;padding-left:21px}
+.related-reading li{margin:10px 0;line-height:1.45}
+.related-reading li a{font-weight:700;text-underline-offset:3px}
+.related-reading p{font-size:13px;color:var(--muted);margin:16px 0 0}
+.related-reading p a{font-weight:700;text-underline-offset:3px}
+@media(max-width:700px){.related-reading{padding:19px 20px;margin-top:30px}}
