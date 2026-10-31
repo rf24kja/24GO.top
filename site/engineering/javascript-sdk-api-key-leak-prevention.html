@@ -21,12 +21,12 @@
 <p class="details">24GOTOP engineering · <a href="https://github.com/rf24kja/24GO.top/pull/56">Merged fix PR #56</a> · <a href="https://github.com/rf24kja/24GO.top/blob/main/packages/sdk/index.mjs">Actual SDK implementation</a> · <a href="https://github.com/rf24kja/24GO.top/blob/main/tests/sdk.test.mjs">Negative security tests</a></p>
 <div class="note" role="note"><strong>Scope:</strong> this article describes a local developer prototype and its reviewed source tests. The 24GOTOP hosted publishing platform, verified production sessions and remote write API are not launched. No real API keys, customer data or private backend modules appear here.</div>
 
-<h2 id="section-the-failure-mode-an-innocent-looking-remote-url-2">The failure mode: an innocent-looking remote URL</h2>
+<h2 id="section-the-failure-mode-an-innocent-looking-remote-url">The failure mode: an innocent-looking remote URL</h2>
 <p>Imagine a development SDK that defaults to <code>http://127.0.0.1:3000</code> and accepts an <code>apiKey</code> for a temporary publishing demo. The SDK also accepts a customizable <code>baseURL</code>, because developers may eventually query a remote read-only API. An accidental configuration change to <code>https://some-service.example</code> must not cause a demo publishing token to travel to that address.</p>
 <p>HTTPS authenticates the TLS endpoint and encrypts transport. It does <em>not</em> establish that the endpoint is authorized to receive a particular credential. The question is not simply “Is this URL secure?” but “Is this the intended recipient of this specific token?”</p>
 <p>In the 24GOTOP prototype, <code>TopClient.listPosts()</code>, <code>getPost()</code> and <code>health()</code> are read operations. <code>publishPost()</code> is different: it attaches a bearer token for a local JSON demo. Before the fix, a user-configured HTTPS remote origin was an unsafe destination for this local credential.</p>
 
-<h2 id="section-the-first-rule-validate-the-base-url-structurally-2">The first rule: validate the base URL structurally</h2>
+<h2 id="section-the-first-rule-validate-the-base-url-structurally">The first rule: validate the base URL structurally</h2>
 <p>The constructor parses the configured URL with the standard JavaScript <code>URL</code> class. It refuses non-HTTP(S) schemes, embedded usernames/passwords, query strings, fragments and non-root paths. This removes several ambiguous or misleading input forms, but it does not by itself establish that a remote server is an approved destination for the write token.</p>
 <pre><code>const parsed = new URL(baseURL);
 if (!['http:', 'https:'].includes(parsed.protocol) ||
@@ -37,7 +37,7 @@ if (!['http:', 'https:'].includes(parsed.protocol) ||
 }</code></pre>
 <p>Compare parsed hostnames, not strings such as <code>baseURL.startsWith('http://127.0.0.1')</code>. The lookalike domain <code>127.0.0.1.evil.example</code> begins with those characters but is not the loopback address. Similarly, a hostname containing “localhost” is not necessarily <code>localhost</code>.</p>
 
-<h2 id="section-keep-a-local-development-token-local-2">Keep a local development token local</h2>
+<h2 id="section-keep-a-local-development-token-local">Keep a local development token local</h2>
 <p>For this prototype, we explicitly allow the development write credential only when the parsed destination hostname is one of three loopback names: <code>localhost</code>, <code>127.0.0.1</code> or IPv6 loopback <code>[::1]</code>. Every other hostname fails before any fetch operation can run.</p>
 <pre><code>const hostname = new URL(this.baseURL).hostname;
 const loopback = ['localhost', '127.0.0.1', '[::1]'];
@@ -49,7 +49,7 @@ if (!loopback.includes(hostname)) {
 <p>This guard belongs directly in <code>publishPost()</code>, not merely in a README warning. It allows remote read-only experiments without sending the token, while protecting the operation that would attach <code>Authorization: Bearer ...</code>.</p>
 <p>There are additional layers: the SDK sets <code>redirect: 'error'</code> for requests so a fetch implementation does not silently follow a redirect to another origin. The local demo server separately restricts write requests to a verified loopback socket and validated Host/Origin requirements. Each protects a different part of the boundary; none should be replaced by a convenient shared secret in production.</p>
 
-<h2 id="section-reproduce-the-rejection-without-making-a-network-request-2">Reproduce the rejection without making a network request</h2>
+<h2 id="section-reproduce-the-rejection-without-making-a-network-request">Reproduce the rejection without making a network request</h2>
 <p>The easiest test is not to send a fake token to a remote test server. Inject a fetch implementation that counts invocations, then assert the remote write is rejected <em>before</em> it is called.</p>
 <pre><code>import assert from 'node:assert/strict';
 import { TopClient } from './packages/sdk/index.mjs';
@@ -76,7 +76,7 @@ cd 24GO.top
 npm test</code></pre>
 <p>These assertions verify a source-level recipient guard and the injected fetch boundary. They do not certify the underlying operating system's DNS configuration, a future reverse proxy, or a production authorization scheme.</p>
 
-<h2 id="section-four-additional-things-an-sdk-security-review-should-ask-2">Four additional things an SDK security review should ask</h2>
+<h2 id="section-four-additional-things-an-sdk-security-review-should-ask">Four additional things an SDK security review should ask</h2>
 <ol>
 <li><strong>Who owns the key?</strong> A shared local development token is not a production account identity. Browser-visible credentials, user-owned API keys and server-held secrets have different storage and delegation rules.</li>
 <li><strong>Can redirection change the recipient?</strong> Redirect following can move a request beyond an initially approved origin. Require a deliberate policy and tests for redirect behavior, not an accidental default.</li>
@@ -84,11 +84,11 @@ npm test</code></pre>
 <li><strong>Does the server independently enforce scope?</strong> A client guard can be bypassed by a custom script or another SDK. The receiving API must authenticate and authorize the caller independently; local demo checks cannot replace user-specific production Auth.</li>
 </ol>
 
-<h2 id="section-what-we-changed-and-what-remains-unfinished-2">What we changed, and what remains unfinished</h2>
+<h2 id="section-what-we-changed-and-what-remains-unfinished">What we changed, and what remains unfinished</h2>
 <p>The relevant fix is publicly reviewable in <a href="https://github.com/rf24kja/24GO.top/pull/56">PR #56</a>. It prevents the 24GOTOP SDK's <code>publishPost()</code> path from transmitting its local development key to remote hosts and preserves read-only requests without the publishing token. GitHub CI and targeted Node tests passed for that change.</p>
 <p>We deliberately have <em>not</em> presented this as a complete production SDK. Real 24GOTOP publication still requires verified user sessions, scoped grants, database row ownership, moderation, an audit trail and independently tested backup recovery. A safe local client check does not make unreviewed public writes acceptable.</p>
 
-<h2 id="section-related-technical-lessons-2">Related technical lessons</h2>
+<h2 id="section-related-technical-lessons">Related technical lessons</h2>
 <p>For other security boundaries behind developer tooling, read our <a href="./postgres-insert-returning-least-privilege.html">PostgreSQL INSERT/RETURNING privilege case study</a> and <a href="./markdown-preview-safety.html">safe Markdown preview note</a>. To see how we expect public articles to be discovered without overstating search results, read the <a href="./discoverable-technical-articles.html">search and AI discovery checklist</a>.</p>
 <p class="source">Evidence: <a href="https://github.com/rf24kja/24GO.top/pull/56">merged public PR</a>, <a href="https://github.com/rf24kja/24GO.top/blob/main/packages/sdk/index.mjs">SDK code</a>, <a href="https://github.com/rf24kja/24GO.top/blob/main/tests/sdk.test.mjs">unit tests</a> and <a href="https://nodejs.org/api/url.html">Node.js URL documentation</a>. No production endpoint or external adoption is claimed.</p>
 <p><a class="cta" href="./">Browse all engineering notes ↗</a></p>
