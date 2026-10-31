@@ -1,5 +1,11 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-31 — Fix misleading Markdown previews for indented source code
+
+- Resolved a writer-facing mismatch: the on-device Markdown exporter preserved all article whitespace, but the live preview still trimmed the **whole article** before parsing. The preview now receives the untrimmed body; empty-only drafts still show the localized placeholder.
+- The restricted preview and the linked local outline now recognize four-space/tab-indented Markdown code blocks and display them in non-executable PRE/CODE nodes. Blank lines inside an indented code block are retained where the next nonblank line is also indented. Author raw HTML remains text, not active markup.
+- Added pure parser/render security regressions and integration coverage for edit → preview → export → reopen fidelity. The feature does not implement full CommonMark, browser autosave, a public post, backend storage or user accounts. Manual browser/mobile QA remains necessary.
+
 ## 2026-10-31 — Real original-article proposal intake through human-reviewed GitHub
 
 - Added a **visible public contributor journey** at `/contribute.html`: write locally, propose a short original technical article through a GitHub issue, and optionally submit a reviewed PR. This is an interim open-source editorial path while hosted account-based publication remains blocked.

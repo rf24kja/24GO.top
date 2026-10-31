@@ -138,3 +138,49 @@ test('malicious schemes and credential-bearing citations remain literal plaintex
  assert.equal(container.nodes.length,1);
  assert.equal(container.nodes[0].textContent,input);
 });
+
+
+test('indented Markdown code remains code instead of a paragraph, with its inner whitespace', () => {
+ const input = [
+  '',
+  '    const token = "<script>not executed</script>";  ',
+  '        console.log(token);',
+  '',
+  '    // Second block line after deliberate blank line',
+  '',
+  'Plain paragraph after code.',
+  '',
+  '\tfunction tabIndented() { return true; }',
+  '',
+  '## Visible section'
+ ].join('\n');
+ const blocks = parsePreviewBlocks(input);
+ assert.deepEqual(blocks,[
+  {type:'code',language:'',text:
+    'const token = "<script>not executed</script>";  \n' +
+    '    console.log(token);\n\n' +
+    '// Second block line after deliberate blank line'},
+  {type:'paragraph',text:'Plain paragraph after code.'},
+  {type:'code',language:'',text:'function tabIndented() { return true; }'},
+  {type:'heading',level:2,text:'Visible section'}
+ ]);
+});
+
+test('indented code preview is safe fixed PRE/CODE text, not interpreted markup',()=>{
+ const documentMock={
+  created:[],
+  createElement(tag){
+    const node={tag,textContent:'',children:[],append(...children){this.children.push(...children);}};
+    this.created.push(node);
+    return node;
+  }
+ };
+ const container={nodes:[],replaceChildren(...nodes){this.nodes=nodes;}};
+ renderMarkdownPreview(container,
+  '    <img src=x onerror=alert(1)>\n    console.log("© 文档");',documentMock);
+ assert.deepEqual(container.nodes.map(node=>node.tag),['pre']);
+ assert.deepEqual(documentMock.created.map(node=>node.tag),['pre','code']);
+ assert.equal(container.nodes[0].children[0].textContent,
+  '<img src=x onerror=alert(1)>\nconsole.log("© 文档");');
+ assert.ok(documentMock.created.every(node=>!('innerHTML' in node)));
+});

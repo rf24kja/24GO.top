@@ -601,3 +601,29 @@ test('homepage language links select only Draft Lab interface without modifying 
   assert.equal(app.elements.postLocale.value,'en');
  }
 });
+
+
+test('live browser preview receives original article whitespace and matches exported text',async()=>{
+ const app=build();
+ const body='\n\n    const secret = "<img onerror=attack()>";  \n\n    const phrase = "中文 Русский ไทย";\n\n';
+ app.elements.postTitle.value='An original technical article';
+ app.elements.postBody.value=body;
+ app.elements.postBody.listeners.input();
+ assert.equal(app.elements.previewBody.textContent,body,
+  'preview renderer must receive untrimmed article source');
+ const draft={
+  title:app.elements.postTitle.value,body,
+  locale:app.elements.postLocale.value,
+  category:app.elements.postCategory.value,
+  source:app.elements.postSource.value
+ };
+ const reopen=formatDraft(draft);
+ assert.equal(parseDraftFile(reopen).body,body,
+  'export and reopen preserve exactly the same source');
+ const fresh=build();
+ await fresh.import(reopen);
+ assert.equal(fresh.elements.previewBody.textContent,body,
+  'reopening .md must not silently trim the preview');
+ assert.equal(fresh.beforeUnload().prevented,false,
+  'merely previewing an imported file does not mark it as edited');
+});
