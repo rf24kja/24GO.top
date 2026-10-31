@@ -5,7 +5,7 @@
 <title>Engineering notes — 24GOTOP</title>
 <link rel="canonical" href="https://24go.top/engineering/">
 <link rel="stylesheet" href="./notes.css"><link rel="stylesheet" href="../interior.css"><link rel="alternate" type="application/rss+xml" title="24GOTOP engineering notes" href="./feed.xml"><link rel="alternate" type="application/feed+json" title="24GOTOP JSON Feed" href="./feed.json">
-<script src="./search.js" defer></script>
+<script src="./search.js" defer></script><script src="./reading-list.js" defer></script>
 </head><body><a class="skip" href="#main-content">Skip to article content</a>
 <header class="interior-header"><nav class="wrap interior-nav" aria-label="Main navigation"><a class="interior-brand" href="../" aria-label="24GOTOP home">24GO<span>TOP</span><span class="interior-brand__dot" aria-hidden="true"></span></a><div class="interior-links"><a href="../">Home</a><a href="./" aria-current="page">Articles</a><a href="../draft-lab.html">Draft Lab</a><a href="../progress.html">Development</a><a href="https://github.com/rf24kja/24GO.top">GitHub ↗</a></div></nav></header>
 <main class="wrap" id="main-content" tabindex="-1"><span class="eyebrow">Open development · Original technical writing</span>
@@ -36,6 +36,13 @@
 </div>
 <div class="note-search__share-row"><button type="button" class="note-search__share" id="engineering-share" hidden>Copy filtered link</button><button type="button" class="note-search__share note-search__export" id="engineering-copy-results" hidden>Copy matching article links</button><span class="note-search__help">Find articles containing all search words, in any order, across titles, summaries and published text. Filters update the address; share a selection without an account.</span><span class="note-search__feedback" id="engineering-share-status" role="status" aria-live="polite" aria-atomic="true"></span></div>
 </form>
+<section id="reading-list-panel" class="reading-list" aria-labelledby="reading-list-heading" hidden>
+<h3 id="reading-list-heading">Saved articles · on this device</h3>
+<p>Save published articles for later with the button on each card. Only public article links are stored in this browser, unencrypted. Clearing browser data removes them. Nothing is sent to 24GOTOP.</p>
+<p id="reading-list-status" role="status" aria-live="polite">Saved public articles: 0</p>
+<ul id="reading-list-items"></ul>
+<button type="button" id="reading-list-clear" class="reading-list__clear" hidden>Clear saved links</button>
+</section>
 <p class="note-search__empty" id="engineering-no-results" hidden>No matching articles. Try a different keyword.</p>
 <div class="cards" id="engineering-list"><article class="card" data-note-card data-note-topic="security" data-note-file="read-only-mcp-server-for-technical-articles.html"><span class="tag">31 October 2026 · MCP &amp; AI agent security</span><h3><a href="./read-only-mcp-server-for-technical-articles.html">How to expose published technical articles to AI agents with a read-only MCP server</a></h3><p>Read-only local MCP tools over a fixed public corpus, with canonical URL allowlists, adversarial tests and no agent write privileges.</p><a href="./read-only-mcp-server-for-technical-articles.html">Read the MCP engineering guide ↗</a></article>
 <article class="card" data-note-card data-note-topic="writing" data-note-file="multilingual-markdown-editor-without-losing-drafts.html"><span class="tag">30 October 2026 · Localization &amp; author UX</span>
