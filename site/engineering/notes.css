@@ -158,3 +158,47 @@ header{background:rgba(249,252,249,.9)}a:hover,.navlinks a:hover{color:#07593f}.
 @media(max-width:500px){.agent-discovery{padding:16px}
  .agent-discovery__steps{display:grid;grid-template-columns:minmax(0,1fr)}}
 @media(prefers-contrast:more){.agent-discovery,.agent-discovery__steps code{border-width:2px}}
+
+/* Progressive on-article reading tools. Static content and anchors work without JS. */
+.article-reader{max-width:750px;margin:16px 0 30px;padding:14px 16px;
+  border:1px solid var(--border);border-radius:12px;background:var(--panel)}
+.article-reader__progress{position:fixed;top:0;left:0;z-index:20;width:100%;height:4px;
+  border:0;border-radius:0;background:var(--bg);accent-color:var(--accent)}
+.article-reader__progress::-webkit-progress-bar{background:var(--bg)}
+.article-reader__progress::-webkit-progress-value{background:var(--accent)}
+.article-reader__progress::-moz-progress-bar{background:var(--accent)}
+.article-reader__actions{display:flex;align-items:center;flex-wrap:wrap;gap:9px}
+.article-reader__menu{flex:1 1 180px;min-width:0;position:relative}
+.article-reader__menu summary{cursor:pointer;border:1px solid var(--border);
+ border-radius:8px;padding:9px 12px;font-weight:700;min-height:44px}
+.article-reader__menu nav{margin:9px 0 0;padding:8px 12px;border:1px solid var(--border);
+ border-radius:8px;max-height:310px;overflow:auto}
+.article-reader__toc{margin:4px 0;padding-inline-start:18px}
+.article-reader__toc li{margin:6px 0;font-size:13px;line-height:1.45}
+.article-reader__toc .article-reader__sub{padding-inline-start:15px}
+.article-reader__toc a{overflow-wrap:anywhere}
+.article-reader__button{cursor:pointer;border:1px solid var(--accent);border-radius:8px;
+ min-height:44px;padding:9px 12px;font:inherit;font-size:12px;font-weight:750;
+ color:var(--accent);background:transparent}
+.article-reader__button:hover{background:var(--accent);color:#08251b}
+.article-reader__button:focus-visible,.article-reader__menu summary:focus-visible,
+.article-reader__section:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.article-reader__section{cursor:pointer;border:0;padding:4px 7px;margin-inline-start:7px;
+ background:transparent;color:var(--accent);font:inherit;font-size:.65em;vertical-align:middle}
+.article-reader__section:hover{background:var(--panel);border-radius:5px}
+.article-reader__status{font-size:12px;line-height:1.45;color:var(--muted);margin:9px 0 0}
+.article-reader__status:empty{display:none}
+.article-reader__manual{width:100%;min-height:110px;margin:10px 0 0;padding:11px;
+ border:1px solid var(--border);border-radius:8px;background:var(--bg);
+ color:var(--text);font:13px/1.5 ui-monospace,Consolas,monospace}
+.article-reader__manual[hidden]{display:none}
+.article h2[id^="section-"],.article h3[id^="section-"]{scroll-margin-top:36px}
+.article h2[id^="section-"]:target,.article h3[id^="section-"]:target{
+ outline:2px solid var(--accent);outline-offset:8px;border-radius:3px}
+@media(max-width:600px){.article-reader{padding:12px}.article-reader__actions{display:grid;
+ grid-template-columns:minmax(0,1fr)}.article-reader__menu,.article-reader__button{width:100%}}
+@media(prefers-color-scheme:light){.article-reader__button:hover{color:#fff}}
+@media(prefers-contrast:more){.article-reader,.article-reader__menu summary,
+.article-reader__button,.article-reader__menu nav{border-width:2px}}
+@media print{.article-reader,.article-reader__section{display:none!important}
+ .article h2[id^="section-"]:target,.article h3[id^="section-"]:target{outline:0}}
