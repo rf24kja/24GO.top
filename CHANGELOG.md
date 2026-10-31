@@ -1,5 +1,12 @@
 # 24GOTOP — Public Change Log
 
+## Unreleased — 31 October 2026: published MCP engineering article
+
+- Publish a tenth original source-backed technical guide explaining the merged read-only local article MCP server (#116), its exact tool boundaries, protocol-process tests, and unresolved publication/review gates.
+- Wire canonical HTML, RSS, JSON Feed 1.1, sitemap, full-text index, public archive and AI discovery listing without enabling hosted writes.
+- Preserve pre-launch status and keep the private P0 release train untouched.
+
+
 ## Unreleased — 31 October 2026
 
 - Redesigned the knowledge-network and product-map SVGs with equal-sized cards, predictable internal padding and no clipped labels; fixed mobile crop and bottom-row caption overlay.

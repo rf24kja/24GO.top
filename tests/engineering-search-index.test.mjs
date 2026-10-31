@@ -13,7 +13,7 @@ test('published full-text index is deterministic, current and restricted to cano
  assert.equal(shipped,renderEngineeringSearchIndex(),'content must match reviewed HTML and JSON Feed exactly');
  const index=JSON.parse(shipped);
  assert.equal(index.version,1);
- assert.equal(index.articles.length,9);
+ assert.equal(index.articles.length,10);
  assert.equal(index.articles.length,articleUrls.size);
  for(const article of index.articles){
   assert.match(article.file,/^[a-z0-9-]+\.html$/);
@@ -27,7 +27,7 @@ test('published full-text index is deterministic, current and restricted to cano
 
 test('index refuses unapproved sources, missing article files and executable editorial markup',()=>{
  const valid=buildEngineeringSearchIndex(feed,file=>read(file));
- assert.equal(valid.articles.length,9);
+ assert.equal(valid.articles.length,10);
  assert.throws(()=>buildEngineeringSearchIndex({...feed,items:[
   {...feed.items[0],url:'https://example.com/a.html'}]},()=>''),/Untrusted article URL/);
  assert.throws(()=>buildEngineeringSearchIndex({...feed,items:[feed.items[0],feed.items[0]]},file=>read(file)),/Duplicate/);

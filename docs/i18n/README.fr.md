@@ -24,10 +24,11 @@ Les idées techniques se perdent dans des contenus sans sources et des échanges
 ![Parcours éditorial : problème réel, exemple reproductible, tests et sources, article vérifiable. Aucune garantie de référencement.](../assets/24gotop-evidence-loop.fr.svg)
 
 ### Disponible aujourd’hui
-- **[Articles d’ingénierie](https://24go.top/engineering/)** : neuf guides originaux en anglais, liés à du code et à de vraies PR.
+- **[Articles d’ingénierie](https://24go.top/engineering/)** : dix guides originaux en anglais, liés à du code et à de vraies PR.
 - **[Draft Lab](https://24go.top/draft-lab.html)** : écrire du Markdown, prévisualiser des liens sûrs, changer parmi **huit langues d’interface**, télécharger et rouvrir un fichier `.md` local. Aucun téléversement.
 - **[API et SDK](../SDK_QUICKSTART.md)** : exemples locaux Node.js, pas une API de production.
 - **[RSS](https://24go.top/engineering/feed.xml)** : nouvelles publications techniques.
+- **Nouvel article (en anglais) :** [MCP local en lecture seule pour les articles publics](https://24go.top/engineering/read-only-mcp-server-for-technical-articles.html).
 - **[Suivi du développement](https://24go.top/progress.html)** : étapes vérifiables.
 
 ### Architecture et limites de publication

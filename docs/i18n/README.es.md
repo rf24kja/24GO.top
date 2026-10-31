@@ -24,10 +24,11 @@ El conocimiento técnico se pierde en contenidos sin fuentes y entre publicacion
 ![Proceso editorial: problema real, implementación reproducible, pruebas y fuentes, artículo verificable. No garantiza posiciones en buscadores.](../assets/24gotop-evidence-loop.es.svg)
 
 ### Disponible hoy
-- **[Artículos técnicos](https://24go.top/engineering/)**: nueve guías originales en inglés, vinculadas a código y PR verificables.
+- **[Artículos técnicos](https://24go.top/engineering/)**: diez guías originales en inglés, vinculadas a código y PR verificables.
 - **[Draft Lab](https://24go.top/draft-lab.html)**: escribe Markdown, previsualiza enlaces seguros, elige entre **ocho idiomas de interfaz** y descarga o vuelve a abrir archivos `.md` locales. No hay subida de archivos.
 - **[API y SDK](../SDK_QUICKSTART.md)**: ejemplos locales de Node.js, no servicios de producción.
 - **[RSS](https://24go.top/engineering/feed.xml)**: actualizaciones de artículos.
+- **Nuevo artículo (en inglés):** [MCP local de solo lectura para artículos públicos](https://24go.top/engineering/read-only-mcp-server-for-technical-articles.html).
 - **[Progreso](https://24go.top/progress.html)**: avances comprobables.
 
 ### Arquitectura y límites de lanzamiento

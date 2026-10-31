@@ -1,0 +1,23 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const read = p => readFileSync(new URL('../site/'+p,import.meta.url),'utf8');
+const leaf='read-only-mcp-server-for-technical-articles.html';
+const canonical='https://24go.top/engineering/'+leaf;
+test('tenth canonical article is safe, searchable and backed by merged MCP source',()=>{
+ const article=read('engineering/'+leaf);
+ const feed=JSON.parse(read('engineering/feed.json'));
+ const index=JSON.parse(read('engineering/search-index.json'));
+ assert.ok(article.includes('How to expose published technical articles to AI agents with a read-only MCP server'));
+ assert.ok(article.includes('https://github.com/rf24kja/24GO.top/pull/116'));
+ assert.ok(article.includes('packages/mcp/stdio.mjs'));
+ assert.ok(article.includes('tests/mcp-public-articles.test.mjs'));
+ assert.ok(article.includes('<link rel="canonical" href="'+canonical+'">'));
+ assert.ok(article.includes('Hosted account-based publishing remains blocked'));
+ assert.equal(feed.items.length,10);
+ assert.equal(index.articles.length,10);
+ assert.ok(feed.items.some(x=>x.url===canonical));
+ assert.ok(index.articles.some(x=>x.file===leaf&&x.text.includes('database connection')));
+ for(const file of ['engineering/index.html','sitemap.xml','llms.txt','index.html'])assert.ok(read(file).includes(leaf),file);
+ assert.ok(!/sb_secret_|service_role|PUBLISH_API_KEY/.test(article));
+});

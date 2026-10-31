@@ -9,7 +9,7 @@ const index=readFileSync(new URL('index.html',dir),'utf8');
 const items=[...rss.matchAll(/<item>([\s\S]*?)<\/item>/g)].map(v=>v[1]);
 
 test('all real public article pages have matching visible byline, canonical metadata and JSON-LD',()=>{
- assert.equal(files.length,9,'only released editorial HTML, no pretend user posts');
+ assert.equal(files.length,10,'only released editorial HTML, no pretend user posts');
  for(const file of files){
   const html=readFileSync(new URL(file,dir),'utf8');
   const canonical='https://24go.top/engineering/'+file;
@@ -23,7 +23,7 @@ test('all real public article pages have matching visible byline, canonical meta
   assert.equal(json.publisher.name,'24GOTOP',file);
   assert.equal(json.mainEntityOfPage['@id'],canonical,file);
   assert.equal(json.inLanguage,'en',file);
-  assert.match(json.datePublished,/^2026-10-(26|29|30)T/,file);
+  assert.match(json.datePublished,/^2026-10-(26|29|30|31)T/,file);
   assert.ok(Number.isFinite(Date.parse(json.datePublished)),file);
   assert.ok(html.includes('content="'+json.datePublished+'"'),'date metadata: '+file);
   assert.equal(json.isAccessibleForFree,true,file);

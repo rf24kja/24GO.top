@@ -8,10 +8,10 @@ const read=name=>readFileSync(fileURLToPath(
   new URL('../site/engineering/'+name,import.meta.url)),'utf8');
 const html=read('index.html'),style=read('notes.css'),code=read('search.js');
 const topicNames=['all','security','writing','infrastructure','publishing','discovery'];
-const cardTopics=['writing','infrastructure','security','security','discovery',
+const cardTopics=['security','writing','infrastructure','security','security','discovery',
   'infrastructure','publishing','writing','publishing'];
 
-test('archive publishes 9 crawlable articles, discoverable topic controls and a JS-only enhancement',()=>{
+test('archive publishes 10 crawlable articles, discoverable topic controls and a JS-only enhancement',()=>{
  assert.match(html,/rel="canonical" href="https:\/\/24go\.top\/engineering\/"/);
  assert.match(html,/<script src="\.\/search\.js" defer><\/script>/);
  assert.match(html,/<form class="note-search" role="search"[^>]+hidden>/);
@@ -209,11 +209,11 @@ test('browser navigation restores the URL state without altering article data',(
 });
 
 
-test('public archive has navigable heading hierarchy for all nine searchable articles',()=>{
+test('public archive has navigable heading hierarchy for all ten searchable articles',()=>{
  assert.match(html,/<h1>Engineering notes<\/h1>/);
  assert.match(html,/<section aria-labelledby="latest-heading"><h2 id="latest-heading">Recent articles<\/h2>/);
  const cards=[...html.matchAll(/<article class="card" data-note-card data-note-topic="[^"]+" data-note-file="[a-z0-9-]+\.html">([\s\S]*?)<\/article>/g)];
- assert.equal(cards.length,9,'all nine article cards retain their searchable data fields');
+ assert.equal(cards.length,10,'all ten article cards retain their searchable data fields');
  for(const card of cards){
   assert.match(card[1],/<h3><a href="\.\/[^"]+\.html">[^<]+<\/a><\/h3>/);
   assert.doesNotMatch(card[1],/<h2\b|<h4\b/);

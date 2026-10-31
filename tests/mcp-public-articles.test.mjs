@@ -10,9 +10,9 @@ const modernMeta={'io.modelcontextprotocol/protocolVersion':'2026-07-28',
  'io.modelcontextprotocol/clientCapabilities':{}};
 
 test('MCP corpus contains exactly the approved canonical articles and no draft material',()=>{
- assert.equal(articles.length,9);
+ assert.equal(articles.length,10);
  const urls=new Set(articles.map(x=>x.url));
- assert.equal(urls.size,9);
+ assert.equal(urls.size,10);
  for(const x of articles){
   assert.match(x.url,/^https:\/\/24go\.top\/engineering\/[a-z0-9-]+\.html$/);
   assert.ok(x.text.length>300);
@@ -50,7 +50,7 @@ test('tools search actual published article body and return useful canonical URL
  assert.ok(body.text.length>300);
  assert.ok(body.text.toLowerCase().includes('content security policy'));
  const resources=handleMcpRequest(query('resources/list',{_meta:modernMeta}),articles).result;
- assert.equal(resources.resources.length,9);
+ assert.equal(resources.resources.length,10);
  const resource=handleMcpRequest(query('resources/read',{
   uri:items[0].url,_meta:modernMeta
  }),articles).result;

@@ -40,7 +40,7 @@ These are real, shareable, canonical HTML entry pages — not a finished transla
 | **[Original engineering articles](https://24go.top/engineering/)** | **[Markdown Draft Lab](https://24go.top/draft-lab.html)** | **[Open SDK quickstart](docs/SDK_QUICKSTART.md)** |
 | Source-backed technical HTML, RSS and JSON Feed. No account required. | Eight interface languages, code and safe links, local preview and `.md` export/reopen. **Nothing is uploaded.** | Node.js 22+ read-only example, development API and reproducible tests. **No public write API.** |
 
-**NEW — Local article MCP for AI agents ([merged PR #116](https://github.com/rf24kja/24GO.top/pull/116)).** Run `npm run mcp:articles` with Node.js 22+ from the repository root. Supported stdio MCP clients can use `list_articles`, `search_articles`, `read_article` and read-only public article Resources. It serves only nine committed engineering articles: **no private drafts, hosted account creation, database access, write operations or remote MCP service.** Third-party host compatibility still needs independent verification. See the [local MCP client guide](docs/PUBLIC_ARTICLE_MCP.md).
+**NEW — Local article MCP for AI agents ([merged PR #116](https://github.com/rf24kja/24GO.top/pull/116)).** Run `npm run mcp:articles` with Node.js 22+ from the repository root. Supported stdio MCP clients can use `list_articles`, `search_articles`, `read_article` and read-only public article Resources. It serves only ten committed engineering articles: **no private drafts, hosted account creation, database access, write operations or remote MCP service.** Third-party host compatibility still needs independent verification. See the [local MCP client guide](docs/PUBLIC_ARTICLE_MCP.md).
 
 **The next major milestone is not a redesign; it is one safely published, author-owned article.** The private hosted publishing path must pass independent security review, signed-user isolation, rollback and restore verification before public sign-up or posting can open. [See the release gates](docs/SECURITY_GATES.md) and [roadmap](docs/ROADMAP.md).
 
@@ -124,7 +124,7 @@ This repository is the **public MIT developer and documentation surface**, not a
 
 | Path | Contents and purpose | Running where? |
 | --- | --- | --- |
-| [`site/`](site/) | Static GitHub Pages landing, nine English editorial articles, RSS, sitemap, `robots.txt`, and the browser-only Draft Lab | Public HTTPS static site |
+| [`site/`](site/) | Static GitHub Pages landing, ten English editorial articles, RSS, sitemap, `robots.txt`, and the browser-only Draft Lab | Public HTTPS static site |
 | [`public/`](public/) | Local reader UI, styling and language controls | Local Node.js demo |
 | [`src/`](src/) | Minimal development HTTP server and in-memory/JSON demonstration store | Local only; **never expose development writes** |
 | [`packages/sdk/`](packages/sdk/) | JavaScript source SDK for local reader API exploration | Source-only; not an npm production package |
@@ -141,6 +141,7 @@ These are **free, crawlable English guides** on real technical decisions. The li
 
 | Developer question | Original guide |
 | --- | --- |
+| How can AI agents search and read technical articles **without write access**? | [Local read-only MCP server and real protocol tests](https://24go.top/engineering/read-only-mcp-server-for-technical-articles.html) |
 | How do you localize a Markdown editor **without losing drafts**? | [Eight-language UI and unsaved-draft invariants](https://24go.top/engineering/multilingual-markdown-editor-without-losing-drafts.html) |
 | How do you verify **GitHub Pages** deployed the latest build, not just pass CI? | [Real failed/successful external HTTPS verification](https://24go.top/engineering/verify-github-pages-deploy-not-just-ci.html) |
 | How can Markdown citation links avoid **XSS**? | [Validated HTTP(S) URLs and safe DOM anchors](https://24go.top/engineering/safe-markdown-citation-links-without-xss.html) |
@@ -242,7 +243,7 @@ We publish code, tests, decisions and release evidence separately. A merged PR i
 | **P2 · Reputation & Library** | Trustworthy counters and resistant-to-abuse rankings, isolated static frontend hosting | [Roadmap](docs/ROADMAP.md) · **planned** |
 | **Reach · Search / AI discovery** | Real indexed URLs, impressions, returning readers, useful referrals and human feedback | [Search status](docs/SEO_DISCOVERY_STATUS.md) · [editorial plan](docs/EDITORIAL_SEARCH_DISCOVERY_PLAN.md) · **traffic not verified** |
 
-**What is independently verified for the public site:** the [SEO delivery register](docs/SEO_DISCOVERY_STATUS.md) documents a GitHub-hosted HTTPS audit of **12 canonical sitemap URLs**, including **nine original articles**, on 30 October 2026. It does **not** establish indexing in Google/Bing, usage, conversions or generative-AI citations. See [deployment status](docs/DEPLOYMENT_STATUS.md) for run links and caveats.
+**What is independently verified for the public site:** the [SEO delivery register](docs/SEO_DISCOVERY_STATUS.md) documents a GitHub-hosted HTTPS audit of **12 canonical sitemap URLs**, including **ten original articles**, on 30 October 2026. It does **not** establish indexing in Google/Bing, usage, conversions or generative-AI citations. See [deployment status](docs/DEPLOYMENT_STATUS.md) for run links and caveats.
 
 ## Development evidence and next steps
 
