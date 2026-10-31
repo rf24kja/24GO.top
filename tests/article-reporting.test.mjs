@@ -12,7 +12,13 @@ test('every published engineering article offers its own public non-security cor
   assert.ok(text.includes('template=article_report.yml&amp;title=Article%20report%3A%20'+slug),path);
   assert.match(text,/SECURITY\.md/);
   assert.match(text,/Reports are public and reviewed manually/);
-  assert.ok(text.indexOf('class="article-report"')<text.indexOf('</article></main>'));
+  const reportAt=text.indexOf('class="article-report"');
+  const articleEnd=text.indexOf('</article>');
+  const relatedAt=text.indexOf('<nav class="related-reading"');
+  const mainEnd=text.indexOf('</main>');
+  assert.ok(reportAt>=0&&reportAt<articleEnd,path+' reports remain inside article');
+  assert.ok(articleEnd<relatedAt&&relatedAt<mainEnd,
+   path+' related links must remain outside the researched article block');
  }
 });
 test('article report issue form requires real article and safe public evidence',()=>{

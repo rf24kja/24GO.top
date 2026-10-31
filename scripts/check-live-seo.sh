@@ -96,6 +96,15 @@ for url in "${listed_urls[@]}"; do
   fi
   route="${url#"$base"}"
   probe "$route" "page$item" "rel=\"canonical\" href=\"$url\""
+  # Every published article now has two static, source-reviewed reading
+  # paths. Check actual delivered HTML, not just the GitHub source.
+  if [[ "$route" == /engineering/*.html ]]; then
+    if ! grep -Fq -- '<nav class="related-reading" aria-label="Continue reading">' "$tmp/page$item" ||
+       ! grep -Fq -- '<li><a href="./' "$tmp/page$item"; then
+      echo "::error::Live engineering article is missing static related reading: $route"
+      failures=$((failures+1))
+    fi
+  fi
 done
 
 # GitHub Pages may use intermediate redirects, but the initial canonical

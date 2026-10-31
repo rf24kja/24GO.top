@@ -1,5 +1,10 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-31 — Reviewed related reading paths for every engineering article
+
+- Add two source-verified, topic-aware static internal article links plus archive navigation to all ten published engineering notes. Generate from canonical JSON Feed (validated against RSS/Article JSON-LD) and human-reviewed archive topics, with no remote recommendation API. CI refuses stale/foreign/duplicate links, escapes link titles, and preserves the independently validated full-text search corpus. Accessible responsive styling, source tests and external HTTPS checks for the released links. No user tracking, new article fabrication or private hosted publishing changes.
+
+
 ## 2026-10-31 — Prevent stale saved-draft loss across browser tabs
 
 - Detect external browser-storage changes to the currently open manual draft and immediately invalidate a stale saved baseline without changing editor text. Restore the native unsaved-work navigation guard, warn through the existing translated live status and detach the outdated slot so the next explicit save creates a separate copy instead of overwriting another tab. Preserve unaffected drafts and imported Markdown baselines. Add end-to-end simulated cross-tab conflict, deletion, clear, unrelated-event and explicit recovery tests, plus a published-asset HTTPS smoke assertion. No autosave, network upload, hosted write permission or private Core changes.
