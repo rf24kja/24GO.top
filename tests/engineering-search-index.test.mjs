@@ -38,3 +38,11 @@ test('index refuses unapproved sources, missing article files and executable edi
  assert.throws(()=>buildEngineeringSearchIndex({...feed,items:[feed.items[0]]},
   ()=>'<link rel="canonical" href="'+feed.items[0].url+'"><article class="article"><script>1</script></article>'),/Unexpected executable markup/);
 });
+
+test('non-article feedback panel is not included in full-text discovery',()=>{
+ const index=buildEngineeringSearchIndex(feed,file=>read(file));
+ for(const article of index.articles){
+  assert.doesNotMatch(article.text,/help improve this article/);
+  assert.doesNotMatch(article.text,/reports are public and reviewed manually/);
+ }
+});

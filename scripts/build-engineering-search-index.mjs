@@ -36,6 +36,10 @@ export function buildEngineeringSearchIndex(feed,readArticle){
     throw Error('Unexpected executable markup in article: '+file);
   const content=decodeEntities(
    block[1].replace(/<!--[\s\S]*?-->/g,' ')
+     // Article-specific reporting UI is not the article's researched prose.
+     // Keep the shipped full-text search index identical when adding a
+     // common non-content report panel to every reviewed page.
+     .replace(/<aside class="article-report"[\s\S]*?<\/aside>/g,' ')
      .replace(/<[^>]*>/g,' ')
   ).normalize('NFC').replace(/\s+/g,' ').trim().toLocaleLowerCase();
   if(content.length<300||content.length>24000)

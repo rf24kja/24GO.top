@@ -1,0 +1,54 @@
+name: Report an article problem
+description: Report a factual, technical, accessibility, attribution or copyright concern with a specific published engineering note. PUBLIC GitHub issue; not a vulnerability channel.
+title: "Article report: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **This is a PUBLIC GitHub report about an existing 24GOTOP engineering article, not an automatic takedown or security disclosure.**
+        Please point to a specific published article and reproducible issue. The maintainers will review and correct or explain it when verified; resolution and timing are not guaranteed.
+        **Do not disclose vulnerabilities, passwords, API tokens, private customer content, personally identifying information or confidential documents here.**
+        For exploitable security issues follow [SECURITY.md](https://github.com/rf24kja/24GO.top/blob/main/SECURITY.md) and use private vulnerability reporting when available.
+  - type: input
+    id: article_url
+    attributes:
+      label: Exact published article URL
+      description: Link to the relevant article on https://24go.top/engineering/ (not your private draft).
+      placeholder: https://24go.top/engineering/submit-is-not-publish.html
+    validations:
+      required: true
+  - type: dropdown
+    id: concern
+    attributes:
+      label: Type of concern
+      options:
+        - Incorrect or unsupported technical claim
+        - Reproduction steps or code do not work
+        - Broken source link or citation
+        - Attribution or copyright concern
+        - Accessibility or translation problem
+        - Other non-security content concern
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What specifically needs review?
+      description: Identify the relevant section and factual observation. Avoid personal data, secrets, exploit details or defamatory claims.
+      placeholder: At heading ..., step ... does not work because ...; documentation says ...
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Safe public references or reproduction steps (optional)
+      description: Only publicly shareable references. For private or security-sensitive evidence use an appropriate nonpublic channel.
+    validations:
+      required: false
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Public report confirmation
+      options:
+        - label: I understand this GitHub issue is PUBLIC, does not automatically remove an article, and contains no secrets, private data, or vulnerability details.
+          required: true
