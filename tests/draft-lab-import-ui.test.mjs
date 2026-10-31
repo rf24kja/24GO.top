@@ -64,6 +64,11 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false}={
   elements.postLocale.value='en';
   elements.postCategory.value='guides';
   elements.draftTemplate.value='guide';
+  const downloads=[],blobUrls=new Map();
+  class BrowserURL extends URL{
+   static createObjectURL(blob){const url='blob:24gotop/'+blobUrls.size;blobUrls.set(url,blob);return url;}
+   static revokeObjectURL(url){blobUrls.delete(url);}
+  }
   let confirm = true;
   const window = {listeners:{}, location:{href:uiHref}, confirm(){return confirm;}, addEventListener(type, callback){this.listeners[type]=callback;}};
   const browserItems=new Map();
@@ -75,7 +80,10 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false}={
   window.localStorage=localStorage;
   const document = {
     listeners:{},
-    createElement(){return {value:'',textContent:'',dataset:{}};},
+    body:{append(){}},
+    createElement(){return {value:'',textContent:'',dataset:{},
+      click(){downloads.push({name:this.download,url:this.href,blob:blobUrls.get(this.href)});},
+      remove(){}};},
     addEventListener(type,callback){this.listeners[type]=callback;},
     documentElement:{lang:'en'},
     getElementById(id){return elements[id];},
@@ -84,7 +92,7 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false}={
   const copied=[];
   const navigator=allowClipboard?{clipboard:{async writeText(value){copied.push(value);}}}:{};
   runInNewContext(source, {
-    document, window, navigator, URL, Blob, setTimeout,
+    document, window, navigator, URL:BrowserURL, Blob, setTimeout,
     safeSourceUrl,validateDraft,formatDraft,draftFilename,hasDraftContent,
     parseDraftFile,readDraftFileStrict,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,countDraftWords,createDraftImportGate,invalidDraftField,
     uiText,applyUiLanguage,appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS,captureDraftRevision,compareDraftRevisions,revisionSummary,createEditorialReviewPack,readEditorialReviewPackFile,buildArticleProposalUrl,
@@ -95,7 +103,7 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false}={
   // node --test starts multiple test files concurrently.
   },{timeout:5000});
   return {
-    elements, document, localStorage, copied,
+    elements, document, localStorage, copied, downloads,
     storageEvent(key=VAULT_KEY,storageArea=localStorage){
       window.listeners.storage({key,storageArea});
     },
