@@ -1,5 +1,11 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-31 — Evidence-based public backlog triage
+
+- Closed obsolete public-hosted-implementation Issues [#14](https://github.com/rf24kja/24GO.top/issues/14) and [#15](https://github.com/rf24kja/24GO.top/issues/15) as **not planned in this public MIT repository / superseded by private hosted-Core implementation**. These closures do not mean PostgreSQL-authored publishing or real Auth are complete. Public parent [#2](https://github.com/rf24kja/24GO.top/issues/2) remains open.
+- Added [open-work register](docs/ISSUE_TRIAGE.md) mapping remaining public Issues to their independent completion evidence, owner-only settings and single private P0 release train. Explicitly retained open acceptance gates for branch protection, signed JWT A/B, backup restore, staff identity, accessibility, translations and real author testing.
+- Updated public roadmap/README to make the unlaunched hosted-service boundary and concrete owner actions visible. Docs/issue hygiene only; no backend, public signup, Supabase, Vercel, DNS, secret, license or production change.
+
 ## 2026-10-31 — Fix misleading Markdown previews for indented source code
 
 - Resolved a writer-facing mismatch: the on-device Markdown exporter preserved all article whitespace, but the live preview still trimmed the **whole article** before parsing. The preview now receives the untrimmed body; empty-only drafts still show the localized placeholder.

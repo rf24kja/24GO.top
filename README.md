@@ -14,6 +14,7 @@
   <a href="https://24go.top/engineering/"><img src="./docs/assets/readme-icons/article.svg" alt="" width="18" height="18"> Read articles</a> ·
   <a href="https://24go.top/draft-lab.html"><img src="./docs/assets/readme-icons/edit.svg" alt="" width="18" height="18"> Try Draft Lab</a> ·
   <a href="docs/ROADMAP.md"><img src="./docs/assets/readme-icons/roadmap.svg" alt="" width="18" height="18"> Roadmap</a> ·
+  <a href="docs/ISSUE_TRIAGE.md">Open work &amp; blockers</a> ·
   <a href="CONTRIBUTING.md"><img src="./docs/assets/readme-icons/community.svg" alt="" width="18" height="18"> Contribute</a> ·
   <a href="https://24go.top/contribute.html">Propose an article (public GitHub review)</a>
 </p>
