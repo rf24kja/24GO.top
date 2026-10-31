@@ -7,10 +7,11 @@
   const empty=document.getElementById('engineering-no-results');
   const reset=document.getElementById('engineering-reset');
   const share=document.getElementById('engineering-share');
+  const copyResults=document.getElementById('engineering-copy-results');
   const shareStatus=document.getElementById('engineering-share-status');
   const cards=[...document.querySelectorAll('[data-note-card]')];
   const topics=[...document.querySelectorAll('[data-engineering-topic]')];
-  if(!form||!input||!status||!empty||!reset||!share||!shareStatus||
+  if(!form||!input||!status||!empty||!reset||!share||!shareStatus||!copyResults||
      cards.length===0||topics.length===0)return;
 
   const entries=cards.map(card=>({
@@ -19,6 +20,10 @@
     topic:card.dataset.noteTopic,
     file:card.dataset.noteFile
   }));
+  // Never let data attributes choose a remote URL or a local filesystem path.
+  if(entries.some(entry=>typeof entry.file!=='string'||
+    !/^[a-z0-9-]+\.html$/.test(entry.file))||
+    new Set(entries.map(entry=>entry.file)).size!==entries.length)return;
   const validTopics=new Set(topics.map(item=>item.dataset.engineeringTopic));
   if(!validTopics.has('all')||
     entries.some(entry=>!validTopics.has(entry.topic)))return;
@@ -110,6 +115,7 @@
     const active=selected!=='all'||Boolean(keyword);
     reset.hidden=!active;
     share.hidden=!active;
+    copyResults.hidden=count===0;
     shareStatus.textContent='';
     if(writeUrl)syncUrl();
   };
@@ -146,6 +152,27 @@
       shareStatus.textContent='Filtered article link copied.';
     }catch{
       shareStatus.textContent='Clipboard unavailable. Copy the page URL from your address bar.';
+    }
+  });
+  copyResults.addEventListener('click',async()=>{
+    // This is an explicit user gesture: copy plain Markdown links to the
+    // *visible* public results, not unpublished author drafts or search text.
+    const lines=entries.filter(entry=>!entry.card.hidden).map(entry=>{
+      const label=entry.card.querySelector?.('h3 a')?.textContent?.trim()||
+        entry.file.slice(0,-5).replaceAll('-',' ');
+      const text=label.replace(/[\r\n\[\]\\]/g,' ').slice(0,180);
+      return '- ['+text+'](https://24go.top/engineering/'+entry.file+')';
+    });
+    if(!lines.length){shareStatus.textContent='No results to copy.';return;}
+    if(typeof navigator==='undefined'||!navigator.clipboard?.writeText){
+      shareStatus.textContent='Clipboard unavailable. Open and copy individual article links.';
+      return;
+    }
+    try{
+      await navigator.clipboard.writeText(lines.join('\n'));
+      shareStatus.textContent=lines.length+' public article link(s) copied as Markdown.';
+    }catch{
+      shareStatus.textContent='Clipboard unavailable. Open and copy individual article links.';
     }
   });
   if(typeof window!=='undefined'&&window.addEventListener){
