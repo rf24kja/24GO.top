@@ -61,3 +61,21 @@ test('Table toolbar inserts an editable bounded Markdown table, locally',()=>{
  }
  assert.throws(()=>formatDraftSelection('x'.repeat(12000),12000,12000,'table'),RangeError);
 });
+
+test('selected and placeholder inline formatting works without a rich-text editor',()=>{
+ for(const [action,expected] of [
+  ['bold','**technical writing**'],
+  ['italic','*technical writing*'],
+  ['inlineCode','`technical writing`']
+ ]){
+  const result=apply('technical writing',0,17,action);
+  assert.equal(result.value,expected);
+  const blank=apply('',0,0,action);
+  assert.ok(blank.edit.selectionEnd>blank.edit.selectionStart);
+  assert.equal(blank.value.slice(blank.edit.selectionStart,blank.edit.selectionEnd),
+    action==='bold'?'bold text':action==='italic'?'italic text':'inline code');
+ }
+ assert.throws(()=>apply('a\nb',0,3,'bold'),TypeError);
+ assert.throws(()=>apply('hello*',0,6,'italic'),TypeError);
+ assert.throws(()=>apply('a`b',0,3,'inlineCode'),TypeError);
+});
