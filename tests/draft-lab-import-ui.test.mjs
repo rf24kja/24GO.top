@@ -841,7 +841,7 @@ test('guidance is local and never blocks export or edits an established file bas
 });
 
 
-test('revision review captures a local checkpoint without changing the draft or vault',()=>{
+test('revision review captures a local checkpoint without changing the draft or vault',async()=>{
  const app=build({allowClipboard:true});
  const body=app.elements.postBody;
  app.elements.postTitle.value='Unpublished revision example';
