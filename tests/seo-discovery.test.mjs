@@ -76,3 +76,31 @@ test('engineering article directory, RSS and optional machine index agree',()=>{
  assert.match(read('engineering/discoverable-technical-articles.html'),/OAI-SearchBot/);
  assert.doesNotMatch(read('engineering/discoverable-technical-articles.html'),/<script\b(?! type="application\/ld\+json">)|sb_secret_|PUBLISH_API_KEY|service_role/i);
 });
+
+
+test('canonical homepage WebSite entity identifies real 24GOTOP and 8 existing locale routes',()=>{
+ const html=read('index.html');
+ const blocks=[...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)];
+ assert.equal(blocks.length,1,'only a truthful declarative homepage entity');
+ const entity=JSON.parse(blocks[0][1]);
+ assert.equal(entity['@context'],'https://schema.org');
+ assert.equal(entity['@type'],'WebSite');
+ assert.equal(entity['@id'],'https://24go.top/#website');
+ assert.equal(entity.url,canonicalHost+'/');
+ assert.equal(entity.name,'24GOTOP');
+ assert.equal(entity.description,html.match(/<meta name="description" content="([^"]+)">/)[1]);
+ const languages=['en','ru','th','es','fr','de','pt','zh'];
+ assert.deepEqual(entity.inLanguage,languages);
+ for(const code of languages){
+  const path=code==='en'?'index.html':code+'/index.html';
+  assert.ok(existsSync(join(root,path)),'actual locale must exist: '+code);
+  assert.match(read(path),new RegExp('<html lang="'+code+'">'));
+  const url=canonicalHost+'/'+(code==='en'?'':code+'/');
+  assert.ok(sitemap.includes('<loc>'+url+'</loc>'));
+  assert.ok(html.includes('hreflang="'+code+'" href="'+url+'"'));
+ }
+ for(const fake of ['potentialAction','SearchAction','aggregateRating','interactionStatistic','numberOfEmployees'])
+  assert.equal(Object.hasOwn(entity,fake),false,'unsupported claim: '+fake);
+ assert.ok(html.indexOf('<script type="application/ld+json">')<html.indexOf('</head>'));
+ assert.doesNotMatch(blocks[0][1],/service_role|PUBLISH_API_KEY|sb_secret_/);
+});

@@ -1,5 +1,9 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-31 — Truthful WebSite identity for SEO/GEO
+
+- Add minimal canonical root `WebSite` JSON-LD with grounded project brand and actual locale URLs, verified by source tests. No fake user metrics or launch features, private backend, paid tools or indexing claims.
+
 ## 2026-10-31 — Public article corrections and attribution reports
 
 - Add a dedicated public GitHub issue form for precise, human-reviewed reports about existing engineering notes and a visible report link on each of ten published technical articles. Distinguish public content corrections from confidential security disclosures, document maintainer triage, and preserve no-backend/no-automatic-takedown safety. No private Supabase/hosted permissions changed.
