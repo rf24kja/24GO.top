@@ -46,7 +46,7 @@ test('editorial content is truthful, code-backed and does not claim production p
   }
   assert.match(article, /npm run demo:read/);
   assert.match(article, /<meta name="description"/);
-  assert.doesNotMatch(article, /<script\b(?! type="application\/ld\+json">)|PUBLISH_API_KEY|sb_secret_|<iframe\b/i);
+  assert.doesNotMatch(article, /<script\b(?! type="application\/ld\+json">| type="module" src="\.\/article-reader\.mjs">)|PUBLISH_API_KEY|sb_secret_|<iframe\b/i);
   assert.doesNotMatch(article, /24gotop-starter/);
 });
 
@@ -70,7 +70,7 @@ test('new safety article is tied to merged source and avoids production claims',
   assert.match(previewNote, /textContent/);
   assert.match(previewNote, /browser-only experiment/);
   assert.match(previewNote, /screen-reader/);
-  assert.doesNotMatch(previewNote, /<script\b(?! type="application\/ld\+json">)|<iframe\b|PUBLISH_API_KEY|sb_secret_|service_role/i);
+  assert.doesNotMatch(previewNote, /<script\b(?! type="application\/ld\+json">| type="module" src="\.\/article-reader\.mjs">)|<iframe\b|PUBLISH_API_KEY|sb_secret_|service_role/i);
 });
 
 test('review lifecycle note is indexed, readable and accurately describes prelaunch gates', () => {
@@ -85,7 +85,7 @@ test('review lifecycle note is indexed, readable and accurately describes prelau
   assert.match(lifecycleNote, /https:\/\/github\.com\/rf24kja\/24GO\.top\/issues\/38/);
   assert.match(lifecycleNote, /https:\/\/github\.com\/rf24kja\/24GO\.top\/issues\/29/);
   assert.match(lifecycleNote, /<link rel="canonical" href="https:\/\/24go\.top\/engineering\/submit-is-not-publish\.html"/);
-  assert.doesNotMatch(lifecycleNote, /<script\b(?! type="application\/ld\+json">)|<iframe\b|PUBLISH_API_KEY|sb_secret_|service_role/i);
+  assert.doesNotMatch(lifecycleNote, /<script\b(?! type="application\/ld\+json">| type="module" src="\.\/article-reader\.mjs">)|<iframe\b|PUBLISH_API_KEY|sb_secret_|service_role/i);
   // No private full SQL or synthetic user credential in the published article.
   assert.doesNotMatch(lifecycleNote, /CREATE ROLE|CREATE POLICY|INSERT INTO app_private|password123/i);
 });
@@ -99,7 +99,7 @@ test('PostgreSQL least-privilege article is verifiable, non-sensitive, and corre
   assert.match(permissionNote, /INSERT \.\.\. RETURNING/);
   assert.match(permissionNote, /not a launched community/i);
   assert.match(permissionNote, /https:\/\/github\.com\/rf24kja\/24GO\.top\/issues\/38/);
-  assert.doesNotMatch(permissionNote, /<script\b(?! type="application\/ld\+json">)|<iframe\b|sb_secret_|PUBLISH_API_KEY|CREATE ROLE app_/i);
+  assert.doesNotMatch(permissionNote, /<script\b(?! type="application\/ld\+json">| type="module" src="\.\/article-reader\.mjs">)|<iframe\b|sb_secret_|PUBLISH_API_KEY|CREATE ROLE app_/i);
 });
 
 test('Pages status cites independently verified apex HTTPS and still discloses absent public publishing', () => {
@@ -122,7 +122,7 @@ test('new JS SDK credential-safety article cites real public code without produc
  assert.match(text,/tests\/sdk\.test\.mjs/);
  assert.match(text,/assert\.equal\(calls, 0\)/);
  assert.match(text,/not.*complete production SDK/i);
- assert.doesNotMatch(text,/<script\b(?! type="application\/ld\+json">)|sb_secret_|service_role|PUBLISH_API_KEY/i);
+ assert.doesNotMatch(text,/<script\b(?! type="application\/ld\+json">| type="module" src="\.\/article-reader\.mjs">)|sb_secret_|service_role|PUBLISH_API_KEY/i);
  assert.match(index, /href="\.\/javascript-sdk-api-key-leak-prevention\.html"/);
  assert.match(feed, /https:\/\/24go\.top\/engineering\/javascript-sdk-api-key-leak-prevention\.html/);
 });
