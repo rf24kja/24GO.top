@@ -138,6 +138,13 @@ done
 # deployed, same-origin JavaScript instead of mistaking source CI for delivery.
 probe '/engineering/search.js' archive_search 'words.every(word=>entry.searchable.includes(word)'
 probe '/engineering/reading-list.js' reading_list_js '24gotop-public-reading-list-v1'
+probe '/engineering/article-reader.mjs' article_reader_js 'export function mountArticleReader'
+probe '/engineering/notes.css' article_notes_css '.article-reader__progress'
+if ! grep -Fq -- 'validatedReaderMetadata' "$tmp/article_reader_js" ||
+   ! grep -Fq -- '.article-reader__section' "$tmp/article_notes_css"; then
+  echo '::error::Live public article reader assets are incomplete'
+  failures=$((failures+1))
+fi
 if ! grep -Fq -- 'id="reading-list-import"' "$tmp/index" ||
    ! grep -Fq -- 'id="reading-list-export"' "$tmp/index" ||
    ! grep -Fq -- 'id="reading-list-filter"' "$tmp/index" ||
@@ -210,6 +217,11 @@ for url in "${listed_urls[@]}"; do
   # Limit article-only assertions to a single path segment. The old Bash
   # wildcard also matched /engineering/topics/*.html and gave false failures.
   if [[ "$route" =~ ^/engineering/[a-z0-9-]+[.]html$ ]]; then
+    if ! grep -Fq -- '<script type="module" src="./article-reader.mjs"></script>' "$tmp/page$item" ||
+       ! grep -Eq -- '<h2 id="section-[a-z0-9-]+">' "$tmp/page$item"; then
+      echo "::error::Live engineering article lacks source-backed section links: $route"
+      failures=$((failures+1))
+    fi
     if ! grep -Fq -- '<nav class="related-reading" aria-label="Continue reading">' "$tmp/page$item" ||
        ! grep -Fq -- '<li><a href="./' "$tmp/page$item"; then
       echo "::error::Live engineering article is missing static related reading: $route"
