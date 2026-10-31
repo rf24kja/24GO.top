@@ -7,6 +7,21 @@
   "language": "en",
   "items": [
     {
+      "id": "https://24go.top/engineering/read-only-mcp-server-for-technical-articles.html",
+      "url": "https://24go.top/engineering/read-only-mcp-server-for-technical-articles.html",
+      "title": "How to expose published technical articles to AI agents with a read-only MCP server",
+      "summary": "Build a local read-only MCP server for a trusted technical-article corpus, with allowlisted canonical URLs, bounded tool inputs, no database permissions and real stdio tests.",
+      "content_text": "Build a local read-only MCP server for a trusted technical-article corpus, with allowlisted canonical URLs, bounded tool inputs, no database permissions and real stdio tests.\n\nRead full original article: https://24go.top/engineering/read-only-mcp-server-for-technical-articles.html",
+      "date_published": "2026-10-31T05:45:00Z",
+      "language": "en",
+      "authors": [
+        {
+          "name": "24GOTOP Engineering",
+          "url": "https://github.com/rf24kja/24GO.top"
+        }
+      ]
+    },
+    {
       "id": "https://24go.top/engineering/safe-markdown-citation-links-without-xss.html",
       "url": "https://24go.top/engineering/safe-markdown-citation-links-without-xss.html",
       "title": "How to render Markdown citation links without introducing XSS",
