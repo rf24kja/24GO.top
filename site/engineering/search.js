@@ -1,4 +1,4 @@
-// Progressive, local-only discovery: no fetch, storage, analytics or HTML injection.
+// Progressive same-origin static discovery: no user-query fetch, storage, analytics or HTML injection.
 // Every article stays crawlable/readable when JavaScript is disabled.
 (()=>{
   const form=document.querySelector('[data-engineering-search]');
