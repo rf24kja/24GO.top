@@ -14,7 +14,9 @@
     "demo:publish": "node --env-file-if-exists=.env scripts/publish-demo.mjs",
     "demo:read": "node examples/read-posts.mjs",
     "feed:check": "node scripts/build-engineering-json-feed.mjs --check",
-    "feed:write": "node scripts/build-engineering-json-feed.mjs --write"
+    "feed:write": "node scripts/build-engineering-json-feed.mjs --write",
+    "search:check": "node scripts/build-engineering-search-index.mjs --check",
+    "search:write": "node scripts/build-engineering-search-index.mjs --write"
   },
   "license": "MIT"
 }
