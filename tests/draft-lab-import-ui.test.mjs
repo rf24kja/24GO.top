@@ -84,6 +84,9 @@ function build({uiHref='https://24go.top/draft-lab.html'}={}) {
   },{timeout:5000});
   return {
     elements, document, localStorage,
+    storageEvent(key=VAULT_KEY,storageArea=localStorage){
+      window.listeners.storage({key,storageArea});
+    },
     setConfirm(value){confirm=value;},
     beforeUnload() {
       const event = {prevented:false, returnValue:undefined, preventDefault(){this.prevented=true;}};
@@ -693,4 +696,81 @@ test('browser vault is opt-in and the author can reopen a saved article',()=>{
  assert.equal(app.elements.postTitle.value,sample.title);
  assert.equal(app.elements.postBody.value,sample.body);
  assert.equal(app.elements.formStatus.dataset.error,'false');
+});
+
+
+test('another tab replacing the saved revision cannot silently erase the current unsaved copy',()=>{
+ const app=build(),el=app.elements;
+ for(const [id,key] of [['postTitle','title'],['postBody','body'],
+  ['postLocale','locale'],['postCategory','category'],['postSource','source']])
+  el[id].value=sample[key];
+ el.saveBrowserDraft.listeners.click();
+ assert.equal(app.beforeUnload().prevented,false,'current text is initially saved');
+ const raw=JSON.parse(app.localStorage.getItem(VAULT_KEY));
+ const originalId=raw.entries[0].id,originalBody=el.postBody.value;
+ raw.entries[0].draft.body='Another tab authored this saved revision independently.';
+ raw.entries[0].updatedAt='2026-10-31T22:00:00.000Z';
+ app.localStorage.setItem(VAULT_KEY,JSON.stringify(raw));
+ app.storageEvent();
+ assert.equal(el.postBody.value,originalBody,'never substitute another tab contents');
+ assert.equal(el.postTitle.value,sample.title);
+ assert.equal(app.beforeUnload().prevented,true,
+  'the stale saved baseline must not suppress the browser leave warning');
+ assert.equal(el.formStatus.textContent,uiText('en','vaultConflict'));
+ assert.equal(el.formStatus.dataset.error,'true');
+ assert.equal(JSON.parse(app.localStorage.getItem(VAULT_KEY)).entries.length,1,
+  'a storage event must not automatically persist data');
+ el.saveBrowserDraft.listeners.click();
+ const saved=JSON.parse(app.localStorage.getItem(VAULT_KEY)).entries;
+ assert.equal(saved.length,2,'explicit save creates a separate slot, not an overwrite');
+ assert.equal(saved.find(x=>x.id===originalId).draft.body,raw.entries[0].draft.body);
+ assert.ok(saved.some(x=>x.draft.body===originalBody&&x.id!==originalId));
+});
+
+test('unrelated storage events and other draft slots do not mark saved work dirty',()=>{
+ const app=build(),el=app.elements;
+ for(const [id,key] of [['postTitle','title'],['postBody','body'],
+  ['postLocale','locale'],['postCategory','category'],['postSource','source']])
+  el[id].value=sample[key];
+ el.saveBrowserDraft.listeners.click();
+ const savedId=JSON.parse(app.localStorage.getItem(VAULT_KEY)).entries[0].id;
+ app.storageEvent('unrelated.key');
+ assert.equal(app.beforeUnload().prevented,false);
+ const second=createDraftVault(app.localStorage).save({...sample,
+  title:'Second reviewed technical example'});
+ assert.notEqual(second.id,savedId);
+ app.storageEvent();
+ assert.equal(app.beforeUnload().prevented,false,
+  'a different slot should not invalidate the active saved baseline');
+ app.storageEvent(VAULT_KEY,{});
+ assert.equal(app.beforeUnload().prevented,false,
+  'an event from a different storage area must be ignored');
+});
+
+test('external deletion or clear activates loss protection without altering editor text',()=>{
+ for(const cleared of [false,true]){
+  const app=build(),el=app.elements;
+  for(const [id,key] of [['postTitle','title'],['postBody','body'],
+   ['postLocale','locale'],['postCategory','category'],['postSource','source']])
+   el[id].value=sample[key];
+  el.saveBrowserDraft.listeners.click();
+  const old=JSON.parse(app.localStorage.getItem(VAULT_KEY));
+  app.localStorage.setItem(VAULT_KEY,JSON.stringify({v:1,entries:[]}));
+  if(cleared)app.localStorage.removeItem(VAULT_KEY);
+  app.storageEvent(cleared?null:VAULT_KEY);
+  assert.equal(app.beforeUnload().prevented,true);
+  assert.equal(el.postBody.value,sample.body);
+  assert.equal(el.formStatus.textContent,uiText('en','vaultConflict'));
+  assert.equal(app.localStorage.getItem(VAULT_KEY),cleared?null:JSON.stringify({v:1,entries:[]}),
+   'no write triggered by browser storage notification');
+ }
+});
+
+test('storage changes never invalidate a separate unchanged local Markdown file baseline',async()=>{
+ const app=build();
+ await app.import(formatDraft(sample));
+ assert.equal(app.beforeUnload().prevented,false);
+ app.storageEvent();
+ assert.equal(app.elements.postBody.value,sample.body);
+ assert.equal(app.beforeUnload().prevented,false);
 });

@@ -94,6 +94,11 @@ require "['formatQuote','quote'],['formatCode','code'],['formatTable','table'],[
 require "if(action==='link')" "$tmp/logic.js" 'Markdown Link pure edit'
 require 'export function safeCitationUrl' "$tmp/preview.js" 'bounded safe citation preview'
 require 'noopener noreferrer ugc' "$tmp/preview.js" 'user-generated external link security'
+# A stale saved revision changed from another tab must reactivate loss
+# protection, not silently mark the current in-memory article as saved.
+require "window.addEventListener('storage',event=>" "$tmp/editor.js" 'cross-tab manual draft revision watcher'
+require "baselineChanged=getDraftVault().load(activeSavedId).version!==activeSavedVersion" "$tmp/editor.js" 'cross-tab version comparison'
+require "resetSavedSlot(); // future explicit saves create a copy, never overwrite" "$tmp/editor.js" 'non-destructive explicit save after conflict'
 require 'id="uiLocale"' "$tmp/draft.html" 'independent interface language selector'
 require 'data-ui="notice"' "$tmp/draft.html" 'localized pre-launch safety disclosure'
 require 'applyUiLanguage(document,uiLocale.value)' "$tmp/editor.js" 'language switch preserving editor fields'

@@ -308,6 +308,30 @@ field('deleteBrowserDraft').addEventListener('click',()=>{
  }catch(error){vaultError(error);}
 });
 
+// Another tab can update or remove the manually saved baseline without
+// changing this tab's current text. Never treat that stale copy as safely
+// persisted: warn on navigation and let the author save it as a new draft.
+// Storage notifications are read-only; no automatic save or network traffic.
+window.addEventListener('storage',event=>{
+  if(event.key!==VAULT_KEY && event.key!==null)return;
+  try{
+    if(event.storageArea && event.storageArea!==window.localStorage)return;
+  }catch{/* Storage access may be revoked; conservatively verify below. */}
+  let baselineChanged=false;
+  if(activeSavedId){
+    try{
+      baselineChanged=getDraftVault().load(activeSavedId).version!==activeSavedVersion;
+    }catch{baselineChanged=true;}
+  }
+  refreshBrowserDrafts();
+  if(baselineChanged){
+    reopenedFileBaseline=null;
+    resetSavedSlot(); // future explicit saves create a copy, never overwrite
+    updateSafetyNotice();
+    message(ui('vaultConflict'),true);
+  }
+});
+
 field('downloadDraft').addEventListener('click', () => {
   if (!readyToExport()) return;
   // Only the direct click initiates a local browser download. No upload or API.
