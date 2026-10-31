@@ -18,17 +18,17 @@
 <p class="lead">A successful pull request confirms the repository changed. A green deployment action confirms a deployment workflow completed. Neither proves a reader can fetch the correct HTML and JavaScript from your canonical domain. We learned this during a real 24GOTOP release and turned the failure into a reproducible deployment check.</p>
 <p class="details">By <a href="https://github.com/rf24kja/24GO.top">24GOTOP Engineering</a> · <time datetime="2026-10-30">30 October 2026</time> · <a href="https://github.com/rf24kja/24GO.top/pull/79">HTTPS verification PR #79</a> · <a href="https://github.com/rf24kja/24GO.top/pull/82">Race fix PR #82</a></p>
 <div class="note" role="note"><strong>What was verified:</strong> the public static pages and assets were fetched over HTTPS from <code>https://24go.top</code> by GitHub-hosted runners. No measurement here proves constant uptime, Google indexing, production accounts, or a live user publishing API. This site is still pre-launch.</div>
-<h2 id="section-the-three-different-questions-you-must-answer-2">The three different questions you must answer</h2>
+<h2 id="section-the-three-different-questions-you-must-answer">The three different questions you must answer</h2>
 <ol>
 <li><strong>Is the code correct?</strong> Unit tests, linting, build checks and source review can show the intended content and behavior under test conditions.</li>
 <li><strong>Did deployment finish?</strong> The official GitHub Pages workflow reports whether uploading and publishing the static artifact succeeded.</li>
 <li><strong>Is the actual site serving the update?</strong> An independent request must fetch the canonical HTTPS URL, follow safe redirects and inspect the resulting HTML/JS files for a release-specific, truthful marker.</li>
 </ol>
 <p>These are separate observations. A deployment can finish before a CDN edge serves new content; a test can also run before the deployment finishes. Reporting “launched successfully” after a Git merge alone conflates all three.</p>
-<h2 id="section-what-happened-in-the-24gotop-release-2">What happened in the 24GOTOP release</h2>
+<h2 id="section-what-happened-in-the-24gotop-release">What happened in the 24GOTOP release</h2>
 <p>Our public <a href="https://github.com/rf24kja/24GO.top/pull/81">eight-language Draft Lab change</a> merged into the MIT repository. The <a href="https://github.com/rf24kja/24GO.top/actions/runs/40969864484">source CI</a> passed and the <a href="https://github.com/rf24kja/24GO.top/actions/runs/40969864491">Pages deployment</a> succeeded. The first external smoke check, however, <a href="https://github.com/rf24kja/24GO.top/actions/runs/40969864523">failed</a>: the check ran on <code>push</code> while the public site still served the previous version, so the new interface-language selector was absent.</p>
 <p>A later smoke check triggered by the <em>completed</em> Pages workflow <a href="https://github.com/rf24kja/24GO.top/actions/runs/40969903691">passed</a>. That is stronger delivery evidence, not proof that the earlier failure was imaginary. The failure reflected the real state visible to the runner when it executed. We retained both run links in the <a href="https://github.com/rf24kja/24GO.top/blob/main/docs/DEPLOYMENT_STATUS.md">deployment evidence log</a>.</p>
-<h2 id="section-fix-the-dependency-not-the-assertion-2">Fix the dependency, not the assertion</h2>
+<h2 id="section-fix-the-dependency-not-the-assertion">Fix the dependency, not the assertion</h2>
 <p>The solution in <a href="https://github.com/rf24kja/24GO.top/pull/82">PR #82</a> was to remove the direct <code>push</code> trigger from the live verification workflow. It now runs after successful completion of <code>Deploy pre-launch landing</code>, or by explicit manual dispatch. The workflow itself needs only read access to the checkout; it cannot publish or change site settings.</p>
 <pre><code>name: Verify live Draft Lab release
 on:
@@ -50,7 +50,7 @@ jobs:
       - run: bash -n scripts/check-live-draft-lab.sh
       - run: bash scripts/check-live-draft-lab.sh</code></pre>
 <p>The snippet illustrates the reviewed workflow shape; consult the <a href="https://github.com/rf24kja/24GO.top/blob/main/.github/workflows/live-draft-lab.yml">current workflow source</a> for the exact maintained version. Merely waiting a fixed number of seconds on every push is less reliable than waiting for the deployment event itself.</p>
-<h2 id="section-a-practical-read-only-https-smoke-test-2">A practical, read-only HTTPS smoke test</h2>
+<h2 id="section-a-practical-read-only-https-smoke-test">A practical, read-only HTTPS smoke test</h2>
 <p>Our <a href="https://github.com/rf24kja/24GO.top/blob/main/scripts/check-live-draft-lab.sh">public test script</a> downloads the canonical homepage, the experimental editor HTML, and its browser JavaScript. It restricts redirects to HTTPS, uses bounded timeouts and retries, and verifies that specific expected artifacts and safety messages are present. It does not upload content, authenticate, print response bodies or access any confidential user data.</p>
 <pre><code>curl --fail --silent --show-error --location \
   --proto '=https' --proto-redir '=https' \
@@ -60,10 +60,10 @@ jobs:
 grep --fixed-strings 'id="uiLocale"' draft.html</code></pre>
 <p>This example checks whether the latest deployed page contains the separately controlled interface language selector. The real script also checks that the preview still protects external links and that the page honestly says it is <strong>not</strong> public article publishing. Assertions should be based on stable user-facing behavior rather than brittle implementation-specific whitespace or minified line numbers.</p>
 <p>To avoid reporting a success for a mismatched release, make your check look for at least one feature unique to the revision being deployed. For more critical deployments, verify the deployed version identifier and content digest, and audit cache headers and redirects. A smoke test is not a substitute for real-browser navigation, accessibility tests or a production rollback drill.</p>
-<h2 id="section-seo-and-ai-discovery-need-delivery-evidence-too-2">SEO and AI discovery need delivery evidence too</h2>
+<h2 id="section-seo-and-ai-discovery-need-delivery-evidence-too">SEO and AI discovery need delivery evidence too</h2>
 <p>Search engines and browsing agents are clients of the published site—not of your GitHub repository. A complete sitemap only helps if its URLs actually return readable HTML over HTTPS. Verify <a href="https://24go.top/robots.txt">robots.txt</a>, <a href="https://24go.top/sitemap.xml">sitemap.xml</a>, <a href="./feed.xml">RSS</a> and representative article pages separately after release.</p>
 <p>Google explains that satisfying its technical requirements and having discoverable content <a href="https://developers.google.com/search/docs/appearance/ai-features">does not guarantee indexing or AI-feature inclusion</a>. For actual search performance you still need verified <a href="https://search.google.com/search-console">Search Console</a> and <a href="https://www.bing.com/webmasters/">Bing Webmaster Tools</a> properties, not estimated traffic or a <code>site:</code> query treated as a definitive index count.</p>
-<h2 id="section-copyable-checklist-for-your-next-static-release-2">Copyable checklist for your next static release</h2>
+<h2 id="section-copyable-checklist-for-your-next-static-release">Copyable checklist for your next static release</h2>
 <ul>
 <li>Review the exact commit and run project CI before merging.</li>
 <li>Deploy only the expected static artifact with least-privilege GitHub Actions permissions.</li>
