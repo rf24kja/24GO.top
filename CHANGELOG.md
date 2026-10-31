@@ -1,5 +1,9 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-31 — Multi-word engineering article discovery
+
+- Upgrade the public, privacy-preserving archive search to find **all words in any order**, across visible titles/summaries and the verified local static article index. Topic filters, bookmarkable URLs, keyboard behavior and no-JavaScript crawlable HTML are preserved. Add tests for mixed card/full-text matching, word-order independence and offline fallback. No remote search API, telemetry, author writes or private Core changes.
+
 ## 2026-10-31 — Deterministic sitemap generator for canonical discovery
 
 - Generate the static XML sitemap from existing reciprocal homepage hreflang URLs, three reviewed public routes and source-validated RSS/Article JSON-LD URLs. Fail CI on stale sitemap, forged or duplicate links, broken canonical locale routes and noindex pages. No fictitious crawl dates, backend access or search ranking assertions.

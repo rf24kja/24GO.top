@@ -89,11 +89,16 @@
   };
   const update=(writeUrl=false)=>{
     const keyword=input.value.trim().toLocaleLowerCase().slice(0,80);
+    // Match all bounded query words, in any order and across the visible
+    // title/summary and optional reviewed full-text index. The previous
+    // contiguous-phrase match missed articles when words were separated.
+    const words=keyword.split(/\s+/).filter(Boolean);
     let count=0;
     for(const entry of entries){
+      const indexed=fullText?.get(entry.file);
       const matches=(selected==='all'||entry.topic===selected) &&
-        (entry.searchable.includes(keyword) ||
-          Boolean(fullText?.get(entry.file)?.includes(keyword)));
+        words.every(word=>entry.searchable.includes(word) ||
+          Boolean(indexed?.includes(word)));
       entry.card.hidden=!matches;
       if(matches)count++;
     }
