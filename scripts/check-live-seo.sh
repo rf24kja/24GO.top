@@ -121,6 +121,12 @@ done
 # The public archive's UX is a client-side enhancement; verify its actual
 # deployed, same-origin JavaScript instead of mistaking source CI for delivery.
 probe '/engineering/search.js' archive_search 'words.every(word=>entry.searchable.includes(word)'
+probe '/engineering/reading-list.js' reading_list_js '24gotop-public-reading-list-v1'
+if ! grep -Fq -- 'id="reading-list-panel"' "$tmp/index" ||
+   ! grep -Fq -- 'reading-list.js' "$tmp/index"; then
+  echo '::error::Live archive lacks optional on-device reading list'
+  failures=$((failures+1))
+fi
 if ! grep -Fq -- 'id="engineering-copy-results"' "$tmp/index"; then
   echo '::error::Live archive missing reference-copy control'
   failures=$((failures+1))
