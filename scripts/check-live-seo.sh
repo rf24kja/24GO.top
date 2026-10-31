@@ -117,6 +117,15 @@ if ! grep -Fq -- 'id="insertTemplate"' "$tmp/draftlab" ||
   failures=$((failures+1))
 fi
 probe '/engineering/' index '<h1>Engineering notes</h1>'
+if ! grep -Fq -- 'id="agent-discovery-heading"' "$tmp/index" ||
+   ! grep -Fq -- 'search technical articles using multiple keywords' "$tmp/index"; then
+  echo '::error::Public engineering archive missing agent MCP onboarding'
+  failures=$((failures+1))
+fi
+if ! grep -Fq -- 'paged results and bounded excerpts' "$tmp/home"; then
+  echo '::error::Public landing missing latest read-only MCP capability'
+  failures=$((failures+1))
+fi
 # Curated, JavaScript-free topical reading paths must ship as actual HTML.
 for topic in security writing infrastructure publishing; do
   probe "/engineering/topics/$topic.html" "topic-$topic" 'class="topic-guide__steps"'
