@@ -194,3 +194,21 @@ test('browser navigation restores the URL state without altering article data',(
  assert.deepEqual(app.cards.map(x=>x.hidden),[true,true,false]);
  assert.equal(app.status.textContent,'1 of 3 articles');
 });
+
+
+test('public archive has navigable heading hierarchy for all nine searchable articles',()=>{
+ assert.match(html,/<h1>Engineering notes<\/h1>/);
+ assert.match(html,/<section aria-labelledby="latest-heading"><h2 id="latest-heading">Recent articles<\/h2>/);
+ const cards=[...html.matchAll(/<article class="card" data-note-card data-note-topic="[^"]+">([\s\S]*?)<\/article>/g)];
+ assert.equal(cards.length,9,'all nine article cards retain their searchable data fields');
+ for(const card of cards){
+  assert.match(card[1],/<h3><a href="\.\/[^"]+\.html">[^<]+<\/a><\/h3>/);
+  assert.doesNotMatch(card[1],/<h2\b|<h4\b/);
+ }
+ assert.match(html,/<aside class="card">[\s\S]*?<h3>Help us make this useful<\/h3>/);
+ assert.doesNotMatch(html,/<aside class="card">[\s\S]*?<h2>Help us make this useful<\/h2>/);
+ assert.equal((html.match(/<h2\b/g)||[]).length,1,
+  'the recent-articles section must remain the sole level-two heading');
+ assert.match(style,/\.card h2,\.card h3\{font-size:21px;margin:7px 0\}/,
+  'corrected heading levels must preserve previously reviewed card typography');
+});

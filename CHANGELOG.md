@@ -1,5 +1,11 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-31 — Correct the article archive heading hierarchy
+
+- Technical article cards and the contributor panel now use `h3` below the `Recent articles` section's `h2`, improving navigation by heading level without altering article links or styling.
+- Added a source regression for all nine archive cards. Manual keyboard, mobile screen reader and zoom verification remain open under Issue #7; tests alone are not an accessibility certification.
+- No change to authenticated publishing, private hosted Core, Supabase, DNS or permissions.
+
 ## 2026-10-31 — Evidence-based public backlog triage
 
 - Closed obsolete public-hosted-implementation Issues [#14](https://github.com/rf24kja/24GO.top/issues/14) and [#15](https://github.com/rf24kja/24GO.top/issues/15) as **not planned in this public MIT repository / superseded by private hosted-Core implementation**. These closures do not mean PostgreSQL-authored publishing or real Auth are complete. Public parent [#2](https://github.com/rf24kja/24GO.top/issues/2) remains open.

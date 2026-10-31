@@ -98,6 +98,8 @@ require "url.searchParams.set('q',query)" "$tmp/search.js" 'bounded URL state fo
 require "url.searchParams.set('topic',selected)" "$tmp/search.js" 'allowlisted topic URL state'
 require "window.addEventListener('popstate'" "$tmp/search.js" 'restored navigation state'
 require 'id="engineering-filter"' "$tmp/shared-search.html" 'public query URL serves readable article directory'
+require '<h2 id="latest-heading">Recent articles</h2>' "$tmp/articles.html" 'section heading for screen readers'
+require '<h3><a href="./multilingual-markdown-editor-without-losing-drafts.html">' "$tmp/articles.html" 'nested article card heading'
 download "$origin/engineering/feed.xml" "$tmp/feed.xml"
 download "$origin/sitemap.xml" "$tmp/sitemap.xml"
 require '<loc>https://24go.top/contribute.html</loc>' "$tmp/sitemap.xml" 'public proposal page sitemap'
