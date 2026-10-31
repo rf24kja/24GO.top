@@ -53,6 +53,10 @@ export function formatDraftSelection(value,start,end,action){
  }else throw new TypeError('Unsupported Markdown action');
  if(value.length-(end-start)+replacement.length>12000)
    throw new RangeError('Article exceeds 12,000 characters');
+ if(action==='table'){
+   const selectionStart=start+innerOffset;
+   return {replacement,selectionStart,selectionEnd:selectionStart+content.length};
+ }
  if(action==='link'){
    const selectionStart=start+innerOffset;
    return {replacement,selectionStart,selectionEnd:selectionStart+'https://example.org'.length};
