@@ -1,5 +1,11 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-01 — Agent-oriented MCP paging, excerpts, and source validation
+
+- Extend the local, strictly read-only public article MCP with two additional tools: `search_articles_page` provides deterministic multiword relevance, count and offset pagination; `read_article_excerpt` provides Unicode-safe bounded chunks of one allowlisted published HTML article. Preserve the existing three MCP tool names, legacy `search_articles` array response, JSON-RPC stdio transport and source-only distribution. All article bodies are explicitly untrusted and HTML-derived excerpts are lossy; no arbitrary file reads, backend credentials or publish privileges.
+- Strengthen complete JSON Feed and search-index corpus validation (canonical feed origin/URLs, metadata limits, dates, NFC and duplicate paths), add pure search helper and protocol-level tests, and update public engineering/archive/homepage entry points and documentation.
+- New web copy is static, crawlable and available without JavaScript. No private Core, Supabase change, paid provider, DNS, Vercel project or remote MCP endpoint. Rollback is source-only PR revert; the original three-tool behavior remains available.
+
 ## 2026-11-01 — Author-owned offline revision review
 
 - Add explicit in-memory **Set checkpoint / Review changes / Clear checkpoint / Copy change summary** controls to the static Draft Lab, plus automatic local comparison baselines when reopening a saved Markdown file or manually saved browser draft. Show metadata field changes and a bounded safe plain-text line diff. Preserve the author article, portable export, browser vault and data-loss warnings unchanged. Long line-heavy articles surface an incomplete preview notice rather than an unbounded LCS pass.
