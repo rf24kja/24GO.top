@@ -98,3 +98,11 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 .editorial-actions{display:flex;flex-direction:column;gap:9px;align-items:flex-start;max-width:325px}
 .editorial-actions .feedback{max-width:100%;overflow-wrap:anywhere}
 @media(max-width:760px){.editorial-actions{width:100%;max-width:none}}
+
+/* Public editorial proposal: explicit consent, only headline leaves the tab. */
+.proposal-bridge{margin-top:20px;padding:20px;border:1px solid var(--border);border-radius:14px;background:var(--field)}
+.proposal-bridge h3{font-size:clamp(17px,2.5vw,21px);margin:9px 0}
+.proposal-bridge p{line-height:1.55;color:var(--muted);overflow-wrap:anywhere}
+.proposal-bridge__link{display:inline-flex;align-items:center;min-height:46px;margin:5px 0;padding:10px 17px;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none;font-weight:700}
+.proposal-bridge__link:hover{filter:brightness(.88);color:#fff}
+.proposal-bridge__link:focus-visible{outline:3px solid var(--accent);outline-offset:4px}

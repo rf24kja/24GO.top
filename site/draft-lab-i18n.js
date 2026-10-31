@@ -2,6 +2,15 @@
 // or translations of the user's article. English is the explicit fallback.
 export const UI_LOCALES=Object.freeze(['en','ru','th','es','fr','de','pt','zh']);
 const EN={
+ proposalTag:"03 / CONTRIBUTE",
+ proposalHeading:"Propose this article for human review",
+ proposalDescription:"Open a public GitHub editorial proposal with your headline prefilled. Only the title is transferred after you confirm; your article text, sources and local file stay here.",
+ proposalCta:"Propose on GitHub ↗",
+ proposalPrivacy:"GitHub issues are public and require a GitHub account. Download your .md first. This does not publish an article or guarantee acceptance.",
+ proposalInvalid:"Enter a valid article headline (5–160 characters) before proposing.",
+ proposalConfirm:"GitHub will receive your article headline in a PUBLIC issue link. Your draft body and source are NOT transferred. Download your .md first. Open GitHub now?",
+ proposalCanceled:"Public proposal canceled. Your draft stays here.",
+ proposalOpened:"GitHub proposal opened in a new tab. Your article body was not submitted.",
  outlineTitle:"Article sections",outlineLabel:"Jump to a section of this draft",
  skip:"Skip to editor",
  formatGroup:"Insert Markdown formatting",
@@ -55,6 +64,15 @@ const EN={
  clearCanceled:'Draft kept. Nothing was erased.',cleared:'Draft cleared from this browser tab.'
 };
 const RU={
+ proposalTag:"03 / ПРЕДЛОЖИТЬ",
+ proposalHeading:"Предложить статью на рассмотрение",
+ proposalDescription:"Откройте публичную заявку GitHub с заполненным заголовком. Только заголовок передаётся после вашего согласия; текст, ссылки и локальный файл остаются здесь.",
+ proposalCta:"Предложить через GitHub ↗",
+ proposalPrivacy:"Заявки GitHub публичны, нужен аккаунт GitHub. Сначала скачайте .md. Это не публикация статьи и не гарантия принятия.",
+ proposalInvalid:"Укажите заголовок статьи длиной 5–160 символов.",
+ proposalConfirm:"Заголовок статьи будет передан GitHub в ПУБЛИЧНОЙ ссылке. Текст черновика и источник НЕ передаются. Сначала скачайте .md. Открыть GitHub?",
+ proposalCanceled:"Публичная заявка отменена. Черновик остался здесь.",
+ proposalOpened:"Заявка GitHub открыта в новой вкладке. Текст статьи не отправлен.",
  outlineTitle:"Разделы статьи",outlineLabel:"Перейти к разделу черновика",
  skip:"К редактору",
  formatGroup:"Форматирование Markdown",
@@ -107,6 +125,15 @@ const RU={
  clearCanceled:'Черновик оставлен без изменений.',cleared:'Черновик очищен в этой вкладке.'
 };
 const TH={
+ proposalTag:"03 / เสนอบทความ",
+ proposalHeading:"เสนอบทความเพื่อให้ทีมตรวจสอบ",
+ proposalDescription:"เปิดแบบฟอร์มข้อเสนอ GitHub แบบสาธารณะพร้อมชื่อเรื่อง เฉพาะชื่อเรื่องจะถูกส่งเมื่อคุณยืนยัน เนื้อหาและไฟล์ยังอยู่ที่นี่",
+ proposalCta:"เสนอผ่าน GitHub ↗",
+ proposalPrivacy:"ข้อเสนอ GitHub เป็นสาธารณะและต้องมีบัญชี GitHub ดาวน์โหลดไฟล์ .md ก่อน ไม่ใช่การเผยแพร่บทความ",
+ proposalInvalid:"กรุณาระบุชื่อเรื่อง 5–160 ตัวอักษร",
+ proposalConfirm:"ชื่อเรื่องจะถูกส่งไปยัง GitHub ในลิงก์สาธารณะ แต่เนื้อหาและแหล่งอ้างอิงจะไม่ถูกส่ง ดาวน์โหลด .md ก่อน เปิด GitHub หรือไม่?",
+ proposalCanceled:"ยกเลิกการเสนอแล้ว ร่างยังอยู่ที่นี่",
+ proposalOpened:"เปิด GitHub ในแท็บใหม่แล้ว ไม่ได้ส่งเนื้อหาบทความ",
  outlineTitle:"หัวข้อในบทความ",outlineLabel:"ข้ามไปยังหัวข้อในฉบับร่าง",
  skip:"ข้ามไปยังตัวแก้ไข",
  formatGroup:"จัดรูปแบบ Markdown",
@@ -158,6 +185,15 @@ const TH={
  clearCanceled:'เก็บร่างเดิมไว้',cleared:'ล้างร่างในแท็บนี้แล้ว'
 };
 const ES={
+ proposalTag:"03 / PROPONER",
+ proposalHeading:"Proponer este artículo para revisión",
+ proposalDescription:"Abre una propuesta pública en GitHub con el título preparado. Solo se transfiere el título tras confirmar; el texto y el archivo permanecen aquí.",
+ proposalCta:"Proponer en GitHub ↗",
+ proposalPrivacy:"Las propuestas de GitHub son públicas y requieren una cuenta. Descarga antes tu archivo .md. No es una publicación automática.",
+ proposalInvalid:"Escribe un título válido de 5 a 160 caracteres.",
+ proposalConfirm:"El título se enviará a GitHub mediante un enlace PÚBLICO. El cuerpo y las fuentes NO se enviarán. Descarga antes el .md. ¿Abrir GitHub?",
+ proposalCanceled:"Propuesta cancelada. Tu borrador sigue aquí.",
+ proposalOpened:"GitHub se abrió en otra pestaña. No se envió el texto.",
  outlineTitle:"Secciones del artículo",outlineLabel:"Ir a una sección del borrador",
  skip:"Ir al editor",
  formatGroup:"Dar formato Markdown",
@@ -209,6 +245,15 @@ const ES={
  clearCanceled:'Borrador conservado.',cleared:'Borrador borrado de esta pestaña.'
 };
 const FR={
+ proposalTag:"03 / PROPOSER",
+ proposalHeading:"Proposer cet article à la relecture",
+ proposalDescription:"Ouvrez une proposition publique GitHub avec le titre prérempli. Seul le titre sera transmis après confirmation ; le texte reste ici.",
+ proposalCta:"Proposer sur GitHub ↗",
+ proposalPrivacy:"Les propositions GitHub sont publiques et nécessitent un compte. Téléchargez votre .md d’abord. Ce n’est pas une publication.",
+ proposalInvalid:"Saisissez un titre valide de 5 à 160 caractères.",
+ proposalConfirm:"Le titre sera transmis à GitHub dans un lien PUBLIC. Le texte et les sources ne seront PAS transmis. Téléchargez le .md avant. Ouvrir GitHub ?",
+ proposalCanceled:"Proposition annulée. Votre brouillon reste ici.",
+ proposalOpened:"GitHub a été ouvert dans un nouvel onglet. Aucun texte transmis.",
  outlineTitle:"Sections de l’article",outlineLabel:"Accéder à une section du brouillon",
  skip:"Aller à l’éditeur",
  formatGroup:"Mise en forme Markdown",
@@ -260,6 +305,15 @@ const FR={
  clearCanceled:'Brouillon conservé.',cleared:'Brouillon effacé de cet onglet.'
 };
 const DE={
+ proposalTag:"03 / VORSCHLAGEN",
+ proposalHeading:"Diesen Artikel zur Prüfung vorschlagen",
+ proposalDescription:"Öffne einen öffentlichen GitHub-Vorschlag mit vorausgefülltem Titel. Erst nach Bestätigung wird nur der Titel übertragen; der Text bleibt hier.",
+ proposalCta:"Auf GitHub vorschlagen ↗",
+ proposalPrivacy:"GitHub-Vorschläge sind öffentlich und benötigen ein Konto. Lade zuerst deine .md-Datei herunter. Dies ist keine Veröffentlichung.",
+ proposalInvalid:"Bitte einen Titel mit 5–160 Zeichen eingeben.",
+ proposalConfirm:"Der Titel wird über einen ÖFFENTLICHEN Link an GitHub übertragen. Text und Quellen werden NICHT gesendet. Lade zuerst die .md herunter. GitHub öffnen?",
+ proposalCanceled:"Vorschlag abgebrochen. Der Entwurf bleibt hier.",
+ proposalOpened:"GitHub wurde in einem neuen Tab geöffnet. Der Artikeltext wurde nicht gesendet.",
  outlineTitle:"Artikelabschnitte",outlineLabel:"Zu einem Abschnitt des Entwurfs springen",
  skip:"Zum Editor springen",
  formatGroup:"Markdown formatieren",
@@ -311,6 +365,15 @@ const DE={
  clearCanceled:'Entwurf beibehalten.',cleared:'Entwurf aus diesem Tab gelöscht.'
 };
 const PT={
+ proposalTag:"03 / PROPOR",
+ proposalHeading:"Propor este artigo para revisão",
+ proposalDescription:"Abra uma proposta pública no GitHub com o título preenchido. Só o título será enviado após confirmação; o texto permanece aqui.",
+ proposalCta:"Propor no GitHub ↗",
+ proposalPrivacy:"Propostas no GitHub são públicas e exigem uma conta. Baixe o .md antes. Isto não publica automaticamente o artigo.",
+ proposalInvalid:"Informe um título válido de 5 a 160 caracteres.",
+ proposalConfirm:"O título será enviado ao GitHub em um link PÚBLICO. O texto e as fontes NÃO serão enviados. Baixe o .md antes. Abrir GitHub?",
+ proposalCanceled:"Proposta cancelada. O rascunho permanece aqui.",
+ proposalOpened:"GitHub foi aberto em outra aba. O texto não foi enviado.",
  outlineTitle:"Seções do artigo",outlineLabel:"Ir para uma seção do rascunho",
  skip:"Ir para o editor",
  formatGroup:"Formatação Markdown",
@@ -362,6 +425,15 @@ const PT={
  clearCanceled:'Rascunho mantido.',cleared:'Rascunho apagado desta aba.'
 };
 const ZH={
+ proposalTag:"03 / 投稿建议",
+ proposalHeading:"提交文章供人工审核",
+ proposalDescription:"打开公开的 GitHub 投稿表单并预填标题。确认后仅传输标题，正文、来源和本地文件仍留在此处。",
+ proposalCta:"在 GitHub 提交建议 ↗",
+ proposalPrivacy:"GitHub 建议是公开的，需要 GitHub 账号。请先下载 .md 文件。这不是自动发表文章。",
+ proposalInvalid:"请输入 5–160 个字符的有效标题。",
+ proposalConfirm:"标题将通过公开链接传给 GitHub，正文和来源不会传输。请先下载 .md。现在打开 GitHub 吗？",
+ proposalCanceled:"已取消投稿建议，草稿仍保留在此。",
+ proposalOpened:"已在新标签页打开 GitHub，未发送文章正文。",
  outlineTitle:"文章章节",outlineLabel:"跳转到草稿章节",
  skip:"跳转到编辑器",
  formatGroup:"Markdown 格式工具",

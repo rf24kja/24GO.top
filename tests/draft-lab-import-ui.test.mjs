@@ -8,11 +8,13 @@ import {
   parseDraftFile, readDraftFileStrict, MAX_DRAFT_FILE_BYTES, hasUnexportedChanges, formatDraftSelection, createDraftImportGate, invalidDraftField
 } from '../site/draft-lab-logic.js';
 import {uiText,applyUiLanguage} from '../site/draft-lab-i18n.js';
+import {buildArticleProposalUrl} from '../site/draft-lab-proposal.js';
 
 const source = readFileSync(fileURLToPath(new URL('../site/draft-lab.js', import.meta.url)), 'utf8')
   .replace(/^import .* from '.\/draft-lab-logic\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-preview\.js';\n/m, '')
-  .replace(/^import .* from '.\/draft-lab-i18n\.js';\n/m, '');
+  .replace(/^import .* from '.\/draft-lab-i18n\.js';\n/m, '')
+  .replace(/^import .* from '.\/draft-lab-proposal\.js';\n/m, '');
 
 const sample = {
   title:'Return and improve the documentation', locale:'ru', category:'tools',
@@ -25,7 +27,7 @@ function build({uiHref='https://24go.top/draft-lab.html'}={}) {
     'postTitle','postBody','postLocale','postCategory','postSource','formStatus',
     'previewHeading','previewBody','previewLocale','previewCategory','bodyCount',
     'previewSource','draftSafety','articleOutline','articleOutlineSection','downloadDraft','copyDraft','clearDraft','importDraft','importDraftFile','draftForm',
-    'formatHeading','formatList','formatQuote','formatCode','formatTable','formatLink','uiLocale','draftDropZone','homeBrandLink','homeNavLink'
+    'formatHeading','formatList','formatQuote','formatCode','formatTable','formatLink','uiLocale','draftDropZone','homeBrandLink','homeNavLink','proposeDraft'
   ];
   const elements = Object.fromEntries(ids.map(id => {
     const el = {
@@ -60,7 +62,7 @@ function build({uiHref='https://24go.top/draft-lab.html'}={}) {
     document, window, navigator:{}, URL, Blob, setTimeout,
     safeSourceUrl,validateDraft,formatDraft,draftFilename,hasDraftContent,
     parseDraftFile,readDraftFileStrict,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,createDraftImportGate,invalidDraftField,
-    uiText,applyUiLanguage,
+    uiText,applyUiLanguage,buildArticleProposalUrl,
     renderMarkdownPreview(container, text) { container.textContent = text; },
     renderPreviewOutline(container,text) { container.textContent=text;return /^#{1,3} /m.test(text)?1:0; }
   // Keep a bounded sandbox timeout, with enough CI runner headroom when
@@ -642,4 +644,23 @@ test('visible Table toolbar edits draft source, previews and keeps loss protecti
  assert.equal(app.elements.previewBody.textContent,app.elements.postBody.value);
  assert.equal(app.beforeUnload().prevented,true);
  assert.match(app.elements.formStatus.textContent,/locally/);
+});
+
+test('draft proposal requires explicit consent and transfers only the headline',()=>{
+ const app=build();
+ app.elements.postTitle.value='Explaining a reproducible SQL bug';
+ app.elements.postLocale.value='en';
+ app.setConfirm(false);
+ let prevented=false;
+ const node=app.elements.proposeDraft;
+ node.listeners.click({currentTarget:node,preventDefault(){prevented=true;}});
+ assert.equal(prevented,true);
+ assert.equal(node.href,undefined);
+ app.setConfirm(true);
+ prevented=false;
+ node.listeners.click({currentTarget:node,preventDefault(){prevented=true;}});
+ assert.equal(prevented,false);
+ assert.equal(new URL(node.href).searchParams.get('title'),
+  'Article proposal: Explaining a reproducible SQL bug');
+ assert.equal(new URL(node.href).searchParams.has('body'),false);
 });

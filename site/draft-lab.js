@@ -3,8 +3,10 @@
 import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, readDraftFileStrict, formatDraftSelection, createDraftImportGate, invalidDraftField } from './draft-lab-logic.js';
 import { renderMarkdownPreview,renderPreviewOutline } from './draft-lab-preview.js';
 import { applyUiLanguage,uiText } from './draft-lab-i18n.js';
+import { buildArticleProposalUrl } from './draft-lab-proposal.js';
 
-// Browser-only UX research prototype: no network, browser persistence or analytics.
+// Browser-only draft editor: no automatic network, browser persistence or analytics.
+// An explicit, confirmed outbound GitHub proposal link transfers only the headline.
 const field = id => document.getElementById(id);
 const title = field('postTitle');
 const body = field('postBody');
@@ -240,6 +242,25 @@ document.addEventListener('keydown',event=>{
      event.altKey||event.shiftKey||(!event.ctrlKey&&!event.metaKey))return;
   event.preventDefault();
   field('downloadDraft').click();
+});
+
+// The author explicitly decides whether the headline may become public.
+// Never transfer article text, sources, the local file or browser tokens.
+field('proposeDraft').addEventListener('click',event=>{
+  const url=buildArticleProposalUrl(currentDraft());
+  if(!url){
+    event.preventDefault();
+    message(ui('proposalInvalid'),true);
+    title.focus();
+    return;
+  }
+  if(!window.confirm(ui('proposalConfirm'))){
+    event.preventDefault();
+    message(ui('proposalCanceled'));
+    return;
+  }
+  event.currentTarget.href=url;
+  message(ui('proposalOpened'));
 });
 
 field('copyDraft').addEventListener('click', async () => {
