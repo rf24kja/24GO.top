@@ -67,3 +67,7 @@ The API covers a bounded latest-issue window, not a comprehensive
 search or a guarantee that every historical proposal is displayed. No
 real submitted issue was fabricated to populate the board. Public
 Pages and HTTPS release verification are required after merging.
+
+## Optional local manuscript integrity handoff
+
+The Draft Lab can now generate an explicit, unencrypted [offline editorial review package](EDITORIAL_REVIEW_PACK.md). It contains the original manuscript and a self-contained SHA-256 checksum for local integrity checking, with a read-only browser check and an offline Node CLI. A digest is not verified identity or approval; avoid uploading private manuscripts into public GitHub Issues. GitHub article proposals and future hosted publication remain separate workflows.
