@@ -45,3 +45,19 @@ test('Link tool inserts bounded Markdown citations with selected URL placeholder
  }
  assert.throws(()=>formatDraftSelection('a'.repeat(12000),12000,12000,'link'),RangeError);
 });
+
+test('Table toolbar inserts an editable bounded Markdown table, locally',()=>{
+ const initial=apply('',0,0,'table');
+ assert.equal(initial.value,'| Column | Value |\n| --- | --- |\n| Example | 123 |');
+ assert.equal(initial.value.slice(initial.edit.selectionStart,initial.edit.selectionEnd),'Column');
+ const named=apply('Status',0,6,'table');
+ assert.equal(named.value,'| Status | Value |\n| --- | --- |\n| Example | 123 |');
+ assert.equal(named.value.slice(named.edit.selectionStart,named.edit.selectionEnd),'Status');
+ assert.deepEqual(parsePreviewBlocks(named.value),[
+  {type:'table',headers:['Status','Value'],align:['left','left'],rows:[['Example','123']]}
+ ]);
+ for(const bad of ['x|y','first\nsecond','x'.repeat(121)]){
+  assert.throws(()=>apply(bad,0,bad.length,'table'),TypeError);
+ }
+ assert.throws(()=>formatDraftSelection('x'.repeat(12000),12000,12000,'table'),RangeError);
+});
