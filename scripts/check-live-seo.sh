@@ -121,6 +121,14 @@ done
 # The public archive's UX is a client-side enhancement; verify its actual
 # deployed, same-origin JavaScript instead of mistaking source CI for delivery.
 probe '/engineering/search.js' archive_search 'words.every(word=>entry.searchable.includes(word)'
+if ! grep -Fq -- 'id="engineering-copy-results"' "$tmp/index"; then
+  echo '::error::Live archive missing reference-copy control'
+  failures=$((failures+1))
+fi
+if ! grep -Fq -- 'copyResults.addEventListener' "$tmp/archive_search"; then
+  echo '::error::Live archive missing copy handler'
+  failures=$((failures+1))
+fi
 if ! grep -Fq -- '<script src="./search.js" defer></script>' "$tmp/index" ||
    ! grep -Fq -- 'Find articles containing all search words' "$tmp/index"; then
   echo '::error::Live article archive is missing the shipped multi-word search UI'

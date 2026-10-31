@@ -1,5 +1,11 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-01 — Public full-text SDK search and shareable reading references
+
+- Extend the source-only `TopEditorialClient` with deterministic, bounded full-text `searchArticles` and strict-canonical `getArticleSearchText`, checking every static search-index record against the reviewed JSON feed. Keep the search terms local and never provide an arbitrary fetch target or private/hosted write permission. Fix the SDK's numeric Content-Length preflight matcher; retain actual stream limits. Add a working CLI, adversarial corpus and Unicode tests, and SDK docs.
+- Add an explicit **Copy matching article links** control to the static engineering archive, copying only currently displayed, allowlisted published article URLs as plain Markdown. This enhancement requires JavaScript but leaves all articles crawlable without it. Update source and post-Pages HTTPS release probes.
+- No auth, Supabase, private Core, DNS, billing, tokens or uploaded content. Roll back by reverting this public source-only PR and redeploying Pages; no data migration.
+
 ## 2026-11-01 — Guided, privacy-preserving technical writing workflow
 
 - Add two structured writing starters — **technical guide** and **case study** — with original article-language section prompts across EN/RU/TH/ES/FR/DE/PT/ZH. Both actions only append to author Markdown after an explicit click, preserve existing content and enforce the 12,000-character limit; no automatic save or upload.

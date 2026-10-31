@@ -19,7 +19,7 @@ export class TopClientError extends Error {
 const MAX_RESPONSE_BYTES = 2 * 1024 * 1024;
 async function readBoundedJson(response) {
   const reported = response.headers?.get?.('content-length');
-  if (typeof reported === 'string' && /^\\d+$/.test(reported) &&
+  if (typeof reported === 'string' && /^\d+$/.test(reported) &&
       BigInt(reported) > BigInt(MAX_RESPONSE_BYTES)) {
     try { await response.body?.cancel(); } catch { /* best effort */ }
     throw new TopClientError('24GOTOP API response exceeds the 2 MiB limit',
@@ -186,10 +186,7 @@ export class TopEditorialClient extends TopClient {
     super({ baseURL: 'https://24go.top', fetchImpl, timeoutMs });
   }
 
-  async listArticles({ limit = 20, signal } = {}) {
-    if (!Number.isSafeInteger(limit) || limit < 1 || limit > 50) {
-      throw new RangeError('limit must be an integer from 1 to 50');
-    }
+  async #validatedArticles(signal) {
     const feed = await this.request('/engineering/feed.json', { signal });
     const invalid = () => new TopClientError(
       '24GOTOP public editorial feed is invalid', null, 'INVALID_FEED'
@@ -200,11 +197,9 @@ export class TopEditorialClient extends TopClient {
         feed.language !== 'en' || !Array.isArray(feed.items) ||
         feed.items.length > 200) throw invalid();
 
-    // Check the entire feed, not just the first `limit` items: a hostile
-    // later entry must not escape validation when consumers page locally.
+    // Validate every entry before returning even the first result.
     const seen = new Set();
-    const articles = [];
-    for (const item of feed.items) {
+    return feed.items.map(item => {
       if (!item || typeof item !== 'object' || Array.isArray(item) ||
           typeof item.url !== 'string' ||
           !/^https:\/\/24go\.top\/engineering\/[a-z0-9-]+\.html$/.test(item.url) ||
@@ -216,17 +211,109 @@ export class TopEditorialClient extends TopClient {
           typeof item.date_published !== 'string' ||
           !Number.isFinite(Date.parse(item.date_published))) throw invalid();
       seen.add(item.url);
-      articles.push({
+      return {
         url: item.url,
         title: item.title,
         summary: item.summary,
         language: item.language,
         publishedAt: item.date_published
-      });
+      };
+    });
+  }
+
+  async listArticles({ limit = 20, signal } = {}) {
+    if (!Number.isSafeInteger(limit) || limit < 1 || limit > 50) {
+      throw new RangeError('limit must be an integer from 1 to 50');
     }
+    const articles = await this.#validatedArticles(signal);
     return {
       articles: articles.slice(0, limit),
       source: 'https://24go.top/engineering/feed.json'
     };
+  }
+
+  async #validatedCorpus(signal) {
+    // Two fixed public GET endpoints, regardless of user search/query/URL.
+    // Neither request carries a query term, developer key or article content.
+    const [articles, index] = await Promise.all([
+      this.#validatedArticles(signal),
+      this.request('/engineering/search-index.json', { signal })
+    ]);
+    const invalid = () => new TopClientError(
+      '24GOTOP public article search index is invalid', null, 'INVALID_INDEX'
+    );
+    if (!index || index.version !== 1 || !Array.isArray(index.articles) ||
+        index.articles.length !== articles.length || index.articles.length > 200)
+      throw invalid();
+    const indexByFile = new Map();
+    for (const entry of index.articles) {
+      if (!entry || typeof entry.file !== 'string' ||
+          !/^[a-z0-9-]+\.html$/.test(entry.file) ||
+          typeof entry.text !== 'string' || !entry.text.length ||
+          entry.text.length > 24000 ||
+          entry.text !== entry.text.normalize('NFC') ||
+          indexByFile.has(entry.file)) throw invalid();
+      indexByFile.set(entry.file, entry.text);
+    }
+    const records = articles.map(article => {
+      const file = article.url.slice('https://24go.top/engineering/'.length);
+      const searchText = indexByFile.get(file);
+      if (searchText === undefined) throw invalid();
+      return { ...article, searchText };
+    });
+    return records;
+  }
+
+  /**
+   * Search all reviewed public articles, including normalized full-text index.
+   * Returns links and summaries, not authoritative/original article HTML.
+   */
+  async searchArticles({ query, limit = 10, signal } = {}) {
+    if (typeof query !== 'string' || query.length > 80 ||
+        /[\u0000-\u001f\u007f\u2028\u2029]/u.test(query) || !query.trim())
+      throw new TypeError('query must be nonempty printable text (up to 80 characters)');
+    if (!Number.isSafeInteger(limit) || limit < 1 || limit > 20)
+      throw new RangeError('limit must be an integer between 1 and 20');
+    const words = query.trim().normalize('NFC').toLocaleLowerCase().split(/\s+/u);
+    const records = await this.#validatedCorpus(signal);
+    const matches = [];
+    records.forEach(({searchText, ...article}, index) => {
+      const title = article.title.toLocaleLowerCase();
+      const summary = article.summary.toLocaleLowerCase();
+      const body = searchText.toLocaleLowerCase();
+      if (!words.every(word => title.includes(word) ||
+          summary.includes(word) || body.includes(word))) return;
+      const score = words.reduce((sum, word) =>
+        sum + (title.includes(word) ? 4 : 0) +
+              (summary.includes(word) ? 2 : 0) +
+              (body.includes(word) ? 1 : 0), 0);
+      matches.push({ ...article, matchedIn:words.every(w=>title.includes(w))
+        ? 'title':words.every(w=>summary.includes(w))?'summary':'article',
+        _score:score, _order:index });
+    });
+    matches.sort((a,b)=>b._score-a._score||a._order-b._order);
+    return {
+      articles: matches.slice(0,limit).map(({_score,_order,...article})=>article),
+      total: matches.length,
+      source: 'https://24go.top/engineering/search-index.json'
+    };
+  }
+
+  /**
+   * Return a normalized, lossy full-text SEARCH INDEX entry for a canonical
+   * published URL. It is NOT the original article or suitable for quoting.
+   */
+  async getArticleSearchText(url, { signal } = {}) {
+    if (typeof url !== 'string' || url.length > 240 ||
+        !/^https:\/\/24go\.top\/engineering\/[a-z0-9-]+\.html$/.test(url))
+      throw new TypeError('url must be a canonical public engineering article URL');
+    const records = await this.#validatedCorpus(signal);
+    const found = records.find(entry => entry.url === url);
+    if (!found) throw new TopClientError(
+      'Article not found in reviewed public corpus', 404, 'ARTICLE_NOT_FOUND'
+    );
+    const { searchText, ...article } = found;
+    return { ...article, searchText, textKind: 'normalized-lossy-search-index',
+      source: 'https://24go.top/engineering/search-index.json' };
   }
 }

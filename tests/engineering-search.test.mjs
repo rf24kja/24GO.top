@@ -23,6 +23,7 @@ test('archive publishes 10 crawlable articles, discoverable topic controls and a
  assert.match(html,/type="button" id="engineering-reset" hidden/);
  assert.match(html,/id="engineering-share" hidden/);
  assert.match(html,/id="engineering-share-status" role="status" aria-live="polite"/);
+ assert.match(html,/id="engineering-copy-results" hidden/);
  assert.match(style,/\.note-search__share\[hidden\]\{display:none\}/);
  const tags=[...html.matchAll(/<article class="card" data-note-card data-note-topic="([^"]+)" data-note-file="[a-z0-9-]+\.html">/g)];
  assert.deepEqual(tags.map(x=>x[1]),cardTopics);
@@ -51,6 +52,7 @@ function setUp({missing=false,badTopic=false,query='',clipboard='ok',index='none
   reset={hidden:true,focused:false,addEventListener(name,fn){listeners['reset-'+name]=fn;}};
  const share={hidden:true,listeners:{},addEventListener(name,fn){this.listeners[name]=fn;}};
  const shareStatus={textContent:''};
+ const copyResults={hidden:true,listeners:{},addEventListener(name,fn){this.listeners[name]=fn;}};
  const form={hidden:true,addEventListener(name,fn){listeners['form-'+name]=fn;}};
  const input={value:'',focused:false,addEventListener(name,fn){listeners[name]=fn;},
    focus(){this.focused=true;}};
@@ -69,7 +71,8 @@ function setUp({missing=false,badTopic=false,query='',clipboard='ok',index='none
   getElementById(id){return ({
    'engineering-filter':input,'engineering-search-status':status,
    'engineering-no-results':empty,'engineering-reset':reset,
-   'engineering-share':share,'engineering-share-status':shareStatus})[id];}
+   'engineering-share':share,'engineering-share-status':shareStatus,
+   'engineering-copy-results':copyResults})[id];}
  };
  const copied=[];
  const location={href:'https://24go.top/engineering/'+query};
@@ -93,7 +96,7 @@ function setUp({missing=false,badTopic=false,query='',clipboard='ok',index='none
  };
  runInNewContext(code,{document,window,navigator,URL,
   ...(index==='none'?{}:{fetch:indexFetch})},{timeout:1000});
- return {form,input,status,empty,reset,share,shareStatus,cards,topics,listeners,window,location,copied,fetchCalls,
+ return {form,input,status,empty,reset,share,copyResults,shareStatus,cards,topics,listeners,window,location,copied,fetchCalls,
   clickTopic:t=>topics.find(x=>x.dataset.engineeringTopic===t).listeners.click()};
 }
 test('search works with all topics and Escape clears only query',()=>{
@@ -305,4 +308,33 @@ test('post-deployment SEO smoke verifies the actual archive multi-word search re
  // Verify that feature assertions are backed by actual source.
  assert.match(code,/words\.every\(word=>entry\.searchable\.includes\(word\)/);
  assert.match(html,/Find articles containing all search words/);
+});
+
+test('copy visible public article references as Markdown without API credentials',async()=>{
+ const app=setUp({query:'?q=PostgreSQL'});
+ assert.equal(app.copyResults.hidden,false);
+ await app.copyResults.listeners.click();
+ assert.equal(app.copied.length,1);
+ assert.match(app.copied[0],/^\- \[database\]\(https:\/\/24go\.top\/engineering\/database\.html\)$/);
+ assert.doesNotMatch(app.copied[0],/secret|private|localhost|\/api\//);
+ assert.match(app.shareStatus.textContent,/1 public article link/);
+ const all=setUp();
+ await all.copyResults.listeners.click();
+ assert.equal(all.copied[0].split('\n').length,3);
+ all.input.value='no results';
+ all.listeners.input();
+ assert.equal(all.copyResults.hidden,true);
+});
+
+test('reference export denies clipboard gracefully and does not unhide invalid corpus',async()=>{
+ const denied=setUp({clipboard:'fail'});
+ await denied.copyResults.listeners.click();
+ assert.match(denied.shareStatus.textContent,/Clipboard unavailable/);
+ const noApi=setUp({clipboard:'none'});
+ await noApi.copyResults.listeners.click();
+ assert.match(noApi.shareStatus.textContent,/Clipboard unavailable/);
+ const invalid=setUp({badTopic:true});
+ assert.equal(invalid.form.hidden,true);
+ assert.equal(invalid.copyResults.hidden,true);
+ assert.doesNotMatch(code,/localStorage|sessionStorage|XMLHttpRequest|sendBeacon|innerHTML/);
 });
