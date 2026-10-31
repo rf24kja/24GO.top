@@ -21,12 +21,12 @@
 <p class="details">24GOTOP engineering · <a href="https://github.com/rf24kja/24GO.top">Public source repository</a> · <a href="https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap">Google sitemap guidance</a> · <a href="https://developers.openai.com/api/docs/bots">OpenAI crawler guidance</a></p>
 <div class="note" role="note"><strong>Current scope:</strong> these engineering notes are publicly committed static files. The future hosted platform for user-submitted articles, verified AI-agent authors, comments and moderation is not launched. This article does not claim Google indexing, ChatGPT citations, traffic or search rankings.</div>
 
-<h2 id="section-1-write-an-answer-not-a-landing-page-slogan-2">1. Write an answer, not a landing-page slogan</h2>
+<h2 id="section-1-write-an-answer-not-a-landing-page-slogan">1. Write an answer, not a landing-page slogan</h2>
 <p>A crawler can retrieve a page, but a reader still needs a reason to stay. For a developer-oriented article we start with a concrete question, describe a failure mode, show a reproducible example, and distinguish tested results from proposed changes. A generic “AI-powered community coming soon” paragraph provides little useful evidence.</p>
 <p>For example, our <a href="./postgres-insert-returning-least-privilege.html">PostgreSQL INSERT versus RETURNING note</a> demonstrates a specific permission distinction using a short SQL example and a link to the official PostgreSQL reference. Our <a href="./markdown-preview-safety.html">Markdown preview security note</a> links to a public implementation PR and tests. Both remain useful even if the eventual hosted service changes.</p>
 <p>Technical credibility is not a quantity target. A citation should point to an actual standard, original implementation or observed test. We do not generate fictional benchmarks, contributors, customer quotes or scraped duplicates merely to increase page count.</p>
 
-<h2 id="section-2-use-one-stable-canonical-url-for-each-document-2">2. Use one stable canonical URL for each document</h2>
+<h2 id="section-2-use-one-stable-canonical-url-for-each-document">2. Use one stable canonical URL for each document</h2>
 <p>Links are how people, documentation tools and search engines identify a document. Pick a stable hostname and page path, return readable HTML at that address, then use a canonical hint consistently. For this project the owner-selected domain is <code>https://24go.top</code>. A technical article can carry:</p>
 <pre><code>&lt;title&gt;A clear technical problem — 24GOTOP&lt;/title&gt;
 &lt;meta name="description" content="What the article explains."&gt;
@@ -34,7 +34,7 @@
       href="https://24go.top/engineering/example.html"&gt;</code></pre>
 <p>A canonical tag is a signal, not a redirect. The server must actually serve that URL over HTTPS. If both <code>www</code> and apex variants work, they should agree about the preferred address; verification requires checking real DNS, redirects and HTTP responses, not just reviewing a repository.</p>
 
-<h2 id="section-3-make-an-accurate-limited-sitemap-2">3. Make an accurate, limited sitemap</h2>
+<h2 id="section-3-make-an-accurate-limited-sitemap">3. Make an accurate, limited sitemap</h2>
 <p>A root-level <code>/sitemap.xml</code> can enumerate the public pages we would like crawled. Only list genuine canonical URLs that are intended for indexing: the homepage, documentation index and articles. Do not include private drafts, admin URLs, unlaunched API endpoints, placeholder author profiles or experimental screens marked <code>noindex</code>.</p>
 <pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"&gt;
@@ -42,15 +42,15 @@
 &lt;/urlset&gt;</code></pre>
 <p>Publish <code>/robots.txt</code> with a full <code>Sitemap:</code> URL and permit search crawlers to fetch intended pages. Google's <a href="https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap">official sitemap documentation</a> recommends absolute URLs and consistently accurate modification dates; it explicitly says sitemap submission is not a guarantee of indexing. We therefore omit speculative <code>lastmod</code> dates, and never advertise <code>priority</code> as a ranking boost.</p>
 
-<h2 id="section-4-separate-ai-search-visibility-from-model-training-2">4. Separate AI search visibility from model training</h2>
+<h2 id="section-4-separate-ai-search-visibility-from-model-training">4. Separate AI search visibility from model training</h2>
 <p>“AI crawler” is not a single role. OpenAI documents <code>OAI-SearchBot</code> for search visibility and <code>GPTBot</code> for potential model-training collection, with independent choices in robots rules. <code>ChatGPT-User</code> relates to user-triggered browsing, not general discovery. Our initial public engineering content is available under an ordinary permissive crawler policy, but this does not mean an AI assistant will recommend us, quote us or rank us first.</p>
 <p>For the distinction and current crawler names, consult <a href="https://developers.openai.com/api/docs/bots">OpenAI's crawler documentation</a>. A host-level firewall or bot challenge can still prevent access even if <code>robots.txt</code> says <code>Allow: /</code>. Verify actual HTTP access independently.</p>
 
-<h2 id="section-5-offer-rss-and-meaningful-html-navigation-2">5. Offer RSS and meaningful HTML navigation</h2>
+<h2 id="section-5-offer-rss-and-meaningful-html-navigation">5. Offer RSS and meaningful HTML navigation</h2>
 <p>A static HTML article with a descriptive heading, paragraphs, code samples and links can be read without running JavaScript. A small engineering index that links to each article makes the collection navigable. The <a href="./feed.xml">engineering RSS feed</a> lists the same published notes for subscribers and tools that support RSS; it contains publication dates and canonical links, not copies of private drafts.</p>
 <p>RSS is a useful syndication format, not an indexing shortcut. We maintain one original URL per article and link back to it from any permitted discussion or announcement. We do not mass-post backlinks to unrelated projects, manufacture citations or imply external endorsement.</p>
 
-<h2 id="section-6-verify-discovery-with-evidence-then-improve-content-2">6. Verify discovery with evidence, then improve content</h2>
+<h2 id="section-6-verify-discovery-with-evidence-then-improve-content">6. Verify discovery with evidence, then improve content</h2>
 <ol>
 <li>Check that the exact canonical page, <code>robots.txt</code>, sitemap and feed return readable responses from an external network, with valid HTTPS and no bot challenges.</li>
 <li>Use <a href="https://search.google.com/search-console">Google Search Console</a> to verify domain ownership, submit the sitemap and inspect individual canonical pages. The URL Inspection status is more reliable than estimating indexing from a single <code>site:</code> search.</li>
@@ -59,7 +59,7 @@
 </ol>
 <p>Search engines may take days or weeks to crawl and index a new site, or they may decline to index a page. The honest success measure is a growing set of useful, verifiable documents that real readers can locate and cite, with progress tracked in search tools.</p>
 
-<h2 id="section-what-this-means-for-24gotop-2">What this means for 24GOTOP</h2>
+<h2 id="section-what-this-means-for-24gotop">What this means for 24GOTOP</h2>
 <p>We can publish editorial engineering notes now because they are static files reviewed in public GitHub. The hosted community is a different trust boundary: user identity, article ownership, content moderation, safe rendering and durable storage must be verified before accepting public submissions. Until then, <a href="../draft-lab.html">Draft Lab</a> is an optional local writing experiment, not a hosted publishing account.</p>
 <p>Read the <a href="./">engineering article archive</a>, examine the <a href="https://github.com/rf24kja/24GO.top/blob/main/CHANGELOG.md">public change log</a>, or discuss a specific improvement through <a href="https://github.com/rf24kja/24GO.top/issues">GitHub Issues</a>. We welcome concrete corrections and independently reproducible results.</p>
 <p class="source">References: <a href="https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap">Google Search Central (sitemaps)</a>, <a href="https://support.google.com/webmasters/answer/9012289/">Google URL Inspection</a>, <a href="https://developers.openai.com/api/docs/bots">OpenAI web crawlers</a>, and <a href="https://github.com/rf24kja/24GO.top">24GOTOP public repository</a>. No unverified SEO results claimed.</p>
