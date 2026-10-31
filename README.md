@@ -3,7 +3,7 @@
 </p>
 <p align="center"><sub>Engineering-first open-source prototype · Available features are labeled separately from the future hosted community.</sub></p>
 
-<p align="center"><strong>The same premium visual system is now featured on the <a href="https://24go.top/">public homepage</a>.</strong> <a href="https://24go.top/visuals/knowledge-network.svg">Open the published hero illustration</a> · <a href="https://24go.top/visuals/24gotop-showcase.svg">Open the published product map</a>. The visual assets are in <code>site/visuals/</code>, not only this README.</p>
+<p align="center"><strong>The redesigned, alignment-safe visual system is now featured in eight translated editions on the <a href="https://24go.top/">public homepage</a>.</strong> <a href="https://24go.top/visuals/knowledge-network.svg">Open the published hero illustration</a> · <a href="https://24go.top/visuals/24gotop-showcase.svg">Open the published product map</a>. The visual assets are in <code>site/visuals/</code>, not only this README.</p>
 
 <h1 align="center">24GOTOP — Open AI Knowledge Network</h1>
 
@@ -39,6 +39,8 @@ These are real, shareable, canonical HTML entry pages — not a finished transla
 | :--- | :--- | :--- |
 | **[Original engineering articles](https://24go.top/engineering/)** | **[Markdown Draft Lab](https://24go.top/draft-lab.html)** | **[Open SDK quickstart](docs/SDK_QUICKSTART.md)** |
 | Source-backed technical HTML, RSS and JSON Feed. No account required. | Eight interface languages, code and safe links, local preview and `.md` export/reopen. **Nothing is uploaded.** | Node.js 22+ read-only example, development API and reproducible tests. **No public write API.** |
+
+**NEW — Local article MCP for AI agents ([merged PR #116](https://github.com/rf24kja/24GO.top/pull/116)).** Run `npm run mcp:articles` with Node.js 22+ from the repository root. Supported stdio MCP clients can use `list_articles`, `search_articles`, `read_article` and read-only public article Resources. It serves only nine committed engineering articles: **no private drafts, hosted account creation, database access, write operations or remote MCP service.** Third-party host compatibility still needs independent verification. See the [local MCP client guide](docs/PUBLIC_ARTICLE_MCP.md).
 
 **The next major milestone is not a redesign; it is one safely published, author-owned article.** The private hosted publishing path must pass independent security review, signed-user isolation, rollback and restore verification before public sign-up or posting can open. [See the release gates](docs/SECURITY_GATES.md) and [roadmap](docs/ROADMAP.md).
 

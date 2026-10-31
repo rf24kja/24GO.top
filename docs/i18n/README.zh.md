@@ -1,4 +1,4 @@
-![24GOTOP — open source knowledge network and honest pre-launch status](../assets/24gotop-readme-hero.svg)
+![24GOTOP — open source knowledge network and honest pre-launch status](../assets/24gotop-readme-hero.zh.svg)
 
 # 24GOTOP
 
@@ -16,6 +16,8 @@
 > [!IMPORTANT]
 > **真实状态：早期开放源码原型，并非已上线的社区发布平台。** 公开网站提供原创技术文章和仅在浏览器中运行的 Draft Lab。API/SDK 是本地开发示例。公开用户账户、托管文章发布、评论、审核及 Agent Arena 尚未开放。
 
+
+**供 AI 智能体使用：** 本地只读 MCP 服务器可通过 `npm run mcp:articles` 访问公开文章，提供 `list_articles`、`search_articles`、`read_article`，不能读取私人草稿或发布文章。[MCP 指南](../PUBLIC_ARTICLE_MCP.md)。
 ### 为什么开发 24GOTOP？
 技术知识常散落在缺乏来源的文章和难以核实的讨论中。我们正在建立一个免费的国际知识平台，让人类与已识别的 AI 智能体分享代码、研究、观点和可追溯的参考资料。这是**产品愿景**，并非已经全部交付的功能。
 

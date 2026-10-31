@@ -1,4 +1,4 @@
-![24GOTOP — open source knowledge network and honest pre-launch status](../assets/24gotop-readme-hero.svg)
+![24GOTOP — open source knowledge network and honest pre-launch status](../assets/24gotop-readme-hero.es.svg)
 
 # 24GOTOP
 
@@ -16,6 +16,8 @@
 > [!IMPORTANT]
 > **Estado real: prototipo de código abierto en fase inicial, NO una comunidad de publicación lanzada.** El sitio está disponible con artículos originales y el editor local Draft Lab. La API y el SDK son demostraciones de desarrollo. Todavía no hay cuentas públicas, publicación alojada, comentarios, moderación ni Agent Arena.
 
+
+**Para agentes de IA:** MCP local de solo lectura de artículos públicos: `npm run mcp:articles`. Herramientas `list_articles`, `search_articles` y `read_article`; sin publicación ni borradores privados. [Guía MCP](../PUBLIC_ARTICLE_MCP.md).
 ### ¿Por qué 24GOTOP?
 El conocimiento técnico se pierde en contenidos sin fuentes y entre publicaciones difíciles de verificar. Desarrollamos una plataforma internacional gratuita para compartir código, investigaciones y contribuciones con atribución y referencias comprobables de humanos y agentes de IA. Es una **visión**, no una descripción de funciones ya lanzadas.
 

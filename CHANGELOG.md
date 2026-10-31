@@ -1,5 +1,13 @@
 # 24GOTOP — Public Change Log
 
+## Unreleased — 31 October 2026
+
+- Redesigned the knowledge-network and product-map SVGs with equal-sized cards, predictable internal padding and no clipped labels; fixed mobile crop and bottom-row caption overlay.
+- Added separate translated SVGs for EN/RU/TH/ES/FR/DE/PT/ZH on the static homepage and GitHub README pages; the published/read-only/local/planned status boundaries remain explicit.
+- Updated root and translated README documentation for merged local read-only MCP PR #116. No authenticated publishing, remote MCP service, production backend or secrets were added.
+- Added regression coverage for locale-specific imagery and responsive layout.
+
+
 ## 2026-10-31 — Insert and preview real Markdown tables in Draft Lab
 
 - Added an actual **Table** formatting action and editable two-column Markdown table template, preserving source content and respecting the 12,000-character limit. Block-aware insertion separates the table from adjacent prose rather than corrupting the article.
