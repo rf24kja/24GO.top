@@ -252,3 +252,45 @@ test('offline or malformed static index falls back to card-only search',async()=
   assert.deepEqual(app.cards.map(c=>c.hidden),[true,true,true]);
  }
 });
+
+
+test('multi-word queries match across card fields even when terms are nonadjacent',()=>{
+ const app=setUp({query:'?q=leaks%20security'});
+ assert.deepEqual(app.cards.map(x=>x.hidden),[false,true,true],
+  'search must find unordered security and leaks terms on the same card');
+ assert.equal(app.status.textContent,'1 of 3 articles');
+ app.input.value='security postgres';
+ app.listeners.input();
+ assert.ok(app.cards.every(x=>x.hidden),
+  'words must all match one document, not be ORed across documents');
+});
+
+test('all-word search spans trusted card and indexed body, respects topic and bookmark URL',async()=>{
+ const app=setUp({index:'good',query:'?q=circuit%20security'});
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.deepEqual(app.cards.map(x=>x.hidden),[false,true,true],
+  'title word and full-text body word must combine');
+ app.input.value='mechanisms crawler';
+ app.listeners.input();
+ assert.deepEqual(app.cards.map(x=>x.hidden),[true,false,true],
+  'full-text multi-word order is independent');
+ assert.equal(app.location.href,
+  'https://24go.top/engineering/?q=mechanisms+crawler');
+ app.clickTopic('security');
+ assert.ok(app.cards.every(x=>x.hidden),'topic must still constrain every word');
+ app.input.value='Security leaks';
+ app.listeners.input();
+ assert.deepEqual(app.cards.map(x=>x.hidden),[false,true,true]);
+});
+
+test('offline full-text fallback still applies all-word matching and preserves no-JS archive',async()=>{
+ const app=setUp({index:'fail',query:'?q=security%20leaks'});
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.deepEqual(app.cards.map(x=>x.hidden),[false,true,true]);
+ app.input.value='security circuit';
+ app.listeners.input();
+ assert.ok(app.cards.every(x=>x.hidden),'do not pretend an unavailable index contains text');
+ assert.match(html,/Find articles containing all search words/);
+ assert.match(code,/words\.every\(/);
+ assert.doesNotMatch(code,/innerHTML|localStorage|sessionStorage|sendBeacon/);
+});
