@@ -4,7 +4,7 @@
 
 - Added a 56 KB static, source-generated full-text index from the nine real published article HTML bodies and canonical JSON Feed. Each index entry is bound to the visible article card; adding or changing an article requires the index to be regenerated before CI can pass.
 - Public archive search now finds words from within the actual article content while retaining topic filters, bounded shareable query URLs, accessible counts, and original crawlable HTML when JavaScript is unavailable.
-- The only new browser request reads the same-origin public `./search-index.json` once with `credentials: omit`; **no search terms, drafts, cookies, API keys or user data are transmitted in that request**, and there is no remote search API or analytics. If the file is unavailable/invalid, searching titles and summaries continues normally.
+- The only new browser request reads the same-origin public `./search-index.json` once with `credentials: omit` and `referrerPolicy: no-referrer`; the index request sends no search query Referer or cookies. **The original page URL and shareable `?q=` links do still contain the user's search terms and may appear in normal browser/hosting logs.** There is no remote search API, private-draft upload or analytics. If the file is unavailable/invalid, searching titles and summaries continues normally.
 - Added deterministic canonical content tests, injected-value and offline regressions, plus external HTTPS verification of the real public index. A green HTTP check is not manual browser/device UX verification. No hosted community registration or author publishing was enabled.
 
 ## 2026-10-31 — Correct the article archive heading hierarchy
