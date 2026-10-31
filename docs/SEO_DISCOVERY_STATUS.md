@@ -1,5 +1,12 @@
 # Public crawlability and indexing — verified 2026-10-31
 
+## Source-proposed accurate WebSite identity — 31 October 2026
+
+The public English canonical homepage declares a minimal inert `schema.org/WebSite` JSON-LD entity with the verified project brand, canonical root URL, matching meta description and eight real language versions. Regression tests check on-disk locale HTML, reciprocal homepage hreflang and the sitemap. The change does NOT invent user adoption, reviews, registered-organization status or an unavailable public search endpoint. It does not claim Google indexing, rankings, impressions or AI citations.
+
+This is a modest **site-name clarity** measure, not a GEO hack. Google Search Central: https://developers.google.com/search/docs/appearance/site-names and https://developers.google.com/search/docs/fundamentals/ai-optimization-guide. Public Pages deploy and HTTPS verification must be measured separately from PR CI.
+
+
 **Latest verification (31 October 2026): all 21 canonical sitemap URLs, including ten original engineering articles and eight homepage locales, were reachable over HTTPS from a GitHub-hosted runner.** [External SEO audit #41174110459](https://github.com/rf24kja/24GO.top/actions/runs/41174110459) checked the sitemap-driven URLs, RSS, JSON Feed and redirect behavior. [Post-deploy live asset smoke #41174110445](https://github.com/rf24kja/24GO.top/actions/runs/41174110445) also passed. Google/Bing indexing, search impressions and AI citations remain **UNVERIFIED**.
 
 **Historical 30 October checkpoint:** all 12 then-listed sitemap URLs, including nine original engineering articles, were reachable from GitHub-hosted infrastructure; do not treat those old counts as current. This proves HTTP delivery at that time, not search traffic or AI citations.
