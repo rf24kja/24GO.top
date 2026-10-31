@@ -29,7 +29,7 @@ function build({uiHref='https://24go.top/draft-lab.html'}={}) {
     'postTitle','postBody','postLocale','postCategory','postSource','formStatus',
     'previewHeading','previewBody','previewLocale','previewCategory','bodyCount',
     'previewSource','draftSafety','articleOutline','articleOutlineSection','downloadDraft','copyDraft','clearDraft','importDraft','importDraftFile','draftForm',
-    'formatHeading','formatList','formatQuote','formatCode','formatTable','formatLink','uiLocale','draftDropZone','homeBrandLink','homeNavLink','proposeDraft',
+    'formatBold','formatItalic','formatInlineCode','formatHeading','formatList','formatQuote','formatCode','formatTable','formatLink','uiLocale','draftDropZone','homeBrandLink','homeNavLink','proposeDraft',
     'saveBrowserDraft','savedBrowserDraft','openBrowserDraft','deleteBrowserDraft','vaultCount','exportDraftLibrary','restoreDraftLibrary','draftLibraryFile'
   ];
   const elements = Object.fromEntries(ids.map(id => {
