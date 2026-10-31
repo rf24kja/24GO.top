@@ -1,5 +1,9 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-31 — Deterministic sitemap generator for canonical discovery
+
+- Generate the static XML sitemap from existing reciprocal homepage hreflang URLs, three reviewed public routes and source-validated RSS/Article JSON-LD URLs. Fail CI on stale sitemap, forged or duplicate links, broken canonical locale routes and noindex pages. No fictitious crawl dates, backend access or search ranking assertions.
+
 ## 2026-10-31 — Live verification for canonical site-name markup
 
 - Extend the public GitHub-hosted read-only HTTPS SEO audit to assert actual deployed root WebSite JSON-LD name, origin and stable ID. Add static regression protecting the probe. This closes the difference between source-only SEO tests and independently delivered markup. No site content, DNS, private Core or credentials changed.
