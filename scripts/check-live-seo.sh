@@ -33,6 +33,10 @@ probe() {
 
 probe '/' home '<link rel="stylesheet" href="./landing.css">'
 probe '/landing.css' gridcss '.site-grid__glow'
+if ! grep -Fq -- '.hero-search__controls{display:flex' "$tmp/gridcss"; then
+  echo '::error::Live homepage CSS lacks responsive native search layout'
+  failures=$((failures+1))
+fi
 probe '/landing.js' motionjs 'pointermove'
 if ! grep -Fq -- '<script src="./landing.js" defer></script>' "$tmp/home"; then
   echo '::error::Deployed homepage does not load its reviewed motion script'
@@ -104,6 +108,17 @@ for url in "${listed_urls[@]}"; do
   fi
   route="${url#"$base"}"
   probe "$route" "page$item" "rel=\"canonical\" href=\"$url\""
+  # Each delivered homepage must provide native GET search into public English articles.
+  if [[ "$route" == "/" || "$route" =~ ^/(ru|th|es|fr|de|pt|zh)/$ ]]; then
+    expected_action='../engineering/'
+    [[ "$route" == "/" ]] && expected_action='./engineering/'
+    if ! grep -Fq -- 'class="hero-search" role="search"' "$tmp/page$item" ||
+       ! grep -Fq -- "method=\"get\" action=\"$expected_action\"" "$tmp/page$item" ||
+       ! grep -Fq -- 'name="q" type="search" maxlength="80"' "$tmp/page$item"; then
+      echo "::error::Deployed homepage lacks native article search: $route"
+      failures=$((failures+1))
+    fi
+  fi
   # Every published article now has two static, source-reviewed reading
   # paths. Check actual delivered HTML, not just the GitHub source.
   # Limit article-only assertions to a single path segment. The old Bash
