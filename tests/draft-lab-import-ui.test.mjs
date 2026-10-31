@@ -17,7 +17,7 @@ const source = readFileSync(fileURLToPath(new URL('../site/draft-lab.js', import
   .replace(/^import .* from '.\/draft-lab-logic\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-preview\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-guidance\.js';\n/m, '')
-  .replace(/^import .* from '.\\/draft-lab-revisions\\.js';\\n/m, '')
+  .replace(/^import .* from '.\/draft-lab-revisions\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-i18n\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-proposal\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-vault\.js';\n/m, '');
@@ -28,7 +28,7 @@ const sample = {
   source:'https://example.org/guide'
 };
 
-function build({uiHref='https://24go.top/draft-lab.html'}={}) {
+function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false}={}) {
   const ids = [
     'postTitle','postBody','postLocale','postCategory','postSource','formStatus',
     'previewHeading','previewBody','previewLocale','previewCategory','bodyCount','bodyWordCount','draftReadingTime','guidanceScore',
@@ -72,14 +72,16 @@ function build({uiHref='https://24go.top/draft-lab.html'}={}) {
   window.localStorage=localStorage;
   const document = {
     listeners:{},
-    createElement(){return {value:'',textContent:''};},
+    createElement(){return {value:'',textContent:'',dataset:{}};},
     addEventListener(type,callback){this.listeners[type]=callback;},
     documentElement:{lang:'en'},
     getElementById(id){return elements[id];},
     querySelectorAll(){return [];}
   };
+  const copied=[];
+  const navigator=allowClipboard?{clipboard:{async writeText(value){copied.push(value);}}}:{};
   runInNewContext(source, {
-    document, window, navigator:{}, URL, Blob, setTimeout,
+    document, window, navigator, URL, Blob, setTimeout,
     safeSourceUrl,validateDraft,formatDraft,draftFilename,hasDraftContent,
     parseDraftFile,readDraftFileStrict,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,countDraftWords,createDraftImportGate,invalidDraftField,
     uiText,applyUiLanguage,appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS,captureDraftRevision,compareDraftRevisions,revisionSummary,buildArticleProposalUrl,
@@ -90,7 +92,7 @@ function build({uiHref='https://24go.top/draft-lab.html'}={}) {
   // node --test starts multiple test files concurrently.
   },{timeout:5000});
   return {
-    elements, document, localStorage,
+    elements, document, localStorage, copied,
     storageEvent(key=VAULT_KEY,storageArea=localStorage){
       window.listeners.storage({key,storageArea});
     },
