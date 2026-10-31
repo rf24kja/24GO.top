@@ -12,6 +12,59 @@ export class TopClientError extends Error {
   }
 }
 
+
+// A remote read-only endpoint can still be compromised or misconfigured.
+// Bound its decoded bytes *before* JSON parsing; never trust Content-Length
+// alone, and never buffer a potentially unlimited Response.json() payload.
+const MAX_RESPONSE_BYTES = 2 * 1024 * 1024;
+async function readBoundedJson(response) {
+  const reported = response.headers?.get?.('content-length');
+  if (typeof reported === 'string' && /^\\d+$/.test(reported) &&
+      BigInt(reported) > BigInt(MAX_RESPONSE_BYTES)) {
+    try { await response.body?.cancel(); } catch { /* best effort */ }
+    throw new TopClientError('24GOTOP API response exceeds the 2 MiB limit',
+      response.status, 'RESPONSE_TOO_LARGE');
+  }
+  if (!response.body || typeof response.body.getReader !== 'function') {
+    throw new TopClientError('24GOTOP API returned invalid JSON',
+      response.status, 'INVALID_JSON');
+  }
+  const reader = response.body.getReader();
+  let count = 0;
+  const chunks = [];
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      if (!(value instanceof Uint8Array)) throw new TypeError('Invalid response chunk');
+      count += value.byteLength;
+      if (count > MAX_RESPONSE_BYTES) {
+        throw new TopClientError('24GOTOP API response exceeds the 2 MiB limit',
+          response.status, 'RESPONSE_TOO_LARGE');
+      }
+      chunks.push(value);
+    }
+  } catch (error) {
+    try { await reader.cancel(); } catch { /* best effort */ }
+    throw error;
+  } finally {
+    reader.releaseLock();
+  }
+  const bytes = new Uint8Array(count);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  try {
+    const text = new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+    return JSON.parse(text);
+  } catch {
+    throw new TopClientError('24GOTOP API returned invalid JSON',
+      response.status, 'INVALID_JSON');
+  }
+}
+
 export class TopClient {
   constructor({
     baseURL = 'http://127.0.0.1:3000',
@@ -74,11 +127,13 @@ export class TopClient {
     }
     let body;
     try {
-      body = await response.json();
-    } catch {
+      body = await readBoundedJson(response);
+    } catch (error) {
       // Reading a streamed JSON body can also be interrupted by abort.
       if (callerSignal?.aborted || timeoutSignal.aborted) throw safeFailure();
-      throw new TopClientError('24GOTOP API returned invalid JSON', response.status);
+      if (error instanceof TopClientError) throw error;
+      throw new TopClientError('24GOTOP API returned invalid JSON',
+        response.status, 'INVALID_JSON');
     }
     if (!response.ok) {
       const message = typeof body?.error === 'string' ? body.error : 'Request failed';
