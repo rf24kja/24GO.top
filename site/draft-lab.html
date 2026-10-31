@@ -48,6 +48,7 @@
             <button id="formatInlineCode" type="button" aria-label="Inline code" data-ui-label="inlineCode" data-ui="inlineCode">Inline code</button>
             <button id="formatHeading" type="button" aria-label="Insert section heading" data-ui-label="heading" data-ui="heading">Heading</button>
             <button id="formatList" type="button" aria-label="Insert bullet list" data-ui-label="list" data-ui="list">List</button>
+            <button id="formatOrderedList" type="button" aria-label="Insert numbered list" data-ui-label="orderedList" data-ui="orderedList">Numbered list</button>
             <button id="formatQuote" type="button" aria-label="Insert quotation" data-ui-label="quote" data-ui="quote">Quote</button>
             <button id="formatCode" type="button" aria-label="Insert fenced code block" data-ui-label="code" data-ui="code">Code block</button>
             <button id="formatTable" type="button" aria-label="Insert Markdown table" data-ui-label="table" data-ui="table">Table</button>
@@ -55,6 +56,7 @@
           </div>
           <p class="hint format-help" data-ui="formatHelp">Select text to format it, or place the cursor to insert an editable placeholder. Export to keep changes.</p>
           <div class="meter" id="bodyCount" aria-live="off">0 / 12,000</div>
+          <div class="meter" id="bodyWordCount" aria-live="off">Approx. words: 0</div>
           <label for="postSource"><span data-ui="source">Original source</span> <span class="hint" data-ui="sourceHint">optional HTTPS/HTTP link</span></label>
           <input id="postSource" name="source" type="url" placeholder="https://example.org/research">
           <p class="tiny" data-ui="importHint">Only files previously exported by Draft Lab can be reopened. Imported text stays in this browser tab; original files remain on your device. Export again to keep new changes.</p>
