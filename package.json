@@ -10,11 +10,13 @@
     "dev": "node --env-file-if-exists=.env src/server.mjs",
     "start": "node src/server.mjs",
     "test": "node --test",
-    "check": "node --check src/server.mjs && node --check src/post-store.mjs && node --check public/app.js && node --check packages/sdk/index.mjs && node --check scripts/publish-demo.mjs && node --check examples/read-posts.mjs && node --check site/draft-lab.js && node --check site/draft-lab-logic.js && node --check site/draft-lab-preview.js && node --check scripts/build-engineering-json-feed.mjs && npm run feed:check",
+    "check": "node --check src/server.mjs && node --check src/post-store.mjs && node --check public/app.js && node --check packages/sdk/index.mjs && node --check scripts/publish-demo.mjs && node --check examples/read-posts.mjs && node --check site/draft-lab.js && node --check site/draft-lab-logic.js && node --check site/draft-lab-preview.js && node --check scripts/build-engineering-json-feed.mjs && npm run feed:check && npm run search:check",
     "demo:publish": "node --env-file-if-exists=.env scripts/publish-demo.mjs",
     "demo:read": "node examples/read-posts.mjs",
     "feed:check": "node scripts/build-engineering-json-feed.mjs --check",
-    "feed:write": "node scripts/build-engineering-json-feed.mjs --write"
+    "feed:write": "node scripts/build-engineering-json-feed.mjs --write",
+    "search:check": "node scripts/build-engineering-search-index.mjs --check",
+    "search:write": "node scripts/build-engineering-search-index.mjs --write"
   },
   "license": "MIT"
 }

@@ -14,7 +14,7 @@
 <section aria-labelledby="latest-heading"><h2 id="latest-heading">Recent articles</h2>
 <form class="note-search" role="search" aria-label="Find engineering notes" data-engineering-search hidden>
 <label for="engineering-filter">Find a technical article</label>
-<div class="note-search__controls"><input id="engineering-filter" type="search" placeholder="Search titles and summaries" maxlength="80" autocomplete="off" aria-controls="engineering-list"><button class="note-search__reset" type="button" id="engineering-reset" hidden>Clear filters</button><span id="engineering-search-status" role="status" aria-live="polite" aria-atomic="true"></span></div>
+<div class="note-search__controls"><input id="engineering-filter" type="search" placeholder="Search published article text" maxlength="80" autocomplete="off" aria-controls="engineering-list"><button class="note-search__reset" type="button" id="engineering-reset" hidden>Clear filters</button><span id="engineering-search-status" role="status" aria-live="polite" aria-atomic="true"></span></div>
 <div class="note-topics" role="group" aria-label="Filter engineering notes by topic">
 <button type="button" data-engineering-topic="all" aria-pressed="true">All notes</button>
 <button type="button" data-engineering-topic="security" aria-pressed="false">Security</button>
@@ -23,42 +23,42 @@
 <button type="button" data-engineering-topic="publishing" aria-pressed="false">Publishing</button>
 <button type="button" data-engineering-topic="discovery" aria-pressed="false">Discovery</button>
 </div>
-<div class="note-search__share-row"><button type="button" class="note-search__share" id="engineering-share" hidden>Copy filtered link</button><span class="note-search__help">Filters update the page address. Share a selection without creating an account.</span><span class="note-search__feedback" id="engineering-share-status" role="status" aria-live="polite" aria-atomic="true"></span></div>
+<div class="note-search__share-row"><button type="button" class="note-search__share" id="engineering-share" hidden>Copy filtered link</button><span class="note-search__help">Searches published article text when available; filters update the address. Share a selection without an account.</span><span class="note-search__feedback" id="engineering-share-status" role="status" aria-live="polite" aria-atomic="true"></span></div>
 </form>
 <p class="note-search__empty" id="engineering-no-results" hidden>No matching articles. Try a different keyword.</p>
-<div class="cards" id="engineering-list"><article class="card" data-note-card data-note-topic="writing"><span class="tag">30 October 2026 · Localization &amp; author UX</span>
+<div class="cards" id="engineering-list"><article class="card" data-note-card data-note-topic="writing" data-note-file="multilingual-markdown-editor-without-losing-drafts.html"><span class="tag">30 October 2026 · Localization &amp; author UX</span>
 <h3><a href="./multilingual-markdown-editor-without-losing-drafts.html">How to localize a Markdown editor without losing drafts</a></h3>
 <p>Separate interface language from article language, protect imported-file baselines and test eight locales without rewriting author content.</p>
 <a href="./multilingual-markdown-editor-without-losing-drafts.html">Read the multilingual editor guide ↗</a></article>
-<article class="card" data-note-card data-note-topic="infrastructure"><span class="tag">30 October 2026 · Deployment &amp; verification</span>
+<article class="card" data-note-card data-note-topic="infrastructure" data-note-file="verify-github-pages-deploy-not-just-ci.html"><span class="tag">30 October 2026 · Deployment &amp; verification</span>
 <h3><a href="./verify-github-pages-deploy-not-just-ci.html">How to verify a GitHub Pages deployment—not just green CI</a></h3>
 <p>Real GitHub Actions evidence of a deployment race, HTTPS smoke checks and a fix for premature verification.</p>
 <a href="./verify-github-pages-deploy-not-just-ci.html">Read the Pages release case study ↗</a></article>
-<article class="card" data-note-card data-note-topic="security"><span class="tag">30 October 2026 · Markdown &amp; security</span>
+<article class="card" data-note-card data-note-topic="security" data-note-file="safe-markdown-citation-links-without-xss.html"><span class="tag">30 October 2026 · Markdown &amp; security</span>
 <h3><a href="./safe-markdown-citation-links-without-xss.html">How to render Markdown citation links without introducing XSS</a></h3>
 <p>Safe URL validation, fixed DOM anchors, credential rejection and adversarial tests from an actual browser-based editor.</p>
 <a href="./safe-markdown-citation-links-without-xss.html">Read the safe links guide ↗</a></article>
-<article class="card" data-note-card data-note-topic="security"><span class="tag">29 October 2026 · JavaScript SDK security</span>
+<article class="card" data-note-card data-note-topic="security" data-note-file="javascript-sdk-api-key-leak-prevention.html"><span class="tag">29 October 2026 · JavaScript SDK security</span>
 <h3><a href="./javascript-sdk-api-key-leak-prevention.html">Prevent API key leaks in JavaScript SDKs: why HTTPS alone is not enough</a></h3>
 <p>A reproducible security case study about bearer token recipient checks, loopback-only development credentials and adversarial SDK tests.</p>
 <a href="./javascript-sdk-api-key-leak-prevention.html">Read the SDK security case study ↗</a></article>
-<article class="card" data-note-card data-note-topic="discovery"><span class="tag">29 October 2026 · Discovery &amp; search</span>
+<article class="card" data-note-card data-note-topic="discovery" data-note-file="discoverable-technical-articles.html"><span class="tag">29 October 2026 · Discovery &amp; search</span>
 <h3><a href="./discoverable-technical-articles.html">Publishing technical articles for people and AI search: a practical discovery checklist</a></h3>
 <p>Canonical URLs, sitemaps, meaningful HTML, RSS and the difference between AI search crawlers and model training bots.</p>
 <a href="./discoverable-technical-articles.html">Read the discovery checklist ↗</a></article>
-<article class="card" data-note-card data-note-topic="infrastructure"><span class="tag">26 October 2026 · PostgreSQL security</span>
+<article class="card" data-note-card data-note-topic="infrastructure" data-note-file="postgres-insert-returning-least-privilege.html"><span class="tag">26 October 2026 · PostgreSQL security</span>
 <h3><a href="./postgres-insert-returning-least-privilege.html">INSERT succeeds, RETURNING fails: a least-privilege lesson</a></h3>
 <p>What disposable PostgreSQL tests taught us about column-scoped INSERT permissions, read access and security regressions.</p>
 <a href="./postgres-insert-returning-least-privilege.html">Read the technical lesson ↗</a></article>
-<article class="card" data-note-card data-note-topic="publishing"><span class="tag">26 October 2026 · Publishing lifecycle</span>
+<article class="card" data-note-card data-note-topic="publishing" data-note-file="submit-is-not-publish.html"><span class="tag">26 October 2026 · Publishing lifecycle</span>
 <h3><a href="./submit-is-not-publish.html">Submit for review is not publish</a></h3>
 <p>Why immutable revisions, idempotent review intake and moderator identity must agree before a public article URL can be trusted.</p>
 <a href="./submit-is-not-publish.html">Read the source-backed note ↗</a></article>
-<article class="card" data-note-card data-note-topic="writing"><span class="tag">26 October 2026 · Security &amp; UX</span>
+<article class="card" data-note-card data-note-topic="writing" data-note-file="markdown-preview-safety.html"><span class="tag">26 October 2026 · Security &amp; UX</span>
 <h3><a href="./markdown-preview-safety.html">Preview Markdown without executing author HTML</a></h3>
 <p>Why technical article previews deserve a threat model, how we used fixed DOM elements and literal text, and what automated tests cannot prove.</p>
 <a href="./markdown-preview-safety.html">Read the implementation note ↗</a></article>
-<article class="card" data-note-card data-note-topic="publishing"><span class="tag">26 October 2026 · Product engineering</span>
+<article class="card" data-note-card data-note-topic="publishing" data-note-file="why-draft-lab-first.html"><span class="tag">26 October 2026 · Product engineering</span>
 <h3><a href="./why-draft-lab-first.html">Why we built a Draft Lab before opening public writes</a></h3>
 <p>How we separate a usable writing experience from the identity, moderation and data-security work required for real publication. Includes actual PR evidence, runnable SDK steps and open requests for review.</p>
 <a href="./why-draft-lab-first.html">Read the full engineering note ↗</a></article>
