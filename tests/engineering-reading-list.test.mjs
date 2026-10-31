@@ -12,14 +12,16 @@ function node(tag='div'){
   getAttribute(name){return this.attributes[name]??null;},
   addEventListener(name,fn){this.listeners[name]=fn;},
   append(...children){this.children.push(...children);},
-  replaceChildren(...children){this.children=children;}
+  replaceChildren(...children){this.children=children;},
+  click(){this.clicked=true;},
+  remove(){this.removed=true;}
  };
 }
-function setup({badFile=false,storageAccess=true}={}){
+function setup({badFile=false,storageAccess=true,clipboardAccess=true,storageWritable=true}={}){
  const store=new Map(),writes=[];
  const storage={
   getItem(k){return store.get(k)??null;},
-  setItem(k,v){writes.push(['set',k,v]);store.set(k,v);},
+  setItem(k,v){if(!storageWritable)throw new Error('Storage denied');writes.push(['set',k,v]);store.set(k,v);},
   removeItem(k){writes.push(['remove',k]);store.delete(k);}
  };
  const anchors=['research-one.html','research-two.html'].map((file,i)=>({
@@ -37,7 +39,14 @@ function setup({badFile=false,storageAccess=true}={}){
   'reading-list-panel':node('section'),
   'reading-list-items':node('ul'),
   'reading-list-status':node('p'),
-  'reading-list-clear':node('button')
+  'reading-list-clear':node('button'),
+  'reading-list-filter':node('input'),
+  'reading-list-filter-status':node('span'),
+  'reading-list-feedback':node('p'),
+  'reading-list-copy':node('button'),
+  'reading-list-export':node('button'),
+  'reading-list-import':node('button'),
+  'reading-list-file':node('input')
  };
  elements['reading-list-panel'].hidden=true;
  elements['reading-list-clear'].hidden=true;
@@ -46,17 +55,33 @@ function setup({badFile=false,storageAccess=true}={}){
   querySelectorAll:q=>q==='[data-note-card]'?cards:[],
   createElement:tag=>node(tag)
  };
- let approve=true;
+ let approve=true,confirmHook=null;
  const window={listeners:{},
   get localStorage(){
    if(!storageAccess)throw new TypeError('Storage denied');
    return storage;
   },
-  confirm(){return approve;},
+  confirm(){if(confirmHook)confirmHook();return approve;},
   addEventListener(name,fn){this.listeners[name]=fn;}
  };
- runInNewContext(source,{window,document},{timeout:1000});
- return {elements,cards,store,writes,storage,window,setApprove:v=>{approve=v;}};
+ const clipboardWrites=[],downloads=[];
+ const navigator=clipboardAccess?{clipboard:{async writeText(text){clipboardWrites.push(text);}}}:{};
+ const blobUrls=new Map();
+ const objectURL={
+  createObjectURL(blob){const url='blob:mock:'+blobUrls.size;blobUrls.set(url,blob);return url;},
+  revokeObjectURL(url){blobUrls.delete(url);}
+ };
+ const oldCreate=document.createElement;
+ document.createElement=tag=>{
+  const el=oldCreate(tag);
+  if(tag==='a')el.click=()=>{el.clicked=true;downloads.push({...el,blob:blobUrls.get(el.href)});};
+  return el;
+ };
+ document.body={append(){}};
+ runInNewContext(source,{window,document,navigator,Blob,TextEncoder,TextDecoder,
+  URL:objectURL,setTimeout:(callback)=>callback()},{timeout:1000});
+ return {elements,cards,store,writes,storage,window,clipboardWrites,downloads,
+  setApprove:v=>{approve=v;},setConfirmHook:fn=>{confirmHook=fn;}};
 }
 test('published archive exposes a progressive, explicitly local reader list',()=>{
  assert.match(html,/src="\.\/reading-list\.js" defer/);
