@@ -39,6 +39,12 @@ export function formatDraftSelection(value,start,end,action){
    const prefix=action==='list'?'- ':'> ';
    replacement=content.split(/\r?\n/).map(line=>prefix+line).join('\n');
    innerOffset=prefix.length;
+ }else if(action==='table'){
+   if(selected.length>120||/[\r\n|]/.test(selected))
+     throw new TypeError('Table header must be a single line without pipes');
+   content=selected||'Column';
+   replacement='| '+content+' | Value |\n| --- | --- |\n| Example | 123 |';
+   innerOffset=2;
  }else if(action==='code'){
    content ||= '// your code';
    const runs=selected.match(/`+/g)||[];
