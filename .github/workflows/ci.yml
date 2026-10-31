@@ -17,5 +17,7 @@ jobs:
         with:
           node-version: '22'
           package-manager-cache: false
+      - name: Validate external HTTPS audit shell syntax
+        run: bash -n scripts/check-live-seo.sh
       - run: npm run check
       - run: npm test
