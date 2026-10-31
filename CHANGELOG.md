@@ -1,5 +1,10 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-31 — Public article corrections and attribution reports
+
+- Add a dedicated public GitHub issue form for precise, human-reviewed reports about existing engineering notes and a visible report link on each of ten published technical articles. Distinguish public content corrections from confidential security disclosures, document maintainer triage, and preserve no-backend/no-automatic-takedown safety. No private Supabase/hosted permissions changed.
+
+
 ## Unreleased — 31 October 2026: public editorial proposal activity
 
 - Add a consent-gated, read-only public proposal board to `/contribute.html`. It renders real issue-form proposals from the project's public GitHub repository, marks open/closed honestly (not published), avoids automatic network calls, and never sends draft content or credentials. Manual proposal flow and private hosted publication gates remain unchanged.

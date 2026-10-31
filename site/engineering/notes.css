@@ -46,3 +46,9 @@ header{background:rgba(249,252,249,.9)}a:hover,.navlinks a:hover{color:#07593f}.
  .note-search__share{color:#fff}
  .note-search__share:hover{background:#07593f;color:#fff}
 }
+
+/* Visible, keyboard-accessible feedback path for each real published note. */
+.article-report{margin:36px 0 12px;padding:20px 22px;border:1px solid var(--border);border-radius:12px;background:var(--panel)}
+.article-report strong{display:block;color:var(--text);margin-bottom:4px}
+.article-report p{font-size:14px;line-height:1.65;color:var(--muted);margin:10px 0}
+.article-report a{color:var(--accent);text-underline-offset:3px}
