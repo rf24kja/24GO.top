@@ -93,7 +93,7 @@ function stub({clipboard=true,malformed=false}={}){
  const article=el('article');
  article.querySelector=selector=>selector==='h1'?h1:null;
  article.querySelectorAll=selector=>selector==='h2[id],h3[id]'?headings:[];
- article.getBoundingClientRect=()=>({top:200,height:2400});
+ article.getBoundingClientRect=()=>({top:200-(Number(view.scrollY)||0),height:2400});
  const main={
   inserted:[],insertBefore(node,target){
    if(target!==article)throw Error('Wrong article');
