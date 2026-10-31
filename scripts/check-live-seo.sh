@@ -122,6 +122,13 @@ done
 # deployed, same-origin JavaScript instead of mistaking source CI for delivery.
 probe '/engineering/search.js' archive_search 'words.every(word=>entry.searchable.includes(word)'
 probe '/engineering/reading-list.js' reading_list_js '24gotop-public-reading-list-v1'
+if ! grep -Fq -- 'id="reading-list-import"' "$tmp/index" ||
+   ! grep -Fq -- 'id="reading-list-export"' "$tmp/index" ||
+   ! grep -Fq -- 'id="reading-list-filter"' "$tmp/index" ||
+   ! grep -Fq -- 'MAX_BACKUP_BYTES=16384' "$tmp/reading_list_js"; then
+  echo '::error::Live reader library lacks the portable backup/filter release'
+  failures=$((failures+1))
+fi
 if ! grep -Fq -- 'id="reading-list-panel"' "$tmp/index" ||
    ! grep -Fq -- 'reading-list.js' "$tmp/index"; then
   echo '::error::Live archive lacks optional on-device reading list'
