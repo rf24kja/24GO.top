@@ -24,13 +24,14 @@ test('archive publishes 9 crawlable articles, discoverable topic controls and a 
  assert.match(html,/id="engineering-share" hidden/);
  assert.match(html,/id="engineering-share-status" role="status" aria-live="polite"/);
  assert.match(style,/\.note-search__share\[hidden\]\{display:none\}/);
- const tags=[...html.matchAll(/<article class="card" data-note-card data-note-topic="([^"]+)">/g)];
+ const tags=[...html.matchAll(/<article class="card" data-note-card data-note-topic="([^"]+)" data-note-file="[a-z0-9-]+\.html">/g)];
  assert.deepEqual(tags.map(x=>x[1]),cardTopics);
  assert.match(html,/<aside class="card">/);
  assert.deepEqual([...html.matchAll(/data-engineering-topic="([^"]+)" aria-pressed="(?:true|false)"/g)]
    .map(x=>x[1]),topicNames);
  assert.doesNotMatch(html,/PUBLISH_API_KEY|sb_secret_|service_role|public registration is open/i);
- assert.doesNotMatch(code,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|localStorage|sessionStorage|innerHTML|eval\s*\(/);
+ assert.match(code,/fetch\('\.\/search-index\.json'/);
+ assert.doesNotMatch(code,/XMLHttpRequest|sendBeacon|localStorage|sessionStorage|innerHTML|eval\s*\(/);
  assert.match(style,/\.card\[hidden\]\{display:none\}/);
  assert.match(style,/\.note-topics button\[aria-pressed="true"\]/);
  assert.match(style,/\.note-topics button:focus-visible/);
@@ -45,7 +46,7 @@ function button(topic){
   setAttribute(name,value){this.attributes[name]=value;}
  };
 }
-function setUp({missing=false,badTopic=false,query='',clipboard='ok'}={}){
+function setUp({missing=false,badTopic=false,query='',clipboard='ok',index='none'}={}){
  const listeners={},status={textContent:''},empty={hidden:true},
   reset={hidden:true,focused:false,addEventListener(name,fn){listeners['reset-'+name]=fn;}};
  const share={hidden:true,listeners:{},addEventListener(name,fn){this.listeners[name]=fn;}};
@@ -55,9 +56,9 @@ function setUp({missing=false,badTopic=false,query='',clipboard='ok'}={}){
    focus(){this.focused=true;}};
  const topics=topicNames.map(button);
  const cards=[
-  {textContent:'Security | Prevent JavaScript SDK API key leaks',dataset:{noteTopic:'security'},hidden:false},
-  {textContent:'SEO | Technical publishing and search discovery',dataset:{noteTopic:'discovery'},hidden:false},
-  {textContent:'Database | PostgreSQL permissions',dataset:{noteTopic:badTopic?'other':'infrastructure'},hidden:false}
+  {textContent:'Security | Prevent JavaScript SDK API key leaks',dataset:{noteTopic:'security',noteFile:'security.html'},hidden:false},
+  {textContent:'SEO | Technical publishing and search discovery',dataset:{noteTopic:'discovery',noteFile:'discovery.html'},hidden:false},
+  {textContent:'Database | PostgreSQL permissions',dataset:{noteTopic:badTopic?'other':'infrastructure',noteFile:'database.html'},hidden:false}
  ];
  const document={
   querySelector(s){assert.equal(s,'[data-engineering-search]');return missing?null:form;},
@@ -79,8 +80,20 @@ function setUp({missing=false,badTopic=false,query='',clipboard='ok'}={}){
   if(clipboard==='fail')throw Error('clipboard unavailable');
   copied.push(value);
  }}};
- runInNewContext(code,{document,window,navigator,URL},{timeout:1000});
- return {form,input,status,empty,reset,share,shareStatus,cards,topics,listeners,window,location,copied,
+ const fetchCalls=[];
+ const staticData={version:1,articles:[
+  {file:'security.html',text:'Security details and a hidden circuit breaker'},
+  {file:'discovery.html',text:'Specific crawler indexing mechanisms'},
+  {file:'database.html',text:'Role permissions and a unique isolation mechanism'}
+ ]};
+ const indexFetch=async(url,options)=>{
+  fetchCalls.push({url,options});
+  if(index==='fail')throw Error('offline');
+  return {ok:true,json:async()=>index==='corrupt'?{version:1,articles:[]}:staticData};
+ };
+ runInNewContext(code,{document,window,navigator,URL,
+  ...(index==='none'?{}:{fetch:indexFetch})},{timeout:1000});
+ return {form,input,status,empty,reset,share,shareStatus,cards,topics,listeners,window,location,copied,fetchCalls,
   clickTopic:t=>topics.find(x=>x.dataset.engineeringTopic===t).listeners.click()};
 }
 test('search works with all topics and Escape clears only query',()=>{
@@ -199,7 +212,7 @@ test('browser navigation restores the URL state without altering article data',(
 test('public archive has navigable heading hierarchy for all nine searchable articles',()=>{
  assert.match(html,/<h1>Engineering notes<\/h1>/);
  assert.match(html,/<section aria-labelledby="latest-heading"><h2 id="latest-heading">Recent articles<\/h2>/);
- const cards=[...html.matchAll(/<article class="card" data-note-card data-note-topic="[^"]+">([\s\S]*?)<\/article>/g)];
+ const cards=[...html.matchAll(/<article class="card" data-note-card data-note-topic="[^"]+" data-note-file="[a-z0-9-]+\.html">([\s\S]*?)<\/article>/g)];
  assert.equal(cards.length,9,'all nine article cards retain their searchable data fields');
  for(const card of cards){
   assert.match(card[1],/<h3><a href="\.\/[^"]+\.html">[^<]+<\/a><\/h3>/);
@@ -211,4 +224,30 @@ test('public archive has navigable heading hierarchy for all nine searchable art
   'the recent-articles section must remain the sole level-two heading');
  assert.match(style,/\.card h2,\.card h3\{font-size:21px;margin:7px 0\}/,
   'corrected heading levels must preserve previously reviewed card typography');
+});
+
+test('full-text search finds article-body terms missing from card titles and summaries',async()=>{
+ const app=setUp({index:'good',query:'?q=circuit%20breaker'});
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.deepEqual(app.fetchCalls.map(x=>x.url),['./search-index.json']);
+ assert.equal(app.fetchCalls[0].options.credentials,'omit');
+ assert.deepEqual(app.cards.map(c=>c.hidden),[false,true,true]);
+ assert.equal(app.status.textContent,'1 of 3 articles');
+ app.clickTopic('discovery');
+ assert.deepEqual(app.cards.map(c=>c.hidden),[true,true,true]);
+ app.input.value='crawler indexing';
+ app.listeners.input();
+ assert.deepEqual(app.cards.map(c=>c.hidden),[true,false,true]);
+});
+
+test('offline or malformed static index falls back to card-only search',async()=>{
+ for(const index of ['fail','corrupt']){
+  const app=setUp({index,query:'?q=JavaScript'});
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(app.form.hidden,false);
+  assert.deepEqual(app.cards.map(c=>c.hidden),[false,true,true]);
+  app.input.value='circuit breaker';
+  app.listeners.input();
+  assert.deepEqual(app.cards.map(c=>c.hidden),[true,true,true]);
+ }
 });
