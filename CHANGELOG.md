@@ -1,5 +1,11 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-01 — Offline, portable editorial manuscript integrity packages
+
+- Add a user-controlled **Export review package** feature to the static eight-language Draft Lab. A confirmed download contains the complete original Markdown manuscript plus a SHA-256 digest calculated locally over UTF-8 bytes; no text upload, third-party AI request, automated browser save or publication.
+- Add **Check review package** for strict, bounded JSON/UTF-8/grammar/digest verification without changing the currently open editor or stored drafts. Provide an offline Node CLI `npm run review:verify -- file.json` so a human reviewer can validate a deliberately shared package without printing its text. The SHA-256 checksum is **not** an identity, copyright, approval or tamper-proof signature.
+- Keep the `.md` author export and manual browser vault unchanged. Add eight-language labels, negative and integration tests, documentation and post-Pages HTTPS release probes. No hosted/private Core or database permissions change. Roll back with a public PR revert.
+
 ## 2026-11-01 — Section navigation and responsible public article citations
 
 - Add immutable source-level fragment IDs for headings in all ten original reviewed engineering articles and progressive first-party `article-reader.mjs` reading controls: accessible in-page contents, per-section canonical link copying, Markdown/plain-text/BibTeX citations from matching JSON-LD and canonical metadata, print action and transient scroll progress. No request tracking, account access, storage, remote AI or publication permissions.
