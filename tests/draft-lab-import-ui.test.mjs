@@ -9,12 +9,14 @@ import {
 } from '../site/draft-lab-logic.js';
 import {uiText,applyUiLanguage} from '../site/draft-lab-i18n.js';
 import {buildArticleProposalUrl} from '../site/draft-lab-proposal.js';
+import {createDraftVault,MAX_SAVED_DRAFTS,VAULT_KEY} from '../site/draft-lab-vault.js';
 
 const source = readFileSync(fileURLToPath(new URL('../site/draft-lab.js', import.meta.url)), 'utf8')
   .replace(/^import .* from '.\/draft-lab-logic\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-preview\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-i18n\.js';\n/m, '')
-  .replace(/^import .* from '.\/draft-lab-proposal\.js';\n/m, '');
+  .replace(/^import .* from '.\/draft-lab-proposal\.js';\n/m, '')
+  .replace(/^import .* from '.\/draft-lab-vault\.js';\n/m, '');
 
 const sample = {
   title:'Return and improve the documentation', locale:'ru', category:'tools',
@@ -27,7 +29,8 @@ function build({uiHref='https://24go.top/draft-lab.html'}={}) {
     'postTitle','postBody','postLocale','postCategory','postSource','formStatus',
     'previewHeading','previewBody','previewLocale','previewCategory','bodyCount',
     'previewSource','draftSafety','articleOutline','articleOutlineSection','downloadDraft','copyDraft','clearDraft','importDraft','importDraftFile','draftForm',
-    'formatHeading','formatList','formatQuote','formatCode','formatTable','formatLink','uiLocale','draftDropZone','homeBrandLink','homeNavLink','proposeDraft'
+    'formatHeading','formatList','formatQuote','formatCode','formatTable','formatLink','uiLocale','draftDropZone','homeBrandLink','homeNavLink','proposeDraft',
+    'saveBrowserDraft','savedBrowserDraft','openBrowserDraft','deleteBrowserDraft','vaultCount'
   ];
   const elements = Object.fromEntries(ids.map(id => {
     const el = {
@@ -42,7 +45,9 @@ function build({uiHref='https://24go.top/draft-lab.html'}={}) {
       getAttribute(name){return this.attributes[name]??null;},
       click(){this.clicked=true;},
       focus(){this.focused=true;},
-      contains(){return false;}
+      contains(){return false;},
+      append(child){this.children??=[];this.children.push(child);},
+      replaceChildren(){this.children=[];}
     };
     return [id,el];
   }));
@@ -51,8 +56,16 @@ function build({uiHref='https://24go.top/draft-lab.html'}={}) {
   elements.postCategory.value='guides';
   let confirm = true;
   const window = {listeners:{}, location:{href:uiHref}, confirm(){return confirm;}, addEventListener(type, callback){this.listeners[type]=callback;}};
+  const browserItems=new Map();
+  const localStorage={
+    getItem(k){return browserItems.has(k)?browserItems.get(k):null;},
+    setItem(k,v){browserItems.set(k,v);},
+    removeItem(k){browserItems.delete(k);}
+  };
+  window.localStorage=localStorage;
   const document = {
     listeners:{},
+    createElement(){return {value:'',textContent:''};},
     addEventListener(type,callback){this.listeners[type]=callback;},
     documentElement:{lang:'en'},
     getElementById(id){return elements[id];},
@@ -63,13 +76,14 @@ function build({uiHref='https://24go.top/draft-lab.html'}={}) {
     safeSourceUrl,validateDraft,formatDraft,draftFilename,hasDraftContent,
     parseDraftFile,readDraftFileStrict,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,createDraftImportGate,invalidDraftField,
     uiText,applyUiLanguage,buildArticleProposalUrl,
+    createDraftVault,MAX_SAVED_DRAFTS,VAULT_KEY,
     renderMarkdownPreview(container, text) { container.textContent = text; },
     renderPreviewOutline(container,text) { container.textContent=text;return /^#{1,3} /m.test(text)?1:0; }
   // Keep a bounded sandbox timeout, with enough CI runner headroom when
   // node --test starts multiple test files concurrently.
   },{timeout:5000});
   return {
-    elements, document,
+    elements, document, localStorage,
     setConfirm(value){confirm=value;},
     beforeUnload() {
       const event = {prevented:false, returnValue:undefined, preventDefault(){this.prevented=true;}};
@@ -663,4 +677,20 @@ test('draft proposal requires explicit consent and transfers only the headline',
  assert.equal(new URL(node.href).searchParams.get('title'),
   'Article proposal: Explaining a reproducible SQL bug');
  assert.equal(new URL(node.href).searchParams.has('body'),false);
+});
+
+test('browser vault is opt-in and the author can reopen a saved article',()=>{
+ const app=build();
+ assert.equal(app.localStorage.getItem(VAULT_KEY),null);
+ for(const [id,key] of [['postTitle','title'],['postBody','body'],
+  ['postLocale','locale'],['postCategory','category'],['postSource','source']])
+  app.elements[id].value=sample[key];
+ app.elements.saveBrowserDraft.listeners.click();
+ assert.notEqual(app.localStorage.getItem(VAULT_KEY),null);
+ app.elements.postTitle.value='Changed but not saved';
+ app.elements.savedBrowserDraft.value=JSON.parse(app.localStorage.getItem(VAULT_KEY)).entries[0].id;
+ app.elements.openBrowserDraft.listeners.click();
+ assert.equal(app.elements.postTitle.value,sample.title);
+ assert.equal(app.elements.postBody.value,sample.body);
+ assert.equal(app.elements.formStatus.dataset.error,'false');
 });

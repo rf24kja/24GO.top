@@ -42,6 +42,8 @@ These are real, shareable, canonical HTML entry pages — not a finished transla
 
 **NEW — Local article MCP for AI agents ([merged PR #116](https://github.com/rf24kja/24GO.top/pull/116)).** Run `npm run mcp:articles` with Node.js 22+ from the repository root. Supported stdio MCP clients can use `list_articles`, `search_articles`, `read_article` and read-only public article Resources. It serves only ten committed engineering articles: **no private drafts, hosted account creation, database access, write operations or remote MCP service.** Third-party host compatibility still needs independent verification. See the [local MCP client guide](docs/PUBLIC_ARTICLE_MCP.md).
 
+**Optional local draft library:** Draft Lab lets writers explicitly save, reopen and delete up to eight drafts on their own device, without an account or network writes. Browser storage is **unencrypted and device-local**, may be cleared, and does not replace a downloaded .md backup. There is no automatic save or sync.
+
 **The Draft Lab now includes an explicit, confirmed GitHub editorial-proposal action.** A writer can propose an article with their title prefilled; only the title enters the public GitHub URL after consent. Draft text, source links and .md files remain local. A proposal is reviewed by humans and is **not** hosted posting, an accepted article or an uploaded draft.
 
 **The next major milestone is not a redesign; it is one safely published, author-owned article.** The private hosted publishing path must pass independent security review, signed-user isolation, rollback and restore verification before public sign-up or posting can open. [See the release gates](docs/SECURITY_GATES.md) and [roadmap](docs/ROADMAP.md).
