@@ -1,5 +1,9 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-01 — Repair broken public HTTPS release audit
+
+- Remove an accidentally duplicated partial shell block left after the real end of `scripts/check-live-seo.sh`. The extra block contained a dangling `then` and caused the external read-only audit to fail even when Pages succeeded. Add `bash -n` to the ordinary GitHub Actions PR/main CI before Node tests and regression assertions that the release receipt and homepage probes occur exactly once. Source-only workflow repair; no DNS, Pages artifact, Auth, keys, paid infrastructure or private Core changes. External live verification remains separate from green source checks. Rollback: revert this PR (not recommended without restoring a syntactically valid script).
+
 ## 2026-11-01 — Exact public Pages release provenance
 
 - GitHub Pages now writes a public, nonsecret `release.json` into the deployed static artifact, containing the actual `main` commit SHA and Pages workflow run ID. The independent post-deploy HTTPS audit compares both fields with the completed deploy workflow, using cache-busting and bounded retries. Scheduled/manual checks verify receipt shape without conflating an older deployment with the newest commit. This addresses the source-CI-vs-public-CDN release evidence gap, not hosted Core, authenticated writes or SEO indexing. No infra/DNS/account change; rollback is a workflow/script revert. Actual remote delivery must still be verified from the completed GitHub-hosted audit.
