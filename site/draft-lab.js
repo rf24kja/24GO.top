@@ -1,6 +1,6 @@
 'use strict';
 
-import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, readDraftFileStrict, formatDraftSelection, createDraftImportGate, invalidDraftField } from './draft-lab-logic.js';
+import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, readDraftFileStrict, formatDraftSelection, countDraftWords, createDraftImportGate, invalidDraftField } from './draft-lab-logic.js';
 import { renderMarkdownPreview,renderPreviewOutline } from './draft-lab-preview.js';
 import { applyUiLanguage,uiText } from './draft-lab-i18n.js';
 import { buildArticleProposalUrl } from './draft-lab-proposal.js';
@@ -125,6 +125,8 @@ function preview() {
   field('previewLocale').textContent = locale.value.toUpperCase();
   field('previewCategory').textContent = ui(['guides','tools','news','models'].includes(category.value)?category.value:'guides');
   field('bodyCount').textContent = body.value.length.toLocaleString('en-US') + ' / 12,000';
+  field('bodyWordCount').textContent = ui('wordCount') +
+    countDraftWords(body.value,locale.value).toLocaleString('en-US');
   const link = safeSourceUrl(source.value);
   const node = field('previewSource');
   node.hidden = !link;
@@ -139,7 +141,7 @@ for (const control of [title,body,locale,category,source]) {
 
 
 for(const [id,action] of [['formatBold','bold'],['formatItalic','italic'],
-  ['formatInlineCode','inlineCode'],['formatHeading','heading'],['formatList','list'],
+  ['formatInlineCode','inlineCode'],['formatHeading','heading'],['formatList','list'],['formatOrderedList','orderedList'],
   ['formatQuote','quote'],['formatCode','code'],['formatTable','table'],['formatLink','link']]){
  field(id).addEventListener('click',()=>{
   try{
