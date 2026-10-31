@@ -69,6 +69,11 @@ require 'GitHub issues and pull requests are public.' "$tmp/contribute.html" 'pu
 require 'contribution-steps' "$tmp/contribute.css" 'mobile-friendly contribution steps'
 
 require 'id="formatLink"' "$tmp/draft.html" 'Link editor control'
+require 'id="formatTable"' "$tmp/draft.html" 'Table editor control'
+require "['formatTable','table']" "$tmp/editor.js" 'wired local table insertion'
+require "const table=tableAt(lines,index)" "$tmp/preview.js" 'safe Markdown table parser'
+require "case 'table':" "$tmp/preview.js" 'semantic Markdown table rendering'
+require "action==='table'" "$tmp/logic.js" 'bounded local table generator'
 require 'does not publish, upload or automatically save your writing' "$tmp/draft.html" 'no-backend warning'
 require "['formatQuote','quote'],['formatCode','code'],['formatLink','link']" "$tmp/editor.js" 'wired toolbar action'
 require "if(action==='link')" "$tmp/logic.js" 'Markdown Link pure edit'
