@@ -7,7 +7,7 @@ const source=readFileSync(new URL('../site/engineering/reading-list.js',import.m
 const html=readFileSync(new URL('../site/engineering/index.html',import.meta.url),'utf8');
 
 function node(tag='div'){
- return {tag,textContent:'',hidden:false,children:[],attributes:{},listeners:{},
+ return {tag,value:'',textContent:'',hidden:false,children:[],attributes:{},listeners:{},
   setAttribute(name,value){this.attributes[name]=value;},
   getAttribute(name){return this.attributes[name]??null;},
   addEventListener(name,fn){this.listeners[name]=fn;},
