@@ -16,12 +16,45 @@
   const entries=cards.map(card=>({
     card,
     searchable:card.textContent.toLocaleLowerCase(),
-    topic:card.dataset.noteTopic
+    topic:card.dataset.noteTopic,
+    file:card.dataset.noteFile
   }));
   const validTopics=new Set(topics.map(item=>item.dataset.engineeringTopic));
   if(!validTopics.has('all')||
     entries.some(entry=>!validTopics.has(entry.topic)))return;
   let selected='all';
+  let fullText=null;
+
+  // Optional same-origin, read-only static index. No query or private draft
+  // is transmitted; the request URL is always exactly ./search-index.json.
+  // On invalid/unavailable index, ordinary title/summary search still works.
+  const loadIndex=async()=>{
+    if(typeof fetch!=='function')return;
+    try{
+      const response=await fetch('./search-index.json',
+        {credentials:'omit',cache:'default'});
+      if(!response.ok)throw Error('Static search index unavailable');
+      const data=await response.json();
+      if(data?.version!==1||!Array.isArray(data.articles)||
+         data.articles.length!==entries.length)
+        throw Error('Unexpected static search index');
+      const byFile=new Map();
+      for(const article of data.articles){
+        if(typeof article?.file!=='string'||
+           !/^[a-z0-9-]+\.html$/.test(article.file)||
+           typeof article.text!=='string'||article.text.length>24000||
+           byFile.has(article.file))
+          throw Error('Invalid static article index entry');
+        byFile.set(article.file,article.text);
+      }
+      if(entries.some(entry=>!byFile.has(entry.file)))
+        throw Error('Static index does not match visible article cards');
+      fullText=byFile;
+      update();
+    }catch{
+      // Search falls back to card titles/summaries; never obscure articles.
+    }
+  };
 
   // URL parameters are untrusted: use an explicit topic set, a bounded
   // plain-text search and native URL encoding. Never insert either as HTML.
@@ -59,7 +92,8 @@
     let count=0;
     for(const entry of entries){
       const matches=(selected==='all'||entry.topic===selected) &&
-        entry.searchable.includes(keyword);
+        (entry.searchable.includes(keyword) ||
+          Boolean(fullText?.get(entry.file)?.includes(keyword)));
       entry.card.hidden=!matches;
       if(matches)count++;
     }
@@ -118,4 +152,5 @@
   readUrl();
   update();
   form.hidden=false;
+  void loadIndex();
 })();
