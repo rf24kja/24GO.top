@@ -80,3 +80,9 @@
  .hero-illustration,.visual-showcase__media,.card-symbol{border-width:2px}
  .visual-showcase figcaption{color:var(--text)}
 }
+
+/* Image captions are part of document flow: never obscure the last row of cards. */
+.hero-illustration figcaption{position:static;right:auto;bottom:auto;left:auto;margin:0;padding:14px 18px;border:0;border-top:1px solid rgba(129,255,202,.22);border-radius:0;background:#0A211F;backdrop-filter:none;line-height:1.5}
+.hero-illustration img{object-fit:contain}
+/* Mobile portrait source replaces the wide product map; no fixed-width crop. */
+@media(max-width:620px){.visual-showcase__media{height:auto}.visual-showcase__media img{position:static;inset:auto;width:100%;height:auto;max-width:100%;aspect-ratio:auto;object-fit:contain}.visual-showcase__media:after{display:none}}
