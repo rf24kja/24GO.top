@@ -203,7 +203,12 @@ test('reader never creates active or credentialed source links from untrusted pe
  const values=['javascript:alert(1)','data:text/html,<script>alert(1)</script>',
   'https://user:secret@example.org/', 'http://user@example.org/',
   '/relative/path','//example.org/relative','not-a-url','ftp://example.org/',
-  'https://example.org/'+('x'.repeat(2100))];
+  'https://example.org/'+('x'.repeat(2100)),
+  'https://example.org/pa\nth','https://example.org/pa\tth',
+  'https://example.org/pa\rth','https://example.org/pa\u0000th',
+  'https://example.org/pa\u007fth',' https://example.org/valid',
+  'https://example.org/valid ',
+  'https://example.org/'+('😀'.repeat(600))];
  for(const sourceUrl of values){
   const app=runReader();
   app.requests[0].resolve(okPosts([{
@@ -237,4 +242,21 @@ test('skip links target focusable landmarks without adding Tab stops',()=>{
  assert.doesNotMatch(html, /id="(?:main-content|posts)"[^>]*tabindex="(?:0|[1-9][0-9]*)"/);
  assert.match(css, /#main-content\{scroll-margin-top:96px\}/);
  assert.match(css, /#posts\{scroll-margin-top:96px\}/);
+});
+
+
+test('source link serialized URL cap prevents Unicode expansion without hiding the post',async()=>{
+ const app=runReader();
+ const sourceUrl='https://example.org/path/'+'😀'.repeat(300);
+ assert.ok(sourceUrl.length<2000);
+ app.requests[0].resolve(okPosts([{
+  id:'long-source',title:'Local article remains readable',body:'Technical note',
+  category:'guides',publishedAt:'2026-10-26T10:00:00Z',authorType:'human',
+  tags:[],sourceUrl
+ }]));
+ await settle();
+ const article=app.nodes.feed.children[0];
+ assert.equal(article.tag,'article');
+ assert.equal(article.children.filter(child=>child.tag==='a').length,0);
+ assert.equal(app.nodes.feed.attributes['aria-busy'],'false');
 });
