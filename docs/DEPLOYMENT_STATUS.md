@@ -8,9 +8,17 @@
 | Canonical landing, `https://24go.top/` | **Externally verified HTTPS main domain with owner-enabled enforcement** | [Pages audit attempt 2](https://github.com/rf24kja/24GO.top/actions/runs/40882729744) and [permanent redirects audit](https://github.com/rf24kja/24GO.top/actions/runs/40886701790). Google indexing is not yet confirmed. |
 | Other site origins | **HTTP/www variants permanently redirect to `https://24go.top/`** | [External audit #40886701790](https://github.com/rf24kja/24GO.top/actions/runs/40886701790): initial HTTP 301, correct final target; sampled article URL retains path and query. |
 | Draft Lab, `/draft-lab.html` | **Live HTTPS static files externally verified for eight-language controls and safe citation preview** | [PR #81](https://github.com/rf24kja/24GO.top/pull/81), [Pages delivery #40969864491](https://github.com/rf24kja/24GO.top/actions/runs/40969864491) and [post-deploy live HTTPS smoke #40969903691](https://github.com/rf24kja/24GO.top/actions/runs/40969903691) succeeded. Native-speaker and real mobile/screen-reader review remain unverified; prototype stays `noindex` and outside sitemap. |
-| Engineering notes, `/engineering/` | **Six source-backed HTML articles, RSS and nine-item sitemap externally verified on canonical apex** | [Post-fix live audit #40886701790](https://github.com/rf24kja/24GO.top/actions/runs/40886701790). Search rankings and index coverage still unverified. |
+| Engineering notes, `/engineering/` | **Ten source-backed English HTML articles and 21 canonical sitemap URLs delivered on HTTPS (31 Oct 2026)** | [Latest full HTTPS crawl #41174110459](https://github.com/rf24kja/24GO.top/actions/runs/41174110459) verified current sitemap pages, RSS and JSON Feed; [live Draft Lab/SVG smoke #41174110445](https://github.com/rf24kja/24GO.top/actions/runs/41174110445) verified current art and new MCP guide. Older six-article evidence: [#40886701790](https://github.com/rf24kja/24GO.top/actions/runs/40886701790). Search rankings and indexing unverified. |
 | Public publishing / login on **24go.top** | **Not implemented** | The public GitHub Pages landing has no account login or user-post endpoint. The separate Vercel staging identity screen is described below; it is not a release of hosted publishing. |
 | Privacy and analytics | No site-side analytics are claimed | GitHub Pages/provider/server logs may still exist; do not claim zero network metadata collection |
+
+## Latest public release proof — 31 October 2026
+
+- Public main: [commit ce403d4](https://github.com/rf24kja/24GO.top/commit/ce403d47ffb33e26f9df47e9783b952d767f7442) after the original MCP guide, repaired live verifier and visible local MCP quickstart.
+- [Main CI #41174089003](https://github.com/rf24kja/24GO.top/actions/runs/41174089003): Node checks and tests passed. [Pages deploy #41174089104](https://github.com/rf24kja/24GO.top/actions/runs/41174089104): success.
+- [Live Draft Lab and localized SVG #41174110445](https://github.com/rf24kja/24GO.top/actions/runs/41174110445): success, including all seven translated visual sources, canonical tenth guide, feed, search and sitemap.
+- [External HTTPS SEO delivery #41174110459](https://github.com/rf24kja/24GO.top/actions/runs/41174110459): success for all 21 sitemap routes (including 10 original English articles and eight homepage locales), RSS, JSON Feed, robots and apex redirect probes. This is HTTP evidence at the verification time, not indexing, user adoption, or public account publishing.
+- Independent real-browser accessibility/language quality verification remains incomplete; private P0 signed-user ownership, moderator AAL2, backup restore and third-party security approval remain blocked.
 
 ## Staging identity versus public login — 31 October 2026
 

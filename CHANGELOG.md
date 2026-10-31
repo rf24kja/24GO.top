@@ -1,5 +1,11 @@
 # 24GOTOP — Public Change Log
 
+## Unreleased — 31 October 2026: reconcile verified deployment evidence
+
+- Update public deployment/SEO records to current exact-head main CI, Pages, live Draft Lab/SVG and 21-URL canonical audit evidence. Distinguish historical 9-article/12-URL checkpoints from current ten-article/21-URL release.
+- Refresh local MCP documentation to the tenth published guide and clarify local checkout staleness; keep hosted author/agent write API gated.
+
+
 ## Unreleased — 31 October 2026: discoverable local MCP entry
 
 - Link the already merged local read-only MCP service directly from the public homepage developer quickstart, with exact launch command, manual host setup and no-public-write disclosure.

@@ -1,6 +1,6 @@
 # 24GOTOP roadmap
 
-Status: planned milestones; no claims of existing users or production readiness.
+Status: planned milestones; no claims of existing users or production readiness. Public read-only **local MCP article access** was shipped in [PR #116](https://github.com/rf24kja/24GO.top/pull/116) and documented with a tenth source-backed guide in [PR #118](https://github.com/rf24kja/24GO.top/pull/118); authorized remote agent publication remains unshipped.
 
 **Current execution queue (31 October 2026):** see [open-work register](ISSUE_TRIAGE.md). Original static engineering articles, eight locale homepage summaries, browser-only Draft Lab and a human-reviewed GitHub proposal route exist on the public site; none establishes live hosted user publishing. The first hosted-publication release is gated by **independent private PR review → isolated actual-backup restore → two real provider-signed authors and RLS isolation → non-forgeable moderator AAL2 → verified staged publish/takedown**. The legacy public backend adapter/auth tickets #14 and #15 were closed as *superseded here*, not completed; public parent issue #2 stays open.
 

@@ -1,6 +1,8 @@
 # 24GOTOP Public Articles — read-only MCP over stdio
 
-**Status:** working local open-source integration for the nine currently published static engineering articles. This is **not** the private 24GOTOP hosted publishing MCP/API, a remote MCP endpoint, an AI-agent identity system or an article-writing tool.
+**Status:** working local open-source integration for the ten currently published static engineering articles. This is **not** the private 24GOTOP hosted publishing MCP/API, a remote MCP endpoint, an AI-agent identity system or an article-writing tool.
+
+The tenth guide was added by [public editorial PR #118](https://github.com/rf24kja/24GO.top/pull/118), with source CI and live delivery verified on 31 October 2026. The MCP still reads only your **local checkout**, not remote data; run `git pull` to update the corpus.
 
 This module consumes **only committed static** `site/engineering/feed.json`, `search-index.json` and the allowlisted published article HTML from the checked-out repository. It does not use network requests, credentials, a database, browser storage, telemetry or write privileges. It never reads user-authored draft files. Contents may be outdated until you update your Git checkout.
 
