@@ -38,8 +38,10 @@ require 'src="./visuals/knowledge-network.svg"' "$tmp/home.html" 'visible hero i
 require 'src="./visuals/24gotop-showcase.svg"' "$tmp/home.html" 'visible full-width product illustration reference'
 download "$origin/visuals/knowledge-network.svg" "$tmp/network.svg"
 download "$origin/visuals/24gotop-showcase.svg" "$tmp/showcase.svg"
-require '24GOTOP — connected knowledge, human first' "$tmp/network.svg" 'illustrated knowledge map'
-require 'Original engineering notes. Readable code.' "$tmp/showcase.svg" 'public visual poster content'
+require '24GOTOP — Knowledge worth verifying' "$tmp/network.svg" 'current illustrated knowledge map title'
+require 'Agent Arena: PLANNED' "$tmp/network.svg" 'planned agent disclosure inside the live hero'
+require 'Articles and local drafts available' "$tmp/showcase.svg" 'public visual poster content'
+require 'Hosted community publishing: pre-launch' "$tmp/showcase.svg" 'current hosted prelaunch disclosure'
 require 'PRE-LAUNCH' "$tmp/showcase.svg" 'honest hosted product status'
 # Each localized homepage must actually be delivered by canonical HTTPS,
 # with the right self canonical and language-aware editor link. No auth writes.
@@ -52,6 +54,19 @@ for locale in ru th es fr de pt zh; do
   require "rel=\"canonical\" href=\"$origin/$locale/\"" "$tmp/home-$locale.html" "$locale canonical homepage"
   require "href=\"../draft-lab.html?ui=$locale\"" "$tmp/home-$locale.html" "$locale editor language transition"
   require 'OPEN SOURCE · PRE-LAUNCH' "$tmp/home-$locale.html" "$locale release disclosure"
+  require "src=\"../visuals/knowledge-network.$locale.svg\"" "$tmp/home-$locale.html" "$locale matching hero artwork"
+  require "src=\"../visuals/24gotop-showcase.$locale.svg\"" "$tmp/home-$locale.html" "$locale matching product-map artwork"
+  download "$origin/visuals/knowledge-network.$locale.svg" "$tmp/network-$locale.svg"
+  case "$locale" in
+    ru) translated='Статьи и код' ;;
+    th) translated='บทความ' ;;
+    es) translated='Artículos técnicos' ;;
+    fr) translated='Articles techniques' ;;
+    de) translated='Technische Artikel' ;;
+    pt) translated='Artigos técnicos' ;;
+    zh) translated='原创技术文章' ;;
+  esac
+  require "$translated" "$tmp/network-$locale.svg" "$locale translated live SVG content"
 done
 require 'hreflang="ru" href="https://24go.top/ru/"' "$tmp/home.html" 'language alternate from English homepage'
 require "const requestedUi=new URL(window.location?.href" "$tmp/editor.js" 'allowlisted editor interface deep link'
@@ -111,6 +126,15 @@ require '<h2 id="latest-heading">Recent articles</h2>' "$tmp/articles.html" 'sec
 require '<h3><a href="./multilingual-markdown-editor-without-losing-drafts.html">' "$tmp/articles.html" 'nested article card heading'
 download "$origin/engineering/feed.xml" "$tmp/feed.xml"
 download "$origin/sitemap.xml" "$tmp/sitemap.xml"
+download "$origin/engineering/feed.json" "$tmp/feed.json"
+download "$origin/engineering/read-only-mcp-server-for-technical-articles.html" "$tmp/mcp-article.html"
+require 'https://github.com/rf24kja/24GO.top/pull/116' "$tmp/mcp-article.html" 'MCP article source-backed PR'
+require 'rel="canonical" href="https://24go.top/engineering/read-only-mcp-server-for-technical-articles.html"' "$tmp/mcp-article.html" 'MCP article canonical'
+require 'href="./read-only-mcp-server-for-technical-articles.html"' "$tmp/articles.html" 'MCP guide in live archive'
+require 'read-only-mcp-server-for-technical-articles.html' "$tmp/search-index.json" 'MCP guide in public full-text index'
+require 'read-only-mcp-server-for-technical-articles.html' "$tmp/feed.json" 'MCP guide in JSON Feed'
+require '<link>https://24go.top/engineering/read-only-mcp-server-for-technical-articles.html</link>' "$tmp/feed.xml" 'MCP guide in RSS'
+require '<loc>https://24go.top/engineering/read-only-mcp-server-for-technical-articles.html</loc>' "$tmp/sitemap.xml" 'MCP guide in sitemap'
 require '<loc>https://24go.top/contribute.html</loc>' "$tmp/sitemap.xml" 'public proposal page sitemap'
 download "$origin/robots.txt" "$tmp/robots.txt"
 require 'Sitemap: https://24go.top/sitemap.xml' "$tmp/robots.txt" 'canonical sitemap discovery'

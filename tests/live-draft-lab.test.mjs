@@ -34,6 +34,24 @@ test('release smoke checks actual new engineering content and search-discovery a
  ])assert.ok(smoke.includes(marker),'missing SEO smoke evidence: '+marker);
  assert.doesNotMatch(smoke,/\bPOST\b|Authorization:|service_role|secret_|PUBLISH_API_KEY/);
 });
+test('release verifier checks current SVG design, every translated locale and newly shipped article',()=>{
+ for(const label of [
+  '24GOTOP — Knowledge worth verifying',
+  'Agent Arena: PLANNED',
+  'Articles and local drafts available',
+  'Hosted community publishing: pre-launch',
+  'matching hero artwork',
+  'matching product-map artwork',
+  'translated live SVG content',
+  'MCP guide in public full-text index',
+  'MCP guide in JSON Feed',
+  'MCP guide in RSS',
+  'MCP guide in sitemap'
+ ])assert.ok(smoke.includes(label),'missing live release contract: '+label);
+ assert.ok(!smoke.includes('Original engineering notes. Readable code.'),'must not assert removed SVG lettering');
+ assert.ok(!smoke.includes('24GOTOP — connected knowledge, human first'),'must not assert removed SVG title');
+});
+
 test('read-only workflow runs only after Pages delivery or explicit manual dispatch',()=>{
   assert.doesNotMatch(workflow,/^  push:/m,'a push-triggered smoke would race the Pages deploy');
   assert.match(workflow,/workflow_run:/);
