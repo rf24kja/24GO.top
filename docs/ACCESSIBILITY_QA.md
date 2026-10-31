@@ -97,3 +97,7 @@ The redesigned `site/index.html` loads local `landing.css` and `landing.js`. Aut
 6. Verify the primary CTA opens **real engineering notes**, secondary CTA the existing browser-only Draft Lab, and the website never implies live user submissions or authenticated agent access.
 
 Record device/browser/viewport screenshots **without account secrets** in [Issue #7](https://github.com/rf24kja/24GO.top/issues/7). GitHub CI, passing fetch probes, and visual appearance do **not** independently prove accessibility conformance.
+
+## Original-source citation integrity — local reader (2026-10-31)
+
+The local-only reader now rejects C0 controls/DEL and leading/trailing whitespace in source URLs **before** WHATWG `URL` parsing can silently alter the citation. It caps the canonical serialized URL after Unicode percent-encoding to 2,000 characters, in addition to the existing raw input limit. Rejected links do not remove or alter article text. Synthetic reader-model regressions cover newlines, tabs, carriage returns, NUL, DEL, surrounding spaces and long serialized Unicode URLs. This is source-level local prototype hardening, not actual browser or deployed publishing verification. Rollback: revert the focused source/test/docs PR; no migration, DNS or production change.
