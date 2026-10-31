@@ -53,3 +53,9 @@ The static Draft Lab now rejects source URL values containing raw control charac
 ## Test & rollback
 
 Node CI covers round-tripping every locale/category, previously exported files, CRLF/BOM, malicious URL data, oversized files and metadata tampering. Manual real-browser file picker, download, focus and screen-reader tests remain necessary. Revert the dedicated Import PR to remove this functionality; no database or production data migration is involved.
+
+## 2026-11-01 — Numbered authoring steps and approximate multilingual words
+
+The experimental browser editor now offers **Numbered list**, converting a selection or caret placeholder into plain `1. …` Markdown, with the existing restricted semantic ordered-list preview. The independent word meter uses browser `Intl.Segmenter` for locale-aware count, including Thai and Chinese; on older browsers its Unicode-regex fallback is an estimate and can undercount unspaced languages. It never changes draft text, doesn't authorize publication, doesn't affect export/import schema, and is not a minimum word requirement. New UI labels are localized into EN/RU/TH/ES/FR/DE/PT/ZH; real native-speaker review remains outstanding.
+
+**Manual acceptance pending:** verify text selection and toolbar keyboard focus, exact numbered markdown, 320px mobile wrapping, long Thai/Chinese paragraphs, light/dark contrast, and download → reopen. Restore a prior static source-only commit to roll back. No cloud storage, secret, server or paid integration change.

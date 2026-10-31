@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {formatDraftSelection} from '../site/draft-lab-logic.js';
+import {formatDraftSelection,countDraftWords} from '../site/draft-lab-logic.js';
 import {parsePreviewBlocks} from '../site/draft-lab-preview.js';
 function apply(value,start,end,action){
  const edit=formatDraftSelection(value,start,end,action);
@@ -78,4 +78,36 @@ test('selected and placeholder inline formatting works without a rich-text edito
  assert.throws(()=>apply('a\nb',0,3,'bold'),TypeError);
  assert.throws(()=>apply('hello*',0,6,'italic'),TypeError);
  assert.throws(()=>apply('a`b',0,3,'inlineCode'),TypeError);
+});
+
+
+test('numbered Markdown formatter creates readable multi-line article steps',()=>{
+ const source='Prepare database\nValidate signed JWT\nPublish 中文 article';
+ const {value}=apply(source,0,source.length,'orderedList');
+ assert.equal(value,'1. Prepare database\n2. Validate signed JWT\n3. Publish 中文 article');
+ assert.deepEqual(parsePreviewBlocks(value),[{
+  type:'list',ordered:true,
+  items:['Prepare database','Validate signed JWT','Publish 中文 article']
+ }]);
+ const empty=apply('',0,0,'orderedList');
+ assert.equal(empty.value,'1. List item');
+ assert.equal(empty.value.slice(empty.edit.selectionStart,empty.edit.selectionEnd),'List item');
+ assert.throws(()=>formatDraftSelection('x'.repeat(12000),12000,12000,'orderedList'),RangeError);
+});
+
+test('word meter counts separated and unspaced writing without mutating the author article',()=>{
+ assert.equal(countDraftWords(''),0);
+ assert.equal(countDraftWords('\n  \t'),0);
+ assert.equal(countDraftWords('PostgreSQL 17 builds.','en'),3);
+ assert.equal(countDraftWords('Безопасная публикация статей','ru'),3);
+ if(typeof Intl.Segmenter==='function'){
+  assert.equal(countDraftWords('中文技术文章','zh'),3);
+  assert.ok(countDraftWords('การเผยแพร่บทความ','th')>=2);
+ }
+ const markdown='## Stable Markdown\n\n- Source: https://example.org';
+ assert.ok(countDraftWords(markdown,'en')>=3);
+ assert.equal(markdown,'## Stable Markdown\n\n- Source: https://example.org');
+ assert.equal(countDraftWords('two words','unexpected'),2);
+ assert.throws(()=>countDraftWords(null),TypeError);
+ assert.throws(()=>countDraftWords('x'.repeat(12001)),RangeError);
 });

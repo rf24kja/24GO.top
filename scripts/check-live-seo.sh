@@ -96,6 +96,11 @@ fi
 
 probe '/robots.txt' robots 'Sitemap: https://24go.top/sitemap.xml'
 probe '/sitemap.xml' sitemap '<loc>https://24go.top/engineering/'
+# Verify actual deployed authoring controls, not only a green source build.
+probe '/draft-lab.html' draftlab 'id="formatOrderedList"'
+probe '/draft-lab.js' draftlab_js 'countDraftWords(body.value,locale.value)'
+probe '/draft-lab-logic.js' draftlab_logic 'export function countDraftWords'
+probe '/draft-lab-i18n.js' draftlab_i18n "orderedList:"
 probe '/engineering/' index '<h1>Engineering notes</h1>'
 # Curated, JavaScript-free topical reading paths must ship as actual HTML.
 for topic in security writing infrastructure publishing; do

@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { runInNewContext } from 'node:vm';
 import {
   safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent,
-  parseDraftFile, readDraftFileStrict, MAX_DRAFT_FILE_BYTES, hasUnexportedChanges, formatDraftSelection, createDraftImportGate, invalidDraftField
+  parseDraftFile, readDraftFileStrict, MAX_DRAFT_FILE_BYTES, hasUnexportedChanges, formatDraftSelection, countDraftWords, createDraftImportGate, invalidDraftField
 } from '../site/draft-lab-logic.js';
 import {uiText,applyUiLanguage} from '../site/draft-lab-i18n.js';
 import {buildArticleProposalUrl} from '../site/draft-lab-proposal.js';
@@ -27,9 +27,9 @@ const sample = {
 function build({uiHref='https://24go.top/draft-lab.html'}={}) {
   const ids = [
     'postTitle','postBody','postLocale','postCategory','postSource','formStatus',
-    'previewHeading','previewBody','previewLocale','previewCategory','bodyCount',
+    'previewHeading','previewBody','previewLocale','previewCategory','bodyCount','bodyWordCount',
     'previewSource','draftSafety','articleOutline','articleOutlineSection','downloadDraft','copyDraft','clearDraft','importDraft','importDraftFile','draftForm',
-    'formatBold','formatItalic','formatInlineCode','formatHeading','formatList','formatQuote','formatCode','formatTable','formatLink','uiLocale','draftDropZone','homeBrandLink','homeNavLink','proposeDraft',
+    'formatBold','formatItalic','formatInlineCode','formatHeading','formatList','formatOrderedList','formatQuote','formatCode','formatTable','formatLink','uiLocale','draftDropZone','homeBrandLink','homeNavLink','proposeDraft',
     'saveBrowserDraft','savedBrowserDraft','openBrowserDraft','deleteBrowserDraft','vaultCount','exportDraftLibrary','restoreDraftLibrary','draftLibraryFile'
   ];
   const elements = Object.fromEntries(ids.map(id => {
@@ -74,7 +74,7 @@ function build({uiHref='https://24go.top/draft-lab.html'}={}) {
   runInNewContext(source, {
     document, window, navigator:{}, URL, Blob, setTimeout,
     safeSourceUrl,validateDraft,formatDraft,draftFilename,hasDraftContent,
-    parseDraftFile,readDraftFileStrict,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,createDraftImportGate,invalidDraftField,
+    parseDraftFile,readDraftFileStrict,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,countDraftWords,createDraftImportGate,invalidDraftField,
     uiText,applyUiLanguage,buildArticleProposalUrl,
     createDraftVault,MAX_SAVED_DRAFTS,MAX_VAULT_BACKUP_BYTES,VAULT_KEY,TextDecoder,
     renderMarkdownPreview(container, text) { container.textContent = text; },
@@ -773,4 +773,20 @@ test('storage changes never invalidate a separate unchanged local Markdown file 
  app.storageEvent();
  assert.equal(app.elements.postBody.value,sample.body);
  assert.equal(app.beforeUnload().prevented,false);
+});
+
+test('numbered list button and multilingual word meter update locally without storage',()=>{
+ const app=build();
+ const body=app.elements.postBody;
+ body.value='Prepare PostgreSQL\nVerify signed JWT\nPublish 中文';
+ body.selectionStart=0;
+ body.selectionEnd=body.value.length;
+ app.elements.postLocale.value='zh';
+ app.elements.formatOrderedList.listeners.click();
+ assert.equal(body.value,'1. Prepare PostgreSQL\n2. Verify signed JWT\n3. Publish 中文');
+ assert.ok(app.elements.bodyWordCount.textContent.startsWith('Approx. words: '));
+ assert.equal(app.elements.bodyWordCount.getAttribute('aria-live'),null,
+  'fake DOM has no attributes; real static HTML explicitly sets aria-live=off');
+ assert.equal(app.beforeUnload().prevented,true);
+ assert.equal(app.localStorage.getItem(VAULT_KEY),null,'toolbar does not automatically store drafts');
 });

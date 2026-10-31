@@ -3,6 +3,23 @@
 export const LOCALES = Object.freeze(['en','ru','th','es','fr','de','pt','zh']);
 export const CATEGORIES = Object.freeze(['news','models','tools','guides']);
 
+/** Approximate private-on-device word count, with Thai/CJK segmentation. */
+export function countDraftWords(value,language='en'){
+ if(typeof value!=='string')throw new TypeError('Article text must be a string');
+ if(value.length>12000)throw new RangeError('Article exceeds 12,000 characters');
+ if(!value.trim())return 0;
+ const locale=LOCALES.includes(language)?language:'en';
+ if(typeof Intl.Segmenter==='function'){
+  let count=0;
+  for(const word of new Intl.Segmenter(locale,{granularity:'word'}).segment(value)){
+   if(word.isWordLike)count++;
+  }
+  return count;
+ }
+ // Older browsers: less accurate for Thai and Chinese; only a display hint.
+ return (value.match(/[\p{L}\p{N}]+/gu)||[]).length;
+}
+
 export function safeSourceUrl(input) {
   if (typeof input !== 'string' || input.length > 2000) return null;
   // WHATWG URL parsing strips C0 controls and surrounding whitespace:
@@ -47,10 +64,11 @@ export function formatDraftSelection(value,start,end,action){
  }else if(action==='heading'){
    if(/[\r\n]/.test(selected))throw new TypeError('Single-line heading only');
    content ||= 'Section heading';replacement='## '+content;innerOffset=3;
- }else if(action==='list'||action==='quote'){
-   content ||= action==='list'?'List item':'Quote';
-   const prefix=action==='list'?'- ':'> ';
-   replacement=content.split(/\r?\n/).map(line=>prefix+line).join('\n');
+ }else if(action==='list'||action==='orderedList'||action==='quote'){
+   content ||= action==='quote'?'Quote':'List item';
+   const prefix=action==='quote'?'> ':action==='list'?'- ':'1. ';
+   replacement=content.split(/\r?\n/).map((line,index)=>
+    action==='orderedList'?(index+1)+'. '+line:prefix+line).join('\n');
    innerOffset=prefix.length;
  }else if(action==='table'){
    if(selected.length>120||/[\r\n|]/.test(selected))
