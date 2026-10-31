@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {rankPublishedArticles,slicePublishedText}
  from '../packages/mcp/discovery.mjs';
+import {validatePublishedCorpus} from '../packages/mcp/stdio.mjs';
+import {readFileSync} from 'node:fs';
 
 const sample=[
  {url:'https://24go.top/engineering/security-overview.html',title:'Security overview',
@@ -77,4 +79,28 @@ test('excerpt rejects unbounded or invalid ranges',()=>{
   ()=>slicePublishedText('good text',{maxChars:value}),RangeError);
  assert.throws(()=>slicePublishedText('hello',{offset:5}),RangeError);
  assert.throws(()=>slicePublishedText('x'.repeat(28001)),TypeError);
+});
+
+
+const read=name=>JSON.parse(readFileSync(new URL('../site/engineering/'+name,import.meta.url),'utf8'));
+const goodFeed=read('feed.json'),goodIndex=read('search-index.json');
+test('pure validated corpus only accepts exact, approved public feed-index pairing',()=>{
+ const approved=validatePublishedCorpus(goodFeed,goodIndex);
+ assert.equal(approved.length,goodFeed.items.length);
+ assert.ok(approved.every(x=>x.url.startsWith('https://24go.top/engineering/')));
+ assert.ok(approved.every(x=>x.text.length>0));
+ const corrupt=[
+  [{...goodFeed,version:'bad'},goodIndex],
+  [{...goodFeed,feed_url:'https://attacker.invalid/feed.json'},goodIndex],
+  [{...goodFeed,items:goodFeed.items.map((x,i)=>i===0?{...x,id:'wrong'}:x)},goodIndex],
+  [{...goodFeed,items:goodFeed.items.map((x,i)=>i===0?{...x,date_published:'bad date'}:x)},goodIndex],
+  [{...goodFeed,items:goodFeed.items.map((x,i)=>i===0?{...x,url:'file:///etc/passwd'}:x)},goodIndex],
+  [goodFeed,{...goodIndex,articles:goodIndex.articles.slice(1)}],
+  [goodFeed,{...goodIndex,articles:goodIndex.articles.map((x,i)=>i===0?{...x,file:'../../private.txt'}:x)}],
+  [goodFeed,{...goodIndex,articles:goodIndex.articles.map((x,i)=>i===0?{...x,text:'x'.repeat(24001)}:x)}],
+  [goodFeed,{...goodIndex,articles:[...goodIndex.articles.slice(0,-1),goodIndex.articles[0]]}]
+ ];
+ for(const [feed,index] of corrupt){
+  assert.throws(()=>validatePublishedCorpus(feed,index),Error);
+ }
 });
