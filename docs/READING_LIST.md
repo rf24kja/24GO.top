@@ -21,3 +21,13 @@ The script refuses unknown, duplicate or noncanonical article identifiers. On ma
 Check desktop and 320/390px mobile widths, dark/light and high-contrast styles, Tab/Space/Enter interaction, VoiceOver/NVDA/TalkBack button announcements, private-browsing storage errors, cross-tab updates, corrupted stored data, browser refresh and explicit clear confirmation. Verify `release.json` SHA/run ID and the GitHub-hosted HTTPS probe separately; passing source tests is not confirmation of CDN delivery.
 
 Rollback: revert the public static-site PR, then redeploy Pages. No database migration or private hosted Core changes are required. The manually saved public link preference can be cleared via the interface before rollback or the browser's site-data settings.
+
+## Portable reader library: on-device search, backup and restore
+
+The saved-links panel can now filter titles locally without touching the archive's original topic/text search, copy just the shown saved articles as canonical Markdown links, and remove any item without returning to its card. Import and export are **explicit** actions; no downloads, storage writes or uploads run on page load.
+
+**Export** downloads `24gotop-public-reading-list.json` with `kind`, `version` and the ordered list of canonical published article filenames. The file is **not encrypted**; keep it private on shared devices. **Import** validates the `.json` filename, strict UTF-8, file byte count (12–16,384 bytes), version, backup marker, filename allowlist, uniqueness and capacity; it prompts before merging with the **current** browser list. If any imported item does not match the current reviewed public archive, the **entire import is rejected**. It does not fetch unfamiliar URLs or overwrite existing preferences.
+
+A local saved-title search is only a display filter; exported backups contain the **entire** approved saved list, while **Copy shown links** copies only the currently visible saved subset. Each saved row supports explicit removal. Cross-tab updates re-render without triggering another storage write. The original unfiltered article archive remains accessible even if saved storage is invalid or blocked.
+
+**Manual QA outstanding:** move a backup between two browsers, test corrupt/oversized/invalid-file inputs, cancelling confirmations, empty and filtered copy, failing clipboard/download, private storage quota, tab conflicts, mobile widths and keyboard/screen readers. Feature presence is covered in the Pages HTTPS audit, but exact deployed commit requires the independent release receipt to match the run. Rollback is one public static-source revert; previously saved v1 links remain readable by the earlier version.
