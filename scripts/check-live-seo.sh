@@ -57,6 +57,14 @@ fi
 probe '/robots.txt' robots 'Sitemap: https://24go.top/sitemap.xml'
 probe '/sitemap.xml' sitemap '<loc>https://24go.top/engineering/'
 probe '/engineering/' index '<h1>Engineering notes</h1>'
+# Curated, JavaScript-free topical reading paths must ship as actual HTML.
+for topic in security writing infrastructure publishing; do
+  probe "/engineering/topics/$topic.html" "topic-$topic" 'class="topic-guide__steps"'
+  if ! grep -Fq -- "href=\"./topics/$topic.html\"" "$tmp/index"; then
+    echo "::error::Engineering archive does not expose the released topic: $topic"
+    failures=$((failures+1))
+  fi
+done
 # The public archive's UX is a client-side enhancement; verify its actual
 # deployed, same-origin JavaScript instead of mistaking source CI for delivery.
 probe '/engineering/search.js' archive_search 'words.every(word=>entry.searchable.includes(word)'

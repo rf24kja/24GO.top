@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1411">
+<meta name="description" content="Practical, source-backed lessons on browser safety, API credentials, and read-only AI integrations.">
+<meta property="og:type" content="website"><meta property="og:title" content="Security engineering — 24GOTOP">
+<meta property="og:description" content="Practical, source-backed lessons on browser safety, API credentials, and read-only AI integrations.">
+<meta property="og:url" content="https://24go.top/engineering/topics/security.html">
+<title>Security engineering — Engineering guides | 24GOTOP</title>
+<link rel="canonical" href="https://24go.top/engineering/topics/security.html">
+<link rel="stylesheet" href="../notes.css"><link rel="stylesheet" href="../../interior.css">
+</head><body>
+<a class="skip" href="#main-content">Skip to reading path</a>
+<header class="interior-header"><nav class="wrap interior-nav" aria-label="Main navigation">
+<a class="interior-brand" href="../../" aria-label="24GOTOP home">24GO<span>TOP</span><span class="interior-brand__dot" aria-hidden="true"></span></a>
+<div class="interior-links"><a href="../../">Home</a><a href="../">Articles</a><a href="../../draft-lab.html">Draft Lab</a><a href="../../progress.html">Development</a><a href="https://github.com/rf24kja/24GO.top">GitHub ↗</a></div>
+</nav></header>
+<main class="wrap" id="main-content" tabindex="-1">
+<nav class="topic-breadcrumb" aria-label="Breadcrumb"><a href="../">Engineering notes</a><span aria-hidden="true"> / </span><span aria-current="page">Security engineering</span></nav>
+<span class="eyebrow">Original source-backed technical notes · Curated path</span>
+<h1>Security engineering</h1>
+<p class="lead">A reading path for developers securing the edges of an AI-native knowledge product: external links, token recipients, and agent tool boundaries.</p>
+<div class="note" role="note"><strong>Pre-launch transparency:</strong> these links lead to actual published engineering articles, not user submissions or a launched hosted community. There is no automated agent publishing in this collection.</div>
+<section class="topic-guide" aria-labelledby="reading-heading">
+<h2 id="reading-heading">Read these notes in order</h2>
+<p>Start where untrusted text meets browser DOM, then follow a credential across a client boundary, and finish by restricting what an AI integration can do.</p>
+<ol class="topic-guide__steps">
+<li><span class="topic-order">01</span><div><h3><a href="../safe-markdown-citation-links-without-xss.html">Render citations without executing author HTML</a></h3><p>Explore trusted DOM creation, URL schemes, and adversarial validation of Markdown links.</p></div></li>
+<li><span class="topic-order">02</span><div><h3><a href="../javascript-sdk-api-key-leak-prevention.html">Keep development API keys away from remote hosts</a></h3><p>Review why HTTPS alone cannot decide who should receive an access token, and what loopback-only boundaries can enforce.</p></div></li>
+<li><span class="topic-order">03</span><div><h3><a href="../read-only-mcp-server-for-technical-articles.html">Expose articles to agents without granting writes</a></h3><p>Read the design and real stdio tests of an allowlisted, local, read-only MCP article server.</p></div></li>
+</ol>
+</section>
+<section class="topic-questions" aria-labelledby="questions-heading">
+<h2 id="questions-heading">What to check in your own project</h2>
+<ul><li>Could author-supplied markup become executable HTML or a dangerous link?</li>
+<li>Will a credential ever travel to a host it was not intended for?</li>
+<li>Can an AI tool enumerate, modify or publish resources outside its explicit read-only scope?</li></ul>
+<p>For persistence and ownership guarantees, continue with the publishing and infrastructure reading paths.</p>
+</section>
+<nav class="topic-explore" aria-label="Other reading paths">
+<h2>Explore another engineering path</h2>
+<ul><li><a href="./writing.html">Writing and editing UX</a></li><li><a href="./infrastructure.html">Infrastructure and release verification</a></li><li><a href="./publishing.html">Publication and moderation lifecycle</a></li></ul>
+<p><a href="../">All original engineering articles</a> · <a href="../feed.xml">RSS</a> · <a href="https://github.com/rf24kja/24GO.top">Inspect the source</a></p>
+</nav>
+</main><footer class="interior-footer"><div class="wrap">24GOTOP · Open engineering notes · <a href="../">All articles</a></div></footer>
+</body></html>

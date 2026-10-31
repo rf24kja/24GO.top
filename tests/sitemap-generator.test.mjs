@@ -17,9 +17,11 @@ test('checked-in sitemap matches source-validated article inventory',()=>{
  const xml=renderSitemap();
  assert.equal(page('sitemap.xml'),xml);
  const urls=[...xml.matchAll(/<url><loc>([^<]+)<\/loc><\/url>/g)].map(x=>x[1]);
- assert.equal(urls.length,11+items.length);
+ assert.equal(urls.length,15+items.length);
  assert.equal(new Set(urls).size,urls.length);
- assert.deepEqual(urls.slice(11),items.map(x=>x.url));
+ assert.deepEqual(urls.slice(15),items.map(x=>x.url));
+ for(const topic of ['security','writing','infrastructure','publishing'])
+  assert.ok(urls.includes('https://24go.top/engineering/topics/'+topic+'.html'));
  assert.ok(!xml.includes('draft-lab.html'));
  assert.ok(!xml.includes('<lastmod>'));
 });

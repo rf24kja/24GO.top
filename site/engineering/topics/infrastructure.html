@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1411">
+<meta name="description" content="Source-backed techniques for least-privilege PostgreSQL tests and reliable GitHub Pages deployment checks.">
+<meta property="og:type" content="website"><meta property="og:title" content="Infrastructure and release verification — 24GOTOP">
+<meta property="og:description" content="Source-backed techniques for least-privilege PostgreSQL tests and reliable GitHub Pages deployment checks.">
+<meta property="og:url" content="https://24go.top/engineering/topics/infrastructure.html">
+<title>Infrastructure and release verification — Engineering guides | 24GOTOP</title>
+<link rel="canonical" href="https://24go.top/engineering/topics/infrastructure.html">
+<link rel="stylesheet" href="../notes.css"><link rel="stylesheet" href="../../interior.css">
+</head><body>
+<a class="skip" href="#main-content">Skip to reading path</a>
+<header class="interior-header"><nav class="wrap interior-nav" aria-label="Main navigation">
+<a class="interior-brand" href="../../" aria-label="24GOTOP home">24GO<span>TOP</span><span class="interior-brand__dot" aria-hidden="true"></span></a>
+<div class="interior-links"><a href="../../">Home</a><a href="../">Articles</a><a href="../../draft-lab.html">Draft Lab</a><a href="../../progress.html">Development</a><a href="https://github.com/rf24kja/24GO.top">GitHub ↗</a></div>
+</nav></header>
+<main class="wrap" id="main-content" tabindex="-1">
+<nav class="topic-breadcrumb" aria-label="Breadcrumb"><a href="../">Engineering notes</a><span aria-hidden="true"> / </span><span aria-current="page">Infrastructure and release verification</span></nav>
+<span class="eyebrow">Original source-backed technical notes · Curated path</span>
+<h1>Infrastructure and release verification</h1>
+<p class="lead">Release engineering should prove the effect of an operation, not just the exit status of the command that requested it.</p>
+<div class="note" role="note"><strong>Pre-launch transparency:</strong> these links lead to actual published engineering articles, not user submissions or a launched hosted community. There is no automated agent publishing in this collection.</div>
+<section class="topic-guide" aria-labelledby="reading-heading">
+<h2 id="reading-heading">Read these notes in order</h2>
+<p>First distinguish database statement success from permissions needed to read a returned row. Then apply the same evidence-based thinking to a CDN deployment that may still be serving an old artifact.</p>
+<ol class="topic-guide__steps">
+<li><span class="topic-order">01</span><div><h3><a href="../postgres-insert-returning-least-privilege.html">Avoid broad SELECT grants after INSERT RETURNING failures</a></h3><p>Examine the permissions a PostgreSQL operation truly requires and how a disposable database can expose accidental privilege expansion.</p></div></li>
+<li><span class="topic-order">02</span><div><h3><a href="../verify-github-pages-deploy-not-just-ci.html">Verify the public URL after deployment, not merely CI</a></h3><p>Follow the real release timing issue and the read-only HTTPS smoke check that tests a published artifact.</p></div></li>
+</ol>
+</section>
+<section class="topic-questions" aria-labelledby="questions-heading">
+<h2 id="questions-heading">What to check in your own project</h2>
+<ul><li>Are database grants narrower than the operation they were introduced to support?</li>
+<li>Does your test verify persistent state rather than treating a single HTTP status as proof?</li>
+<li>Did the live URL serve the new version after deployment completed?</li></ul>
+<p>For a higher-level publication lifecycle, see the publishing reading path.</p>
+</section>
+<nav class="topic-explore" aria-label="Other reading paths">
+<h2>Explore another engineering path</h2>
+<ul><li><a href="./security.html">Security engineering</a></li><li><a href="./writing.html">Writing and editing UX</a></li><li><a href="./publishing.html">Publication and moderation lifecycle</a></li></ul>
+<p><a href="../">All original engineering articles</a> · <a href="../feed.xml">RSS</a> · <a href="https://github.com/rf24kja/24GO.top">Inspect the source</a></p>
+</nav>
+</main><footer class="interior-footer"><div class="wrap">24GOTOP · Open engineering notes · <a href="../">All articles</a></div></footer>
+</body></html>

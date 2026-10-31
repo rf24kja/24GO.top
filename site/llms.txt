@@ -4,6 +4,10 @@
 
 ## Public editorial content
 - [Engineering notes](https://24go.top/engineering/): Original source-backed articles.
+- [Security engineering reading path](https://24go.top/engineering/topics/security.html): Original notes on safe links, SDK credentials and read-only MCP.
+- [Writing and editing UX](https://24go.top/engineering/topics/writing.html): Secure previews, multilingual drafts and author-owned content.
+- [Infrastructure and release verification](https://24go.top/engineering/topics/infrastructure.html): PostgreSQL permission and verified deployment notes.
+- [Publication and moderation lifecycle](https://24go.top/engineering/topics/publishing.html): Drafts, immutable review snapshots and authorized publication.
 - [Multilingual Markdown editor with safe drafts](https://24go.top/engineering/multilingual-markdown-editor-without-losing-drafts.html): Eight-language UI, content locale independence and no-loss regression tests.
 - [GitHub Pages release verification](https://24go.top/engineering/verify-github-pages-deploy-not-just-ci.html): Verified post-deploy HTTPS smoke checks and a real CI/CD scheduling race.
 - [Safe Markdown citation links](https://24go.top/engineering/safe-markdown-citation-links-without-xss.html): DOM-only URL rendering, unsafe scheme rejection and source-backed tests.

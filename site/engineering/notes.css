@@ -66,3 +66,33 @@ header{background:rgba(249,252,249,.9)}a:hover,.navlinks a:hover{color:#07593f}.
 .related-reading p{font-size:13px;color:var(--muted);margin:16px 0 0}
 .related-reading p a{font-weight:700;text-underline-offset:3px}
 @media(max-width:700px){.related-reading{padding:19px 20px;margin-top:30px}}
+
+/* Static, crawlable editorial collections; no JavaScript or external asset. */
+.topic-index{margin:35px 0 39px}
+.topic-index h2{font-size:26px;margin:0 0 10px}
+.topic-index>p{max-width:760px;color:var(--muted);font-size:15px}
+.topic-index__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin-top:18px}
+.topic-index__grid a{display:flex;flex-direction:column;gap:6px;padding:18px 19px;border:1px solid var(--border);border-radius:12px;background:var(--panel);text-decoration:none}
+.topic-index__grid a:hover{border-color:var(--accent)}
+.topic-index__grid strong{color:var(--text);font-size:16px;line-height:1.35}
+.topic-index__grid span{color:var(--muted);font-size:13px;line-height:1.55}
+.topic-index__grid a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.topic-breadcrumb{font-size:14px;color:var(--muted);margin:0 0 25px}
+.topic-breadcrumb a{font-weight:700}
+.topic-guide,.topic-questions{max-width:790px}
+.topic-guide>p,.topic-questions>p{color:var(--muted)}
+.topic-guide__steps{list-style:none;counter-reset:none;padding:0;display:grid;gap:14px}
+.topic-guide__steps>li{display:flex;gap:15px;max-width:none;border:1px solid var(--border);border-radius:12px;padding:17px 20px;background:var(--panel);margin:0}
+.topic-guide__steps h3{font-size:19px;line-height:1.35;margin:1px 0 6px}
+.topic-guide__steps p{font-size:15px;color:var(--muted);margin:0}
+.topic-order{font-size:16px;letter-spacing:1px;color:var(--accent);font-weight:850;flex:none}
+.topic-questions ul{padding-left:24px}
+.topic-explore{margin:45px 0 0;border-top:1px solid var(--border);padding-top:12px}
+.topic-explore h2{font-size:23px;margin:14px 0}
+.topic-explore ul{display:flex;gap:10px 24px;flex-wrap:wrap;list-style:none;padding:0}
+.topic-explore ul li{margin:0}
+.topic-explore ul a{font-weight:700}
+.topic-explore p{font-size:14px;color:var(--muted)}
+@media(max-width:700px){.topic-index__grid{grid-template-columns:1fr}
+.topic-guide__steps>li{padding:15px 16px}
+.topic-explore ul{display:block}.topic-explore ul li{margin:8px 0}}

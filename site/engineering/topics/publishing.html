@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1411">
+<meta name="description" content="Understand why editable drafts, review submissions, and final public articles need distinct security boundaries.">
+<meta property="og:type" content="website"><meta property="og:title" content="Publication and moderation lifecycle — 24GOTOP">
+<meta property="og:description" content="Understand why editable drafts, review submissions, and final public articles need distinct security boundaries.">
+<meta property="og:url" content="https://24go.top/engineering/topics/publishing.html">
+<title>Publication and moderation lifecycle — Engineering guides | 24GOTOP</title>
+<link rel="canonical" href="https://24go.top/engineering/topics/publishing.html">
+<link rel="stylesheet" href="../notes.css"><link rel="stylesheet" href="../../interior.css">
+</head><body>
+<a class="skip" href="#main-content">Skip to reading path</a>
+<header class="interior-header"><nav class="wrap interior-nav" aria-label="Main navigation">
+<a class="interior-brand" href="../../" aria-label="24GOTOP home">24GO<span>TOP</span><span class="interior-brand__dot" aria-hidden="true"></span></a>
+<div class="interior-links"><a href="../../">Home</a><a href="../">Articles</a><a href="../../draft-lab.html">Draft Lab</a><a href="../../progress.html">Development</a><a href="https://github.com/rf24kja/24GO.top">GitHub ↗</a></div>
+</nav></header>
+<main class="wrap" id="main-content" tabindex="-1">
+<nav class="topic-breadcrumb" aria-label="Breadcrumb"><a href="../">Engineering notes</a><span aria-hidden="true"> / </span><span aria-current="page">Publication and moderation lifecycle</span></nav>
+<span class="eyebrow">Original source-backed technical notes · Curated path</span>
+<h1>Publication and moderation lifecycle</h1>
+<p class="lead">A pleasant writing screen is useful, but it is not evidence that identity verification, ownership, moderation and durable publishing are production-ready.</p>
+<div class="note" role="note"><strong>Pre-launch transparency:</strong> these links lead to actual published engineering articles, not user submissions or a launched hosted community. There is no automated agent publishing in this collection.</div>
+<section class="topic-guide" aria-labelledby="reading-heading">
+<h2 id="reading-heading">Read these notes in order</h2>
+<p>Read the product boundary first: a prototype can safely help an author draft offline without becoming a public writer. Then examine why a submitted revision is not yet a published article.</p>
+<ol class="topic-guide__steps">
+<li><span class="topic-order">01</span><div><h3><a href="../why-draft-lab-first.html">Build the writing experience before opening public writes</a></h3><p>See the source-backed rationale for a local Draft Lab, the limits of current OSS demos, and the specific security gates still missing.</p></div></li>
+<li><span class="topic-order">02</span><div><h3><a href="../submit-is-not-publish.html">Keep immutable review submissions separate from published URLs</a></h3><p>Study revision snapshots, idempotent review intake and moderator identity constraints before claiming public publication.</p></div></li>
+</ol>
+</section>
+<section class="topic-questions" aria-labelledby="questions-heading">
+<h2 id="questions-heading">What to check in your own project</h2>
+<ul><li>Can one signed author read or replace another author&#39;s draft or review snapshot?</li>
+<li>Is moderator action distinguishable from merely submitting content for review?</li>
+<li>Is a public canonical URL created only after a fully authorized, durable publication decision?</li></ul>
+<p>Propose an original article on GitHub for human review while hosted user publishing remains pre-launch.</p>
+</section>
+<nav class="topic-explore" aria-label="Other reading paths">
+<h2>Explore another engineering path</h2>
+<ul><li><a href="./security.html">Security engineering</a></li><li><a href="./writing.html">Writing and editing UX</a></li><li><a href="./infrastructure.html">Infrastructure and release verification</a></li></ul>
+<p><a href="../">All original engineering articles</a> · <a href="../feed.xml">RSS</a> · <a href="https://github.com/rf24kja/24GO.top">Inspect the source</a></p>
+</nav>
+</main><footer class="interior-footer"><div class="wrap">24GOTOP · Open engineering notes · <a href="../">All articles</a></div></footer>
+</body></html>

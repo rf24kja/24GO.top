@@ -1,5 +1,12 @@
 # Public crawlability and indexing — verified 2026-10-31
 
+## Source-backed editorial topic guides (31 October 2026)
+
+To help humans navigate ten verified original technical notes, four curated no-JavaScript reading paths are published at `/engineering/topics/{security,writing,infrastructure,publishing}.html`. Each is a real standalone page: unique purpose, recommended reading order, verification questions, pre-launch disclosure, clean canonical metadata and links to articles verified against the published RSS/Article JSON-LD feed and existing archive topics. They are linked visibly from the archive, described in the optional `llms.txt`, and included in `sitemap.xml` only through the explicit reviewed static URL list. The one-article discovery topic stays on the main archive rather than gaining a thin duplicate page. Four paths add four new canonical sitemap URLs; no user-generated content, fabricated dates, ratings or SearchAction are asserted.
+
+Maintenance: update or add a guide only when it has distinct original reader value and at least two genuine source-backed articles. After editorial review, run `npm run sitemap:write`, `npm run check`, `npm test`, inspect PR diff, deploy Pages and confirm a post-deployment real HTTPS audit. The external smoke now probes all four topic pages and their archive entry points as well as all sitemap canonicals. Search Console impressions, actual index coverage and AI citations remain **unverified** until measured. Rollback is a single public static revert plus Pages redeploy; no production migrations.
+
+
 ## Correct release ordering for live SEO verification (2026-10-31)
 
 The public internal-link release [#132](https://github.com/rf24kja/24GO.top/pull/132) demonstrated a genuine CDN race. A `push`-triggered SEO audit [#41208632019](https://github.com/rf24kja/24GO.top/actions/runs/41208632019) started while [Pages #41208631961](https://github.com/rf24kja/24GO.top/actions/runs/41208631961) was still deploying and correctly detected that the **old** public HTML lacked the newly required related-reading links. After Pages completed, the automatically triggered [SEO audit #41208664348](https://github.com/rf24kja/24GO.top/actions/runs/41208664348) **PASS** fetched the new public HTML; the separate Draft Lab smoke also passed. These outcomes are retained, not erased or relabeled as synthetic failures.

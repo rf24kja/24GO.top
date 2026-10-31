@@ -1,5 +1,10 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-31 — Four source-backed technical reading paths
+
+- Publish four manually curated, crawlable and accessible topic guides for Security, Writing UX, Infrastructure, and Publishing. Each has an original reading sequence, practical verification questions and links solely to already published canonical technical articles, with pre-launch disclosures. Link them from the archive and optional llms.txt; include four verified canonical routes in generated sitemap and the live HTTPS SEO checks. Do not create a thin fifth topic page until substantial original content exists. This improves reader navigation but does not establish search indexing or AI citations. No new backend, analytics, credentials or paid services.
+
+
 ## 2026-10-31 — Portable manual draft library backup and restore
 
 - Extend the browser-only Draft Lab with export of all eight opt-in locally saved drafts to an unencrypted JSON backup, plus explicit confirmed local restore into a **strictly empty** browser library. Validate format, UUIDs, timestamps, article fields, duplicates and byte limits before one atomic localStorage write; reject corrupt and unsafe files without deleting or changing existing drafts or the active editor. Add eight-language controls and privacy warnings, a compact regression suite and post-Pages HTTPS delivery assertions. No backend upload, analytics, autosave, credentials, changes to hosted Core or external services.
