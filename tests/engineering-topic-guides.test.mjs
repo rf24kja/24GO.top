@@ -50,3 +50,12 @@ test('collections are reachable through sitemap and author-curated discovery fil
  assert.ok(!xml.includes('/engineering/topics/discovery.html'),
   'do not generate a thin collection for only one published discovery note');
 });
+
+test('live audit distinguishes article leaves from nested topic guides',()=>{
+ const audit=readFileSync(new URL('../scripts/check-live-seo.sh',import.meta.url),'utf8');
+ assert.ok(audit.includes('if [[ "$route" =~ ^/engineering/[a-z0-9-]+[.]html$ ]]; then'),
+  'article-only checks must never include nested /topics/*.html pages');
+ assert.ok(!audit.includes('if [[ "$route" == /engineering/*.html ]]; then'));
+ assert.ok(archive.includes('href="./discoverable-technical-articles.html">Read the original technical discovery checklist</a>'),
+  'a single discovery article must remain easy to reach without thin collection pages');
+});

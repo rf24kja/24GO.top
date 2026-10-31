@@ -1,5 +1,10 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-31 — Distinguish topic pages from articles in the live SEO audit
+
+- Fix the external HTTPS smoke's Bash pattern so the required `Continue reading` article-only block is checked on top-level `/engineering/*.html` articles, not on nested editorial topic pages. The first [post-Pages audit #41212603091](https://github.com/rf24kja/24GO.top/actions/runs/41212603091) correctly fetched the new guides but failed four times because the old wildcard matched nested paths. Keep canonical/link checks for all 25 pages; add a regression and a direct human-facing link to the single original SEO/AI discovery article. No permission, backend or private Core changes.
+
+
 ## 2026-10-31 — Four source-backed technical reading paths
 
 - Publish four manually curated, crawlable and accessible topic guides for Security, Writing UX, Infrastructure, and Publishing. Each has an original reading sequence, practical verification questions and links solely to already published canonical technical articles, with pre-launch disclosures. Link them from the archive and optional llms.txt; include four verified canonical routes in generated sitemap and the live HTTPS SEO checks. Do not create a thin fifth topic page until substantial original content exists. This improves reader navigation but does not establish search indexing or AI citations. No new backend, analytics, credentials or paid services.
