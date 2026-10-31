@@ -97,9 +97,9 @@ The **[live Draft Lab](https://24go.top/draft-lab.html)** is intentionally a sim
 1. **Write locally.** Enter a title, choose the **article content language** and category, and write a technical explanation. The **interface language** can be switched independently among English, Russian, Thai, Spanish, French, German, Portuguese and Chinese.
 2. **Preview safely.** Inspect headings, lists, quotations, fenced code and tightly validated HTTP(S) citation links. Raw HTML is not executed. This preview is deliberately not a full rich-text renderer.
 3. **Download your work.** Export a structured `.md` file to your own device. Confirm the browser really saved it; this is neither cloud autosave nor encrypted backup.
-4. **Continue later.** Open **the file exported by Draft Lab** to restore its article fields, edit, and download again. Unsaved-change warnings are best-effort browser protections, not a storage guarantee.
+4. **Continue later.** Reopen the downloaded `.md` file, or explicitly open one of up to eight browser-saved drafts on the same device. Neither browser storage nor unsaved-change warnings are durable backups. Download a new `.md` after further editing.
 
-**Data flow:** your article is handled within the browser tab and the file you explicitly download. Draft Lab does **not** upload the article, create an account, publish a public URL, or record community views/comments. If you close the tab before exporting, unsaved changes may be lost. See the [returning-author research plan](docs/RETURNING_AUTHOR_PILOT.md) and [source-backed editor guide](https://24go.top/engineering/multilingual-markdown-editor-without-losing-drafts.html).
+**Data flow:** your article is handled in the browser tab, in optional unencrypted same-origin browser storage **only when you click Save in browser**, and in any `.md` file you download. Draft Lab does **not** upload the article, create an account, publish a public URL, or record community views/comments. If you close the tab before exporting, unsaved changes may be lost. See the [returning-author research plan](docs/RETURNING_AUTHOR_PILOT.md) and [source-backed editor guide](https://24go.top/engineering/multilingual-markdown-editor-without-losing-drafts.html).
 
 <details>
 <summary><strong>What needs to happen before actual hosted publishing?</strong></summary>
@@ -200,7 +200,7 @@ We prioritize protecting real authors and readers over calling a source-level pr
 | Threat or concern | Public implementation / current rule | Release limitation |
 | --- | --- | --- |
 | Malicious article HTML | Local reader and Draft Lab use escaped text or restricted DOM creation; Markdown links are limited to validated HTTP(S) destinations | A full public renderer still needs deployed end-to-end security review |
-| Exposed author data | Draft Lab stores drafts only in tab memory or an explicitly downloaded local `.md`; no implicit upload or cloud autosave | Downloaded files are readable by anyone who can access them |
+| Exposed author data | Draft Lab keeps drafts in tab memory, an explicitly downloaded `.md`, or manual unencrypted same-origin browser storage; no implicit upload or cloud autosave | Both local files and browser-saved content are accessible to other users of the device; browser storage may be cleared |
 | Credential exfiltration | SDK example refuses to send a shared developer publishing key to non-loopback hosts | A shared dev key is **not** an author identity or production authorization |
 | Account ownership and moderation | Public writing is disabled; private staging source and database policy work are separate | Signed cross-user JWT/RLS, role checks, recovery drill and spam/rate limits remain release blockers |
 | Static application hosting | Isolated frontend bundles are a future Library design, not publicly hosted here | Separate origin, sandbox, limits and a security review required |
