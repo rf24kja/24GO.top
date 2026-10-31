@@ -138,7 +138,8 @@ for (const control of [title,body,locale,category,source]) {
 }
 
 
-for(const [id,action] of [['formatHeading','heading'],['formatList','list'],
+for(const [id,action] of [['formatBold','bold'],['formatItalic','italic'],
+  ['formatInlineCode','inlineCode'],['formatHeading','heading'],['formatList','list'],
   ['formatQuote','quote'],['formatCode','code'],['formatTable','table'],['formatLink','link']]){
  field(id).addEventListener('click',()=>{
   try{
