@@ -114,7 +114,7 @@ test('external post-deploy audit checks live WebSite identity rather than trusti
  assert.match(script,/grep -Fq -- '"@id": "https:\/\/24go\.top\/#website"' "\$tmp\/home"/);
  assert.match(script,/Live homepage is missing verified WebSite/);
  // Ignore explanatory comments (which deliberately mention unsafe flags).
- const shell=script.split('\\n').filter(line=>!line.trimStart().startsWith('#')).join('\\n');
- assert.doesNotMatch(shell,/(?:^|\\s)(?:-k|--insecure)(?=\\s|$)/m);
+ const shell=script.split('\n').filter(line=>!line.trimStart().startsWith('#')).join('\n');
+ assert.doesNotMatch(shell,/(?:^|\s)(?:-k|--insecure)(?=\s|$)/m);
  assert.match(shell,/curl --fail --silent --show-error/);
 });
