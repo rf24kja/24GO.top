@@ -91,6 +91,10 @@ require 'outlineTitle:' "$tmp/i18n.js" 'localized section navigation'
 # after Pages completes. Do not mistake a successful Git merge for CDN delivery.
 download "$origin/engineering/" "$tmp/articles.html"
 download "$origin/engineering/search.js" "$tmp/search.js"
+download "$origin/engineering/search-index.json" "$tmp/search-index.json"
+require '"version": 1' "$tmp/search-index.json" 'deployed full-text index version'
+require 'content security policy' "$tmp/search-index.json" 'real article body indexed over HTTPS'
+require "fetch('./search-index.json'" "$tmp/search.js" 'browser-only same-origin index loading'
 download "$origin/engineering/?q=api&topic=security" "$tmp/shared-search.html"
 require 'id="engineering-share" hidden' "$tmp/articles.html" 'visible shareable article search action'
 require 'id="engineering-share-status" role="status"' "$tmp/articles.html" 'accessible copy-link outcome'
