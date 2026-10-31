@@ -43,6 +43,9 @@
           <label for="postBody"><span data-ui="body">Article</span> <span class="hint" data-ui="bodyHint">20–12,000 characters</span></label>
           <textarea id="postBody" name="body" rows="11" maxlength="12000" placeholder="Explain the problem, what you tried, the result and what others can reproduce." data-ui-placeholder="bodyPlaceholder" required></textarea>
           <div class="format-tools" role="group" aria-label="Insert Markdown formatting" data-ui-label="formatGroup">
+            <button id="formatBold" type="button" aria-label="Bold text" data-ui-label="bold" data-ui="bold">Bold</button>
+            <button id="formatItalic" type="button" aria-label="Italic text" data-ui-label="italic" data-ui="italic">Italic</button>
+            <button id="formatInlineCode" type="button" aria-label="Inline code" data-ui-label="inlineCode" data-ui="inlineCode">Inline code</button>
             <button id="formatHeading" type="button" aria-label="Insert section heading" data-ui-label="heading" data-ui="heading">Heading</button>
             <button id="formatList" type="button" aria-label="Insert bullet list" data-ui-label="list" data-ui="list">List</button>
             <button id="formatQuote" type="button" aria-label="Insert quotation" data-ui-label="quote" data-ui="quote">Quote</button>
@@ -104,7 +107,7 @@
         </section>
         <div id="previewBody" class="preview-content" aria-label="Article body preview" data-ui-label="reader" data-ui="emptyBody">Begin writing to see your article preview.</div>
         <p id="previewSource" class="source" hidden></p>
-        <div class="preview-foot" data-ui="previewHelp">Limited Markdown preview: headings, lists, quotes, code, tables and safe HTTP(S) citation links. Inline emphasis and raw HTML remain literal text. Export a local Markdown file to keep your work. No comments, views, reactions or public URL have been created.</div>
+        <div class="preview-foot" data-ui="previewHelp">Limited Markdown preview: headings, bold, italic, inline code, lists, quotes, fenced code, tables and safe HTTP(S) citation links. Raw HTML remains literal text. Export a local Markdown file to keep your work. No comments, views, reactions or public URL have been created.</div>
       </section>
     </div>
     <section class="bottom">

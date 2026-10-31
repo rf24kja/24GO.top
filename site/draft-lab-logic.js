@@ -24,7 +24,15 @@ export function formatDraftSelection(value,start,end,action){
     start<0||end<start||end>value.length)throw new TypeError('Invalid article selection');
  const selected=value.slice(start,end);
  let replacement,innerOffset,content=selected;
- if(action==='link'){
+ if(['bold','italic','inlineCode'].includes(action)){
+   if(/[\r\n]/.test(selected) ||
+      (action==='inlineCode'?selected.includes('`'):selected.includes('*')))
+     throw new TypeError('Inline formatting requires plain single-line text');
+   const marker=action==='bold'?'**':action==='italic'?'*':'`';
+   content ||= action==='bold'?'bold text':action==='italic'?'italic text':'inline code';
+   replacement=marker+content+marker;
+   innerOffset=marker.length;
+ }else if(action==='link'){
    if(selected.length>200||/[\[\]\r\n]/.test(selected))
      throw new TypeError('Select up to 200 characters of a single line');
    content ||= 'documentation';

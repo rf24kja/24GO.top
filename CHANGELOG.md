@@ -1,5 +1,9 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-31 — Richer private-on-device Markdown editing
+
+- Add Bold, Italic and Inline code tools to the public Draft Lab (eight interface languages). Render supported inline Markdown using safe fixed `strong`, `em`, and `code` DOM elements while preserving plain-text HTML and the existing safe citation link rules. No upload, autosave, cloud account, backend or public publishing. Small source-only rollback; the existing Markdown export remains unchanged.
+
 ## 2026-10-31 — Preserve source-link integrity in local reader
 
 - Reject C0/DEL controls and surrounding whitespace before URL parsing can silently alter author source citations; enforce the canonical serialized URL length limit after Unicode encoding. Preserve valid article text without creating a link when its source URL is unsafe. Extend regression tests and accessibility QA notes. Development-only reader; no hosted Auth, public write, private Core or Pages deploy change.

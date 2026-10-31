@@ -257,3 +257,26 @@ test('table preview renders semantic headers/cells without interpreting maliciou
  assert.ok(nodes.every(x=>!('innerHTML' in x)));
  assert.ok(nodes.every(x=>!['script','img','iframe'].includes(x.tag)));
 });
+
+test('inline Markdown preview renders semantic text safely, including code and citations',()=>{
+ const created=[];
+ const doc={
+  createElement(tag){
+   const el={tag,children:[],attributes:{},textContent:'',
+    append(...children){this.children.push(...children)},
+    setAttribute(k,v){this.attributes[k]=v}};
+   created.push(el);return el;
+  },
+  createTextNode(value){return {tag:'#text',textContent:value}}
+ };
+ const container={nodes:[],replaceChildren(...nodes){this.nodes=nodes}};
+ const raw='**strong** and *emphasis* and `<img src=x onerror=alert(1)>` and [Docs](https://example.org)';
+ renderMarkdownPreview(container,raw,doc);
+ assert.deepEqual(container.nodes.map(x=>x.tag),['p']);
+ assert.deepEqual(container.nodes[0].children.filter(x=>x.tag!=='#text').map(x=>x.tag),
+  ['strong','em','code','a']);
+ const code=created.find(x=>x.tag==='code');
+ assert.equal(code.textContent,'<img src=x onerror=alert(1)>');
+ assert.ok(created.every(x=>!['script','iframe','img'].includes(x.tag)));
+ assert.ok(created.every(x=>!('innerHTML' in x)));
+});
