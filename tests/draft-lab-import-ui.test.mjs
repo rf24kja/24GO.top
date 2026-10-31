@@ -10,6 +10,7 @@ import {
 import {uiText,applyUiLanguage} from '../site/draft-lab-i18n.js';
 import {appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS} from '../site/draft-lab-guidance.js';
 import {captureDraftRevision,compareDraftRevisions,revisionSummary} from '../site/draft-lab-revisions.js';
+import {createEditorialReviewPack,readEditorialReviewPackFile} from '../site/draft-lab-review-pack.js';
 import {buildArticleProposalUrl} from '../site/draft-lab-proposal.js';
 import {createDraftVault,MAX_SAVED_DRAFTS,MAX_VAULT_BACKUP_BYTES,VAULT_KEY} from '../site/draft-lab-vault.js';
 
@@ -18,6 +19,7 @@ const source = readFileSync(fileURLToPath(new URL('../site/draft-lab.js', import
   .replace(/^import .* from '.\/draft-lab-preview\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-guidance\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-revisions\.js';\n/m, '')
+  .replace(/^import .* from '.\/draft-lab-review-pack\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-i18n\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-proposal\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-vault\.js';\n/m, '');
@@ -34,6 +36,7 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false}={
     'previewHeading','previewBody','previewLocale','previewCategory','bodyCount','bodyWordCount','draftReadingTime','guidanceScore',
     'guideTitleState','guideBodyState','guideHeadingsState','guideStepsState','guideSourceState','guideCompleteState','draftTemplate','insertTemplate',
     'revisionCapture','revisionCompare','revisionCopy','revisionClear','revisionStatus','revisionFields','revisionLines',
+    'downloadReviewPack','verifyReviewPack','reviewPackFile',
     'previewSource','draftSafety','articleOutline','articleOutlineSection','downloadDraft','copyDraft','clearDraft','importDraft','importDraftFile','draftForm',
     'formatBold','formatItalic','formatInlineCode','formatHeading','formatList','formatOrderedList','formatQuote','formatCode','formatTable','formatLink','uiLocale','draftDropZone','homeBrandLink','homeNavLink','proposeDraft',
     'saveBrowserDraft','savedBrowserDraft','openBrowserDraft','deleteBrowserDraft','vaultCount','exportDraftLibrary','restoreDraftLibrary','draftLibraryFile'
@@ -84,7 +87,7 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false}={
     document, window, navigator, URL, Blob, setTimeout,
     safeSourceUrl,validateDraft,formatDraft,draftFilename,hasDraftContent,
     parseDraftFile,readDraftFileStrict,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,countDraftWords,createDraftImportGate,invalidDraftField,
-    uiText,applyUiLanguage,appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS,captureDraftRevision,compareDraftRevisions,revisionSummary,buildArticleProposalUrl,
+    uiText,applyUiLanguage,appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS,captureDraftRevision,compareDraftRevisions,revisionSummary,createEditorialReviewPack,readEditorialReviewPackFile,buildArticleProposalUrl,
     createDraftVault,MAX_SAVED_DRAFTS,MAX_VAULT_BACKUP_BYTES,VAULT_KEY,TextDecoder,
     renderMarkdownPreview(container, text) { container.textContent = text; },
     renderPreviewOutline(container,text) { container.textContent=text;return /^#{1,3} /m.test(text)?1:0; }
