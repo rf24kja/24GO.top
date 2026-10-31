@@ -10,6 +10,7 @@ import {
 import {uiText,applyUiLanguage} from '../site/draft-lab-i18n.js';
 import {appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS} from '../site/draft-lab-guidance.js';
 import {captureDraftRevision,compareDraftRevisions,revisionSummary} from '../site/draft-lab-revisions.js';
+import {createEditorialReviewPack,readEditorialReviewPackFile,verifyEditorialReviewPack} from '../site/draft-lab-review-pack.js';
 import {buildArticleProposalUrl} from '../site/draft-lab-proposal.js';
 import {createDraftVault,MAX_SAVED_DRAFTS,MAX_VAULT_BACKUP_BYTES,VAULT_KEY} from '../site/draft-lab-vault.js';
 
@@ -18,6 +19,7 @@ const source = readFileSync(fileURLToPath(new URL('../site/draft-lab.js', import
   .replace(/^import .* from '.\/draft-lab-preview\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-guidance\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-revisions\.js';\n/m, '')
+  .replace(/^import .* from '.\/draft-lab-review-pack\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-i18n\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-proposal\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-vault\.js';\n/m, '');
@@ -34,6 +36,7 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false}={
     'previewHeading','previewBody','previewLocale','previewCategory','bodyCount','bodyWordCount','draftReadingTime','guidanceScore',
     'guideTitleState','guideBodyState','guideHeadingsState','guideStepsState','guideSourceState','guideCompleteState','draftTemplate','insertTemplate',
     'revisionCapture','revisionCompare','revisionCopy','revisionClear','revisionStatus','revisionFields','revisionLines',
+    'downloadReviewPack','verifyReviewPack','reviewPackFile',
     'previewSource','draftSafety','articleOutline','articleOutlineSection','downloadDraft','copyDraft','clearDraft','importDraft','importDraftFile','draftForm',
     'formatBold','formatItalic','formatInlineCode','formatHeading','formatList','formatOrderedList','formatQuote','formatCode','formatTable','formatLink','uiLocale','draftDropZone','homeBrandLink','homeNavLink','proposeDraft',
     'saveBrowserDraft','savedBrowserDraft','openBrowserDraft','deleteBrowserDraft','vaultCount','exportDraftLibrary','restoreDraftLibrary','draftLibraryFile'
@@ -61,6 +64,11 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false}={
   elements.postLocale.value='en';
   elements.postCategory.value='guides';
   elements.draftTemplate.value='guide';
+  const downloads=[],blobUrls=new Map();
+  class BrowserURL extends URL{
+   static createObjectURL(blob){const url='blob:24gotop/'+blobUrls.size;blobUrls.set(url,blob);return url;}
+   static revokeObjectURL(url){blobUrls.delete(url);}
+  }
   let confirm = true;
   const window = {listeners:{}, location:{href:uiHref}, confirm(){return confirm;}, addEventListener(type, callback){this.listeners[type]=callback;}};
   const browserItems=new Map();
@@ -72,7 +80,10 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false}={
   window.localStorage=localStorage;
   const document = {
     listeners:{},
-    createElement(){return {value:'',textContent:'',dataset:{}};},
+    body:{append(){}},
+    createElement(){return {value:'',textContent:'',dataset:{},
+      click(){downloads.push({name:this.download,url:this.href,blob:blobUrls.get(this.href)});},
+      remove(){}};},
     addEventListener(type,callback){this.listeners[type]=callback;},
     documentElement:{lang:'en'},
     getElementById(id){return elements[id];},
@@ -81,10 +92,10 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false}={
   const copied=[];
   const navigator=allowClipboard?{clipboard:{async writeText(value){copied.push(value);}}}:{};
   runInNewContext(source, {
-    document, window, navigator, URL, Blob, setTimeout,
+    document, window, navigator, URL:BrowserURL, Blob, setTimeout,
     safeSourceUrl,validateDraft,formatDraft,draftFilename,hasDraftContent,
     parseDraftFile,readDraftFileStrict,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,countDraftWords,createDraftImportGate,invalidDraftField,
-    uiText,applyUiLanguage,appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS,captureDraftRevision,compareDraftRevisions,revisionSummary,buildArticleProposalUrl,
+    uiText,applyUiLanguage,appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS,captureDraftRevision,compareDraftRevisions,revisionSummary,createEditorialReviewPack,readEditorialReviewPackFile,buildArticleProposalUrl,
     createDraftVault,MAX_SAVED_DRAFTS,MAX_VAULT_BACKUP_BYTES,VAULT_KEY,TextDecoder,
     renderMarkdownPreview(container, text) { container.textContent = text; },
     renderPreviewOutline(container,text) { container.textContent=text;return /^#{1,3} /m.test(text)?1:0; }
@@ -92,7 +103,7 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false}={
   // node --test starts multiple test files concurrently.
   },{timeout:5000});
   return {
-    elements, document, localStorage, copied,
+    elements, document, localStorage, copied, downloads,
     storageEvent(key=VAULT_KEY,storageArea=localStorage){
       window.listeners.storage({key,storageArea});
     },
@@ -914,4 +925,57 @@ test('clearing a draft removes only temporary revision checkpoint, never saved b
  assert.equal(app.elements.revisionCopy.disabled,true);
  assert.equal(app.elements.revisionLines.children.length,0);
  assert.equal(app.elements.postBody.value,'');
+});
+
+
+test('export of an unpublished author review package requires explicit consent and never saves to vault',async()=>{
+ const app=build();
+ Object.assign(app.elements.postTitle,{value:sample.title});
+ Object.assign(app.elements.postBody,{value:sample.body});
+ app.elements.postLocale.value=sample.locale;
+ app.elements.postCategory.value=sample.category;
+ app.elements.postSource.value=sample.source;
+ app.setConfirm(false);
+ await app.elements.downloadReviewPack.listeners.click();
+ assert.equal(app.downloads.length,0,'declined review hand-off must not download');
+ app.setConfirm(true);
+ await app.elements.downloadReviewPack.listeners.click();
+ assert.equal(app.downloads.length,1);
+ assert.equal(app.downloads[0].name,'24gotop-editorial-review-pack.json');
+ const raw=await app.downloads[0].blob.text();
+ const valid=await verifyEditorialReviewPack(raw);
+ assert.equal(valid.draft.body,sample.body);
+ assert.equal(app.localStorage.getItem(VAULT_KEY),null);
+ assert.match(app.elements.formStatus.textContent,/Review package download requested/);
+});
+
+test('selected review package verification never replaces the current unsaved author text',async()=>{
+ const app=build();
+ app.elements.postTitle.value='Private unsaved article';
+ app.elements.postBody.value='Original unsaved body that must not be replaced with imported text.';
+ const pkg=await createEditorialReviewPack(sample);
+ const encoded=new TextEncoder().encode(pkg);
+ const input=app.elements.reviewPackFile;
+ input.files=[{name:'review.json',size:encoded.length,
+  async arrayBuffer(){return Uint8Array.from(encoded).buffer;}}];
+ await input.listeners.change({currentTarget:input});
+ assert.equal(app.elements.postTitle.value,'Private unsaved article');
+ assert.equal(app.elements.postBody.value,'Original unsaved body that must not be replaced with imported text.');
+ assert.match(app.elements.formStatus.textContent,/Valid local review package/);
+ assert.equal(input.value,'');
+ assert.equal(app.localStorage.getItem(VAULT_KEY),null);
+});
+test('tampered review file fails closed and never modifies the editor',async()=>{
+ const app=build();
+ app.elements.postBody.value='My private content should stay untouched.';
+ const pkg=JSON.parse(await createEditorialReviewPack(sample));
+ pkg.document=pkg.document.replace('The first paragraph','A replaced paragraph');
+ const encoded=new TextEncoder().encode(JSON.stringify(pkg));
+ const input=app.elements.reviewPackFile;
+ input.files=[{name:'tampered.json',size:encoded.length,
+  async arrayBuffer(){return Uint8Array.from(encoded).buffer;}}];
+ await input.listeners.change({currentTarget:input});
+ assert.equal(app.elements.postBody.value,'My private content should stay untouched.');
+ assert.match(app.elements.formStatus.textContent,/Invalid, damaged/);
+ assert.equal(app.elements.formStatus.dataset.error,'true');
 });

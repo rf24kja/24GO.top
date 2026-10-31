@@ -116,3 +116,19 @@ test('guided local article workflow is fully translated and has accessible landm
  assert.match(code,/analyzeDraftGuidance\(currentDraft\(\)\)/);
  assert.doesNotMatch(i18n,/\bfetch\s*\(|sendBeacon|XMLHttpRequest|document\.cookie/);
 });
+
+test('offline review handoff is translated in every UI language and declares full-text privacy',()=>{
+ for(const locale of UI_LOCALES){
+  for(const key of ['reviewPackDownload','reviewPackVerify','reviewPackPrivacy',
+   'reviewPackConfirm','reviewPackInterrupted','reviewPackExported',
+   'reviewPackError','reviewPackValid','reviewPackValidSuffix','reviewPackInvalid']){
+    assert.ok(uiText(locale,key).trim().length>2,locale+'/'+key);
+  }
+ }
+ assert.match(html,/id="downloadReviewPack"[^>]+data-ui="reviewPackDownload"/);
+ assert.match(html,/id="verifyReviewPack"[^>]+data-ui="reviewPackVerify"/);
+ assert.match(html,/id="reviewPackFile" type="file"/);
+ assert.match(code,/createEditorialReviewPack/);
+ assert.match(code,/readEditorialReviewPackFile/);
+ assert.doesNotMatch(code,/sendBeacon|XMLHttpRequest/);
+});

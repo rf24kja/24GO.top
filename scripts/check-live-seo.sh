@@ -103,6 +103,14 @@ probe '/draft-lab-logic.js' draftlab_logic 'export function countDraftWords'
 probe '/draft-lab-i18n.js' draftlab_i18n "orderedList:"
 probe '/draft-lab-guidance.js' draftlab_guidance 'export function analyzeDraftGuidance'
 probe '/draft-lab-revisions.js' draftlab_revision_js 'export function compareDraftRevisions'
+probe '/draft-lab-review-pack.js' draftlab_pack_js 'export async function createEditorialReviewPack'
+if ! grep -Fq -- 'id="downloadReviewPack"' "$tmp/draftlab" ||
+   ! grep -Fq -- 'id="verifyReviewPack"' "$tmp/draftlab" ||
+   ! grep -Fq -- 'readEditorialReviewPackFile' "$tmp/draftlab_js" ||
+   ! grep -Fq -- 'SHA-256' "$tmp/draftlab_pack_js"; then
+  echo '::error::Delivered Draft Lab lacks offline editorial review-pack controls'
+  failures=$((failures+1))
+fi
 if ! grep -Fq -- 'id="revisionCapture"' "$tmp/draftlab" ||
    ! grep -Fq -- 'id="revisionLines"' "$tmp/draftlab" ||
    ! grep -Fq -- 'captureDraftRevision' "$tmp/draftlab_js"; then

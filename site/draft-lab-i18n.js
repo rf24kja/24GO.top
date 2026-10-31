@@ -2,6 +2,16 @@
 // or translations of the user's article. English is the explicit fallback.
 export const UI_LOCALES=Object.freeze(['en','ru','th','es','fr','de','pt','zh']);
 const EN={
+ reviewPackDownload:"Export review package",
+ reviewPackVerify:"Check review package",
+ reviewPackPrivacy:"A review package contains your complete manuscript in plaintext and a SHA-256 checksum. Share only with a trusted reviewer after removing secrets. No automatic upload; checksum is not author identity or approval.",
+ reviewPackConfirm:"Export your full unpublished manuscript as an unencrypted JSON package on this device?",
+ reviewPackInterrupted:"The draft changed during export. No package downloaded.",
+ reviewPackExported:"Review package download requested. No upload or publication.",
+ reviewPackError:"Could not export the review package.",
+ reviewPackValid:"Valid local review package. Manuscript size: ",
+ reviewPackValidSuffix:" bytes. No text imported or uploaded.",
+ reviewPackInvalid:"Invalid, damaged or unsupported review package. Current draft unchanged.",
  revisionHeading:"Compare draft revisions",
  revisionHint:"Set a temporary checkpoint, or reopen a saved draft, then review changes locally. Checkpoints are lost when this tab closes. Nothing is uploaded.",
  revisionCapture:"Set checkpoint",
@@ -131,6 +141,16 @@ const EN={
  clearCanceled:'Draft kept. Nothing was erased.',cleared:'Draft cleared from this browser tab.'
 };
 const RU={
+ reviewPackDownload:"Выгрузить пакет для рецензии",
+ reviewPackVerify:"Проверить пакет рецензии",
+ reviewPackPrivacy:"Пакет содержит всю рукопись открытым текстом и SHA-256. Передавайте только доверенному рецензенту после удаления секретов. Ничего не отправляется автоматически; хеш не подтверждает автора или одобрение.",
+ reviewPackConfirm:"Выгрузить всю неопубликованную рукопись в незашифрованный JSON-файл на этом устройстве?",
+ reviewPackInterrupted:"Во время выгрузки черновик изменился. Файл не создан.",
+ reviewPackExported:"Запрошено скачивание пакета. Ничего не загружено и не опубликовано.",
+ reviewPackError:"Не удалось выгрузить пакет рецензии.",
+ reviewPackValid:"Пакет проверен локально. Размер рукописи: ",
+ reviewPackValidSuffix:" байт. Текст не импортирован и не отправлен.",
+ reviewPackInvalid:"Пакет повреждён или не поддерживается. Черновик не изменён.",
  revisionHeading:"Сравнение версий черновика",
  revisionHint:"Создайте временную контрольную точку или откройте сохранённый черновик. Изменения сравниваются локально. После закрытия вкладки точка исчезнет; ничего не загружается.",
  revisionCapture:"Запомнить версию",
@@ -259,6 +279,16 @@ const RU={
  clearCanceled:'Черновик оставлен без изменений.',cleared:'Черновик очищен в этой вкладке.'
 };
 const TH={
+ reviewPackDownload:"ส่งออกชุดเอกสารสำหรับตรวจทาน",
+ reviewPackVerify:"ตรวจสอบชุดเอกสาร",
+ reviewPackPrivacy:"ชุดเอกสารมีต้นฉบับทั้งหมดเป็นข้อความธรรมดาพร้อม SHA-256 โปรดลบข้อมูลลับก่อนแบ่งปัน ไม่มีการอัปโหลดอัตโนมัติ และแฮชไม่ยืนยันผู้เขียน",
+ reviewPackConfirm:"ส่งออกต้นฉบับที่ยังไม่เผยแพร่เป็นไฟล์ JSON ที่ไม่ได้เข้ารหัสหรือไม่?",
+ reviewPackInterrupted:"ร่างถูกแก้ไขระหว่างส่งออก จึงไม่ได้ดาวน์โหลดไฟล์",
+ reviewPackExported:"ขอดาวน์โหลดชุดเอกสารแล้ว ไม่มีการอัปโหลดหรือเผยแพร่",
+ reviewPackError:"ไม่สามารถส่งออกชุดเอกสารได้",
+ reviewPackValid:"ตรวจสอบชุดเอกสารในเครื่องแล้ว ขนาดต้นฉบับ: ",
+ reviewPackValidSuffix:" ไบต์ ไม่มีการนำเข้าเนื้อหาหรืออัปโหลด",
+ reviewPackInvalid:"ชุดเอกสารไม่ถูกต้องหรือเสียหาย ร่างเดิมไม่เปลี่ยน",
  revisionHeading:"เปรียบเทียบฉบับร่าง",
  revisionHint:"สร้างจุดอ้างอิงชั่วคราวหรือเปิดร่างที่บันทึกไว้ แล้วเปรียบเทียบการแก้ไขในเครื่อง จุดอ้างอิงจะหายเมื่อปิดแท็บ ไม่มีการอัปโหลด",
  revisionCapture:"บันทึกจุดอ้างอิง",
@@ -386,6 +416,16 @@ const TH={
  clearCanceled:'เก็บร่างเดิมไว้',cleared:'ล้างร่างในแท็บนี้แล้ว'
 };
 const ES={
+ reviewPackDownload:"Exportar paquete para revisión",
+ reviewPackVerify:"Verificar paquete de revisión",
+ reviewPackPrivacy:"El paquete contiene el manuscrito completo sin cifrar y una suma SHA-256. Elimina secretos antes de compartirlo. No hay carga automática; la suma no verifica la autoría.",
+ reviewPackConfirm:"¿Exportar el manuscrito inédito a un JSON sin cifrar en este dispositivo?",
+ reviewPackInterrupted:"El borrador cambió durante la exportación. No se descargó ningún paquete.",
+ reviewPackExported:"Descarga solicitada. Nada se subió ni publicó.",
+ reviewPackError:"No se pudo exportar el paquete.",
+ reviewPackValid:"Paquete verificado localmente. Tamaño del manuscrito: ",
+ reviewPackValidSuffix:" bytes. Sin importar ni subir texto.",
+ reviewPackInvalid:"Paquete no válido o dañado. El borrador no cambió.",
  revisionHeading:"Comparar versiones del borrador",
  revisionHint:"Crea un punto de referencia temporal o abre un borrador guardado. La comparación es local y se pierde al cerrar la pestaña. No se sube nada.",
  revisionCapture:"Guardar punto de referencia",
@@ -513,6 +553,16 @@ const ES={
  clearCanceled:'Borrador conservado.',cleared:'Borrador borrado de esta pestaña.'
 };
 const FR={
+ reviewPackDownload:"Exporter un dossier de relecture",
+ reviewPackVerify:"Vérifier le dossier de relecture",
+ reviewPackPrivacy:"Le dossier contient le manuscrit entier en clair et une empreinte SHA-256. Retirez les secrets avant partage. Aucun envoi automatique ; l’empreinte ne prouve pas l’auteur.",
+ reviewPackConfirm:"Exporter le manuscrit inédit dans un fichier JSON non chiffré sur cet appareil ?",
+ reviewPackInterrupted:"Le brouillon a changé pendant l’export. Aucun fichier téléchargé.",
+ reviewPackExported:"Téléchargement demandé. Aucun envoi ni publication.",
+ reviewPackError:"Impossible d’exporter le dossier.",
+ reviewPackValid:"Dossier vérifié localement. Taille du manuscrit : ",
+ reviewPackValidSuffix:" octets. Aucun texte importé ou envoyé.",
+ reviewPackInvalid:"Dossier invalide ou endommagé. Brouillon inchangé.",
  revisionHeading:"Comparer les versions du brouillon",
  revisionHint:"Créez un point de référence temporaire ou ouvrez un brouillon enregistré. La comparaison reste locale et disparaît à la fermeture de l’onglet. Aucun envoi.",
  revisionCapture:"Créer un point de référence",
@@ -640,6 +690,16 @@ const FR={
  clearCanceled:'Brouillon conservé.',cleared:'Brouillon effacé de cet onglet.'
 };
 const DE={
+ reviewPackDownload:"Prüfpaket exportieren",
+ reviewPackVerify:"Prüfpaket verifizieren",
+ reviewPackPrivacy:"Das Paket enthält den gesamten Manuskripttext unverschlüsselt mit SHA-256. Vor dem Teilen Geheimnisse entfernen. Kein automatischer Upload; der Hash beweist keine Urheberschaft.",
+ reviewPackConfirm:"Unveröffentlichtes Manuskript als unverschlüsselte JSON-Datei exportieren?",
+ reviewPackInterrupted:"Der Entwurf wurde während des Exports geändert. Kein Download.",
+ reviewPackExported:"Paketdownload angefordert. Nichts hochgeladen oder veröffentlicht.",
+ reviewPackError:"Prüfpaket konnte nicht exportiert werden.",
+ reviewPackValid:"Paket lokal verifiziert. Manuskriptgröße: ",
+ reviewPackValidSuffix:" Byte. Kein Text importiert oder hochgeladen.",
+ reviewPackInvalid:"Ungültiges oder beschädigtes Paket. Entwurf unverändert.",
  revisionHeading:"Entwurfsstände vergleichen",
  revisionHint:"Erstelle einen temporären Vergleichspunkt oder öffne einen gespeicherten Entwurf. Alles bleibt lokal; beim Schließen des Tabs geht der Vergleichspunkt verloren.",
  revisionCapture:"Vergleichspunkt setzen",
@@ -767,6 +827,16 @@ const DE={
  clearCanceled:'Entwurf beibehalten.',cleared:'Entwurf aus diesem Tab gelöscht.'
 };
 const PT={
+ reviewPackDownload:"Exportar pacote de revisão",
+ reviewPackVerify:"Verificar pacote de revisão",
+ reviewPackPrivacy:"O pacote contém todo o manuscrito em texto simples e SHA-256. Remova segredos antes de partilhar. Sem envio automático; o hash não comprova autoria.",
+ reviewPackConfirm:"Exportar o manuscrito inédito como JSON sem encriptação neste dispositivo?",
+ reviewPackInterrupted:"O rascunho mudou durante a exportação. Nenhum ficheiro descarregado.",
+ reviewPackExported:"Descarregamento solicitado. Nada foi enviado ou publicado.",
+ reviewPackError:"Não foi possível exportar o pacote.",
+ reviewPackValid:"Pacote verificado localmente. Tamanho do manuscrito: ",
+ reviewPackValidSuffix:" bytes. Nenhum texto importado ou enviado.",
+ reviewPackInvalid:"Pacote inválido ou danificado. Rascunho inalterado.",
  revisionHeading:"Comparar versões do rascunho",
  revisionHint:"Crie um ponto de referência temporário ou abra um rascunho guardado. A comparação é local e perde-se ao fechar o separador. Nada é enviado.",
  revisionCapture:"Criar ponto de referência",
@@ -894,6 +964,16 @@ const PT={
  clearCanceled:'Rascunho mantido.',cleared:'Rascunho apagado desta aba.'
 };
 const ZH={
+ reviewPackDownload:"导出审稿资料包",
+ reviewPackVerify:"验证审稿资料包",
+ reviewPackPrivacy:"资料包包含完整的明文稿件和 SHA-256 校验值。分享前请移除机密信息。不会自动上传；校验值不能证明作者身份。",
+ reviewPackConfirm:"要将未发布稿件导出为本设备上未加密的 JSON 文件吗？",
+ reviewPackInterrupted:"导出期间草稿发生变化，未下载文件。",
+ reviewPackExported:"已请求下载资料包，未上传或发布。",
+ reviewPackError:"无法导出审稿资料包。",
+ reviewPackValid:"已在本地验证资料包。稿件大小：",
+ reviewPackValidSuffix:" 字节。未导入或上传正文。",
+ reviewPackInvalid:"资料包无效或损坏，草稿未更改。",
  revisionHeading:"比较草稿版本",
  revisionHint:"创建临时检查点或打开已保存的草稿，便可在本地比较修改。关闭标签页后检查点将消失；不会上传内容。",
  revisionCapture:"创建检查点",
