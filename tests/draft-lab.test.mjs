@@ -34,6 +34,40 @@ test('source URLs permit only HTTP(S) and disallow credentials or script URLs',(
   assert.match(validateDraft({...valid,source:'javascript:alert(1)'}),/HTTP or HTTPS/);
 });
 
+
+test('source citations reject lossy parser normalization before export or local persistence',()=>{
+ const unsafe=[
+  'https://example.org/a\nb','https://example.org/a\tb',
+  'https://example.org/a\rb','https://example.org/a\u0000b',
+  'https://example.org/a\u007fb',' https://example.org/source',
+  'https://example.org/source ', 'https://example.org/'+'x'.repeat(2000),
+  'https://example.org/'+'😀'.repeat(300)
+ ];
+ for(const source of unsafe){
+  assert.equal(safeSourceUrl(source),null,JSON.stringify(source.slice(0,70)));
+  assert.equal(invalidDraftField({...valid,source}),'source');
+  assert.throws(()=>formatDraft({...valid,source}),TypeError);
+ }
+ assert.equal(safeSourceUrl(''),'', 'empty source remains optional');
+ assert.equal(safeSourceUrl('https://example.org/doc'),'https://example.org/doc');
+});
+
+test('portable Markdown cannot export title line breaks or metadata spoofing',()=>{
+ const titles=[
+  'This article\nLanguage: ru','Valid article\rCategory: tools',
+  'Valid article\u0000unsafe', 'Valid article\u007fhidden',
+  'Valid article\u2028line separator','Valid article\u2029paragraph separator',
+  'Valid article\tseparator'
+ ];
+ for(const title of titles){
+  assert.equal(invalidDraftField({...valid,title}),'title');
+  assert.throws(()=>formatDraft({...valid,title}),TypeError);
+ }
+ // Prior safe international headings retain their portable round-trip.
+ const multilingual={...valid,title:'Research notes — 中文 ภาษาไทย Русский'};
+ assert.deepEqual(parseDraftFile(formatDraft(multilingual)),multilingual);
+});
+
 test('copy output is deterministic, human-readable, and clearly unpublished',()=>{
   const output=formatDraft(valid);
   assert.match(output,/^# Making a secure publishing API/);
