@@ -16,7 +16,7 @@ test('proposal only transfers a confirmed public headline, never author content'
 
 test('invalid headlines and unsupported languages never create an outbound proposal',()=>{
  for(const draft of [null,{}, {title:'Hi',locale:'en'},{title:'Good title',locale:'xx'},
-  {title:'Valid\\nheader',locale:'en'},{title:'x'.repeat(161),locale:'en'}]){
+  {title:'Valid\nheader',locale:'en'},{title:'x'.repeat(161),locale:'en'}]){
   assert.equal(buildArticleProposalUrl(draft),null);
  }
 });
