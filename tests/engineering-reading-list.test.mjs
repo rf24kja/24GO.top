@@ -155,3 +155,141 @@ test('no browser storage or unexpected article filename leaves static reading in
   assert.equal(app.writes.length,0);
  }
 });
+
+
+test('saved-title search filters only reader library and never changes public article cards',()=>{
+ const app=setup();
+ app.cards[0].children[0].listeners.click();
+ app.cards[1].children[0].listeners.click();
+ const input=app.elements['reading-list-filter'];
+ input.value='TECHNICAL ARTICLE 2';
+ input.listeners.input();
+ assert.equal(app.elements['reading-list-items'].children.length,1);
+ assert.equal(app.elements['reading-list-items'].children[0].children[0].href,'./research-two.html');
+ assert.equal(app.elements['reading-list-filter-status'].textContent,'1 of 2 saved links shown.');
+ assert.equal(app.cards[0].hidden,false);
+ assert.equal(app.cards[1].hidden,false);
+ assert.equal(app.elements['reading-list-copy'].disabled,false);
+ input.value='no matching article';
+ input.listeners.input();
+ assert.equal(app.elements['reading-list-items'].children.length,0);
+ assert.equal(app.elements['reading-list-copy'].disabled,true);
+ assert.equal(JSON.parse(app.store.get('24gotop-public-reading-list-v1')).files.length,2,
+  'filtering does not persist or delete saved links');
+});
+
+test('row removal keeps remaining bookmarks without clearing the entire reading list',()=>{
+ const app=setup();
+ app.cards[0].children[0].listeners.click();
+ app.cards[1].children[0].listeners.click();
+ const entry=app.elements['reading-list-items'].children[0];
+ assert.equal(entry.children[1].textContent,'Remove');
+ entry.children[1].listeners.click();
+ assert.deepEqual(JSON.parse(app.store.get('24gotop-public-reading-list-v1')).files,
+  ['research-two.html']);
+ assert.equal(app.elements['reading-list-items'].children.length,1);
+ assert.equal(app.cards[0].children[0].attributes['aria-pressed'],'false');
+});
+
+test('copy visible saved links produces canonical Markdown only after a click',async()=>{
+ const app=setup();
+ assert.deepEqual(app.clipboardWrites,[]);
+ app.cards[0].children[0].listeners.click();
+ app.cards[1].children[0].listeners.click();
+ const input=app.elements['reading-list-filter'];
+ input.value='article 1';
+ input.listeners.input();
+ await app.elements['reading-list-copy'].listeners.click();
+ assert.equal(app.clipboardWrites.length,1);
+ assert.equal(app.clipboardWrites[0],
+  '- [Reviewed technical article 1](https://24go.top/engineering/research-one.html)');
+ assert.equal(app.clipboardWrites[0].includes('research-two.html'),false);
+ const denied=setup({clipboardAccess:false});
+ denied.cards[0].children[0].listeners.click();
+ await denied.elements['reading-list-copy'].listeners.click();
+ assert.match(denied.elements['reading-list-feedback'].textContent,/Clipboard unavailable/);
+});
+
+test('JSON backup export is opt-in, versioned and contains only public article filenames',async()=>{
+ const app=setup();
+ assert.deepEqual(app.downloads,[]);
+ assert.equal(app.elements['reading-list-export'].disabled,true);
+ app.cards[0].children[0].listeners.click();
+ app.elements['reading-list-export'].listeners.click();
+ assert.equal(app.downloads.length,1);
+ const downloaded=app.downloads[0];
+ assert.equal(downloaded.download,'24gotop-public-reading-list.json');
+ const payload=JSON.parse(await downloaded.blob.text());
+ assert.deepEqual(payload,{
+  kind:'24gotop-public-reading-list-backup',
+  version:1,
+  files:['research-one.html']
+ });
+ assert.equal(app.writes.filter(x=>x[0]==='set').length,1,
+  'export must not write any new browser preference');
+});
+
+test('restore merges into newest list only after confirmation, never clobbering a second tab',async()=>{
+ const app=setup();
+ const input=app.elements['reading-list-file'];
+ const key='24gotop-public-reading-list-v1';
+ const backup=JSON.stringify({kind:'24gotop-public-reading-list-backup',
+  version:1,files:['research-one.html']});
+ const bytes=new TextEncoder().encode(backup);
+ input.files=[{name:'saved-links.json',size:bytes.length,async arrayBuffer(){return bytes.buffer;}}];
+ app.setConfirmHook(()=>app.store.set(key,JSON.stringify({
+  version:1,files:['research-two.html']
+ })));
+ await input.listeners.change();
+ assert.deepEqual(JSON.parse(app.store.get(key)).files,
+  ['research-two.html','research-one.html']);
+ assert.equal(input.value,'');
+ assert.equal(app.elements['reading-list-items'].children.length,2);
+ assert.match(app.elements['reading-list-feedback'].textContent,/Imported public links/);
+});
+
+test('cancelled or invalid JSON backup never mutates the current saved list',async()=>{
+ const app=setup(),input=app.elements['reading-list-file'];
+ const key='24gotop-public-reading-list-v1';
+ app.cards[0].children[0].listeners.click();
+ const before=app.store.get(key);
+ const makeFile=(data,name='reader.json')=>{
+  const bytes=new TextEncoder().encode(data);
+  return {name,size:bytes.length,async arrayBuffer(){return bytes.buffer;}};
+ };
+ const valid=JSON.stringify({kind:'24gotop-public-reading-list-backup',version:1,
+  files:['research-two.html']});
+ app.setApprove(false);
+ input.files=[makeFile(valid)];
+ await input.listeners.change();
+ assert.equal(app.store.get(key),before,'a cancelled confirmation is not a write');
+ app.setApprove(true);
+ const invalid=[
+  '{"version":1,"files":[]}',
+  JSON.stringify({kind:'24gotop-public-reading-list-backup',version:1,
+   files:['not-published.html']}),
+  JSON.stringify({kind:'24gotop-public-reading-list-backup',version:1,
+   files:['research-two.html','research-two.html']}),
+  '{corrupt',
+  valid
+ ];
+ for(const data of invalid){
+  input.files=[makeFile(data,data===valid?'reader.txt':'reader.json')];
+  await input.listeners.change();
+  assert.equal(app.store.get(key),before);
+ }
+ assert.equal(app.elements['reading-list-items'].children.length,1);
+});
+
+test('invalid stored list fails closed and imports stay disabled until explicit clearing',async()=>{
+ const app=setup(),key='24gotop-public-reading-list-v1';
+ app.store.set(key,'{"version":1,"files":["external.html"]}');
+ app.window.listeners.storage({key,storageArea:app.storage});
+ assert.equal(app.elements['reading-list-import'].disabled,true);
+ assert.equal(app.elements['reading-list-export'].disabled,true);
+ assert.equal(app.elements['reading-list-items'].children.length,0);
+ assert.equal(app.elements['reading-list-clear'].hidden,false);
+ app.elements['reading-list-clear'].listeners.click();
+ assert.equal(app.store.has(key),false);
+ assert.equal(app.elements['reading-list-import'].disabled,false);
+});
