@@ -1,15 +1,17 @@
-# Public crawlability and indexing — 2026-10-30
+# Public crawlability and indexing — verified 2026-10-31
 
-**All 12 current sitemap URLs, including nine engineering articles, were independently reachable over canonical HTTPS from a GitHub-hosted runner on 2026-10-30; Google/Bing indexing is NOT confirmed.** This proves HTTP delivery at that time, not search traffic or AI citations.
+**Latest verification (31 October 2026): all 21 canonical sitemap URLs, including ten original engineering articles and eight homepage locales, were reachable over HTTPS from a GitHub-hosted runner.** [External SEO audit #41174110459](https://github.com/rf24kja/24GO.top/actions/runs/41174110459) checked the sitemap-driven URLs, RSS, JSON Feed and redirect behavior. [Post-deploy live asset smoke #41174110445](https://github.com/rf24kja/24GO.top/actions/runs/41174110445) also passed. Google/Bing indexing, search impressions and AI citations remain **UNVERIFIED**.
 
-## Additional JSON Feed 1.1 (source PR; post-merge HTTPS verification pending)
+**Historical 30 October checkpoint:** all 12 then-listed sitemap URLs, including nine original engineering articles, were reachable from GitHub-hosted infrastructure; do not treat those old counts as current. This proves HTTP delivery at that time, not search traffic or AI citations.
 
-Proposed public `/engineering/feed.json` is a standard alternative to RSS for programmatic readers. It derives real article URLs, bylines and dates from source-controlled RSS and `Article` JSON-LD, with a source parity CI gate. Its actual public delivery, Google/Bing indexing, rankings, visitors or AI search citations are **not claimed** until independently verified.
+## JSON Feed 1.1 — now available over verified HTTPS
+
+Published public `/engineering/feed.json` is a standard alternative to RSS for programmatic readers. It derives real article URLs, bylines and dates from source-controlled RSS and `Article` JSON-LD, with a source parity CI gate. Its actual public HTTPS delivery is confirmed by audit #41174110459. Google/Bing indexing, rankings, visitors and AI search citations are **not confirmed** by an HTTP response.
 
 ## Source-verified assets
 - Canonical policy: https://24go.top (**owner settings and live routing independently verified on 2026-10-29**).
 - Public root `site/robots.txt`, XML sitemap `site/sitemap.xml`, optional `site/llms.txt` (not an SEO ranking mechanism).
-- Editorial `site/engineering/`: **nine** original static technical notes, metadata, HTML navigation, RSS, unique canonical URLs; all nine appear in the **12-URL** source sitemap (home, progress, archive and nine articles).
+- **Historical 30 October:** editorial `site/engineering/` held **nine** original static technical notes, metadata, HTML navigation, RSS, unique canonical URLs; all nine appear in the **12-URL** source sitemap (home, progress, archive and nine articles).
 - The experimental `site/draft-lab.html` intentionally retains its `noindex,follow` metadata and is excluded from sitemap.
 - No fake translations, unverified `hreflang`, invented review stars, paid backlinks, synthetic traffic or fake public publishing API.
 
@@ -64,7 +66,7 @@ Search Console or Bing index coverage, ranking positions and AI recommendation v
 
 ## Source and release-audit reconciliation — 2026-10-30
 
-- The current public `main` source includes **nine** engineering HTML articles, **nine** RSS items and **12** XML sitemap URLs. The three newest original guides were merged in [PR #83](https://github.com/rf24kja/24GO.top/pull/83), and metadata/feed parity in [PR #84](https://github.com/rf24kja/24GO.top/pull/84). The existing [Article structured-data test](https://github.com/rf24kja/24GO.top/blob/main/tests/article-structured-data.test.mjs) checks matching visible headings, Article JSON-LD, canonical URLs, RSS publication dates, index navigation and newest-first ordering. This is **source verification**, not search indexing.
+- **Historical 30 October source snapshot:** public `main` then included **nine** engineering HTML articles, **nine** RSS items and **12** XML sitemap URLs. Current verified totals are 10 / 10 / 21 (31 October audit above). The three newest original guides were merged in [PR #83](https://github.com/rf24kja/24GO.top/pull/83), and metadata/feed parity in [PR #84](https://github.com/rf24kja/24GO.top/pull/84). The existing [Article structured-data test](https://github.com/rf24kja/24GO.top/blob/main/tests/article-structured-data.test.mjs) checks matching visible headings, Article JSON-LD, canonical URLs, RSS publication dates, index navigation and newest-first ordering. This is **source verification**, not search indexing.
 - [Pages deployment #40973542565](https://github.com/rf24kja/24GO.top/actions/runs/40973542565) completed after PR #84. [Draft Lab HTTPS check #40973593512](https://github.com/rf24kja/24GO.top/actions/runs/40973593512) also passed, but its scope is the Draft Lab, **not** an independent full check of the three newest article URLs. The earlier full [SEO audit #40894098316](https://github.com/rf24kja/24GO.top/actions/runs/40894098316) predates those additions and must not be used as proof of their delivery.
 - The read-only `workflow_run` trigger now follows **successful completion** of the named Pages workflow; it checks every URL actually listed in the deployed sitemap, not a hard-coded historical page count. **Observed:** [External SEO audit #40986751453](https://github.com/rf24kja/24GO.top/actions/runs/40986751453) passed at 2026-10-30 01:35 UTC after merge of [PR #86](https://github.com/rf24kja/24GO.top/pull/86). The job log explicitly reports PASS for **12 sitemap pages**, all nine engineering articles, `robots.txt`, RSS, homepage CSS/JS, canonical self URLs and HTTP/www 301 redirects preserving article path and query. This is the first complete live audit after the three new guides.
 - Neither a passing source test nor an HTTPS response proves Google/Bing index coverage, impressions, clicks, RSS subscribers, unique readers or AI answer citations. All remain **unmeasured** without their respective authoritative telemetry. No live DNS/Pages configuration, Supabase or billing was changed.
