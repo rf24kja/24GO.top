@@ -104,3 +104,14 @@ test('canonical homepage WebSite entity identifies real 24GOTOP and 8 existing l
  assert.ok(html.indexOf('<script type="application/ld+json">')<html.indexOf('</head>'));
  assert.doesNotMatch(blocks[0][1],/service_role|PUBLISH_API_KEY|sb_secret_/);
 });
+
+
+test('external post-deploy audit checks live WebSite identity rather than trusting merged source',()=>{
+ const script=readFileSync(new URL('../scripts/check-live-seo.sh',import.meta.url),'utf8');
+ assert.match(script,/grep -Fq -- '"@type": "WebSite"' "\$tmp\/home"/);
+ assert.match(script,/grep -Fq -- '"name": "24GOTOP"' "\$tmp\/home"/);
+ assert.match(script,/grep -Fq -- '"url": "https:\/\/24go\.top\/"' "\$tmp\/home"/);
+ assert.match(script,/grep -Fq -- '"@id": "https:\/\/24go\.top\/#website"' "\$tmp\/home"/);
+ assert.match(script,/Live homepage is missing verified WebSite/);
+ assert.doesNotMatch(script,/curl.*-k\b/);
+});

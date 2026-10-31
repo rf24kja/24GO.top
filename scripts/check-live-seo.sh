@@ -42,6 +42,18 @@ if ! grep -Fq -- 'OPEN SOURCE · PRE-LAUNCH' "$tmp/home"; then
   echo '::error::Deployed homepage lost the public pre-launch disclosure'
   failures=$((failures+1))
 fi
+# Verify that the site's declared identity actually reached GitHub Pages.
+# The static source/PR alone cannot establish a live search-crawl contract.
+if ! grep -Fq -- '"@type": "WebSite"' "$tmp/home" ||
+   ! grep -Fq -- '"name": "24GOTOP"' "$tmp/home" ||
+   ! grep -Fq -- '"url": "https://24go.top/"' "$tmp/home" ||
+   ! grep -Fq -- '"@id": "https://24go.top/#website"' "$tmp/home"; then
+  echo '::error::Live homepage is missing verified WebSite structured-data identity'
+  failures=$((failures+1))
+else
+  echo 'PASS public WebSite identity: 24GOTOP canonical source'
+fi
+
 probe '/robots.txt' robots 'Sitemap: https://24go.top/sitemap.xml'
 probe '/sitemap.xml' sitemap '<loc>https://24go.top/engineering/'
 probe '/engineering/' index '<h1>Engineering notes</h1>'

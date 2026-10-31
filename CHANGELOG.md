@@ -1,5 +1,9 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-31 — Live verification for canonical site-name markup
+
+- Extend the public GitHub-hosted read-only HTTPS SEO audit to assert actual deployed root WebSite JSON-LD name, origin and stable ID. Add static regression protecting the probe. This closes the difference between source-only SEO tests and independently delivered markup. No site content, DNS, private Core or credentials changed.
+
 ## 2026-10-31 — Truthful WebSite identity for SEO/GEO
 
 - Add minimal canonical root `WebSite` JSON-LD with grounded project brand and actual locale URLs, verified by source tests. No fake user metrics or launch features, private backend, paid tools or indexing claims.

@@ -1,8 +1,10 @@
 # Public crawlability and indexing — verified 2026-10-31
 
-## Source-proposed accurate WebSite identity — 31 October 2026
+## Canonical WebSite identity source merged and static Pages released — 31 October 2026
 
 The public English canonical homepage declares a minimal inert `schema.org/WebSite` JSON-LD entity with the verified project brand, canonical root URL, matching meta description and eight real language versions. Regression tests check on-disk locale HTML, reciprocal homepage hreflang and the sitemap. The change does NOT invent user adoption, reviews, registered-organization status or an unavailable public search endpoint. It does not claim Google indexing, rankings, impressions or AI citations.
+
+**Release evidence:** public [PR #126](https://github.com/rf24kja/24GO.top/pull/126), exact merged `a87310ba5f432dcb1546a997742a4deb48cc58e3`, [public Pages deploy #41203226060](https://github.com/rf24kja/24GO.top/actions/runs/41203226060), [post-deploy external SEO audit #41203265026](https://github.com/rf24kja/24GO.top/actions/runs/41203265026) and [Draft Lab smoke #41203265114](https://github.com/rf24kja/24GO.top/actions/runs/41203265114) all passed. The previous external SEO audit validated canonical URLs and site delivery but **did not explicitly assert WebSite JSON-LD**; this follow-up adds that specific live assertion. Do not report live markup verified until the updated probe actually passes.
 
 This is a modest **site-name clarity** measure, not a GEO hack. Google Search Central: https://developers.google.com/search/docs/appearance/site-names and https://developers.google.com/search/docs/fundamentals/ai-optimization-guide. Public Pages deploy and HTTPS verification must be measured separately from PR CI.
 
