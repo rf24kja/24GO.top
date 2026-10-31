@@ -58,7 +58,7 @@ test('premiere image remains responsive, focus accessible and motion/privacy saf
  assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
  assert.match(home,/<a class="skip" href="#main-content">Skip to main content<\/a>/);
  // The only form is a native GET to the public archive, never a write endpoint.
- assert.equal((home.match(/<form\\b/gi)||[]).length,1);
- assert.match(home,/<form class="hero-search" role="search" aria-label="[^"]+" method="get" action="\\.\\/engineering\\/">/);
+ assert.equal((home.match(/<form\b/gi)||[]).length,1);
+ assert.match(home,/<form class="hero-search" role="search" aria-label="[^"]+" method="get" action="\.\/engineering\/">/);
  assert.doesNotMatch(home,/method="post"|enctype=|onsubmit=|sb_secret_|PUBLISH_API_KEY/i);
 });
