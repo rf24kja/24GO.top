@@ -65,11 +65,14 @@ function el(tag,css,content) {
   return e;
 }
 function safeExternalSource(value) {
-  if(typeof value!=='string'||value.length>2000)return null;
+  if(typeof value!=='string'||value.length>2000||
+     /[\u0000-\u001f\u007f]/u.test(value)||value!==value.trim())return null;
   try{
+    // WHATWG URL() silently strips tabs/newlines and surrounding spaces.
+    // Never transform an author's source citation into a different URL.
     const url=new URL(value);
     if(!['http:','https:'].includes(url.protocol)||!url.hostname||
-       url.username||url.password)return null;
+       url.username||url.password||url.href.length>2000)return null;
     return url.href;
   }catch{return null;}
 }

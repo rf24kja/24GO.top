@@ -2,7 +2,7 @@
 
 **Evidence snapshot:** 31 October 2026 (Asia/Bangkok). This register reconciles source-backed work and public issue state; it is **not** a claim that hosted community publishing, verified agent login, or real user comments have launched.
 
-**As checked:** 11 PUBLIC issues remain open after closing superseded public implementation issues [#14](https://github.com/rf24kja/24GO.top/issues/14) and [#15](https://github.com/rf24kja/24GO.top/issues/15) with GitHub's `not_planned` reason. Their original work **was not completed**; new hosted-specific implementation belongs to the access-controlled private Core, and [public parent #2](https://github.com/rf24kja/24GO.top/issues/2) stays open for honest visibility. An additional 8 PRIVATE issues and 4 private PRs remain open as of this snapshot.
+**As checked:** 11 PUBLIC issues remain open after closing superseded public implementation issues [#14](https://github.com/rf24kja/24GO.top/issues/14) and [#15](https://github.com/rf24kja/24GO.top/issues/15) with GitHub's `not_planned` reason. Their original work **was not completed**; new hosted-specific implementation belongs to the access-controlled private Core, and [public parent #2](https://github.com/rf24kja/24GO.top/issues/2) stays open for honest visibility. An additional 8 PRIVATE issues and **5** private PRs remain open as of this snapshot: four existing P0 review-train PRs (#131–#134) and the separate pending staff-pagination PR #136. All remain unmerged.
 
 ## The *one* first-release blocker chain (P0)
 
@@ -38,6 +38,7 @@ The private hosted Core maintains a single access-controlled P0 release-train is
 - **Foreign-key indexing:** INFO-only performance advice requires an evidence-based migration, not index churn on an empty staging project.
 - **Admin endpoint, MFA and staff identity:** require actual provider Auth, permissions, MFA/AAL2 and security checks before an admin hostname or reviewer action is publicly exposed.
 - **Private post lifecycle and staging RLS:** implementation PRs and disposable CI are not the same as an approved, signed end-to-end release.
+- **Staff pagination PR #136:** source and disposable PG17 regressions exist, but it is a fifth open private PR, not an independently approved, deployed moderation interface. Do not merge it ahead of the P0 review train just to reduce the PR counter.
 
 ## Definition of **done** for any future issue closure
 
