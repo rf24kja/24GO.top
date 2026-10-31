@@ -38,8 +38,21 @@ test('all real public article pages have matching visible byline, canonical meta
    assert.equal(json.author.name,'rf24kja');
   }else assert.equal(json.author.name,'24GOTOP Engineering');
   assert.match(html,/<link rel="alternate" type="application\/rss\+xml"/,file);
-  // Only inert structured-data scripts, never arbitrary active third-party scripts.
-  assert.doesNotMatch(html,/<script\b(?! type="application\/ld\+json">)|<iframe\b|sb_secret_|PUBLISH_API_KEY|service_role/i,file);
+  // Exactly one reviewed same-origin reader module may execute on article pages.
+  // Keep every other active script and all embedded remote scripts forbidden.
+  const scripts=[...html.matchAll(/<script\b([^>]*)>/g)];
+  assert.equal(scripts.length,2,'one Article JSON-LD plus one first-party reader module: '+file);
+  assert.deepEqual(scripts.map(x=>x[0]).sort(),[
+    '<script type="application/ld+json">',
+    '<script type="module" src="./article-reader.mjs">'
+  ].sort(),file);
+  assert.doesNotMatch(html,/<iframe\b|sb_secret_|PUBLISH_API_KEY|service_role/i,file);
+  const articleBody=html.match(/<article class="article">([\s\S]*?)<\/article>/)?.[1];
+  assert.ok(articleBody,file);
+  const anchors=[...articleBody.matchAll(/<h[23] id="(section-[a-z0-9-]+)">/g)].map(x=>x[1]);
+  assert.ok(anchors.length>=3,file);
+  assert.equal(new Set(anchors).size,anchors.length,'unique stable fragment IDs: '+file);
+  assert.doesNotMatch(articleBody,/<script\b/i,file);
   assert.ok(index.includes('href="./'+file+'"'),'archive: '+file);
   assert.ok(sitemap.includes('<loc>'+canonical+'</loc>'),'sitemap: '+file);
   const item=items.filter(x=>x.includes('<link>'+canonical+'</link>'));
