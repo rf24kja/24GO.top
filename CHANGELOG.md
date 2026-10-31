@@ -1,5 +1,9 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-31 — Prevent stale saved-draft loss across browser tabs
+
+- Detect external browser-storage changes to the currently open manual draft and immediately invalidate a stale saved baseline without changing editor text. Restore the native unsaved-work navigation guard, warn through the existing translated live status and detach the outdated slot so the next explicit save creates a separate copy instead of overwriting another tab. Preserve unaffected drafts and imported Markdown baselines. Add end-to-end simulated cross-tab conflict, deletion, clear, unrelated-event and explicit recovery tests, plus a published-asset HTTPS smoke assertion. No autosave, network upload, hosted write permission or private Core changes.
+
 ## 2026-10-31 — Independent live archive search release verification
 
 - Extend existing read-only GitHub-hosted HTTPS audit to fetch published engineering/search.js and require the shipped all-word search implementation and matching accessible archive help text. A successful Pages workflow without the new JS no longer passes this release-specific probe. No changes to static article content, Auth, telemetry or private Core.
