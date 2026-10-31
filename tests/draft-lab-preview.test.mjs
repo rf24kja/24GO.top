@@ -190,7 +190,7 @@ test('bounded Markdown tables parse two language-safe columns, alignment and esc
  const markdown=[
   'Intro paragraph.','',
   '| Field | Result |','| :--- | ---: |',
-  '| PostgreSQL | 17 |','| escaped \| pipe | <img onerror=evil()> |',
+  '| PostgreSQL | 17 |','| escaped \\| pipe | <img onerror=evil()> |',
   '','After the table.'
  ].join('\n');
  assert.deepEqual(parsePreviewBlocks(markdown),[
