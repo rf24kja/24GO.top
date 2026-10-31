@@ -1,5 +1,12 @@
 # 24GOTOP — Public Change Log
 
+## Unreleased — 31 October 2026: live HTTPS asset verifier repair
+
+- Fix stale GitHub Pages post-deployment smoke expectations from pre-redesign SVGs, which made [live release verification](https://github.com/rf24kja/24GO.top/actions/runs/41173788865) fail despite successful Pages delivery.
+- Verify current English visual claims, each of the seven native-language SVG URLs and text labels, and the tenth source-backed MCP article across live canonical HTML, RSS, JSON Feed, sitemap and full-text index.
+- Keep tests as read-only public HTTPS checks; no production write, credentials, custom domain, private database or infrastructure change.
+
+
 ## Unreleased — 31 October 2026: published MCP engineering article
 
 - Publish a tenth original source-backed technical guide explaining the merged read-only local article MCP server (#116), its exact tool boundaries, protocol-process tests, and unresolved publication/review gates.
