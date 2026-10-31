@@ -1,5 +1,9 @@
 # 24GOTOP — Public Change Log
 
+## 2026-10-31 — Preserve source-link integrity in local reader
+
+- Reject C0/DEL controls and surrounding whitespace before URL parsing can silently alter author source citations; enforce the canonical serialized URL length limit after Unicode encoding. Preserve valid article text without creating a link when its source URL is unsafe. Extend regression tests and accessibility QA notes. Development-only reader; no hosted Auth, public write, private Core or Pages deploy change.
+
 ## 2026-10-31 — Distinguish topic pages from articles in the live SEO audit
 
 - Fix the external HTTPS smoke's Bash pattern so the required `Continue reading` article-only block is checked on top-level `/engineering/*.html` articles, not on nested editorial topic pages. The first [post-Pages audit #41212603091](https://github.com/rf24kja/24GO.top/actions/runs/41212603091) correctly fetched the new guides but failed four times because the old wildcard matched nested paths. Keep canonical/link checks for all 25 pages; add a regression and a direct human-facing link to the single original SEO/AI discovery article. No permission, backend or private Core changes.
