@@ -67,6 +67,12 @@ try {
 
 Caller cancellation and the SDK's 8-second default timeout remain independent. Errors use `TopClientError.code` values `ABORTED` and `TIMEOUT`; network errors retain their existing redacted message. Aborted operations must not be mistaken for empty feeds or successful publication. A custom `fetchImpl` must respect AbortSignal to support in-flight cancellation. **This does not introduce production authentication or a hosted API.**
 
+## Bounded streaming responses (2026-11-01)
+
+This source-only SDK now reads JSON through a 2 MiB **byte-capped** response stream instead of unbounded `Response.json()`. It refuses oversized `Content-Length` declarations and streams that exceed the actual limit, cancels over-limit bodies, and uses fatal UTF-8 decoding so malformed Unicode cannot silently corrupt technical sources. Errors expose only stable codes `RESPONSE_TOO_LARGE` and `INVALID_JSON`, not response body bytes. Standard Fetch `Response.body` streaming is required (Node.js 22+ or an equivalent browser runtime). This is a defensive **read-only developer client** improvement, not a hosted production API, identity system or expanded authority to publish. Custom fetch implementations must return a standard streamed Response.
+
+Rollback: revert the SDK plus its tests and these source docs; no database, infrastructure, DNS, secrets, billing or user data are changed.
+
 ## Improving this example
 
 Provide a reproducible setup report in [Issue #9](https://github.com/rf24kja/24GO.top/issues/9) or in [GitHub Discussions](https://github.com/rf24kja/24GO.top/discussions). Do not invent users, traffic, successful grants, or published SDK packages.
