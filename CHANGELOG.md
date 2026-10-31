@@ -1,5 +1,12 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-01 — Guided, privacy-preserving technical writing workflow
+
+- Add two structured writing starters — **technical guide** and **case study** — with original article-language section prompts across EN/RU/TH/ES/FR/DE/PT/ZH. Both actions only append to author Markdown after an explicit click, preserve existing content and enforce the 12,000-character limit; no automatic save or upload.
+- Introduce a live **six-point editorial checklist** for headline, content, sections, reproducible examples, citations and unfinished TODO placeholders, plus an approximate local reading-time estimate. This is advice, **not a release gate**, credential, moderation approval, or guarantee of quality.
+- Keep the existing portable `.md` import/export format, optional browser vault, author ownership and prelaunch disclosures unchanged. Add negative/Unicode/template/browser-interaction tests and post-Pages HTTPS release-content checks. Human mobile and language review remain pending.
+- Rollback: revert the static-site PR. No private Core, VPS, Supabase permissions, DNS, payments or secrets involved.
+
 ## 2026-11-01 — Numbered authoring steps and local multilingual word count
 
 - Add an accessible numbered Markdown list toolbar button and an approximate, privacy-preserving word meter to the existing browser-only Draft Lab. Use locale-aware `Intl.Segmenter` for eight author languages (including unspaced Thai/CJK); older browsers use an explicitly approximate Unicode fallback. Preserve local-only exports, the previous Markdown file format and manual browser drafts. Extend source tests and the post-Pages HTTPS probe to require the newly delivered editor assets. Real-screen/mobile and native-language validation still outstanding. Rollback: revert this public source-only PR; no backend or DNS changes.

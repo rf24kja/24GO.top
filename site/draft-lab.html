@@ -55,8 +55,21 @@
             <button id="formatLink" type="button" aria-label="Insert HTTP or HTTPS citation link" data-ui-label="link" data-ui="link">Link</button>
           </div>
           <p class="hint format-help" data-ui="formatHelp">Select text to format it, or place the cursor to insert an editable placeholder. Export to keep changes.</p>
+          <section class="draft-starters" aria-labelledby="templateHeading">
+            <h3 id="templateHeading" data-ui="templateHeading">Article starters</h3>
+            <p class="hint" data-ui="templateHelp">Add editable Markdown sections in your article language. Nothing is replaced, sent, or saved automatically.</p>
+            <div class="draft-starters__controls">
+              <label for="draftTemplate" data-ui="templateLabel">Article structure</label>
+              <select id="draftTemplate" data-ui-label="templateLabel" aria-label="Article structure">
+                <option value="guide" data-ui="templateGuide">Technical guide</option>
+                <option value="caseStudy" data-ui="templateCaseStudy">Case study</option>
+              </select>
+              <button id="insertTemplate" type="button" class="secondary" data-ui="templateInsert">Append sections</button>
+            </div>
+          </section>
           <div class="meter" id="bodyCount" aria-live="off">0 / 12,000</div>
           <div class="meter" id="bodyWordCount" aria-live="off">Approx. words: 0</div>
+          <div class="meter" id="draftReadingTime" aria-live="off">Approx. reading time: 0 min</div>
           <label for="postSource"><span data-ui="source">Original source</span> <span class="hint" data-ui="sourceHint">optional HTTPS/HTTP link</span></label>
           <input id="postSource" name="source" type="url" placeholder="https://example.org/research">
           <p class="tiny" data-ui="importHint">Only files previously exported by Draft Lab can be reopened. Imported text stays in this browser tab; original files remain on your device. Export again to keep new changes.</p>
@@ -103,6 +116,19 @@
         <div class="panel-head"><div><span class="eyebrow" data-ui="review">02 / REVIEW</span><h2 id="preview-title" data-ui="reader">Reader preview</h2></div><span class="pill" data-ui="local">Local only</span></div>
         <div class="preview-meta"><span id="previewCategory">Guides</span><span id="previewLocale">EN</span><span data-ui="notPublished">Draft · Not published</span></div>
         <h3 id="previewHeading" data-ui="emptyTitle">Your title will appear here.</h3>
+        <section class="draft-guidance" aria-labelledby="guidanceHeading">
+          <h4 id="guidanceHeading" data-ui="guidanceHeading">Editorial suggestions</h4>
+          <p class="hint" data-ui="guidanceHint">Local writing prompts, not approval to publish. You decide what belongs in the article.</p>
+          <p class="draft-guidance__score" id="guidanceScore" aria-live="off">Suggestions met: 0 / 6</p>
+          <ul>
+            <li><span data-ui="checkTitle">Descriptive title</span><span id="guideTitleState" class="guidance-state">Review</span></li>
+            <li><span data-ui="checkBody">Article content</span><span id="guideBodyState" class="guidance-state">Review</span></li>
+            <li><span data-ui="checkHeadings">Clear sections</span><span id="guideHeadingsState" class="guidance-state">Review</span></li>
+            <li><span data-ui="checkSteps">Steps or code example</span><span id="guideStepsState" class="guidance-state">Review</span></li>
+            <li><span data-ui="checkSource">Reference or source link</span><span id="guideSourceState" class="guidance-state">Review</span></li>
+            <li><span data-ui="checkComplete">No TODO placeholders</span><span id="guideCompleteState" class="guidance-state">Review</span></li>
+          </ul>
+        </section>
         <section id="articleOutlineSection" class="article-outline" aria-labelledby="articleOutlineTitle" hidden>
           <h4 id="articleOutlineTitle" data-ui="outlineTitle">Article sections</h4>
           <nav id="articleOutline" aria-label="Jump to a section of this draft" data-ui-label="outlineLabel"></nav>

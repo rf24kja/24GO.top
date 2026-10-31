@@ -2,6 +2,7 @@
 
 import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, readDraftFileStrict, formatDraftSelection, countDraftWords, createDraftImportGate, invalidDraftField } from './draft-lab-logic.js';
 import { renderMarkdownPreview,renderPreviewOutline } from './draft-lab-preview.js';
+import {appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS} from './draft-lab-guidance.js';
 import { applyUiLanguage,uiText } from './draft-lab-i18n.js';
 import { buildArticleProposalUrl } from './draft-lab-proposal.js';
 import {createDraftVault,MAX_SAVED_DRAFTS,MAX_VAULT_BACKUP_BYTES,VAULT_KEY} from './draft-lab-vault.js';
@@ -127,6 +128,16 @@ function preview() {
   field('bodyCount').textContent = body.value.length.toLocaleString('en-US') + ' / 12,000';
   field('bodyWordCount').textContent = ui('wordCount') +
     countDraftWords(body.value,locale.value).toLocaleString('en-US');
+  const guidance=analyzeDraftGuidance(currentDraft());
+  field('draftReadingTime').textContent=ui('readingTime')+
+    guidance.readingMinutes.toLocaleString('en-US')+ui('readingMinutes');
+  field('guidanceScore').textContent=ui('guidanceScore')+
+    guidance.completed+' / '+guidance.total;
+  for(const key of GUIDANCE_KEYS){
+    const state=field('guide'+key[0].toUpperCase()+key.slice(1)+'State');
+    state.textContent=guidance.checks[key]?ui('guidanceDone'):ui('guidanceMissing');
+    state.dataset.passed=String(guidance.checks[key]);
+  }
   const link = safeSourceUrl(source.value);
   const node = field('previewSource');
   node.hidden = !link;
@@ -159,6 +170,24 @@ for(const [id,action] of [['formatBold','bold'],['formatItalic','italic'],
   }
  });
 }
+
+// Explicit, append-only template action. Never replace unsaved text or make
+// a background write; inserted TODO hints are part of the editable Markdown.
+field('insertTemplate').addEventListener('click',()=>{
+ try{
+  const next=appendDraftTemplate(body.value,field('draftTemplate').value,locale.value);
+  body.value=next;
+  body.setSelectionRange(next.length,next.length);
+  importGate.changed();
+  clearFieldError(body);
+  preview();
+  updateValidationNotice();
+  body.focus();
+  message(ui('templateAdded'));
+ }catch(error){
+  message(error instanceof RangeError?ui('templateLimit'):ui('templateInvalid'),true);
+ }
+});
 
 function readyToExport() {
   clearFieldErrors();

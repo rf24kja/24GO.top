@@ -96,3 +96,23 @@ test('authoring controls have translated labels and are wired to local-only logi
  assert.match(code,/countDraftWords\(body\.value,locale\.value\)/);
  assert.match(code,/\['formatOrderedList','orderedList'\]/);
 });
+
+test('guided local article workflow is fully translated and has accessible landmarks',()=>{
+ for(const locale of UI_LOCALES){
+  for(const key of ['templateHeading','templateHelp','templateLabel','templateGuide',
+   'templateCaseStudy','templateInsert','templateAdded','templateLimit',
+   'templateInvalid','readingTime','readingMinutes','guidanceHeading',
+   'guidanceHint','guidanceScore','guidanceDone','guidanceMissing','checkTitle',
+   'checkBody','checkHeadings','checkSteps','checkSource','checkComplete']){
+    assert.equal(typeof uiText(locale,key),'string',locale+'/'+key);
+    assert.ok(uiText(locale,key).trim().length>1,locale+'/'+key);
+  }
+ }
+ assert.match(html,/id="draftTemplate"[^>]+data-ui-label="templateLabel"/);
+ assert.match(html,/id="insertTemplate" type="button"/);
+ assert.match(html,/id="draftReadingTime" aria-live="off"/);
+ assert.match(html,/class="draft-guidance" aria-labelledby="guidanceHeading"/);
+ assert.match(code,/appendDraftTemplate\(body\.value,field\('draftTemplate'\)\.value,locale\.value\)/);
+ assert.match(code,/analyzeDraftGuidance\(currentDraft\(\)\)/);
+ assert.doesNotMatch(i18n,/\bfetch\s*\(|sendBeacon|XMLHttpRequest|document\.cookie/);
+});

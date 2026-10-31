@@ -101,6 +101,14 @@ probe '/draft-lab.html' draftlab 'id="formatOrderedList"'
 probe '/draft-lab.js' draftlab_js 'countDraftWords(body.value,locale.value)'
 probe '/draft-lab-logic.js' draftlab_logic 'export function countDraftWords'
 probe '/draft-lab-i18n.js' draftlab_i18n "orderedList:"
+probe '/draft-lab-guidance.js' draftlab_guidance 'export function analyzeDraftGuidance'
+if ! grep -Fq -- 'id="insertTemplate"' "$tmp/draftlab" ||
+   ! grep -Fq -- 'id="guidanceScore"' "$tmp/draftlab" ||
+   ! grep -Fq -- 'id="draftReadingTime"' "$tmp/draftlab" ||
+   ! grep -Fq -- 'appendDraftTemplate(' "$tmp/draftlab_js"; then
+  echo '::error::Deployed Draft Lab is missing guided authoring functionality'
+  failures=$((failures+1))
+fi
 probe '/engineering/' index '<h1>Engineering notes</h1>'
 # Curated, JavaScript-free topical reading paths must ship as actual HTML.
 for topic in security writing infrastructure publishing; do
