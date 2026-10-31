@@ -33,10 +33,41 @@ probe() {
 
 
 # Runtime release receipt is generated inside the Pages runner at exact
-# checkout SHA. A green source CI without this public HTTPS receipt is NOT
-# evidence that the intended build was actually delivered.
+# checkout SHA. A source CI success alone is not proof of CDN delivery.
 probe '/release.json' release '"pages_run_id":'
-if ! grep -Eq '^\{"commit":"[0-9a-f]{40}","pages_run_id":"[0-9]+"\}
+if ! grep -Eq '^\{"commit":"[0-9a-f]{40}","pages_run_id":"[0-9]+"\}$' "$tmp/release"; then
+  echo '::error::Deployed Pages release receipt is malformed or missing'
+  failures=$((failures+1))
+fi
+
+if [[ -n "${EXPECTED_PAGES_SHA:-}" || -n "${EXPECTED_PAGES_RUN_ID:-}" ]]; then
+  if [[ ! "${EXPECTED_PAGES_SHA:-}" =~ ^[0-9a-f]{40}$ ||
+        ! "${EXPECTED_PAGES_RUN_ID:-}" =~ ^[0-9]+$ ]]; then
+    echo '::error::Invalid GitHub Pages workflow_run provenance'
+    failures=$((failures+1))
+  else
+    expected_receipt=$(printf '{"commit":"%s","pages_run_id":"%s"}' "$EXPECTED_PAGES_SHA" "$EXPECTED_PAGES_RUN_ID")
+    receipt_matched=false
+    # A cache-busted public URL avoids falsely accepting an older CDN build.
+    for attempt in 1 2 3 4; do
+      if curl --fail --silent --show-error --location --max-redirs 3 --connect-timeout 10 --max-time 20 -H 'Cache-Control: no-cache' --output "$tmp/exact-release" "$base/release.json?audit=$EXPECTED_PAGES_RUN_ID" &&
+         grep -Fxq -- "$expected_receipt" "$tmp/exact-release"; then
+        receipt_matched=true
+        break
+      fi
+      if [[ "$attempt" -lt 4 ]]; then sleep 5; fi
+    done
+    if [[ "$receipt_matched" != true ]]; then
+      echo "::error::Public Pages did not serve completed workflow commit $EXPECTED_PAGES_SHA (run $EXPECTED_PAGES_RUN_ID)"
+      failures=$((failures+1))
+    else
+      echo "PASS exact public Pages release: commit $EXPECTED_PAGES_SHA, run $EXPECTED_PAGES_RUN_ID"
+    fi
+  fi
+fi
+
+probe '/' home '<link rel="stylesheet" href="./landing.css">'
+
 probe '/landing.css' gridcss '.site-grid__glow'
 if ! grep -Fq -- '.hero-search__controls{display:flex' "$tmp/gridcss"; then
   echo '::error::Live homepage CSS lacks responsive native search layout'
