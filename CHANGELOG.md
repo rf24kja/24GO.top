@@ -1,5 +1,10 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-01 — Portable offline reading library
+
+- Extend the explicit local-only saved-public-article list with a title filter, per-saved-row removal, **Copy shown links** as Markdown, and JSON backup export/import with strict UTF-8, version, kind, byte-size and canonical allowlist validation. An import merges with the latest on-device list only after user confirmation; invalid inputs are rejected entirely. No automatic downloads, tracking, external requests or implicit storage writes.
+- Preserve existing version-1 saved-link storage, no-JavaScript reading, responsiveness, cross-tab refresh, and explicit unencrypted-storage disclosure. Add user-interaction, backup rejection and full regression tests, documentation and post-Pages HTTPS content probe. No hosted Core, privileged credentials, Supabase or production write API change. Rollback is public PR revert.
+
 ## 2026-11-01 — Opt-in on-device reading list for published articles
 
 - Add a reader-controlled **Save for later** / **Remove from reading list** action to each already published engineering note. Only exact, existing, canonical article filenames may be stored in the browser, with a strict 50-item maximum, validated versioned storage, a visible list of accessible links, cross-tab refresh, and explicit **Clear saved links** confirmation. No automatic browser writes on page load, user account, article tracking, network requests, drafts or remote analytics.
