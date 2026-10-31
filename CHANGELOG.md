@@ -1,5 +1,9 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-01 — Exact public Pages release provenance
+
+- GitHub Pages now writes a public, nonsecret `release.json` into the deployed static artifact, containing the actual `main` commit SHA and Pages workflow run ID. The independent post-deploy HTTPS audit compares both fields with the completed deploy workflow, using cache-busting and bounded retries. Scheduled/manual checks verify receipt shape without conflating an older deployment with the newest commit. This addresses the source-CI-vs-public-CDN release evidence gap, not hosted Core, authenticated writes or SEO indexing. No infra/DNS/account change; rollback is a workflow/script revert. Actual remote delivery must still be verified from the completed GitHub-hosted audit.
+
 ## 2026-11-01 — Search published engineering articles from every homepage
 
 - Add direct, accessible native GET search on eight localized static homepages, routing to the existing English technical-article archive without hosted writes or analytics. Include URL-query privacy disclosure, mobile responsive CSS, eight-route source tests, and post-deployment HTTPS assertions. Preserve the pre-launch disclosure; native translation and real-device accessibility testing remain pending. Rollback is a static source-only PR revert.
