@@ -17,6 +17,8 @@
 
 - [JavaScript SDK API key safety](https://24go.top/engineering/javascript-sdk-api-key-leak-prevention.html): Loopback-bound development tokens and tests for remote-host leakage.
 
+- [Read-only MCP article integration](https://24go.top/engineering/read-only-mcp-server-for-technical-articles.html): Local stdio tools, canonical article allowlist, process tests and explicit no-write boundary.
+
 ## Source and current capabilities
 - [Public repository](https://github.com/rf24kja/24GO.top): OSS SDK/API demos, source and tests.
 - [Project roadmap](https://github.com/rf24kja/24GO.top/blob/main/docs/ROADMAP.md): Planned features, not delivery claims.
