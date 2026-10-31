@@ -4,6 +4,7 @@ import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftConte
 import { renderMarkdownPreview,renderPreviewOutline } from './draft-lab-preview.js';
 import {appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS} from './draft-lab-guidance.js';
 import {captureDraftRevision,compareDraftRevisions,revisionSummary} from './draft-lab-revisions.js';
+import {createEditorialReviewPack,readEditorialReviewPackFile} from './draft-lab-review-pack.js';
 import { applyUiLanguage,uiText } from './draft-lab-i18n.js';
 import { buildArticleProposalUrl } from './draft-lab-proposal.js';
 import {createDraftVault,MAX_SAVED_DRAFTS,MAX_VAULT_BACKUP_BYTES,VAULT_KEY} from './draft-lab-vault.js';
@@ -500,6 +501,41 @@ field('downloadDraft').addEventListener('click', () => {
   // The browser may still be using the Blob immediately after the click.
   setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
   message(ui('downloadStarted') + anchor.download + ui('downloadSuffix'));
+});
+
+// Deliberate editorial hand-off; a package can expose the entire private
+// manuscript. Hash integrity is not a signature or editorial approval.
+field('downloadReviewPack').addEventListener('click',async()=>{
+ if(!readyToExport()||!window.confirm(ui('reviewPackConfirm')))return;
+ const draft=currentDraft();
+ try{
+  const pack=await createEditorialReviewPack(draft);
+  // Do not misrepresent the download as a successful saved backup.
+  // If the author changed text while the async digest ran, decline export.
+  if(hasUnexportedChanges(currentDraft(),draft)){
+   message(ui('reviewPackInterrupted'),true);return;
+  }
+  const blob=new Blob([pack],{type:'application/json;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  try{
+   const a=document.createElement('a');
+   a.href=url;a.download='24gotop-editorial-review-pack.json';
+   document.body.append(a);a.click();a.remove();
+  }finally{setTimeout(()=>URL.revokeObjectURL(url),10000);}
+  message(ui('reviewPackExported'));
+ }catch{message(ui('reviewPackError'),true);}
+});
+field('verifyReviewPack').addEventListener('click',()=>field('reviewPackFile').click());
+field('reviewPackFile').addEventListener('change',async event=>{
+ const input=event.currentTarget,file=input.files?.[0];
+ if(!file)return;
+ try{
+  const result=await readEditorialReviewPackFile(file);
+  // Checking a package is non-destructive. Never replace the current draft,
+  // browser vault, file import baseline or revision history.
+  message(ui('reviewPackValid')+result.bytes.toLocaleString('en-US')+ui('reviewPackValidSuffix'));
+ }catch{message(ui('reviewPackInvalid'),true);}
+ finally{input.value='';}
 });
 
 // On this local editor only, Ctrl/Cmd+S explicitly downloads the Markdown
