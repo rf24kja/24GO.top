@@ -29,7 +29,7 @@ test('MCP discovery and legacy initialize advertise read-only tools and resource
  assert.equal(initialized.result.protocolVersion,'2025-11-25');
  const tools=handleMcpRequest(query('tools/list',{_meta:modernMeta}),articles).result;
  assert.equal(tools.resultType,'complete');
- assert.deepEqual(tools.tools.map(x=>x.name),['search_articles','read_article','list_articles']);
+ assert.deepEqual(tools.tools.map(x=>x.name),['search_articles','search_articles_page','read_article_excerpt','read_article','list_articles']);
  assert.ok(tools.tools.every(x=>x.inputSchema.additionalProperties===false));
 });
 
@@ -58,6 +58,58 @@ test('tools search actual published article body and return useful canonical URL
  assert.ok(resource.contents[0].text.length>300);
 });
 
+test('paged search returns deterministic canonical public results and nextOffset',()=>{
+ const first=handleMcpRequest(query('tools/call',{
+  name:'search_articles_page',
+  arguments:{query:'security',limit:2,offset:0},_meta:modernMeta
+ }),articles).result;
+ assert.equal(first.resultType,'complete');
+ const data=JSON.parse(first.content[0].text);
+ assert.ok(data.total>=2);
+ assert.equal(data.offset,0);
+ assert.equal(data.articles.length,2);
+ assert.equal(data.nextOffset,2);
+ assert.ok(data.articles.every(x=>articles.some(item=>item.url===x.url)));
+ assert.ok(data.articles.every(x=>['title','summary','article'].includes(x.matchedIn)));
+ const next=handleMcpRequest(query('tools/call',{
+  name:'search_articles_page',
+  arguments:{query:'security',limit:2,offset:2}
+ }),articles).result;
+ const nextData=JSON.parse(next.content[0].text);
+ assert.ok(nextData.articles.every(x=>!data.articles.some(y=>y.url===x.url)));
+ const none=handleMcpRequest(query('tools/call',{
+  name:'search_articles_page',
+  arguments:{query:'security',limit:2,offset:200}
+ }),articles).result;
+ const last=JSON.parse(none.content[0].text);
+ assert.deepEqual(last.articles,[]);
+ assert.equal(last.nextOffset,null);
+});
+
+test('read_article_excerpt returns bounded Unicode-safe plain text and canonical metadata',()=>{
+ const source=articles[0].url;
+ const first=handleMcpRequest(query('tools/call',{
+  name:'read_article_excerpt',arguments:{url:source,maxChars:300},_meta:modernMeta
+ }),articles).result;
+ assert.equal(first.resultType,'complete');
+ const chunk=JSON.parse(first.content[0].text);
+ assert.equal(chunk.url,source);
+ assert.equal(chunk.textKind,'lossy-extracted-public-html');
+ assert.equal(Array.from(chunk.excerpt).length,300);
+ assert.equal(chunk.nextOffset,300);
+ assert.ok(chunk.totalCharacters>=300);
+ assert.match(chunk.note,/untrusted/i);
+ const second=handleMcpRequest(query('tools/call',{
+  name:'read_article_excerpt',
+  arguments:{url:source,offset:chunk.nextOffset,maxChars:300}
+ }),articles).result;
+ const page=JSON.parse(second.content[0].text);
+ assert.equal(page.offset,chunk.nextOffset);
+ assert.equal(page.end,page.nextOffset);
+ assert.ok(!page.excerpt.startsWith(chunk.excerpt));
+ assert.ok(!JSON.stringify(first).includes('PUBLISH_API_KEY'));
+});
+
 test('untrusted input cannot read arbitrary files, write data or send external requests',()=>{
  for(const args of [
   {name:'read_article',arguments:{url:'file:///etc/passwd'}},
@@ -66,6 +118,15 @@ test('untrusted input cannot read arbitrary files, write data or send external r
   {name:'search_articles',arguments:{query:'x'.repeat(81)}},
   {name:'search_articles',arguments:{query:'',limit:1}},
   {name:'search_articles',arguments:{query:'security',limit:100}},
+  {name:'search_articles_page',arguments:{query:'control\ncharacter',offset:0}},
+  {name:'search_articles_page',arguments:{query:'security',offset:-1}},
+  {name:'search_articles_page',arguments:{query:'security',offset:201}},
+  {name:'search_articles_page',arguments:{query:'security',offset:1.5}},
+  {name:'read_article_excerpt',arguments:{url:articles[0].url,maxChars:20}},
+  {name:'read_article_excerpt',arguments:{url:articles[0].url,maxChars:4001}},
+  {name:'read_article_excerpt',arguments:{url:articles[0].url,offset:28000}},
+  {name:'read_article_excerpt',arguments:{url:'file:///etc/shadow'}},
+  {name:'read_article_excerpt',arguments:{url:articles[0].url,token:'secret'}},
   {name:'publish_article',arguments:{body:'new article'}}
  ]){
   const reply=handleMcpRequest(query('tools/call',args),articles);
@@ -98,7 +159,7 @@ test('stdio child process speaks newline JSON-RPC without logs mixed into stdout
  assert.equal(replies.length,4,stdout);
  assert.deepEqual(replies.map(x=>x.id),[1,2,3,4]);
  assert.equal(replies[0].result.resultType,'complete');
- assert.equal(replies[1].result.tools.length,3);
+ assert.equal(replies[1].result.tools.length,5);
  assert.equal(JSON.parse(replies[2].result.content[0].text).length,2);
  assert.equal(replies[3].result.protocolVersion,'2025-11-25');
  assert.equal(stderr,'');
