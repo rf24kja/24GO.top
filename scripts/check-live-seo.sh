@@ -57,6 +57,14 @@ fi
 probe '/robots.txt' robots 'Sitemap: https://24go.top/sitemap.xml'
 probe '/sitemap.xml' sitemap '<loc>https://24go.top/engineering/'
 probe '/engineering/' index '<h1>Engineering notes</h1>'
+# The public archive's UX is a client-side enhancement; verify its actual
+# deployed, same-origin JavaScript instead of mistaking source CI for delivery.
+probe '/engineering/search.js' archive_search 'words.every(word=>entry.searchable.includes(word)'
+if ! grep -Fq -- '<script src="./search.js" defer></script>' "$tmp/index" ||
+   ! grep -Fq -- 'Find articles containing all search words' "$tmp/index"; then
+  echo '::error::Live article archive is missing the shipped multi-word search UI'
+  failures=$((failures+1))
+fi
 probe '/engineering/feed.xml' feed '<rss version="2.0">'
 probe '/engineering/feed.json' jsonfeed '"version": "https://jsonfeed.org/version/1.1"'
 # Cross-check deployed RSS permalinks against the JSON alternative.

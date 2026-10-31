@@ -294,3 +294,14 @@ test('offline full-text fallback still applies all-word matching and preserves n
  assert.match(code,/words\.every\(/);
  assert.doesNotMatch(code,/innerHTML|localStorage|sessionStorage|sendBeacon/);
 });
+
+
+test('post-deployment SEO smoke verifies the actual archive multi-word search release',()=>{
+ const audit=readFileSync(new URL('../scripts/check-live-seo.sh',import.meta.url),'utf8');
+ assert.match(audit,/probe '\/engineering\/search\.js' archive_search 'words\.every\(word=>entry\.searchable\.includes\(word\)'/);
+ assert.match(audit,/Find articles containing all search words/);
+ assert.match(audit,/Live article archive is missing the shipped multi-word search UI/);
+ // Verify that feature assertions are backed by actual source.
+ assert.match(code,/words\.every\(word=>entry\.searchable\.includes\(word\)/);
+ assert.match(html,/Find articles containing all search words/);
+});
