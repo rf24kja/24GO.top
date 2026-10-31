@@ -1,5 +1,10 @@
 # Public crawlability and indexing — verified 2026-10-31
 
+## Topic-page audit correction (2026-10-31)
+
+The first completed-Pages SEO workflow after public PR #135, [run #41212603091](https://github.com/rf24kja/24GO.top/actions/runs/41212603091), confirmed HTTP 200/canonical delivery of **all four new topic guides**, but reported four misleading errors: its old Bash glob `/engineering/*.html` also matched `/engineering/topics/*.html`, requiring the **article-only** related-reading component on thematic guide pages. This is a test-type mismatch, not a hidden production outage or a missing topic guide. The current corrective PR changes this check to a bounded single-segment regex, retaining the all-sitemap canonical checks and explicit topic-page content tests. The archive also links directly to the one published discovery checklist, rather than adding an empty fifth collection. Validate through a new protected main commit, successful Pages run, and **post-Pages** external audit; keep the original failed run visible.
+
+
 ## Source-backed editorial topic guides (31 October 2026)
 
 To help humans navigate ten verified original technical notes, four curated no-JavaScript reading paths are published at `/engineering/topics/{security,writing,infrastructure,publishing}.html`. Each is a real standalone page: unique purpose, recommended reading order, verification questions, pre-launch disclosure, clean canonical metadata and links to articles verified against the published RSS/Article JSON-LD feed and existing archive topics. They are linked visibly from the archive, described in the optional `llms.txt`, and included in `sitemap.xml` only through the explicit reviewed static URL list. The one-article discovery topic stays on the main archive rather than gaining a thin duplicate page. Four paths add four new canonical sitemap URLs; no user-generated content, fabricated dates, ratings or SearchAction are asserted.

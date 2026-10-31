@@ -106,7 +106,9 @@ for url in "${listed_urls[@]}"; do
   probe "$route" "page$item" "rel=\"canonical\" href=\"$url\""
   # Every published article now has two static, source-reviewed reading
   # paths. Check actual delivered HTML, not just the GitHub source.
-  if [[ "$route" == /engineering/*.html ]]; then
+  # Limit article-only assertions to a single path segment. The old Bash
+  # wildcard also matched /engineering/topics/*.html and gave false failures.
+  if [[ "$route" =~ ^/engineering/[a-z0-9-]+[.]html$ ]]; then
     if ! grep -Fq -- '<nav class="related-reading" aria-label="Continue reading">' "$tmp/page$item" ||
        ! grep -Fq -- '<li><a href="./' "$tmp/page$item"; then
       echo "::error::Live engineering article is missing static related reading: $route"
