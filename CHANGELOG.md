@@ -1,5 +1,10 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-01 — Opt-in on-device reading list for published articles
+
+- Add a reader-controlled **Save for later** / **Remove from reading list** action to each already published engineering note. Only exact, existing, canonical article filenames may be stored in the browser, with a strict 50-item maximum, validated versioned storage, a visible list of accessible links, cross-tab refresh, and explicit **Clear saved links** confirmation. No automatic browser writes on page load, user account, article tracking, network requests, drafts or remote analytics.
+- Preserve crawlable article links and ordinary reading without JavaScript or browser storage. Clearly disclose that the public URLs are saved unencrypted locally and can be lost when site data is cleared. Include fake-browser accessibility/security tests and post-Pages HTTPS release probes. Rollback: revert this static PR; existing local saved public link data can be deleted through Clear or normal browser site-data settings. No backend/DB migration.
+
 ## 2026-11-01 — Public full-text SDK search and shareable reading references
 
 - Extend the source-only `TopEditorialClient` with deterministic, bounded full-text `searchArticles` and strict-canonical `getArticleSearchText`, checking every static search-index record against the reviewed JSON feed. Keep the search terms local and never provide an arbitrary fetch target or private/hosted write permission. Fix the SDK's numeric Content-Length preflight matcher; retain actual stream limits. Add a working CLI, adversarial corpus and Unicode tests, and SDK docs.
