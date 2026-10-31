@@ -18,12 +18,12 @@
 <p class="details">24GOTOP engineering · <a href="https://github.com/rf24kja/24GO.top/pull/40">Implementation PR #40</a> · <a href="https://github.com/rf24kja/24GO.top/blob/main/tests/draft-lab-preview.test.mjs">Regression tests</a></p>
 <div class="note" role="note"><strong>Scope:</strong> this is a static, browser-only experiment. It cannot register users, publish to the network, or create permanent article URLs. A green unit-test suite is not an external security certification.</div>
 
-<h2 id="section-why-even-a-preview-deserves-a-threat-model-2">Why even a preview deserves a threat model</h2>
+<h2 id="section-why-even-a-preview-deserves-a-threat-model">Why even a preview deserves a threat model</h2>
 <p>Draft Lab originally inserted the article body as plain text. That kept hostile markup inert, but it made writing code-oriented articles harder to review. The naive alternative—taking user-controlled Markdown, treating it as HTML and assigning it to <code>innerHTML</code>—could turn a preview into an injection surface.</p>
 <p>Consider an example article about unsafe image handlers. The author may intentionally type markup resembling an HTML image tag with an event handler, or a fenced code sample that contains script tags. Those bytes are valid <em>documentation</em>. They should neither disappear nor become executable UI.</p>
 <p>Our scope was therefore narrower than “implement all Markdown.” We aimed to visually distinguish the blocks authors use most, while preserving the original text for export and avoiding new network or persistence paths.</p>
 
-<h2 id="section-the-implementation-explicit-tags-literal-content-2">The implementation: explicit tags, literal content</h2>
+<h2 id="section-the-implementation-explicit-tags-literal-content">The implementation: explicit tags, literal content</h2>
 <p>In <a href="https://github.com/rf24kja/24GO.top/pull/40">PR #40</a>, the new <a href="https://github.com/rf24kja/24GO.top/blob/main/site/draft-lab-preview.js">preview module</a> separates two operations. First, a small parser recognizes headings, paragraphs, lists, block quotes, horizontal rules and fenced code. Second, a renderer creates only a fixed set of ordinary DOM elements and assigns author-controlled strings through <code>textContent</code>.</p>
 <pre><code>const paragraph = document.createElement('p');
 paragraph.textContent = authorText;
@@ -31,7 +31,7 @@ container.replaceChildren(paragraph);</code></pre>
 <p>For a fenced block, the renderer creates <code>pre</code> and <code>code</code> elements, then assigns the code sample as text. For headings, it uses lower-level headings beneath the article title to avoid breaking the page's heading hierarchy. A small amount of CSS keeps code blocks scrollable within mobile layouts.</p>
 <p>At the time of PR #40, the renderer did not create interactive Markdown links: no Markdown-provided tag, attribute, URL or event handler was used. That baseline was intentionally narrower than full CommonMark. <strong>Update, 30 October 2026:</strong> <a href="https://github.com/rf24kja/24GO.top/pull/78">PR #78</a> subsequently introduced a bounded HTTP(S) citation-link syntax with a separate URL validator and fixed DOM-only anchor construction. Arbitrary raw HTML, image embeds, scripts and unsupported Markdown are still inert. Read <a href="./safe-markdown-citation-links-without-xss.html">the later security analysis</a> for the new trust boundary.</p>
 
-<h2 id="section-what-the-tests-actually-prove-2">What the tests actually prove</h2>
+<h2 id="section-what-the-tests-actually-prove">What the tests actually prove</h2>
 <p>The <a href="https://github.com/rf24kja/24GO.top/blob/main/tests/draft-lab-preview.test.mjs">Node tests</a> exercise headings, paragraphs, ordered and unordered lists, blockquotes, code fences and unclosed fences. They also pass HTML-like strings into the renderer and assert that the created node types are restricted and the suspicious markup remains in <code>textContent</code>.</p>
 <p>We retained the earlier Draft Lab import/export format: a writer can download a Markdown file, leave the tab and reopen that file later. The preview does not silently upload, save or normalize away the body of the original article.</p>
 <p>Developers can reproduce the source checks locally with Node.js 22 or newer:</p>
@@ -41,7 +41,7 @@ npm run check
 npm test</code></pre>
 <p>GitHub Actions succeeded on <a href="https://github.com/rf24kja/24GO.top/pull/40">PR #40</a>. These are automated source-level checks. We have not yet completed independent screen-reader, real-device or public-URL verification for the latest editor.</p>
 
-<h2 id="section-trade-offs-and-what-we-deliberately-did-not-build-2">Trade-offs and what we deliberately did not build</h2>
+<h2 id="section-trade-offs-and-what-we-deliberately-did-not-build">Trade-offs and what we deliberately did not build</h2>
 <ul>
 <li><strong>Not a full Markdown engine:</strong> inline emphasis, link rendering, nested lists, tables and syntax highlighting are not implemented. Unknown syntax stays visible as text.</li>
 <li><strong>Not a production content renderer:</strong> real published articles still need a reviewed Markdown pipeline, explicit content security policy, URL rules, attribution and moderation.</li>
@@ -49,7 +49,7 @@ npm test</code></pre>
 <li><strong>No measured adoption claim:</strong> unit tests do not tell us whether authors prefer this interface. That requires consenting volunteers and clear task results.</li>
 </ul>
 
-<h2 id="section-review-the-code-not-the-hype-2">Review the code, not the hype</h2>
+<h2 id="section-review-the-code-not-the-hype">Review the code, not the hype</h2>
 <p>We would value a review of the parser edge cases, mobile code overflow, keyboard behavior and accessible semantics. The <a href="https://github.com/rf24kja/24GO.top/issues/29">Draft Lab user pilot</a> still needs real independent participants; the <a href="https://github.com/rf24kja/24GO.top/issues/38">staging security test plan</a> concerns the separate authenticated publishing backend. Neither is marked complete by the preview PR.</p>
 <p>Which single code-oriented writing feature should we validate next: inline formatting, citations, syntax highlighting or an explicit Markdown source/preview switch? Bring a small reproducible case to <a href="https://github.com/rf24kja/24GO.top/issues/21">the publishing RFC</a> or the <a href="https://github.com/rf24kja/24GO.top/discussions">GitHub Discussions</a>.</p>
 <p class="source">Evidence: <a href="https://github.com/rf24kja/24GO.top/pull/40">merged PR #40</a>, <a href="https://github.com/rf24kja/24GO.top/blob/main/CHANGELOG.md">change log</a> and <a href="https://github.com/rf24kja/24GO.top/blob/main/docs/MODULE_READINESS.md">module readiness register</a>. This article describes source implementation and known limitations, not a launched hosted product.</p>
