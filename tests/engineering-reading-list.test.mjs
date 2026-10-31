@@ -85,3 +85,48 @@ test('save and remove actions persist only strict canonical public filenames',()
  assert.deepEqual(JSON.parse(app.store.get('24gotop-public-reading-list-v1')).files,[]);
  assert.equal(first.attributes['aria-pressed'],'false');
 });
+
+test('multi-tab storage notifications refresh the visible list without writing',()=>{
+ const app=setup();
+ const key='24gotop-public-reading-list-v1';
+ app.store.set(key,JSON.stringify({version:1,files:['research-two.html']}));
+ const before=app.writes.length;
+ app.window.listeners.storage({key,storageArea:app.storage});
+ assert.equal(app.writes.length,before);
+ assert.equal(app.cards[1].children[0].attributes['aria-pressed'],'true');
+ assert.equal(app.elements['reading-list-items'].children.length,1);
+ app.window.listeners.storage({key:'unrelated',storageArea:app.storage});
+ assert.equal(app.writes.length,before);
+});
+test('damaged or unknown stored links never become clickable',()=>{
+ const app=setup();
+ const key='24gotop-public-reading-list-v1';
+ app.store.set(key,JSON.stringify({version:1,files:['not-approved.html']}));
+ app.window.listeners.storage({key,storageArea:app.storage});
+ assert.equal(app.elements['reading-list-items'].children.length,0);
+ assert.equal(app.cards[0].children[0].disabled,true);
+ assert.match(app.elements['reading-list-status'].textContent,/damaged or unavailable/);
+ assert.equal(app.writes.length,0);
+});
+test('clearing saved links requires confirmation; denied clearing preserves them',()=>{
+ const app=setup();
+ const button=app.cards[0].children[0],clear=app.elements['reading-list-clear'];
+ button.listeners.click();
+ assert.equal(clear.hidden,false);
+ app.setApprove(false);
+ clear.listeners.click();
+ assert.equal(JSON.parse(app.store.get('24gotop-public-reading-list-v1')).files.length,1);
+ app.setApprove(true);
+ clear.listeners.click();
+ assert.equal(app.store.has('24gotop-public-reading-list-v1'),false);
+ assert.equal(clear.hidden,true);
+ assert.equal(app.elements['reading-list-items'].children.length,0);
+});
+test('no browser storage or unexpected article filename leaves static reading intact',()=>{
+ for(const opts of [{storageAccess:false},{badFile:true}]){
+  const app=setup(opts);
+  assert.equal(app.elements['reading-list-panel'].hidden,true);
+  assert.ok(app.cards.every(card=>card.children.length===0));
+  assert.equal(app.writes.length,0);
+ }
+});
