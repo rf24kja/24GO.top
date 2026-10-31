@@ -43,7 +43,7 @@ jobs:
           set -euo pipefail
           [[ "$PAGES_COMMIT" =~ ^[0-9a-f]{40}$ ]]
           [[ "$PAGES_RUN_ID" =~ ^[0-9]+$ ]]
-          printf '{"commit":"%s","pages_run_id":"%s"}\\n' "$PAGES_COMMIT" "$PAGES_RUN_ID" > site/release.json
+          printf '{"commit":"%s","pages_run_id":"%s"}\n' "$PAGES_COMMIT" "$PAGES_RUN_ID" > site/release.json
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload ONLY the static site
