@@ -1,5 +1,10 @@
 # 24GOTOP — Public Change Log
 
+## Unreleased — 31 October 2026: direct editorial proposal from Draft Lab
+
+- Add a human-initiated GitHub article-proposal action directly to the working eight-language Draft Lab. It validates a headline, requests explicit consent before opening a public GitHub issue form, and transfers only the article title (not body, source links, local draft file or credentials). Existing author-owned file export and browser privacy remain intact. This is a useful live proposal path, **not** hosted publishing.
+
+
 ## Unreleased — 31 October 2026: reconcile verified deployment evidence
 
 - Update public deployment/SEO records to current exact-head main CI, Pages, live Draft Lab/SVG and 21-URL canonical audit evidence. Distinguish historical 9-article/12-URL checkpoints from current ten-article/21-URL release.
