@@ -1,5 +1,12 @@
 # Public crawlability and indexing — verified 2026-10-31
 
+## Deterministic source-verified sitemap — 31 October 2026
+
+The public static `sitemap.xml` is now produced by `npm run sitemap:write`, and checked with `npm run sitemap:check` as part of `npm run check`. The generator takes eight reciprocal canonical homepage languages, three explicit public editorial/navigation pages and published engineering RSS entries validated against the exact visible Article JSON-LD, dates, bylines and canonical URLs. It refuses forged domains, repeated URLs, missing canonical/h1, broken reciprocal hreflang and unindexable `noindex` pages; browser-only Draft Lab remains excluded. It does not crawl file-system uploads, invent timestamps, use API credentials or call external services.
+
+To publish a new reviewed article: add article HTML with visible canonical metadata and verified JSON-LD, update RSS and the archive, run `npm run feed:write`, `npm run search:write` and `npm run sitemap:write`, run `npm run check && npm test`, then review and deploy only the `site/` Pages artifact. If an output is stale, CI fails. This change verifies consistency of **published source**, not Google/Bing indexing or AI answer citations. Revert the generator, scripts, sitemap and tests for rollback; no database migration.
+
+
 ## Canonical WebSite identity source merged and static Pages released — 31 October 2026
 
 The public English canonical homepage declares a minimal inert `schema.org/WebSite` JSON-LD entity with the verified project brand, canonical root URL, matching meta description and eight real language versions. Regression tests check on-disk locale HTML, reciprocal homepage hreflang and the sitemap. The change does NOT invent user adoption, reviews, registered-organization status or an unavailable public search endpoint. It does not claim Google indexing, rankings, impressions or AI citations.
