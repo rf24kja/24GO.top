@@ -30,5 +30,8 @@ jobs:
           persist-credentials: false
       - name: Static shell syntax
         run: bash -n scripts/check-live-seo.sh
-      - name: Probe real public website without secrets
+      - name: Probe real public website and matching Pages release
+        env:
+          EXPECTED_PAGES_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || '' }}
+          EXPECTED_PAGES_RUN_ID: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.id || '' }}
         run: bash scripts/check-live-seo.sh
