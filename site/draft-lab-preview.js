@@ -8,6 +8,7 @@ const HEADING = /^ {0,3}(#{1,3})\s+(.+)$/;
 const RULE = /^ {0,3}(?:(?:-\s*){3,}|(?:\*\s*){3,}|(?:_\s*){3,})$/;
 const QUOTE = /^ {0,3}> ?(.*)$/;
 const LIST = /^ {0,3}([-*+]|\d+[.)])\s+(.+)$/;
+const INDENTED_CODE = /^(?: {4}|\t)/;
 
 // Limited user-authored citation links. Never interpret raw HTML or image Markdown.
 const CITATION=/\[([^\[\]\n]{1,200})\]\((https?:\/\/[^<>\s()\\]{1,1500})\)/g;
@@ -43,7 +44,7 @@ function setInline(node,text,doc){
 
 function startsBlock(line) {
   return FENCE.test(line) || HEADING.test(line) || RULE.test(line)
-    || QUOTE.test(line) || LIST.test(line);
+    || QUOTE.test(line) || LIST.test(line) || INDENTED_CODE.test(line);
 }
 
 export function parsePreviewBlocks(input) {
@@ -73,6 +74,33 @@ export function parsePreviewBlocks(input) {
         codeLines.push(lines[index++]);
       }
       blocks.push({ type: 'code', language, text: codeLines.join('\n') });
+      continue;
+    }
+
+    // Basic Markdown indented code. Four leading spaces or a tab is
+    // meaningful source syntax and must not become a normal paragraph.
+    // Keep blank lines only when another indented code line follows them.
+    // Fixed text-only PRE/CODE rendering below prevents HTML execution.
+    if (INDENTED_CODE.test(line)) {
+      const codeLines = [];
+      while (index < lines.length) {
+        if (INDENTED_CODE.test(lines[index])) {
+          codeLines.push(lines[index].replace(INDENTED_CODE, ''));
+          index++;
+          continue;
+        }
+        if (!lines[index].trim()) {
+          let next = index;
+          while (next < lines.length && !lines[next].trim()) next++;
+          if (next < lines.length && INDENTED_CODE.test(lines[next])) {
+            codeLines.push(...Array(next - index).fill(''));
+            index = next;
+            continue;
+          }
+        }
+        break;
+      }
+      blocks.push({ type:'code', language:'', text:codeLines.join('\n') });
       continue;
     }
 
