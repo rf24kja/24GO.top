@@ -23,6 +23,30 @@ test('validate title/body/language/category limits before copy',()=>{
   assert.match(validateDraft({...valid,category:'unsafe'}),/category/);
 });
 
+test('Unicode author manuscripts reject lossy lone surrogates before export',()=>{
+ const bad=['\uD800','\uDBFF','\uDC00','\uDFFF','prefix \uD83D suffix'];
+ for(const locale of LOCALES){
+  for(const fragment of bad){
+   const cases=[
+    [{...valid,locale,title:'Valid title '+fragment},'title'],
+    [{...valid,locale,body:'Reproducible evidence and code: '+fragment},'body'],
+    [{...valid,locale,source:'https://example.org/'+fragment},'source']
+   ];
+   for(const [draft,field] of cases){
+    assert.equal(invalidDraftField(draft),field,locale+' '+field);
+    assert.throws(()=>formatDraft(draft),TypeError);
+   }
+  }
+  const correct={...valid,locale,title:'Guide 🧪 — 中文 ภาษาไทย 🇹🇭',
+   body:'Reproducible technical details 🧪 about code 💻 and international text 中文 ภาษาไทย.'};
+  const exported=formatDraft(correct);
+  assert.equal(new TextDecoder('utf-8',{fatal:true}).decode(new TextEncoder().encode(exported)),exported);
+  assert.deepEqual(parseDraftFile(exported),correct);
+ }
+ // A lone surrogate is not faithfully transferable via native Blob/TextEncoder.
+ assert.notEqual(new TextDecoder().decode(new TextEncoder().encode('x\uD83Dy')),'x\uD83Dy');
+});
+
 test('source URLs permit only HTTP(S) and disallow credentials or script URLs',()=>{
   assert.equal(safeSourceUrl(''),'');
   assert.equal(safeSourceUrl('https://example.org/post'),'https://example.org/post');
