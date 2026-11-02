@@ -264,7 +264,7 @@
       return '- ['+text+'](https://24go.top/engineering/'+entry.file+')';
     });
     if(!lines.length){shareStatus.textContent='No results to copy.';return;}
-    return copyOrSelect(lines.join('\\n'),lines.length+
+    return copyOrSelect(lines.join('\n'),lines.length+
       ' public article link(s) copied as Markdown.');
   });
   if(typeof window!=='undefined'&&window.addEventListener){
