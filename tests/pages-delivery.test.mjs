@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {expectedReceipt,verifyPagesDelivery} from '../scripts/verify-pages-delivery.mjs';
 
 const SHA='845531da1202f1abf9dfb414191842d714fdd7bb';
@@ -112,4 +113,16 @@ test('invalid verification arguments cause no network calls',async()=>{
   await assert.rejects(verifyPagesDelivery({...options,fetchImpl}),TypeError);
  }
  assert.equal(calls,0);
+});
+
+test('Pages deployment workflow verifies the exact successful deployment runner externally',()=>{
+ const yaml=readFileSync(new URL('../.github/workflows/pages.yml',import.meta.url),'utf8');
+ const deploy=yaml.indexOf('uses: actions/deploy-pages@v4');
+ const verifier=yaml.indexOf('run: node scripts/verify-pages-delivery.mjs');
+ assert.ok(deploy>0&&verifier>deploy,
+  'CDN verification must happen after the GitHub Pages deploy action');
+ assert.match(yaml,/EXPECTED_PAGES_SHA: \\$\\{\\{ github\\.sha \\}\\}/);
+ assert.match(yaml,/EXPECTED_PAGES_RUN_ID: \\$\\{\\{ github\\.run_id \\}\\}/);
+ assert.match(yaml,/node-version: '22'/);
+ assert.match(yaml,/paths:[\\s\\S]*?site\\/\\*\\*/);
 });
