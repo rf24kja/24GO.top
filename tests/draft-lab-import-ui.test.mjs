@@ -30,7 +30,8 @@ const sample = {
   source:'https://example.org/guide'
 };
 
-function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false}={}) {
+function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
+  reviewPackGenerator=createEditorialReviewPack}={}) {
   const ids = [
     'postTitle','postBody','postLocale','postCategory','postSource','formStatus',
     'previewHeading','previewBody','previewLocale','previewCategory','bodyCount','bodyWordCount','draftReadingTime','guidanceScore',
@@ -95,7 +96,7 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false}={
     document, window, navigator, URL:BrowserURL, Blob, setTimeout,
     safeSourceUrl,validateDraft,formatDraft,draftFilename,hasDraftContent,
     parseDraftFile,readDraftFileStrict,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,countDraftWords,createDraftImportGate,matchesDraftExportSnapshot,invalidDraftField,
-    uiText,applyUiLanguage,appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS,captureDraftRevision,compareDraftRevisions,revisionSummary,createEditorialReviewPack,readEditorialReviewPackFile,buildArticleProposalUrl,
+    uiText,applyUiLanguage,appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS,captureDraftRevision,compareDraftRevisions,revisionSummary,createEditorialReviewPack:reviewPackGenerator,readEditorialReviewPackFile,buildArticleProposalUrl,
     createDraftVault,MAX_SAVED_DRAFTS,MAX_VAULT_BACKUP_BYTES,VAULT_KEY,TextDecoder,
     renderMarkdownPreview(container, text) { container.textContent = text; },
     renderPreviewOutline(container,text) { container.textContent=text;return /^#{1,3} /m.test(text)?1:0; }
@@ -947,6 +948,44 @@ test('export of an unpublished author review package requires explicit consent a
  assert.equal(valid.draft.body,sample.body);
  assert.equal(app.localStorage.getItem(VAULT_KEY),null);
  assert.match(app.elements.formStatus.textContent,/Review package download requested/);
+});
+
+test('clearing draft during async SHA-256 cancels old full-manuscript download',async()=>{
+ let finish;
+ const app=build({reviewPackGenerator:()=>new Promise(resolve=>{finish=resolve;})});
+ Object.assign(app.elements.postTitle,{value:sample.title});
+ Object.assign(app.elements.postBody,{value:sample.body});
+ app.elements.postLocale.value=sample.locale;
+ app.elements.postCategory.value=sample.category;
+ app.elements.postSource.value=sample.source;
+ const exportPromise=app.elements.downloadReviewPack.listeners.click();
+ assert.equal(typeof finish,'function','the digest must be running');
+ app.elements.clearDraft.listeners.click();
+ assert.equal(app.elements.postBody.value,'');
+ finish('PRIVATE MANUSCRIPT THAT MUST NOT DOWNLOAD');
+ await exportPromise;
+ assert.equal(app.downloads.length,0);
+ assert.match(app.elements.formStatus.textContent,/draft changed during export/i);
+});
+
+test('typing then restoring original text still invalidates pending review export',async()=>{
+ let finish;
+ const app=build({reviewPackGenerator:()=>new Promise(resolve=>{finish=resolve;})});
+ Object.assign(app.elements.postTitle,{value:sample.title});
+ Object.assign(app.elements.postBody,{value:sample.body});
+ app.elements.postLocale.value=sample.locale;
+ app.elements.postCategory.value=sample.category;
+ app.elements.postSource.value=sample.source;
+ const exportPromise=app.elements.downloadReviewPack.listeners.click();
+ assert.equal(typeof finish,'function');
+ app.elements.postBody.value='TEMPORARY EDIT';
+ app.elements.postBody.listeners.input();
+ app.elements.postBody.value=sample.body;
+ app.elements.postBody.listeners.input();
+ finish('PRIVATE MANUSCRIPT THAT MUST NOT DOWNLOAD');
+ await exportPromise;
+ assert.equal(app.downloads.length,0);
+ assert.match(app.elements.formStatus.textContent,/draft changed during export/i);
 });
 
 test('selected review package verification never replaces the current unsaved author text',async()=>{
