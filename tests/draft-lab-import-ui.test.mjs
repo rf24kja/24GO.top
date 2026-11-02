@@ -560,6 +560,17 @@ test('invalid source makes keyboard citation fail closed without changing draft'
  assert.equal(app.elements.formStatus.dataset.error,'true');
 });
 
+test('all eight editor languages explain keyboard shortcuts without claiming autosave',()=>{
+ for(const language of ['en','ru','th','es','fr','de','pt','zh']){
+  const help=uiText(language,'formatHelp');
+  for(const key of ['B','I','K'])
+   assert.ok(help.includes('Ctrl/⌘+'+key),language+' misses '+key+' shortcut');
+ }
+ const page=readFileSync(fileURLToPath(new URL('../site/draft-lab.html',import.meta.url)),'utf8');
+ assert.match(page,/id="postBody"/);
+ assert.match(page,/Ctrl\/⌘\+B bold, Ctrl\/⌘\+I italic, Ctrl\/⌘\+K link/);
+});
+
 test('Ctrl+S / Cmd+S routes only the explicit local export, never browser writes',()=>{
  const app=build();
  const shortcut=app.document.listeners.keydown;
