@@ -1,6 +1,7 @@
 // Read-only, post-deployment proof for the PUBLIC GitHub Pages build.
 // Runs on GitHub-hosted Actions AFTER deploy-pages. No secrets, no writes.
 import {pathToFileURL} from 'node:url';
+import {readFile} from 'node:fs/promises';
 
 const SHA=/^[0-9a-f]{40}$/;
 const RUN=/^[1-9][0-9]{0,19}$/;
@@ -65,12 +66,27 @@ export async function verifyPagesDelivery({
 // Static-only, deliberately fixed paths. The receipt alone cannot prove the
 // homepage, editor and article discovery assets reached the public CDN.
 export const ESSENTIAL_PUBLIC_ROUTES=Object.freeze([
- Object.freeze({path:'/',marker:'OPEN SOURCE · PRE-LAUNCH'}),
- Object.freeze({path:'/draft-lab.html',marker:'id="postTitle"'}),
- Object.freeze({path:'/draft-lab.js',marker:'reviewExportGate.canApply(ticket)'}),
- Object.freeze({path:'/engineering/',marker:'<h1>Engineering notes</h1>'}),
- Object.freeze({path:'/engineering/search.js',marker:'INDEX_MAX_BYTES=512000'})
+ Object.freeze({path:'/',marker:'OPEN SOURCE · PRE-LAUNCH',source:'../site/index.html'}),
+ Object.freeze({path:'/draft-lab.html',marker:'id="postTitle"',source:'../site/draft-lab.html'}),
+ Object.freeze({path:'/draft-lab.js',marker:'reviewExportGate.canApply(ticket)',source:'../site/draft-lab.js'}),
+ Object.freeze({path:'/engineering/',marker:'<h1>Engineering notes</h1>',source:'../site/engineering/index.html'}),
+ Object.freeze({path:'/engineering/search.js',marker:'INDEX_MAX_BYTES=512000',source:'../site/engineering/search.js'})
 ]);
+
+// Check the COMPLETE five deployed assets against the checked-out public
+// commit, not just a stable marker left over in an older CDN-cached file.
+// Paths are source-authored fixed allowlist entries, never request inputs.
+export async function loadEssentialPublicAssets(){
+ const entries=await Promise.all(ESSENTIAL_PUBLIC_ROUTES.map(async entry=>{
+  const text=await readFile(new URL(entry.source,import.meta.url),'utf8');
+  if(Buffer.byteLength(text,'utf8')>65536)
+   throw new RangeError('Critical source file exceeds public audit budget: '+entry.path);
+  if(!text.includes(entry.marker))
+   throw new Error('Reviewed source lacks essential public marker: '+entry.path);
+  return [entry.path,text];
+ }));
+ return Object.freeze(Object.fromEntries(entries));
+}
 
 async function readBoundedPage(response){
  if(response?.status!==200||!response.body?.getReader)
@@ -95,13 +111,21 @@ async function readBoundedPage(response){
 
 export async function verifyEssentialPublicPages({
  runId,fetchImpl=globalThis.fetch,attempts=2,pauseMs=1500,
- wait=ms=>new Promise(resolve=>setTimeout(resolve,ms))
+ wait=ms=>new Promise(resolve=>setTimeout(resolve,ms)),expectedAssets=null
 }={}){
  if(typeof runId!=='string'||!RUN.test(runId)||
     typeof fetchImpl!=='function'||typeof wait!=='function'||
     !Number.isSafeInteger(attempts)||attempts<1||attempts>3||
     !Number.isSafeInteger(pauseMs)||pauseMs<0||pauseMs>5000)
   throw new TypeError('Invalid Pages smoke verification inputs');
+ if(expectedAssets!==null &&
+   (typeof expectedAssets!=='object'||Array.isArray(expectedAssets)||
+    Object.keys(expectedAssets).length!==ESSENTIAL_PUBLIC_ROUTES.length||
+    ESSENTIAL_PUBLIC_ROUTES.some(entry=>
+     typeof expectedAssets[entry.path]!=='string'||
+     Buffer.byteLength(expectedAssets[entry.path],'utf8')>65536||
+     !expectedAssets[entry.path].includes(entry.marker))))
+  throw new TypeError('Invalid exact Pages asset expectations');
  for(const entry of ESSENTIAL_PUBLIC_ROUTES){
   let matched=false;
   for(let attempt=1;attempt<=attempts;attempt++){
@@ -114,7 +138,10 @@ export async function verifyEssentialPublicPages({
        signal:AbortSignal.timeout(20000)
       });
     const data=await readBoundedPage(response);
-    if(data.includes(entry.marker)){matched=true;break;}
+    if(data.includes(entry.marker)&&
+       (expectedAssets===null||data===expectedAssets[entry.path])){
+      matched=true;break;
+    }
    }catch{/* No untrusted response bytes or URL query logged. */}
    if(attempt<attempts)await wait(pauseMs);
   }
@@ -129,7 +156,10 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const result=await verifyPagesDelivery({
    sha:process.env.EXPECTED_PAGES_SHA,runId:process.env.EXPECTED_PAGES_RUN_ID
   });
-  const assets=await verifyEssentialPublicPages({runId:result.runId});
+  const expectedAssets=await loadEssentialPublicAssets();
+  const assets=await verifyEssentialPublicPages({
+   runId:result.runId,expectedAssets
+  });
   console.log('PASS external HTTPS Pages release: '+result.sha+
    ', workflow '+result.runId+', attempt '+result.attempt+
    ', essential public assets '+assets.checked+'/'+assets.checked);
