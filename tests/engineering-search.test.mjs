@@ -292,6 +292,55 @@ test('offline or malformed and oversized static indexes fall back to card-only s
 });
 
 
+test('full-text search reports actual readiness separately from article result count',async()=>{
+ const app=setUp({index:'good',query:'?q=circuit%20breaker'});
+ assert.match(app.indexStatus.textContent,/titles and summaries while full-text search loads/);
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(app.status.textContent,'1 of 3 articles');
+ assert.equal(app.indexStatus.textContent,'Full article text is searchable.');
+ assert.equal(app.retryIndex.hidden,true);
+ const noFetch=setUp({index:'none'});
+ assert.match(noFetch.indexStatus.textContent,/Only titles and summaries/);
+ assert.equal(noFetch.retryIndex.hidden,true);
+});
+
+test('a failed full-text index can be retried explicitly without losing the query or topic',async()=>{
+ const app=setUp({index:'recover',query:'?q=circuit%20security&topic=security'});
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.match(app.indexStatus.textContent,/Full-text search unavailable/);
+ assert.equal(app.retryIndex.hidden,false);
+ assert.deepEqual(app.cards.map(c=>c.hidden),[true,true,true]);
+ assert.equal(app.status.textContent,'0 of 3 articles');
+ assert.equal(app.input.value,'circuit security');
+ const originalUrl=app.location.href;
+ await app.retryIndex.listeners.click();
+ assert.equal(app.indexStatus.textContent,'Full article text is searchable.');
+ assert.equal(app.retryIndex.hidden,true);
+ assert.equal(app.retryIndex.disabled,false);
+ assert.deepEqual(app.cards.map(c=>c.hidden),[false,true,true]);
+ assert.equal(app.status.textContent,'1 of 3 articles');
+ assert.equal(app.location.href,originalUrl);
+ assert.deepEqual(app.fetchCalls.map(c=>c.url),['./search-index.json','./search-index.json']);
+ for(const call of app.fetchCalls){
+  assert.equal(call.options.credentials,'omit');
+  assert.equal(call.options.redirect,'error');
+  assert.equal(call.options.referrerPolicy,'no-referrer');
+ }
+});
+
+test('retry remains explicit and never hides crawlable article cards after repeated failures',async()=>{
+ const app=setUp({index:'fail',query:'?q=JavaScript&topic=security'});
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(app.retryIndex.hidden,false);
+ await app.retryIndex.listeners.click();
+ assert.match(app.indexStatus.textContent,/Only titles and summaries/);
+ assert.equal(app.retryIndex.hidden,false);
+ assert.equal(app.input.value,'JavaScript');
+ assert.deepEqual(app.cards.map(c=>c.hidden),[false,true,true]);
+ assert.equal(app.fetchCalls.length,2);
+ assert.equal(app.form.hidden,false);
+});
+
 test('multi-word queries match across card fields even when terms are nonadjacent',()=>{
  const app=setUp({query:'?q=leaks%20security'});
  assert.deepEqual(app.cards.map(x=>x.hidden),[false,true,true],
