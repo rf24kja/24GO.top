@@ -99,7 +99,7 @@ async function copyValue(value){
 el('path-copy-link').addEventListener('click',()=>{
  try{
   const state=normalizeReadingPath({title:title.value,ids},approved,{requireItems:true});
-  const url=new URL('./paths.html',window.location.href);
+  const url=new URL('./',window.location.href);
   url.hash=encodeReadingPath(state,approved);
   void copyValue(url.href);
  }catch{copyStatus.textContent='Check your title and select at least one article.';}
@@ -110,7 +110,7 @@ el('path-copy-markdown').addEventListener('click',()=>{
 });
 async function load(){
  try{
-  const response=await fetch('./feed.json',{credentials:'omit',cache:'no-store',
+  const response=await fetch('../feed.json',{credentials:'omit',cache:'no-store',
    headers:{accept:'application/feed+json, application/json'}});
   if(!response.ok)throw Error('catalog_unavailable');
   approved=approvedReadingArticles(await response.json());
