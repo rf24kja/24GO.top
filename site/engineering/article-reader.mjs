@@ -1,5 +1,6 @@
 // Progressive enhancement for reviewed PUBLIC editorial pages only.
-// No network requests, storage, tracking, credentials, AI, publication or writes.
+// No network requests, tracking, credentials, AI or publishing writes.
+// Only an explicit Save for later click may persist a PUBLIC link on this device.
 const CANONICAL=/^https:\/\/24go\.top\/engineering\/[a-z0-9-]+\.html$/;
 const SECTION=/^section-[a-z0-9-]+$/;
 const plain=text=>typeof text==='string'&&text.length>0&&text.length<=250&&
