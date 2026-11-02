@@ -221,3 +221,9 @@ header{background:rgba(249,252,249,.9)}a:hover,.navlinks a:hover{color:#07593f}.
 /* Accessible full-text-search capability state, separate from result counts. */
 .note-search__index-state{color:var(--muted);font-size:13px;line-height:1.5;margin:12px 0 0}
 .note-search__share-row #engineering-index-retry{min-height:40px}
+
+/* A bounded explanatory excerpt from the already reviewed public search index. */
+.note-search__excerpt{margin:13px 0 0;padding:10px 12px;border-inline-start:3px solid var(--accent);
+ background:var(--panel);border-radius:0 7px 7px 0;color:var(--muted);
+ font-size:13px;line-height:1.65;overflow-wrap:anywhere}
+.note-search__excerpt[hidden]{display:none}
