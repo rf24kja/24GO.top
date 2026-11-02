@@ -15,3 +15,7 @@ section{border-top:1px solid var(--border);padding:42px 0}
 @media(max-width:680px){.grid{grid-template-columns:1fr}.hero{padding:55px 0}h1{letter-spacing:-.035em}.wrap{padding:0 18px}}
 @media(prefers-color-scheme:light){:root{color-scheme:light;--bg:#f4f7f5;--panel:rgba(255,255,255,.89);--border:#c1d4ca;--text:#142420;--muted:#49635a;--accent:#006c4b;--notice-bg:#e7f6ed;--notice-border:#79ab8a;--notice-text:#244c35}body{background:radial-gradient(ellipse at 80% -5%,rgba(76,185,123,.12),transparent 49%),var(--bg)}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* Release evidence remains readable with long commit/run links on small screens. */
+.release-evidence-links{display:flex;flex-wrap:wrap;gap:12px 22px;align-items:center}
+.release-evidence-links a{overflow-wrap:anywhere}
