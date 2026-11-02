@@ -33,14 +33,37 @@ export async function fetchReleaseReceipt(fetchImpl=globalThis.fetch){
  });
  if(response?.status!==200 || typeof response.text!=='function')
   throw new Error('Pages release receipt unavailable');
+ // A declared size is only a hint: compression and chunked transfer can
+ // exceed it. Bound decoded response bytes WHILE reading, not after text().
+ const maxBytes=256,maxChunks=32;
  const declared=response.headers?.get?.('content-length');
- if(declared && /^\d+$/.test(declared) && Number(declared)>256)
+ if(declared && /^\d+$/.test(declared) && Number(declared)>maxBytes)
   throw new Error('Pages release receipt too large');
- const text=await response.text();
- if(typeof text!=='string'||text.length>256)
-  throw new Error('Pages release receipt too large');
- try{return validateReleaseReceipt(JSON.parse(text));}
- catch{throw new TypeError('Invalid Pages release receipt');}
+ if(!response.body || typeof response.body.getReader!=='function')
+  throw new TypeError('Pages release receipt body unavailable');
+ const reader=response.body.getReader();
+ const chunks=[];
+ let size=0,chunkCount=0;
+ try{
+  for(;;){
+   const {done,value}=await reader.read();
+   if(done)break;
+   if(!(value instanceof Uint8Array) || ++chunkCount>maxChunks ||
+      size+value.byteLength>maxBytes){
+    await reader.cancel().catch(()=>{});
+    throw new Error('Pages release receipt exceeded safe stream limit');
+   }
+   size+=value.byteLength;
+   chunks.push(value);
+  }
+ }finally{reader.releaseLock();}
+ const bytes=new Uint8Array(size);
+ let offset=0;
+ for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.byteLength;}
+ try{
+  const text=new TextDecoder('utf-8',{fatal:true,ignoreBOM:true}).decode(bytes);
+  return validateReleaseReceipt(JSON.parse(text));
+ }catch{throw new TypeError('Invalid Pages release receipt');}
 }
 
 export async function mountReleaseReceipt(doc,fetchImpl=globalThis.fetch){
