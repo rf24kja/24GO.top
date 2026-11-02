@@ -293,6 +293,15 @@ test('deferred clipboard refusal cannot reopen stale filtered URLs',async()=>{
  assert.equal(app.manualCopy.value,'');
  assert.equal(app.copied.length,0);
 });
+test('successful matching-result clipboard copy does not display fallback',async()=>{
+ const app=setUp({clipboard:'ok',query:'?topic=security'});
+ await app.copyResults.listeners.click();
+ assert.equal(app.manualCopy.hidden,true);
+ assert.equal(app.manualCopy.value,'');
+ assert.deepEqual(app.copied,
+  ['- [security](https://24go.top/engineering/security.html)']);
+ assert.equal(app.fetchCalls.length,0);
+});
 test('browser navigation restores the URL state without altering article data',()=>{
  const app=setUp({query:'?topic=security'});
  app.location.href='https://24go.top/engineering/?q=PostgreSQL&topic=infrastructure';
