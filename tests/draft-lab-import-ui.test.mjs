@@ -485,6 +485,67 @@ test('oversized title and body focus the correct control, including programmatic
  assert.equal(el.postBody.attributes['aria-invalid'],'true');
 });
 
+test('Find in article selects exact local text with next/previous and wraparound',()=>{
+ const app=build(),body=app.elements.postBody,term=app.elements.draftFindQuery;
+ body.value='One two One 🚀 One';body.selectionStart=0;body.selectionEnd=0;
+ term.value='One';
+ const before=app.beforeUnload();
+ const storageBefore=app.localStorage.getItem(VAULT_KEY);
+ app.elements.draftFindNext.listeners.click();
+ assert.deepEqual([body.selectionStart,body.selectionEnd],[0,3]);
+ app.elements.draftFindNext.listeners.click();
+ assert.deepEqual([body.selectionStart,body.selectionEnd],[8,11]);
+ app.elements.draftFindNext.listeners.click();
+ assert.deepEqual([body.selectionStart,body.selectionEnd],[15,18]);
+ app.elements.draftFindNext.listeners.click();
+ assert.deepEqual([body.selectionStart,body.selectionEnd],[0,3]);
+ app.elements.draftFindPrevious.listeners.click();
+ assert.deepEqual([body.selectionStart,body.selectionEnd],[15,18]);
+ assert.equal(body.focused,true);
+ assert.equal(body.value,'One two One 🚀 One');
+ assert.equal(app.localStorage.getItem(VAULT_KEY),storageBefore);
+ assert.equal(app.beforeUnload().prevented,before.prevented,
+  'find does not edit the manuscript or change unsaved state');
+ assert.equal(app.elements.draftFindStatus.textContent,uiText('en','findFound'));
+});
+
+test('Find in article handles Unicode, absent/empty query and Enter without form submission',()=>{
+ const app=build(),body=app.elements.postBody,term=app.elements.draftFindQuery;
+ body.value='Тест 中文 🚀 Тест';
+ term.value='中文 🚀';
+ let prevented=false;
+ term.listeners.keydown({key:'Enter',isComposing:false,preventDefault(){prevented=true;}});
+ assert.equal(prevented,true);
+ assert.equal(body.value,'Тест 中文 🚀 Тест');
+ assert.equal(body.value.slice(body.selectionStart,body.selectionEnd),'中文 🚀');
+ term.value='MISSING';term.listeners.input();
+ assert.equal(app.elements.draftFindStatus.textContent,'');
+ app.elements.draftFindNext.listeners.click();
+ assert.equal(app.elements.draftFindStatus.textContent,uiText('en','findMissing'));
+ term.value='';app.elements.draftFindNext.listeners.click();
+ assert.equal(app.elements.draftFindStatus.textContent,uiText('en','findEmpty'));
+ term.value='Тест';
+ prevented=false;
+ term.listeners.keydown({key:'Enter',isComposing:true,preventDefault(){prevented=true;}});
+ assert.equal(prevented,false,'IME composition should preserve native typing');
+});
+
+test('Find controls use translated labels in all eight locales, with no network or storage',()=>{
+ for(const language of ['en','ru','th','es','fr','de','pt','zh']){
+  for(const key of ['findGroup','findLabel','findPlaceholder','findNext','findPrevious','findFound','findMissing','findEmpty']){
+   const translation=uiText(language,key);
+   assert.ok(typeof translation==='string'&&translation.length>0);
+  }
+ }
+ const html=readFileSync(new URL('../site/draft-lab.html',import.meta.url),'utf8');
+ const css=readFileSync(new URL('../site/draft-lab.css',import.meta.url),'utf8');
+ assert.match(html,/id="draftFindQuery"[^>]*maxlength="80"/);
+ assert.match(html,/id="draftFindStatus"[^>]*role="status" aria-live="polite"/);
+ assert.match(css,/\\.draft-find__controls button:focus-visible/);
+ assert.match(css,/@media\\(max-width:550px\\)/);
+ assert.doesNotMatch(source,/fetch\\(|sendBeacon|XMLHttpRequest|eval\\(/);
+});
+
 test('textarea-only Ctrl/Cmd+B and I format selection using same safe toolbar path',()=>{
  for(const modifier of ['ctrlKey','metaKey']){
   for(const [key,expected] of [['b','**original research**'],['i','*original research*']]){
