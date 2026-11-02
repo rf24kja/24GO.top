@@ -1,6 +1,6 @@
 'use strict';
 
-import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, readDraftFileStrict, formatDraftSelection, countDraftWords, createDraftImportGate, invalidDraftField } from './draft-lab-logic.js';
+import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, readDraftFileStrict, formatDraftSelection, countDraftWords, createDraftImportGate, matchesDraftExportSnapshot, invalidDraftField } from './draft-lab-logic.js';
 import { renderMarkdownPreview,renderPreviewOutline } from './draft-lab-preview.js';
 import {appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS} from './draft-lab-guidance.js';
 import {captureDraftRevision,compareDraftRevisions,revisionSummary} from './draft-lab-revisions.js';
@@ -69,6 +69,13 @@ function revisionChanged(){
 }
 
 const importGate=createDraftImportGate();
+// Separate token for pending review-package digests: it is invalidated by
+// every editor action, including Clear and a change later reverted to text.
+const reviewExportGate=createDraftImportGate();
+function editorChanged(){
+ importGate.changed();
+ reviewExportGate.changed();
+}
 let activeSavedId=null,activeSavedVersion=null;
 function getDraftVault(){return createDraftVault(window.localStorage);}
 function resetSavedSlot(){activeSavedId=null;activeSavedVersion=null;}
@@ -173,8 +180,8 @@ function preview() {
 }
 
 for (const control of [title,body,locale,category,source]) {
-  control.addEventListener('input', () => { clearFieldError(control);importGate.changed();preview();updateValidationNotice(); });
-  control.addEventListener('change', () => { clearFieldError(control);importGate.changed();preview();updateValidationNotice(); });
+  control.addEventListener('input', () => { clearFieldError(control);editorChanged();preview();updateValidationNotice(); });
+  control.addEventListener('change', () => { clearFieldError(control);editorChanged();preview();updateValidationNotice(); });
 }
 
 
@@ -185,7 +192,7 @@ for(const [id,action] of [['formatBold','bold'],['formatItalic','italic'],
   try{
    const edit=formatDraftSelection(body.value,body.selectionStart,body.selectionEnd,action);
    body.setRangeText(edit.replacement,body.selectionStart,body.selectionEnd,'end');
-   importGate.changed();
+   editorChanged();
    body.focus();
    body.setSelectionRange(edit.selectionStart,edit.selectionEnd);
    preview();
@@ -205,7 +212,7 @@ field('insertTemplate').addEventListener('click',()=>{
   const next=appendDraftTemplate(body.value,field('draftTemplate').value,locale.value);
   body.value=next;
   body.setSelectionRange(next.length,next.length);
-  importGate.changed();
+  editorChanged();
   clearFieldError(body);
   preview();
   updateValidationNotice();
@@ -305,7 +312,7 @@ async function openLocalDraft(file,input=null) {
     revisionCapture(reopened);
     resetSavedSlot();
     clearFieldErrors();
-    importGate.changed();
+    editorChanged();
     preview();
     refreshBrowserDrafts();
     message(ui('opened'));
@@ -398,7 +405,7 @@ field('openBrowserDraft').addEventListener('click',()=>{
   reopenedFileBaseline={...saved.draft};
   revisionCapture(saved.draft);
   clearFieldErrors();
-  importGate.changed();
+  editorChanged();
   preview();
   refreshBrowserDrafts(saved.id);
   message(ui('vaultOpened'));
@@ -508,11 +515,14 @@ field('downloadDraft').addEventListener('click', () => {
 field('downloadReviewPack').addEventListener('click',async()=>{
  if(!readyToExport()||!window.confirm(ui('reviewPackConfirm')))return;
  const draft=currentDraft();
+ const ticket=reviewExportGate.begin();
  try{
   const pack=await createEditorialReviewPack(draft);
-  // Do not misrepresent the download as a successful saved backup.
-  // If the author changed text while the async digest ran, decline export.
-  if(hasUnexportedChanges(currentDraft(),draft)){
+  // A change followed by Undo, an editor Clear, or a second export request
+  // invalidates the earlier consent. An unload-warning helper is unsuitable:
+  // it intentionally returns false for an empty current editor.
+  if(!reviewExportGate.canApply(ticket)||
+     !matchesDraftExportSnapshot(draft,currentDraft())){
    message(ui('reviewPackInterrupted'),true);return;
   }
   const blob=new Blob([pack],{type:'application/json;charset=utf-8'});
@@ -596,7 +606,7 @@ field('clearDraft').addEventListener('click', () => {
   revisionResetView();
   resetSavedSlot();
   clearFieldErrors();
-  importGate.changed();
+  editorChanged();
   preview();
   refreshBrowserDrafts();
   message(ui('cleared'));

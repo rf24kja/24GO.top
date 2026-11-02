@@ -1,5 +1,13 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-02 — Cancel stale asynchronous private review-package downloads
+
+- Fix a privacy race in the browser-only author Draft Lab. When SHA-256 review-package generation was pending, clearing the editor caused `hasUnexportedChanges()` to return false by design (empty drafts do not trigger navigation warnings), so the previously captured full manuscript could still be downloaded after Clear.
+- Review-package export now uses a separate, in-memory editor-version token **and** exact five-field snapshot equality. Any typing, formatting, template insertion, local-file open, browser-vault open, Clear, newer export or edit-then-undo aborts the previous pending digest/download. This never affects ordinary Markdown exports or import behavior.
+- Add regression tests for cleared drafts, changed metadata, edit-undo races and all existing editor mutation paths. This is a static browser privacy fix only: no server uploads, user accounts, database changes or third-party services.
+- Rollback: revert this PR; no persisted data migration involved.
+
+
 ## 2026-11-02 — Bounded full-text article search loading
 
 - Protect the public engineering archive's optional same-origin `search-index.json` loader from oversized or malformed responses: stream no more than 512,000 decoded bytes in 512 chunks, abort the request after eight seconds, reject redirects and decode UTF-8 strictly. The published index was about 63 KB when this change was prepared.
