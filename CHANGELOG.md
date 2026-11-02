@@ -1,5 +1,10 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-02 — Preserve author source citation integrity in Draft Lab
+
+- Reject raw backslashes in author-supplied citation URLs rather than silently accepting WHATWG normalization to forward slashes. This prevents a changed link from being exported, stored manually in the browser vault, or displayed as if it were the author's original URL.
+- Add negative regressions for ambiguous authority and path citations. Static site only; no hosted publishing, backend changes, account creation or private-source exposure. Rollback: revert the public static PR.
+
 ## 2026-11-01 — Offline, portable editorial manuscript integrity packages
 
 - Add a user-controlled **Export review package** feature to the static eight-language Draft Lab. A confirmed download contains the complete original Markdown manuscript plus a SHA-256 digest calculated locally over UTF-8 bytes; no text upload, third-party AI request, automated browser save or publication.
