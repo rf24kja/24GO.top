@@ -1,7 +1,7 @@
 // Read-only, post-deployment proof for the PUBLIC GitHub Pages build.
 // Runs on GitHub-hosted Actions AFTER deploy-pages. No secrets, no writes.
 import {pathToFileURL} from 'node:url';
-import {readFile} from 'node:fs/promises';
+import {readFile,appendFile} from 'node:fs/promises';
 
 const SHA=/^[0-9a-f]{40}$/;
 const RUN=/^[1-9][0-9]{0,19}$/;
@@ -151,6 +151,22 @@ export async function verifyEssentialPublicPages({
  return Object.freeze({verified:true,checked:ESSENTIAL_PUBLIC_ROUTES.length});
 }
 
+// This is written to GitHub's Actions job summary ONLY after exact-SHA receipt
+// and all five byte-for-byte public CDN checks pass. It is an audit record,
+// not a guarantee of continuous uptime, indexing or hosted publishing.
+export function formatPagesEvidenceSummary(sha,runId,checked){
+ expectedReceipt(sha,runId);
+ if(checked!==ESSENTIAL_PUBLIC_ROUTES.length)
+  throw new TypeError('Incomplete Pages asset proof');
+ const repo='https://github.com/rf24kja/24GO.top';
+ return '## Verified static 24GOTOP Pages delivery\n\n'+
+  '- Deployed commit: [`'+sha+'`]('+repo+'/commit/'+sha+')\n'+
+  '- GitHub Pages run: [`'+runId+'`]('+repo+'/actions/runs/'+runId+')\n'+
+  '- External HTTPS provenance: **exact commit + workflow receipt**\n'+
+  '- Five essential live routes: **5/5 exact source-content matches**\n'+
+  '- Scope: PUBLIC static assets only, not accounts, publishing, user data or uptime.\n';
+}
+
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
  try{
   const result=await verifyPagesDelivery({
@@ -162,7 +178,10 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   });
   console.log('PASS external HTTPS Pages release: '+result.sha+
    ', workflow '+result.runId+', attempt '+result.attempt+
-   ', essential public assets '+assets.checked+'/'+assets.checked);
+   ', essential byte-exact public assets '+assets.checked+'/'+assets.checked);
+  if(process.env.GITHUB_STEP_SUMMARY)
+   await appendFile(process.env.GITHUB_STEP_SUMMARY,
+    formatPagesEvidenceSummary(result.sha,result.runId,assets.checked),'utf8');
  }catch(error){
   console.error('::error::'+error.message);
   process.exitCode=1;
