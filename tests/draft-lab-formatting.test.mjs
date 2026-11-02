@@ -46,6 +46,38 @@ test('Link tool inserts bounded Markdown citations with selected URL placeholder
  assert.throws(()=>formatDraftSelection('a'.repeat(12000),12000,12000,'link'),RangeError);
 });
 
+test('Link tool prefers a safe original source, with Markdown-safe parentheses',()=>{
+ const body='Technical API reference';
+ const source='https://example.org/reference(v2)?mode=read#proof';
+ const edit=formatDraftSelection(body,0,body.length,'link',source);
+ assert.equal(edit.replacement,
+  '[Technical API reference](https://example.org/reference%28v2%29?mode=read#proof)');
+ assert.equal(edit.selectionStart,edit.replacement.length);
+ assert.equal(edit.selectionEnd,edit.replacement.length,
+  'do not preselect a real citation URL for accidental overwrite');
+ const empty=formatDraftSelection('',0,0,'link',source);
+ assert.equal(empty.replacement,
+  '[documentation](https://example.org/reference%28v2%29?mode=read#proof)');
+ assert.equal(empty.replacement.slice(empty.selectionStart,empty.selectionEnd),'documentation');
+ const noSource=formatDraftSelection('Docs',0,4,'link','');
+ assert.equal(noSource.replacement,'[Docs](https://example.org)');
+ assert.equal(noSource.replacement.slice(noSource.selectionStart,noSource.selectionEnd),'https://example.org');
+});
+
+test('Link tool rejects unsafe or preview-incompatible original sources',()=>{
+ const bad=[
+  'javascript:alert(1)',
+  'data:text/html,<script>',
+  'https://user:secret@example.org/research',
+  String.raw`https://example.org/path\\another`,
+  ' https://example.org/research',
+  'https://example.org/'+'x'.repeat(1500)
+ ];
+ for(const source of bad)
+  assert.throws(()=>formatDraftSelection('Evidence',0,8,'link',source),TypeError,
+   'invalid source must not be inserted into generated Markdown');
+});
+
 test('Table toolbar inserts an editable bounded Markdown table, locally',()=>{
  const initial=apply('',0,0,'table');
  assert.equal(initial.value,'| Column | Value |\n| --- | --- |\n| Example | 123 |');
