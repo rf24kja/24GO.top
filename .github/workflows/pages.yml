@@ -6,6 +6,7 @@ on:
     paths:
       - "site/**"
       - ".github/workflows/pages.yml"
+      - "scripts/verify-pages-delivery.mjs"
   workflow_dispatch:
 
 permissions:

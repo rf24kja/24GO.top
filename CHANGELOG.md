@@ -1,5 +1,13 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-02 — Trigger GitHub Pages when deployment verification changes
+
+- Fix a release-pipeline oversight discovered after public PR #161: the Pages workflow watched `site/**` and its own YAML, but **not** `scripts/verify-pages-delivery.mjs`. Changes to the CDN verifier could pass source CI and merge without running a new Pages attestation.
+- Include that exact verifier script in the existing Pages `push.paths` trigger. Add a regression test so future release-check changes necessarily redeploy and reverify the public site.
+- This workflow change itself triggers a Pages run from `main`. A successful live deployment still requires independent evidence from that run, not just the source merge. No privileged configuration, new endpoint, database or paid resource change.
+- Rollback: revert this public PR to restore the previous path filter.
+
+
 ## 2026-11-02 — Post-deployment smoke test for public reader and author flows
 
 - Strengthen the existing GitHub Pages post-deployment verification: after confirming the exact commit and Pages workflow run via `release.json`, independently fetch and verify five **actual public assets** — homepage, Draft Lab HTML and its authoring JavaScript, engineering article archive and client-side search script.

@@ -124,6 +124,8 @@ test('Pages deployment workflow verifies the exact successful deployment runner 
  assert.match(yaml,/EXPECTED_PAGES_SHA: \$\{\{ github\.sha \}\}/);
  assert.match(yaml,/EXPECTED_PAGES_RUN_ID: \$\{\{ github\.run_id \}\}/);
  assert.match(yaml,/node-version: '22'/);
+ assert.ok(yaml.includes('      - "scripts/verify-pages-delivery.mjs"'),
+  'updating the delivery verifier must trigger a Pages re-deploy and re-audit');
  assert.match(yaml,/paths:[\s\S]*?site\/\*\*/);
 });
 
