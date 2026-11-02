@@ -68,7 +68,16 @@ function setUp({missing=false,badTopic=false,query='',clipboard='ok',index='none
   {textContent:'SEO | Technical publishing and search discovery',dataset:{noteTopic:'discovery',noteFile:'discovery.html'},hidden:false},
   {textContent:'Database | PostgreSQL permissions',dataset:{noteTopic:badTopic?'other':'infrastructure',noteFile:'database.html'},hidden:false}
  ];
+ for(const card of cards){
+  card.children=[];
+  card.append=function(child){this.children.push(child);};
+ }
  const document={
+  createElement(tag){
+   assert.equal(tag,'p','excerpts are inert paragraph text, never parsed HTML');
+   return {tagName:'P',className:'',textContent:'',hidden:true,
+    attributes:{},setAttribute(key,value){this.attributes[key]=value;}};
+  },
   querySelector(s){assert.equal(s,'[data-engineering-search]');return missing?null:form;},
   querySelectorAll(s){
    if(s==='[data-note-card]')return cards;
@@ -93,7 +102,9 @@ function setUp({missing=false,badTopic=false,query='',clipboard='ok',index='none
  }}};
  const fetchCalls=[];
  const staticData={version:1,articles:[
-  {file:'security.html',text:'Security details and a hidden circuit breaker'},
+  {file:'security.html',text:index==='html'
+   ?'Security details include <img src=x onerror=alert(1)> without execution'
+   :'Security details and a hidden circuit breaker'},
   {file:'discovery.html',text:'Specific crawler indexing mechanisms'},
   {file:'database.html',text:'Role permissions and a unique isolation mechanism'}
  ]};
