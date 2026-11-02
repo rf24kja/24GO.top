@@ -252,6 +252,23 @@ test('copy filtered link is explicit, accessible and gracefully handles denied c
  assert.match(missing.shareStatus.textContent,/address bar/);
 });
 
+test('copy denied clipboard exposes selectable canonical URL',async()=>{
+ const app=setUp({query:'?topic=security&q=api',clipboard:'fail'});
+ await app.share.listeners.click();
+ assert.equal(app.manualCopy.hidden,false);
+ assert.equal(app.manualCopy.value,'https://24go.top/engineering/?q=api&topic=security');
+ assert.equal(app.manualCopy.focused,true);
+ assert.equal(app.manualCopy.selected,true);
+ assert.deepEqual(app.copied,[]);
+});
+test('missing clipboard displays manually copyable Markdown links',async()=>{
+ const app=setUp({clipboard:'none',query:'?topic=security'});
+ await app.copyResults.listeners.click();
+ assert.equal(app.manualCopy.hidden,false);
+ assert.equal(app.manualCopy.value,
+  '- [security](https://24go.top/engineering/security.html)');
+ assert.equal(app.manualCopy.selected,true);
+});
 test('browser navigation restores the URL state without altering article data',()=>{
  const app=setUp({query:'?topic=security'});
  app.location.href='https://24go.top/engineering/?q=PostgreSQL&topic=infrastructure';
