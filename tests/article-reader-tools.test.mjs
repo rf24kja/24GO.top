@@ -215,8 +215,8 @@ test('huge or empty code samples do not get a copy control or alter source',()=>
 test('code-copy feature remains static, keyboard focusable and absent on printed pages',()=>{
  const css=readFileSync(new URL('../site/engineering/notes.css',import.meta.url),'utf8');
  const js=readFileSync(new URL('../site/engineering/article-reader.mjs',import.meta.url),'utf8');
- assert.match(css,/\\.article-reader__copy-code:focus-visible/);
- assert.match(css,/@media print\\{[^}]*\\.article-reader__copy-code\\{display:none!important/);
- assert.match(js,/article\\.querySelectorAll\\('pre > code'\\)/);
- assert.doesNotMatch(js,/fetch\\(|sendBeacon|localStorage|sessionStorage|innerHTML|eval\\(/);
+ assert.match(css,/\.article-reader__copy-code:focus-visible/);
+ assert.match(css,/@media print\{[^}]*\.article-reader__copy-code\{display:none!important/);
+ assert.match(js,/article\.querySelectorAll\('pre > code'\)/);
+ assert.doesNotMatch(js,/fetch\(|sendBeacon|localStorage|sessionStorage|innerHTML|eval\(/);
 });
