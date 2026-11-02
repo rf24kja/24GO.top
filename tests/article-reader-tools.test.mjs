@@ -235,7 +235,7 @@ test('code-copy feature remains static, keyboard focusable and absent on printed
 
 test('article Save for later allowlist matches exactly the public archive cards',()=>{
  const html=readFileSync(new URL('index.html',dir),'utf8');
- const listed=[...html.matchAll(/data-note-file="([a-z0-9-]+\\.html)"/g)]
+ const listed=[...html.matchAll(/data-note-file="([a-z0-9-]+\.html)"/g)]
   .map(match=>match[1]);
  assert.equal(listed.length,10);
  assert.equal(new Set(listed).size,listed.length);
@@ -330,7 +330,7 @@ test('public reading-list decoder accepts only the reviewed static corpus and bo
 
 test('article saving is visibly local and source copy remains independent',()=>{
  const css=readFileSync(new URL('notes.css',dir),'utf8');
- assert.match(css,/\\.article-reader__local-note/);
+ assert.match(css,/\.article-reader__local-note/);
  const env=stub({clipboard:false});
  assert.equal(mountArticleReader(env.doc,env.view),true);
  const tools=env.main.inserted[0];
