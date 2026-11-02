@@ -186,6 +186,13 @@ header{background:rgba(249,252,249,.9)}a:hover,.navlinks a:hover{color:#07593f}.
 .article-reader__section{cursor:pointer;border:0;padding:4px 7px;margin-inline-start:7px;
  background:transparent;color:var(--accent);font:inherit;font-size:.65em;vertical-align:middle}
 .article-reader__section:hover{background:var(--panel);border-radius:5px}
+.article-reader__copy-code{display:inline-flex;align-items:center;justify-content:center;
+ min-height:40px;margin:12px 0 6px;padding:6px 13px;cursor:pointer;
+ font:inherit;font-size:12px;font-weight:750;color:var(--accent);
+ background:var(--panel);border:1px solid var(--accent);border-radius:8px}
+.article-reader__copy-code:hover{background:var(--accent);color:#08251b}
+.article-reader__copy-code:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+@media(prefers-color-scheme:light){.article-reader__copy-code:hover{color:#fff}}
 .article-reader__status{font-size:12px;line-height:1.45;color:var(--muted);margin:9px 0 0}
 .article-reader__status:empty{display:none}
 .article-reader__manual{width:100%;min-height:110px;margin:10px 0 0;padding:11px;
@@ -200,7 +207,7 @@ header{background:rgba(249,252,249,.9)}a:hover,.navlinks a:hover{color:#07593f}.
 @media(prefers-color-scheme:light){.article-reader__button:hover{color:#fff}}
 @media(prefers-contrast:more){.article-reader,.article-reader__menu summary,
 .article-reader__button,.article-reader__menu nav{border-width:2px}}
-@media print{.article-reader,.article-reader__section{display:none!important}
+@media print{.article-reader,.article-reader__section,.article-reader__copy-code{display:none!important}
  .article h2[id^="section-"]:target,.article h3[id^="section-"]:target{outline:0}}
 
 /* Accessible full-text-search capability state, separate from result counts. */

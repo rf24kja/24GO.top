@@ -77,7 +77,7 @@ function el(tag,text=''){
  };
  return node;
 }
-function stub({clipboard=true,malformed=false}={}){
+function stub({clipboard=true,malformed=false,codeText='const result = "<script>alert(1)</script>";'}={}){
  const canonical='https://24go.top/engineering/markdown-preview-safety.html';
  const json={
   '@context':'https://schema.org','@type':'Article',
@@ -91,8 +91,16 @@ function stub({clipboard=true,malformed=false}={}){
  headings[0].attributes.id='section-reproducible-steps';
  headings[1].attributes.id='section-strict-utf-8';
  const article=el('article');
+ const pre=el('pre'),code=el('code',codeText);
+ const codeParent={inserted:[],insertBefore(node,target){
+  if(target!==pre)throw Error('Wrong code block');
+  this.inserted.push(node);
+ }};
+ pre.parentNode=codeParent;
+ code.parentNode=pre;
  article.querySelector=selector=>selector==='h1'?h1:null;
- article.querySelectorAll=selector=>selector==='h2[id],h3[id]'?headings:[];
+ article.querySelectorAll=selector=>selector==='h2[id],h3[id]'?headings:
+  selector==='pre > code'?[code]:[];
  article.getBoundingClientRect=()=>({top:200-(Number(view.scrollY)||0),height:2400});
  const main={
   inserted:[],insertBefore(node,target){
@@ -117,7 +125,7 @@ function stub({clipboard=true,malformed=false}={}){
   addEventListener(event,fn){listeners[event]=fn;},
   print(){prints.push('print');}
  };
- return {doc,view,main,article,headings,listeners,copied,prints};
+ return {doc,view,main,article,headings,listeners,copied,prints,code,pre,codeParent};
 }
 test('render safe TOC and interactive citations without changing the reviewed article data',async()=>{
  const env=stub();
@@ -165,4 +173,50 @@ test('mismatched JSON-LD fails closed without a bogus reference UI',()=>{
  const env=stub({malformed:true});
  assert.equal(mountArticleReader(env.doc,env.view),false);
  assert.equal(env.main.inserted.length,0);
+});
+
+test('code copy preserves literal reviewed code and does not change the article',async()=>{
+ const source='curl --header "X-Literal: <img src=x onerror=alert(1)>" \\n--data "{pass:true}"';
+ const env=stub({codeText:source});
+ assert.equal(mountArticleReader(env.doc,env.view),true);
+ const [button]=env.codeParent.inserted;
+ assert.equal(env.codeParent.inserted.length,1);
+ assert.equal(button.tagName,'BUTTON');
+ assert.equal(button.type,'button');
+ assert.equal(button.textContent,'Copy code');
+ assert.equal(button.attributes['aria-label'],'Copy this public code example');
+ assert.equal(env.code.textContent,source);
+ await button.listeners.click();
+ assert.deepEqual(env.copied,[source]);
+ assert.equal(env.code.textContent,source,'copying cannot rewrite the published code');
+ assert.equal(env.main.inserted[0].children[2].textContent,'Copied to clipboard.');
+});
+
+test('code copy has a keyboard-selectable fallback when the browser denies clipboard',async()=>{
+ const env=stub({clipboard:false,codeText:'const safe = true;'});
+ assert.equal(mountArticleReader(env.doc,env.view),true);
+ await env.codeParent.inserted[0].listeners.click();
+ const tools=env.main.inserted[0];
+ assert.equal(tools.children[3].value,'const safe = true;');
+ assert.equal(tools.children[3].selected,true);
+ assert.equal(tools.children[3].focused,true);
+ assert.match(tools.children[2].textContent,/Clipboard unavailable/);
+});
+
+test('huge or empty code samples do not get a copy control or alter source',()=>{
+ for(const input of ['', 'x'.repeat(8193)]){
+  const env=stub({codeText:input});
+  assert.equal(mountArticleReader(env.doc,env.view),true);
+  assert.equal(env.codeParent.inserted.length,0);
+  assert.equal(env.code.textContent,input);
+ }
+});
+
+test('code-copy feature remains static, keyboard focusable and absent on printed pages',()=>{
+ const css=readFileSync(new URL('../site/engineering/notes.css',import.meta.url),'utf8');
+ const js=readFileSync(new URL('../site/engineering/article-reader.mjs',import.meta.url),'utf8');
+ assert.match(css,/\.article-reader__copy-code:focus-visible/);
+ assert.match(css,/@media print\{[^}]*\.article-reader__copy-code\{display:none!important/);
+ assert.match(js,/article\.querySelectorAll\('pre > code'\)/);
+ assert.doesNotMatch(js,/fetch\(|sendBeacon|localStorage|sessionStorage|innerHTML|eval\(/);
 });
