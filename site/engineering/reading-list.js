@@ -10,9 +10,10 @@
  const clear=id('reading-list-clear'),filter=id('reading-list-filter');
  const filterStatus=id('reading-list-filter-status');
  const copy=id('reading-list-copy'),exportButton=id('reading-list-export');
+ const manualCopy=id('reading-list-manual-copy');
  const importButton=id('reading-list-import'),fileInput=id('reading-list-file');
  const cards=[...document.querySelectorAll('[data-note-card]')];
- if([panel,list,count,feedback,clear,filter,filterStatus,copy,
+ if([panel,list,count,feedback,clear,filter,filterStatus,copy,manualCopy,
     exportButton,importButton,fileInput].some(x=>!x)||!cards.length)return;
  let storage;
  try{storage=window.localStorage;}catch{return;}
@@ -52,7 +53,13 @@
     approved.get(file).title.normalize('NFC').toLocaleLowerCase().includes(needle));
  };
  const mark=message=>{feedback.textContent=message;};
+ const clearManual=()=>{
+  manualCopy.hidden=true;
+  manualCopy.value='';
+ };
  const render=()=>{
+  // Never show an obsolete export after another tab or the filter changes.
+  clearManual();
   let files=[],invalid=false;
   try{files=current();}
   catch{invalid=true;}
@@ -126,15 +133,21 @@
   let files;
   try{files=selected(current());}catch{render();return;}
   if(!files.length)return;
-  if(!navigator.clipboard?.writeText){
-   mark('Clipboard unavailable. Copy individual public links instead.');return;
-  }
+  clearManual();
   const markdown=files.map(file=>
    '- ['+cleanTitle(approved.get(file).title)+'](https://24go.top/engineering/'+file+')').join('\n');
+  const offerManualCopy=()=>{
+   manualCopy.value=markdown;
+   manualCopy.hidden=false;
+   manualCopy.focus();
+   manualCopy.select();
+   mark('Clipboard unavailable. Select and copy these public Markdown links manually.');
+  };
+  if(!navigator.clipboard?.writeText){offerManualCopy();return;}
   try{
    await navigator.clipboard.writeText(markdown);
    mark(files.length+' saved link(s) copied as Markdown.');
-  }catch{mark('Clipboard unavailable. Copy individual public links instead.');}
+  }catch{offerManualCopy();}
  });
  exportButton.addEventListener('click',()=>{
   try{
