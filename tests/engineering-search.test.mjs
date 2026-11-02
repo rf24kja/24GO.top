@@ -269,6 +269,20 @@ test('missing clipboard displays manually copyable Markdown links',async()=>{
   '- [security](https://24go.top/engineering/security.html)');
  assert.equal(app.manualCopy.selected,true);
 });
+test('manual copy is cleared after filter changes',async()=>{
+ const a=setUp({query:'?topic=security',clipboard:'fail'});
+ await a.share.listeners.click();
+ assert.equal(a.manualCopy.hidden,false);
+ a.input.value='postgres';a.listeners.input();
+ assert.equal(a.manualCopy.hidden,true);
+ assert.equal(a.manualCopy.value,'');
+ await a.share.listeners.click();
+ a.clickTopic('infrastructure');
+ assert.equal(a.manualCopy.hidden,true);
+ a.location.href='https://24go.top/engineering/?topic=security';
+ a.window.listeners.popstate();
+ assert.equal(a.manualCopy.value,'');
+});
 test('browser navigation restores the URL state without altering article data',()=>{
  const app=setUp({query:'?topic=security'});
  app.location.href='https://24go.top/engineering/?q=PostgreSQL&topic=infrastructure';
