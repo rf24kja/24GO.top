@@ -1,5 +1,13 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-02 — Verify actual Pages CDN delivery after each public deploy
+
+- Add a **read-only, independent HTTPS release attestation** after GitHub Pages `deploy-pages` finishes. The GitHub-hosted runner fetches `https://24go.top/release.json` with a cache-busting run identifier and requires its full bounded contents to exactly match the current workflow's commit SHA and run ID.
+- A stale/undelivered build, redirected response, network error, malformed JSON or oversized response fails the Pages workflow's post-deployment verification; an uploaded Pages artifact or green source CI is no longer silently treated as proof of public CDN delivery. Attempts are bounded with a short retry window for CDN propagation.
+- Add Node tests with simulated HTTPS responses and workflow wiring assertions. The verifier sends no credentials, drafts or personal data and does not modify DNS, Vercel, Supabase or production backend. No actual live delivery is claimed until a completed successful Pages workflow is independently observed.
+- Rollback: revert this public workflow PR. The existing static Pages artifact remains the release unit; this change only adds an explicit delivery verification stage.
+
+
 ## 2026-11-02 — Link author-selected text to the original source in Draft Lab
 
 - The browser-only Article Draft Lab **Link** toolbar now uses the author's already-entered and validated `Original source` HTTP(S) URL. This avoids copying a dummy `example.org` target into citations that the author intended to reference their real source.
