@@ -230,7 +230,9 @@ export function mountArticleReader(doc,view){
   refreshBookmark(); // A notification is read-only, even across tabs.
  });
  }
- tools.append(actions,status,manual);
+ const localNote=create('p','article-reader__local-note',
+  'Save for later stores only a public article link in this browser. Saved links are unencrypted and visible to anyone using the same browser. Nothing is uploaded.');
+ tools.append(actions,status,manual,localNote);
  main.insertBefore(tools,article);
  // Scroll progress is a transient in-page visualization. No persistence.
  const update=()=>{
