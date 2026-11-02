@@ -1,5 +1,12 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-02 — Bounded GitHub Pages release receipt streaming
+
+- Fix a bounded-response security bug in the read-only Development page release checker: the previous code fetched an entire response with `response.text()` before enforcing its 256-character limit. Now read at most 256 **decoded bytes** and 32 chunks, cancel oversized responses immediately, and reject malformed UTF-8 rather than converting bad bytes.
+- Add regression tests for streamed oversized payload cancellation, excessive empty chunks, split valid JSON and malformed UTF-8. This hardens **public static Pages UI only**; no hosted publication, accounts, sensitive credentials, Supabase or private Core changes.
+- Rollback: revert the static-site fix PR; retain the fail-closed status presentation if evidence is unavailable.
+
+
 ## 2026-11-02 — Visible GitHub Pages release evidence on Development
 
 - Add a compact, accessible public release-evidence section to `/progress.html`. It reads the same-origin `release.json` receipt created during the Pages workflow and links to its exact 40-character GitHub commit and Pages Actions run, with no tokens, storage, tracking or external API requests.

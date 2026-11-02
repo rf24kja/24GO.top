@@ -76,3 +76,54 @@ test('progress page renders evidence links only from a valid public deployment r
  assert.equal(failed.values.get('public-release-commit').hidden,true);
  assert.equal(failed.values.get('public-release-workflow').hidden,true);
 });
+
+
+test('receipt stops an oversized chunked response before full download',async()=>{
+ let wasCancelled=false;
+ const stream=new ReadableStream({
+  start(controller){
+   controller.enqueue(new Uint8Array(180));
+   controller.enqueue(new Uint8Array(180));
+  },
+  cancel(){wasCancelled=true;}
+ });
+ const response=new Response(stream,{status:200,headers:{'content-type':'application/json'}});
+ response.text=()=>{throw new Error('unbounded response.text must never run');};
+ await assert.rejects(fetchReleaseReceipt(async()=>response),/safe stream limit/);
+ assert.equal(wasCancelled,true,'cancel unread provider response once budget is exceeded');
+});
+
+test('too many empty stream chunks are rejected without a hanging read',async()=>{
+ let cancelled=false;
+ const stream=new ReadableStream({
+  start(controller){for(let i=0;i<40;i++)controller.enqueue(new Uint8Array(0));},
+  cancel(){cancelled=true;}
+ });
+ await assert.rejects(fetchReleaseReceipt(async()=>new Response(stream)),/safe stream limit/);
+ assert.equal(cancelled,true);
+});
+
+test('strict UTF-8 parsing rejects malformed bytes that JSON text() may replace',async()=>{
+ const raw=Buffer.concat([
+  Buffer.from('{"commit":"'),
+  Buffer.from([0xc3,0x28]),
+  Buffer.from('","pages_run_id":"41387261485"}')
+ ]);
+ await assert.rejects(fetchReleaseReceipt(async()=>new Response(raw)),
+  /Invalid Pages release receipt/);
+});
+
+test('valid receipt JSON split into several byte chunks remains verifiable',async()=>{
+ const raw=Buffer.from(JSON.stringify(valid));
+ const stream=new ReadableStream({
+  start(controller){
+   controller.enqueue(raw.subarray(0,17));
+   controller.enqueue(raw.subarray(17,39));
+   controller.enqueue(raw.subarray(39));
+   controller.close();
+  }
+ });
+ const result=await fetchReleaseReceipt(async()=>new Response(stream));
+ assert.equal(result.commit,SHA);
+ assert.equal(result.pagesRunId,valid.pages_run_id);
+});
