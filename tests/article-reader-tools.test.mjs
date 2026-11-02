@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readdirSync,readFileSync} from 'node:fs';
-import {articleCitations,validatedReaderMetadata,mountArticleReader}
+import {articleCitations,validatedReaderMetadata,mountArticleReader,
+ validatedPublicReadingList,PUBLIC_READING_LIST_KEY,PUBLIC_READING_FILES}
  from '../site/engineering/article-reader.mjs';
 
 const dir=new URL('../site/engineering/',import.meta.url);
@@ -77,7 +78,8 @@ function el(tag,text=''){
  };
  return node;
 }
-function stub({clipboard=true,malformed=false,codeText='const result = "<script>alert(1)</script>";'}={}){
+function stub({clipboard=true,malformed=false,codeText='const result = "<script>alert(1)</script>";',
+ storageAccess=true,storageWritable=true,storedRaw=null}={}){
  const canonical='https://24go.top/engineering/markdown-preview-safety.html';
  const json={
   '@context':'https://schema.org','@type':'Article',
@@ -119,13 +121,23 @@ function stub({clipboard=true,malformed=false,codeText='const result = "<script>
   querySelectorAll:s=>s==='script[type="application/ld+json"]'?[jsonScript]:[]
  };
  const copied=[],listeners={},prints=[];
+ const stored=new Map(),writes=[];
+ if(storedRaw!==null)stored.set(PUBLIC_READING_LIST_KEY,storedRaw);
+ const storage={
+  getItem(key){return stored.get(key)??null;},
+  setItem(key,value){
+   if(!storageWritable)throw new Error('Storage quota denied');
+   writes.push([key,value]);stored.set(key,value);
+  }
+ };
  const view={
   navigator:clipboard?{clipboard:{async writeText(v){copied.push(v);}}}:{},
+  get localStorage(){if(!storageAccess)throw new Error('Storage blocked');return storage;},
   innerHeight:800,scrollY:0,
   addEventListener(event,fn){listeners[event]=fn;},
   print(){prints.push('print');}
  };
- return {doc,view,main,article,headings,listeners,copied,prints,code,pre,codeParent};
+ return {doc,view,main,article,headings,listeners,copied,prints,code,pre,codeParent,storage,stored,writes};
 }
 test('render safe TOC and interactive citations without changing the reviewed article data',async()=>{
  const env=stub();
@@ -142,7 +154,7 @@ test('render safe TOC and interactive citations without changing the reviewed ar
  assert.equal(toc.children[1].children[0].attributes.href,'#section-strict-utf-8');
  const buttons=actions.children.filter(x=>x.tagName==='BUTTON');
  assert.deepEqual(buttons.map(b=>b.textContent),
-  ['Copy Markdown citation','Copy text reference','Copy BibTeX','Print article']);
+  ['Copy Markdown citation','Copy text reference','Copy BibTeX','Print article','Save for later']);
  await buttons[0].listeners.click();
  assert.equal(env.copied.length,1);
  assert.match(env.copied[0],/A safe technical guide/);
@@ -218,5 +230,113 @@ test('code-copy feature remains static, keyboard focusable and absent on printed
  assert.match(css,/\.article-reader__copy-code:focus-visible/);
  assert.match(css,/@media print\{[^}]*\.article-reader__copy-code\{display:none!important/);
  assert.match(js,/article\.querySelectorAll\('pre > code'\)/);
- assert.doesNotMatch(js,/fetch\(|sendBeacon|localStorage|sessionStorage|innerHTML|eval\(/);
+ assert.doesNotMatch(js,/fetch\(|sendBeacon|sessionStorage|innerHTML|eval\(/);
+});
+
+test('article Save for later allowlist matches exactly the public archive cards',()=>{
+ const html=readFileSync(new URL('index.html',dir),'utf8');
+ const listed=[...html.matchAll(/data-note-file="([a-z0-9-]+\.html)"/g)]
+  .map(match=>match[1]);
+ assert.equal(listed.length,10);
+ assert.equal(new Set(listed).size,listed.length);
+ assert.deepEqual([...PUBLIC_READING_FILES].sort(),listed.sort());
+ assert.equal(PUBLIC_READING_LIST_KEY,'24gotop-public-reading-list-v1');
+});
+
+test('article page save and remove use the existing local reading list with no initial write',()=>{
+ const env=stub();
+ assert.equal(mountArticleReader(env.doc,env.view),true);
+ const tools=env.main.inserted[0];
+ const actions=tools.children[1],button=actions.children.at(-1);
+ assert.deepEqual(env.writes,[]);
+ assert.equal(button.textContent,'Save for later');
+ assert.equal(button.type,'button');
+ assert.equal(button.disabled,false);
+ assert.equal(button.attributes['aria-pressed'],'false');
+ assert.match(button.attributes['aria-label'],/Save A safe technical guide for later/);
+ button.listeners.click();
+ assert.equal(env.writes.length,1);
+ assert.deepEqual(JSON.parse(env.stored.get(PUBLIC_READING_LIST_KEY)),{
+  version:1,files:['markdown-preview-safety.html']
+ });
+ assert.equal(button.attributes['aria-pressed'],'true');
+ assert.equal(button.textContent,'Remove from reading list');
+ assert.match(tools.children[2].textContent,/Saved this public article/);
+ assert.match(tools.children[4].textContent,/unencrypted/);
+ button.listeners.click();
+ assert.equal(button.attributes['aria-pressed'],'false');
+ assert.deepEqual(JSON.parse(env.stored.get(PUBLIC_READING_LIST_KEY)),{
+  version:1,files:[]
+ });
+ assert.equal(env.writes.length,2);
+ assert.ok(!env.writes.some(([key])=>key!==PUBLIC_READING_LIST_KEY));
+});
+
+test('article-page button mirrors newer cross-tab saved changes without writes',()=>{
+ const env=stub();
+ assert.equal(mountArticleReader(env.doc,env.view),true);
+ const button=env.main.inserted[0].children[1].children.at(-1);
+ assert.equal(button.attributes['aria-pressed'],'false');
+ env.stored.set(PUBLIC_READING_LIST_KEY,JSON.stringify({
+  version:1,files:['markdown-preview-safety.html']
+ }));
+ env.listeners.storage({key:PUBLIC_READING_LIST_KEY,storageArea:env.storage});
+ assert.equal(button.attributes['aria-pressed'],'true');
+ assert.deepEqual(env.writes,[]);
+ env.stored.set(PUBLIC_READING_LIST_KEY,JSON.stringify({version:1,files:[]}));
+ env.listeners.storage({key:null,storageArea:env.storage});
+ assert.equal(button.attributes['aria-pressed'],'false');
+ env.listeners.storage({key:'unrelated',storageArea:env.storage});
+ assert.deepEqual(env.writes,[]);
+});
+
+test('damaged or inaccessible browser list fails closed without overwriting bookmarks',()=>{
+ for(const options of [
+  {storedRaw:JSON.stringify({version:1,files:['unknown.html']})},
+  {storedRaw:'{malformed'},
+  {storageAccess:false}
+ ]){
+  const env=stub(options);
+  assert.equal(mountArticleReader(env.doc,env.view),true);
+  const button=env.main.inserted[0].children[1].children.at(-1);
+  assert.equal(button.disabled,true);
+  assert.equal(button.attributes['aria-pressed'],'false');
+  button.listeners.click();
+  assert.deepEqual(env.writes,[]);
+  assert.match(env.main.inserted[0].children[2].textContent,/Cannot update/);
+ }
+ const readOnly=stub({storageWritable:false});
+ assert.equal(mountArticleReader(readOnly.doc,readOnly.view),true);
+ readOnly.main.inserted[0].children[1].children.at(-1).listeners.click();
+ assert.deepEqual(readOnly.writes,[]);
+ assert.match(readOnly.main.inserted[0].children[2].textContent,/Cannot update/);
+});
+
+test('public reading-list decoder accepts only the reviewed static corpus and bounded v1 schema',()=>{
+ assert.deepEqual(validatedPublicReadingList(null),[]);
+ const ok=JSON.stringify({version:1,files:['markdown-preview-safety.html']});
+ assert.deepEqual(validatedPublicReadingList(ok),['markdown-preview-safety.html']);
+ for(const raw of [
+  'not json',
+  JSON.stringify({version:2,files:[]}),
+  JSON.stringify({version:1,files:['not-in-archive.html']}),
+  JSON.stringify({version:1,files:['../secret.html']}),
+  JSON.stringify({version:1,files:['markdown-preview-safety.html','markdown-preview-safety.html']}),
+  JSON.stringify({version:1,files:'not an array'}),
+  JSON.stringify({version:1,files:['markdown-preview-safety.html',1]}),
+  'x'.repeat(16385)
+ ])assert.throws(()=>validatedPublicReadingList(raw));
+});
+
+test('article saving is visibly local and source copy remains independent',()=>{
+ const css=readFileSync(new URL('notes.css',dir),'utf8');
+ assert.match(css,/\.article-reader__local-note/);
+ const env=stub({clipboard:false});
+ assert.equal(mountArticleReader(env.doc,env.view),true);
+ const tools=env.main.inserted[0];
+ assert.match(tools.children[4].textContent,/Nothing is uploaded/);
+ assert.equal(env.writes.length,0);
+ tools.children[1].children.at(-1).listeners.click();
+ assert.equal(env.writes.length,1);
+ assert.equal(tools.children[3].hidden,true);
 });

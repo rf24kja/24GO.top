@@ -1,5 +1,6 @@
 // Progressive enhancement for reviewed PUBLIC editorial pages only.
-// No network requests, storage, tracking, credentials, AI, publication or writes.
+// No network requests, tracking, credentials, AI or publishing writes.
+// Only an explicit Save for later click may persist a PUBLIC link on this device.
 const CANONICAL=/^https:\/\/24go\.top\/engineering\/[a-z0-9-]+\.html$/;
 const SECTION=/^section-[a-z0-9-]+$/;
 const plain=text=>typeof text==='string'&&text.length>0&&text.length<=250&&
@@ -41,6 +42,27 @@ export function articleCitations(meta){
   bibtex:'@online{24gotop-'+slug+',\n  author = {'+author+'},\n  title = {'+
     title+'},\n  date = {'+meta.date+'},\n  url = {'+meta.url+'}\n}'
  });
+}
+
+// The public archive reading list stores ONLY reviewed article filenames.
+// Preserve its v1 wire format and fail closed on corrupt/oversized local data.
+// Reading here never repairs or overwrites another tab's saved preferences.
+// Canonical static filenames must match the archive; regression tests enforce parity.
+export const PUBLIC_READING_FILES=Object.freeze(["read-only-mcp-server-for-technical-articles.html","multilingual-markdown-editor-without-losing-drafts.html","verify-github-pages-deploy-not-just-ci.html","safe-markdown-citation-links-without-xss.html","javascript-sdk-api-key-leak-prevention.html","discoverable-technical-articles.html","postgres-insert-returning-least-privilege.html","submit-is-not-publish.html","markdown-preview-safety.html","why-draft-lab-first.html"]);
+const APPROVED_READING_FILES=new Set(PUBLIC_READING_FILES);
+export const PUBLIC_READING_LIST_KEY='24gotop-public-reading-list-v1';
+export function validatedPublicReadingList(raw){
+ if(raw===null)return [];
+ if(typeof raw!=='string'||raw.length>16384)
+  throw new TypeError('Invalid public reading list storage');
+ const saved=JSON.parse(raw);
+ if(saved?.version!==1||!Array.isArray(saved.files)||
+    saved.files.length>APPROVED_READING_FILES.size||
+    new Set(saved.files).size!==saved.files.length||
+    saved.files.some(file=>typeof file!=='string'||file.length>120||
+      !APPROVED_READING_FILES.has(file)))
+  throw new TypeError('Invalid public reading list');
+ return saved.files;
 }
 
 /**
@@ -153,7 +175,65 @@ export function mountArticleReader(doc,view){
  print.type='button';
  print.addEventListener('click',()=>{if(typeof view.print==='function')view.print();});
  actions.append(print);
- tools.append(actions,status,manual);
+ // Save the currently open, reviewed PUBLIC article to the exact same local
+ // list used by the engineering archive. This never writes on first visit.
+ const file=meta.url.slice('https://24go.top/engineering/'.length);
+ if(APPROVED_READING_FILES.has(file)){
+ const bookmark=create('button','article-reader__button','Save for later');
+ bookmark.type='button';
+ let storage;
+ try{storage=view.localStorage;}catch{/* Browser storage may be blocked. */}
+ const readSaved=()=>{
+  if(!storage||typeof storage.getItem!=='function'||
+     typeof storage.setItem!=='function')
+   throw new TypeError('Local reading list unavailable');
+  return validatedPublicReadingList(storage.getItem(PUBLIC_READING_LIST_KEY));
+ };
+ const refreshBookmark=()=>{
+  try{
+   const saved=readSaved();
+   const active=saved.includes(file);
+   bookmark.disabled=false;
+   bookmark.setAttribute('aria-pressed',String(active));
+   bookmark.setAttribute('aria-label',(active?'Remove ':'Save ')+meta.title+
+     (active?' from reading list':' for later'));
+   bookmark.textContent=active?'Remove from reading list':'Save for later';
+  }catch{
+   bookmark.disabled=true;
+   bookmark.setAttribute('aria-pressed','false');
+   bookmark.setAttribute('aria-label','Browser reading list unavailable');
+   bookmark.textContent='Save for later unavailable';
+  }
+ };
+ bookmark.addEventListener('click',()=>{
+  try{
+   // Re-read after the user click; never rely on stale initial tab state.
+   const files=readSaved();
+   const active=files.includes(file);
+   if(!active&&files.length>=APPROVED_READING_FILES.size)
+    throw new RangeError('Reading list is full');
+   const next=active?files.filter(saved=>saved!==file):[...files,file];
+   storage.setItem(PUBLIC_READING_LIST_KEY,JSON.stringify({version:1,files:next}));
+   refreshBookmark();
+   status.textContent=active
+     ?'Removed this public article from the on-device reading list.'
+     :'Saved this public article for later in this browser.';
+  }catch{
+   refreshBookmark();
+   status.textContent='Cannot update the on-device reading list. Open the archive to check saved links.';
+  }
+ });
+ actions.append(bookmark);
+ refreshBookmark();
+ view.addEventListener?.('storage',event=>{
+  if(event.key!==PUBLIC_READING_LIST_KEY&&event.key!==null)return;
+  if(event.storageArea&&event.storageArea!==storage)return;
+  refreshBookmark(); // A notification is read-only, even across tabs.
+ });
+ }
+ const localNote=create('p','article-reader__local-note',
+  'Save for later stores only a public article link in this browser. Saved links are unencrypted and visible to anyone using the same browser. Nothing is uploaded.');
+ tools.append(actions,status,manual,localNote);
  main.insertBefore(tools,article);
  // Scroll progress is a transient in-page visualization. No persistence.
  const update=()=>{

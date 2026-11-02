@@ -1,5 +1,13 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-02 — Save published articles from the article reader
+
+- Add **Save for later** / **Remove from reading list** directly to each canonical, reviewed public engineering article. It writes only the approved article's filename into the **same on-device v1 reading list** used by the engineering archive; no accounts, API requests, article-body data or automatic first-visit writes. Existing saved links appear as selected after opening an article.
+- Keep a strict allowlist of the ten actual published archive filenames, with an automated exact-parity test, to prevent unknown page names from damaging the shared reading-list state. Reject malformed, oversized, duplicate and off-corpus saved data without rewriting it; browser storage denied/locked fails closed. A cross-tab `storage` notification refreshes the button **read-only**.
+- Show the storage privacy boundary beside the action: saved public links are unencrypted in the browser and visible on shared devices; nothing is uploaded. Include tests for save/remove, no initial write, malformed data, denied storage and cross-tab updates.
+- Public static MIT-only enhancement. No hosted publishing, private backend, privileged configuration or database changes. Rollback: revert this PR; saved-link JSON remains compatible with the existing archive.
+
+
 ## 2026-11-02 — Manual Markdown copy fallback for saved reading links
 
 - Improve the private-on-device public engineering reading list: `Copy shown links` now offers an accessible, selectable, read-only Markdown textarea when the browser lacks Clipboard API access or rejects an explicit clipboard write. The fallback contains exactly the links shown by the current saved-title filter, without network requests or new persistence.
