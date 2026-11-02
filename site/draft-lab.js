@@ -1,6 +1,6 @@
 'use strict';
 
-import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, readDraftFileStrict, formatDraftSelection, countDraftWords, createDraftImportGate, matchesDraftExportSnapshot, invalidDraftField } from './draft-lab-logic.js';
+import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, readDraftFileStrict, formatDraftSelection, countDraftWords, createDraftImportGate, matchesDraftExportSnapshot, invalidDraftField, findDraftText } from './draft-lab-logic.js';
 import { renderMarkdownPreview,renderPreviewOutline } from './draft-lab-preview.js';
 import {appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS} from './draft-lab-guidance.js';
 import {captureDraftRevision,compareDraftRevisions,revisionSummary} from './draft-lab-revisions.js';
@@ -219,6 +219,40 @@ body.addEventListener('keydown',event=>{
  if(!action)return;
  event.preventDefault();
  applyDraftFormatting(action);
+});
+
+// Exact, case-sensitive local manuscript navigation. Selecting a match is
+// read-only: it cannot update export baselines, vault data or remote services.
+const findQuery=field('draftFindQuery');
+const findStatus=field('draftFindStatus');
+function findInDraft(direction){
+ const query=findQuery.value;
+ if(!query.trim()){
+  findStatus.textContent=ui('findEmpty');
+  findQuery.focus();
+  return;
+ }
+ let match;
+ try{
+  const from=direction==='next'?body.selectionEnd:body.selectionStart;
+  match=findDraftText(body.value,query,from,direction);
+ }catch{match=null;}
+ if(!match){
+  findStatus.textContent=ui('findMissing');
+  return;
+ }
+ body.focus();
+ body.setSelectionRange(match.start,match.end);
+ findStatus.textContent=ui('findFound');
+}
+field('draftFindNext').addEventListener('click',()=>findInDraft('next'));
+field('draftFindPrevious').addEventListener('click',()=>findInDraft('previous'));
+findQuery.addEventListener('input',()=>{findStatus.textContent='';});
+findQuery.addEventListener('keydown',event=>{
+ if(event.key==='Enter'&&!event.isComposing){
+  event.preventDefault();
+  findInDraft('next');
+ }
 });
 
 // Explicit, append-only template action. Never replace unsaved text or make
