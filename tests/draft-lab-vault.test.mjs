@@ -79,6 +79,22 @@ test('manual vault refuses malformed citations and multiline titles without modi
  assert.deepEqual(vault.load(known.id).draft,a);
 });
 
+test('manual browser vault rejects malformed UTF-16 without overwriting user snapshots',()=>{
+ const {vault,items}=setup();
+ const saved=vault.save(a);
+ const original=items.get(VAULT_KEY);
+ for(const malformed of [
+  {...a,title:'Corrupt title \uD83D'},
+  {...a,body:a.body+' \uDC00'},
+  {...a,source:'https://example.org/\uDBFF'}
+ ]){
+  assert.throws(()=>vault.save(malformed),/vault_invalid/);
+  assert.throws(()=>vault.save(malformed,{id:saved.id,version:saved.version}),/vault_invalid/);
+  assert.equal(items.get(VAULT_KEY),original);
+ }
+ assert.deepEqual(vault.load(saved.id).draft,a);
+});
+
 test('when local storage is blocked, the editor receives a safe failure',()=>{
  const denied={getItem(){throw Error('private storage blocked');},
  setItem(){throw Error('quota exceeded');}};

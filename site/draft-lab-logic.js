@@ -3,6 +3,12 @@
 export const LOCALES = Object.freeze(['en','ru','th','es','fr','de','pt','zh']);
 export const CATEGORIES = Object.freeze(['news','models','tools','guides']);
 
+// TextEncoder/Blob silently substitutes U+FFFD for lone UTF-16 surrogate
+// code units. Refuse a damaged manuscript instead of claiming a lossless
+// local Markdown export, review package or manual browser-vault save.
+const hasUnpairedSurrogate=value=>
+ /[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/u.test(value);
+
 /** Approximate private-on-device word count, with Thai/CJK segmentation. */
 export function countDraftWords(value,language='en'){
  if(typeof value!=='string')throw new TypeError('Article text must be a string');
@@ -26,7 +32,7 @@ export function safeSourceUrl(input) {
   // never turn an invalid author citation into a different valid link.
   // WHATWG parsing silently normalizes backslashes to path separators.
   // Reject ambiguous raw citations instead of changing the author's URL.
-  if (/[\u0000-\u001f\u007f\\]/u.test(input)) return null;
+  if (/[\u0000-\u001f\u007f\\]/u.test(input) || hasUnpairedSurrogate(input)) return null;
   const value = input.trim();
   if (!value) return '';
   if (value !== input) return null;
@@ -127,8 +133,10 @@ const DRAFT_ERRORS=Object.freeze({
 /** A stable validation field identity, not a language-dependent error string. */
 export function invalidDraftField({title,body,locale,category,source}){
  if(typeof title!=='string'||title.trim().length<5||title.length>160||
-    /[\u0000-\u001f\u007f\u2028\u2029]/u.test(title))return 'title';
- if(typeof body!=='string'||body.trim().length<20||body.length>12000)return 'body';
+    /[\u0000-\u001f\u007f\u2028\u2029]/u.test(title)||
+    hasUnpairedSurrogate(title))return 'title';
+ if(typeof body!=='string'||body.trim().length<20||body.length>12000||
+    hasUnpairedSurrogate(body))return 'body';
  if(!LOCALES.includes(locale))return 'locale';
  if(!CATEGORIES.includes(category))return 'category';
  if(safeSourceUrl(source)===null)return 'source';
