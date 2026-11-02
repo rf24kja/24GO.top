@@ -24,7 +24,9 @@ export function safeSourceUrl(input) {
   if (typeof input !== 'string' || input.length > 2000) return null;
   // WHATWG URL parsing strips C0 controls and surrounding whitespace:
   // never turn an invalid author citation into a different valid link.
-  if (/[\u0000-\u001f\u007f]/u.test(input)) return null;
+  // WHATWG parsing silently normalizes backslashes to path separators.
+  // Reject ambiguous raw citations instead of changing the author's URL.
+  if (/[\u0000-\u001f\u007f\\]/u.test(input)) return null;
   const value = input.trim();
   if (!value) return '';
   if (value !== input) return null;
