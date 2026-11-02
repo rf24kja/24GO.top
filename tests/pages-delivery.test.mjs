@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {expectedReceipt,verifyPagesDelivery,verifyEssentialPublicPages,ESSENTIAL_PUBLIC_ROUTES,loadEssentialPublicAssets} from '../scripts/verify-pages-delivery.mjs';
+import {expectedReceipt,verifyPagesDelivery,verifyEssentialPublicPages,ESSENTIAL_PUBLIC_ROUTES,loadEssentialPublicAssets,formatPagesEvidenceSummary} from '../scripts/verify-pages-delivery.mjs';
 
 const SHA='845531da1202f1abf9dfb414191842d714fdd7bb';
 const RUN='41396728819';
@@ -208,6 +208,17 @@ test('invalid exact-asset expectations never trigger public network calls',async
   runId:RUN,expectedAssets:bad,fetchImpl
  }),TypeError);
  assert.equal(calls,0);
+});
+
+test('successful Pages check exposes trustworthy exact-match evidence in job summary',()=>{
+ const report=formatPagesEvidenceSummary(SHA,RUN,5);
+ assert.match(report,/Verified static 24GOTOP Pages delivery/);
+ assert.ok(report.includes('/commit/'+SHA));
+ assert.ok(report.includes('/actions/runs/'+RUN));
+ assert.match(report,/5\/5 exact source-content matches/);
+ assert.match(report,/PUBLIC static assets only/);
+ for(const options of [[SHA,RUN,4],['main',RUN,5],[SHA,'bad',5]])
+  assert.throws(()=>formatPagesEvidenceSummary(...options),TypeError);
 });
 
 test('workflow command loads exact checked-out source files before CDN verification',()=>{
