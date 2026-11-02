@@ -14,6 +14,8 @@ function node(tag='div'){
   append(...children){this.children.push(...children);},
   replaceChildren(...children){this.children=children;},
   click(){this.clicked=true;},
+  focus(){this.focused=true;},
+  select(){this.selected=true;},
   remove(){this.removed=true;}
  };
 }
@@ -44,12 +46,14 @@ function setup({badFile=false,storageAccess=true,clipboardAccess=true,storageWri
   'reading-list-filter-status':node('span'),
   'reading-list-feedback':node('p'),
   'reading-list-copy':node('button'),
+  'reading-list-manual-copy':node('textarea'),
   'reading-list-export':node('button'),
   'reading-list-import':node('button'),
   'reading-list-file':node('input')
  };
  elements['reading-list-panel'].hidden=true;
  elements['reading-list-clear'].hidden=true;
+ elements['reading-list-manual-copy'].hidden=true;
  const document={
   getElementById:id=>elements[id],
   querySelectorAll:q=>q==='[data-note-card]'?cards:[],
@@ -65,7 +69,15 @@ function setup({badFile=false,storageAccess=true,clipboardAccess=true,storageWri
   addEventListener(name,fn){this.listeners[name]=fn;}
  };
  const clipboardWrites=[],downloads=[];
- const navigator=clipboardAccess?{clipboard:{async writeText(text){clipboardWrites.push(text);}}}:{};
+ let rejectPendingClipboard;
+ const navigator=clipboardAccess?{clipboard:{writeText(text){
+  if(clipboardAccess==='reject')return Promise.reject(new Error('Clipboard denied'));
+  if(clipboardAccess==='pending')return new Promise((_resolve,reject)=>{
+   rejectPendingClipboard=reject;
+  });
+  clipboardWrites.push(text);
+  return Promise.resolve();
+ }}}:{};
  const blobUrls=new Map();
  const objectURL={
   createObjectURL(blob){const url='blob:mock:'+blobUrls.size;blobUrls.set(url,blob);return url;},
@@ -81,6 +93,7 @@ function setup({badFile=false,storageAccess=true,clipboardAccess=true,storageWri
  runInNewContext(source,{window,document,navigator,Blob,TextEncoder,TextDecoder,
   URL:objectURL,setTimeout:(callback)=>callback()},{timeout:1000});
  return {elements,cards,store,writes,storage,window,clipboardWrites,downloads,
+  rejectPendingClipboard:()=>rejectPendingClipboard(new Error('Clipboard denied')),
   setApprove:v=>{approve=v;},setConfirmHook:fn=>{confirmHook=fn;}};
 }
 test('published archive exposes a progressive, explicitly local reader list',()=>{
@@ -208,6 +221,11 @@ test('copy visible saved links produces canonical Markdown only after a click',a
  denied.cards[0].children[0].listeners.click();
  await denied.elements['reading-list-copy'].listeners.click();
  assert.match(denied.elements['reading-list-feedback'].textContent,/Clipboard unavailable/);
+ assert.equal(denied.elements['reading-list-manual-copy'].hidden,false);
+ assert.equal(denied.elements['reading-list-manual-copy'].selected,true);
+ assert.equal(denied.elements['reading-list-manual-copy'].focused,true);
+ assert.equal(denied.elements['reading-list-manual-copy'].value,
+  '- [Reviewed technical article 1](https://24go.top/engineering/research-one.html)');
 });
 
 test('JSON backup export is opt-in, versioned and contains only public article filenames',async()=>{
@@ -292,4 +310,64 @@ test('invalid stored list fails closed and imports stay disabled until explicit 
  app.elements['reading-list-clear'].listeners.click();
  assert.equal(app.store.has(key),false);
  assert.equal(app.elements['reading-list-import'].disabled,false);
+});
+
+test('rejected clipboard Promise exposes the exact selected Markdown as a manual fallback',async()=>{
+ const app=setup({clipboardAccess:'reject'});
+ app.cards[0].children[0].listeners.click();
+ app.elements['reading-list-filter'].value='article 1';
+ app.elements['reading-list-filter'].listeners.input();
+ await app.elements['reading-list-copy'].listeners.click();
+ const manual=app.elements['reading-list-manual-copy'];
+ assert.equal(manual.hidden,false);
+ assert.equal(manual.focused,true);
+ assert.equal(manual.selected,true);
+ assert.equal(manual.value,
+  '- [Reviewed technical article 1](https://24go.top/engineering/research-one.html)');
+ assert.equal(app.clipboardWrites.length,0);
+ assert.match(app.elements['reading-list-feedback'].textContent,/manually/);
+ assert.match(html,/id="reading-list-manual-copy"[^>]+readonly[^>]+hidden/);
+});
+
+test('manual copy of currently shown bookmarks clears when filter or storage changes',async()=>{
+ const app=setup({clipboardAccess:false});
+ app.cards[0].children[0].listeners.click();
+ app.cards[1].children[0].listeners.click();
+ const input=app.elements['reading-list-filter'];
+ input.value='article 2';input.listeners.input();
+ await app.elements['reading-list-copy'].listeners.click();
+ const manual=app.elements['reading-list-manual-copy'];
+ assert.equal(manual.hidden,false);
+ assert.equal(manual.value,
+  '- [Reviewed technical article 2](https://24go.top/engineering/research-two.html)');
+ input.value='article 1';input.listeners.input();
+ assert.equal(manual.hidden,true);
+ assert.equal(manual.value,'','stale selection must not remain as a copy target');
+ await app.elements['reading-list-copy'].listeners.click();
+ assert.equal(manual.hidden,false);
+ app.window.listeners.storage({key:'24gotop-public-reading-list-v1',storageArea:app.storage});
+ assert.equal(manual.hidden,true);
+ assert.equal(manual.value,'');
+ assert.deepEqual(JSON.parse(app.store.get('24gotop-public-reading-list-v1')).files,
+  ['research-one.html','research-two.html']);
+});
+
+test('a delayed clipboard rejection cannot expose stale links after the user changes filter',async()=>{
+ const app=setup({clipboardAccess:'pending'});
+ app.cards[0].children[0].listeners.click();
+ app.cards[1].children[0].listeners.click();
+ const input=app.elements['reading-list-filter'];
+ input.value='article 1';input.listeners.input();
+ const promise=app.elements['reading-list-copy'].listeners.click();
+ input.value='article 2';input.listeners.input();
+ app.rejectPendingClipboard();
+ await promise;
+ const manual=app.elements['reading-list-manual-copy'];
+ assert.equal(manual.hidden,true);
+ assert.equal(manual.value,'');
+ assert.equal(app.elements['reading-list-items'].children.length,1);
+ assert.equal(app.elements['reading-list-items'].children[0].children[0].href,'./research-two.html');
+ assert.match(html,/aria-label="Selected Markdown links to your saved public articles for manual copying"/);
+ assert.match(readFileSync(new URL('../site/engineering/notes.css',import.meta.url),'utf8'),
+  /\.reading-list__manual-copy\[hidden\]\{display:none\}/);
 });
