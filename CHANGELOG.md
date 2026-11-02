@@ -1,5 +1,13 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-02 — Evidence snippets for full-text public article searches
+
+- Show a short, bounded **matched passage** within each filtered engineering article card when the optional same-origin full-text index successfully loads. Readers can now understand why a technical article matched a term that is absent from its title and summary, without having to open every result.
+- Excerpts come solely from the existing reviewed static `search-index.json`; the visitor's search words are not sent to any API or third party. Each snippet is limited to an approximately 180-character window around the first matching search word, inserted via `textContent` in a plain paragraph (never interpreted as HTML). No new fetches, persistence or analytics.
+- Hide and clear obsolete snippets when the query changes, a topic excludes the result, the filter is reset or the full-text index is unavailable. Without JavaScript or the index, existing crawlable static article cards remain usable.
+- Add tests for search relevance context, literal handling of HTML-like article text, bounded rendering, stale result clearing, offline/corrupt index fallback and topic isolation. This is a public MIT static-only feature. Rollback: revert this PR; no backend, identity or database changes.
+
+
 ## 2026-11-02 — Explicit single-match replacement in private Markdown drafts
 
 - Extend the browser-only Draft Lab's eight-language **Find in article** controls with **Replace selected**. The user must explicitly find an exact match before replacing; changing the manuscript, search query or textarea selection invalidates the current match, and replacing never edits every occurrence automatically.

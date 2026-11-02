@@ -144,6 +144,31 @@
       catch{/* Filtering remains functional even if history is unavailable. */}
     }
   };
+  // Explain a full-text match without rendering HTML or sending query terms.
+  // The existing static index is normalized lowercase PUBLIC article text.
+  const excerpts=new Map();
+  const renderExcerpt=(entry,indexed,words,matched)=>{
+    let el=excerpts.get(entry.file);
+    const first=matched&&indexed&&words.length
+      ?words.map(word=>indexed.indexOf(word)).find(at=>at>=0):-1;
+    if(first===-1||first===undefined){
+      if(el){el.hidden=true;el.textContent='';}
+      return;
+    }
+    if(!el){
+      el=document.createElement('p');
+      el.className='note-search__excerpt';
+      el.setAttribute('aria-label','Excerpt from matched published article text');
+      entry.card.append(el);
+      excerpts.set(entry.file,el);
+    }
+    const start=Math.max(0,first-65);
+    const end=Math.min(indexed.length,first+115);
+    const passage=indexed.slice(start,end).replace(/\\s+/g,' ').trim();
+    el.textContent='In article: '+(start>0?'…':'')+passage+
+      (end<indexed.length?'…':'');
+    el.hidden=false;
+  };
   const update=(writeUrl=false)=>{
     const keyword=input.value.trim().toLocaleLowerCase().slice(0,80);
     // Match all bounded query words, in any order and across the visible
@@ -157,6 +182,7 @@
         words.every(word=>entry.searchable.includes(word) ||
           Boolean(indexed?.includes(word)));
       entry.card.hidden=!matches;
+      renderExcerpt(entry,indexed,words,matches);
       if(matches)count++;
     }
     for(const topic of topics){
