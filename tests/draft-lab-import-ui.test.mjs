@@ -541,9 +541,9 @@ test('Find controls use translated labels in all eight locales, with no network 
  const css=readFileSync(new URL('../site/draft-lab.css',import.meta.url),'utf8');
  assert.match(html,/id="draftFindQuery"[^>]*maxlength="80"/);
  assert.match(html,/id="draftFindStatus"[^>]*role="status" aria-live="polite"/);
- assert.match(css,/\\.draft-find__controls button:focus-visible/);
- assert.match(css,/@media\\(max-width:550px\\)/);
- assert.doesNotMatch(source,/fetch\\(|sendBeacon|XMLHttpRequest|eval\\(/);
+ assert.match(css,/\.draft-find__controls button:focus-visible/);
+ assert.match(css,/@media\(max-width:550px\)/);
+ assert.doesNotMatch(source,/fetch\(|sendBeacon|XMLHttpRequest|eval\(/);
 });
 
 test('textarea-only Ctrl/Cmd+B and I format selection using same safe toolbar path',()=>{
