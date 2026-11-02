@@ -27,6 +27,8 @@ test('archive publishes 10 crawlable articles, discoverable topic controls and a
  assert.match(html,/id="engineering-share" hidden/);
  assert.match(html,/id="engineering-share-status" role="status" aria-live="polite"/);
  assert.match(html,/id="engineering-copy-results" hidden/);
+ assert.match(html,/id="engineering-manual-copy"[^>]+readonly[^>]+hidden/);
+ assert.match(style,/\.note-search__manual-copy\[hidden\]\{display:none\}/);
  assert.match(style,/\.note-search__share\[hidden\]\{display:none\}/);
  const tags=[...html.matchAll(/<article class="card" data-note-card data-note-topic="([^"]+)" data-note-file="[a-z0-9-]+\.html">/g)];
  assert.deepEqual(tags.map(x=>x[1]),cardTopics);
@@ -55,6 +57,8 @@ function setUp({missing=false,badTopic=false,query='',clipboard='ok',index='none
   reset={hidden:true,focused:false,addEventListener(name,fn){listeners['reset-'+name]=fn;}};
  const share={hidden:true,listeners:{},addEventListener(name,fn){this.listeners[name]=fn;}};
  const shareStatus={textContent:''};
+ const manualCopy={value:'',hidden:true,focused:false,selected:false,
+  focus(){this.focused=true;},select(){this.selected=true;}};
  const indexStatus={textContent:''};
  const retryIndex={hidden:true,disabled:false,listeners:{},
   addEventListener(name,fn){this.listeners[name]=fn;}};
@@ -88,6 +92,7 @@ function setUp({missing=false,badTopic=false,query='',clipboard='ok',index='none
    'engineering-no-results':empty,'engineering-reset':reset,
    'engineering-share':share,'engineering-share-status':shareStatus,
    'engineering-copy-results':copyResults,
+   'engineering-manual-copy':manualCopy,
    'engineering-index-status':indexStatus,
    'engineering-index-retry':retryIndex})[id];}
  };
@@ -96,8 +101,12 @@ function setUp({missing=false,badTopic=false,query='',clipboard='ok',index='none
  const window={location,listeners:{},history:{
   replaceState(_state,_title,url){location.href=new URL(url,location.href).href;}
  },addEventListener(name,callback){this.listeners[name]=callback;}};
+ let rejectPending;
  const navigator=clipboard==='none'?{}:{clipboard:{async writeText(value){
   if(clipboard==='fail')throw Error('clipboard unavailable');
+  if(clipboard==='pending')return new Promise((_resolve,reject)=>{
+   rejectPending=reject;
+  });
   copied.push(value);
  }}};
  const fetchCalls=[];
@@ -136,7 +145,8 @@ function setUp({missing=false,badTopic=false,query='',clipboard='ok',index='none
  };
  runInNewContext(code,{document,window,navigator,URL,TextDecoder,AbortSignal,
   ...(index==='none'?{}:{fetch:indexFetch})},{timeout:1000});
- return {form,input,status,empty,reset,share,copyResults,shareStatus,indexStatus,retryIndex,cards,topics,listeners,window,location,copied,fetchCalls,
+ return {form,input,status,empty,reset,share,copyResults,shareStatus,manualCopy,indexStatus,retryIndex,cards,topics,listeners,window,location,copied,fetchCalls,
+  rejectPending:()=>rejectPending(new Error('Clipboard blocked')),
   clickTopic:t=>topics.find(x=>x.dataset.engineeringTopic===t).listeners.click()};
 }
 test('search works with all topics and Escape clears only query',()=>{
@@ -239,9 +249,59 @@ test('copy filtered link is explicit, accessible and gracefully handles denied c
  assert.match(denied.shareStatus.textContent,/Clipboard unavailable/);
  const missing=setUp({query:'?topic=security',clipboard:'none'});
  await missing.share.listeners.click();
- assert.match(missing.shareStatus.textContent,/address bar/);
+ assert.match(missing.shareStatus.textContent,/manual copying/);
 });
 
+test('copy denied clipboard exposes selectable canonical URL',async()=>{
+ const app=setUp({query:'?topic=security&q=api',clipboard:'fail'});
+ await app.share.listeners.click();
+ assert.equal(app.manualCopy.hidden,false);
+ assert.equal(app.manualCopy.value,'https://24go.top/engineering/?q=api&topic=security');
+ assert.equal(app.manualCopy.focused,true);
+ assert.equal(app.manualCopy.selected,true);
+ assert.deepEqual(app.copied,[]);
+});
+test('missing clipboard displays manually copyable Markdown links',async()=>{
+ const app=setUp({clipboard:'none',query:'?topic=security'});
+ await app.copyResults.listeners.click();
+ assert.equal(app.manualCopy.hidden,false);
+ assert.equal(app.manualCopy.value,
+  '- [security](https://24go.top/engineering/security.html)');
+ assert.equal(app.manualCopy.selected,true);
+});
+test('manual copy is cleared after filter changes',async()=>{
+ const a=setUp({query:'?topic=security',clipboard:'fail'});
+ await a.share.listeners.click();
+ assert.equal(a.manualCopy.hidden,false);
+ a.input.value='postgres';a.listeners.input();
+ assert.equal(a.manualCopy.hidden,true);
+ assert.equal(a.manualCopy.value,'');
+ await a.share.listeners.click();
+ a.clickTopic('infrastructure');
+ assert.equal(a.manualCopy.hidden,true);
+ a.location.href='https://24go.top/engineering/?topic=security';
+ a.window.listeners.popstate();
+ assert.equal(a.manualCopy.value,'');
+});
+test('deferred clipboard refusal cannot reopen stale filtered URLs',async()=>{
+ const app=setUp({clipboard:'pending',query:'?topic=security'});
+ const writing=app.copyResults.listeners.click();
+ app.clickTopic('discovery');
+ app.rejectPending();
+ await writing;
+ assert.equal(app.manualCopy.hidden,true);
+ assert.equal(app.manualCopy.value,'');
+ assert.equal(app.copied.length,0);
+});
+test('successful matching-result clipboard copy does not display fallback',async()=>{
+ const app=setUp({clipboard:'ok',query:'?topic=security'});
+ await app.copyResults.listeners.click();
+ assert.equal(app.manualCopy.hidden,true);
+ assert.equal(app.manualCopy.value,'');
+ assert.deepEqual(app.copied,
+  ['- [security](https://24go.top/engineering/security.html)']);
+ assert.equal(app.fetchCalls.length,0);
+});
 test('browser navigation restores the URL state without altering article data',()=>{
  const app=setUp({query:'?topic=security'});
  app.location.href='https://24go.top/engineering/?q=PostgreSQL&topic=infrastructure';

@@ -9,11 +9,12 @@
   const share=document.getElementById('engineering-share');
   const copyResults=document.getElementById('engineering-copy-results');
   const shareStatus=document.getElementById('engineering-share-status');
+  const manualCopy=document.getElementById('engineering-manual-copy');
   const indexStatus=document.getElementById('engineering-index-status');
   const retryIndex=document.getElementById('engineering-index-retry');
   const cards=[...document.querySelectorAll('[data-note-card]')];
   const topics=[...document.querySelectorAll('[data-engineering-topic]')];
-  if(!form||!input||!status||!empty||!reset||!share||!shareStatus||!copyResults||
+  if(!form||!input||!status||!empty||!reset||!share||!shareStatus||!manualCopy||!copyResults||
      !indexStatus||!retryIndex||
      cards.length===0||topics.length===0)return;
 
@@ -33,6 +34,32 @@
   let selected='all';
   let fullText=null;
   let indexState='loading';
+  let resultRevision=0;
+  const hideManualCopy=()=>{
+    manualCopy.value='';
+    manualCopy.hidden=true;
+  };
+  // Only a real click may attempt a browser clipboard write. A denied or
+  // missing clipboard API exposes the same PUBLIC data for manual selection.
+  const copyOrSelect=async(text,success)=>{
+    const revision=resultRevision;
+    hideManualCopy();
+    const offerManual=()=>{
+      if(revision!==resultRevision)return;
+      manualCopy.value=text;
+      manualCopy.hidden=false;
+      manualCopy.focus();
+      manualCopy.select();
+      shareStatus.textContent='Clipboard unavailable. Selected public links for manual copying.';
+    };
+    if(typeof navigator==='undefined'||!navigator.clipboard?.writeText){
+      offerManual();return;
+    }
+    try{
+      await navigator.clipboard.writeText(text);
+      if(revision===resultRevision)shareStatus.textContent=success;
+    }catch{offerManual();}
+  };
   const setIndexState=state=>{
     indexState=state;
     indexStatus.textContent=state==='ready'
@@ -170,6 +197,8 @@
     el.hidden=false;
   };
   const update=(writeUrl=false)=>{
+    resultRevision++;
+    hideManualCopy();
     const keyword=input.value.trim().toLocaleLowerCase().slice(0,80);
     // Match all bounded query words, in any order and across the visible
     // title/summary and optional reviewed full-text index. The previous
@@ -221,19 +250,9 @@
       update(true);
     }
   });
-  share.addEventListener('click',async()=>{
+  share.addEventListener('click',()=>{
     const url=currentUrl();
-    if(!url)return;
-    if(typeof navigator==='undefined'||!navigator.clipboard?.writeText){
-      shareStatus.textContent='Copy the page URL from your browser address bar.';
-      return;
-    }
-    try{
-      await navigator.clipboard.writeText(url.href);
-      shareStatus.textContent='Filtered article link copied.';
-    }catch{
-      shareStatus.textContent='Clipboard unavailable. Copy the page URL from your address bar.';
-    }
+    if(url)return copyOrSelect(url.href,'Filtered article link copied.');
   });
   copyResults.addEventListener('click',async()=>{
     // This is an explicit user gesture: copy plain Markdown links to the
@@ -245,16 +264,8 @@
       return '- ['+text+'](https://24go.top/engineering/'+entry.file+')';
     });
     if(!lines.length){shareStatus.textContent='No results to copy.';return;}
-    if(typeof navigator==='undefined'||!navigator.clipboard?.writeText){
-      shareStatus.textContent='Clipboard unavailable. Open and copy individual article links.';
-      return;
-    }
-    try{
-      await navigator.clipboard.writeText(lines.join('\n'));
-      shareStatus.textContent=lines.length+' public article link(s) copied as Markdown.';
-    }catch{
-      shareStatus.textContent='Clipboard unavailable. Open and copy individual article links.';
-    }
+    return copyOrSelect(lines.join('\n'),lines.length+
+      ' public article link(s) copied as Markdown.');
   });
   if(typeof window!=='undefined'&&window.addEventListener){
     window.addEventListener('popstate',()=>{
