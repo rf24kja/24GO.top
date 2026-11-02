@@ -202,3 +202,7 @@ header{background:rgba(249,252,249,.9)}a:hover,.navlinks a:hover{color:#07593f}.
 .article-reader__button,.article-reader__menu nav{border-width:2px}}
 @media print{.article-reader,.article-reader__section{display:none!important}
  .article h2[id^="section-"]:target,.article h3[id^="section-"]:target{outline:0}}
+
+/* Accessible full-text-search capability state, separate from result counts. */
+.note-search__index-state{color:var(--muted);font-size:13px;line-height:1.5;margin:12px 0 0}
+.note-search__share-row #engineering-index-retry{min-height:40px}
