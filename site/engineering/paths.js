@@ -1,0 +1,134 @@
+import {approvedReadingArticles,normalizeReadingPath,encodeReadingPath,
+ decodeReadingPath,changeReadingPath,readingPathMarkdown,MAX_READING_PATH_ITEMS}
+ from './paths-logic.mjs';
+
+// This screen consumes only the already published, same-origin JSON Feed.
+// It does not store drafts, call an author API or publish new content.
+const el=id=>document.getElementById(id);
+const catalog=el('path-catalog'),selected=el('path-selected');
+const title=el('path-title'),search=el('path-search');
+const copyStatus=el('path-copy-status'),manual=el('path-manual-copy');
+const status=el('path-status');
+let approved=[],ids=[];
+const node=(name,value,className)=>{
+ const item=document.createElement(name);
+ if(value!==undefined)item.textContent=String(value);
+ if(className)item.className=className;
+ return item;
+};
+const button=(label,callback,{disabled=false,ariaLabel=null}={})=>{
+ const item=node('button',label);
+ item.type='button';item.disabled=disabled;
+ if(ariaLabel)item.setAttribute('aria-label',ariaLabel);
+ item.addEventListener('click',callback);
+ return item;
+};
+function forgetManual(){
+ manual.value='';manual.hidden=true;el('path-manual-label').hidden=true;
+ copyStatus.textContent='';
+}
+function showManual(value){
+ manual.value=value;manual.hidden=false;el('path-manual-label').hidden=false;
+ manual.focus();manual.select();
+ copyStatus.textContent='Clipboard unavailable. Select and copy the text above manually.';
+}
+function renderCatalog(){
+ catalog.replaceChildren();
+ const query=search.value.trim().toLocaleLowerCase();
+ const matches=approved.filter(article=>(article.title+' '+article.summary)
+  .toLocaleLowerCase().includes(query));
+ el('catalog-count').textContent=matches.length+' notes';
+ for(const article of matches){
+  const li=node('li',undefined,'path-catalog-item');
+  const info=node('div');
+  const link=node('a',article.title,'path-article-link');
+  link.href=article.url;link.rel='noopener noreferrer';info.append(link);
+  const summary=node('p',article.summary,'path-small');info.append(summary);
+  const active=ids.includes(article.id);
+  const add=button(active?'Added':'Add to path',()=>{
+   try{ids=changeReadingPath(ids,article.id,'add',approved);render();}
+   catch{status.textContent='You can select at most ten articles.';}
+  },{disabled:active||ids.length>=MAX_READING_PATH_ITEMS,
+   ariaLabel:(active?'Already selected: ':'Add: ')+article.title});
+  li.append(info,add);catalog.append(li);
+ }
+ if(!matches.length)catalog.append(node('li','No matching public articles. Try another keyword.','path-small'));
+}
+function renderSelected(){
+ selected.replaceChildren();
+ const lookup=new Map(approved.map(article=>[article.id,article]));
+ ids.forEach((id,index)=>{
+  const article=lookup.get(id);
+  const li=node('li',undefined,'path-selected-item');
+  const text=node('div');
+  const link=node('a',article.title,'path-article-link');
+  link.href=article.url;link.rel='noopener noreferrer';
+  text.append(link);
+  const tools=node('div',undefined,'path-item-actions');
+  tools.append(
+   button('↑',()=>reorder(id,'up'),{disabled:index===0,ariaLabel:'Move '+article.title+' earlier'}),
+   button('↓',()=>reorder(id,'down'),{disabled:index===ids.length-1,ariaLabel:'Move '+article.title+' later'}),
+   button('Remove',()=>reorder(id,'remove'),{ariaLabel:'Remove '+article.title})
+  );
+  li.append(text,tools);selected.append(li);
+ });
+ if(!ids.length)selected.append(node('li','No articles yet. Add one from the catalog to start.','path-empty'));
+ el('selected-count').textContent=ids.length+' / '+MAX_READING_PATH_ITEMS;
+ el('path-copy-link').disabled=ids.length===0;
+ el('path-copy-markdown').disabled=ids.length===0;
+ el('path-reset').disabled=ids.length===0;
+}
+function render(){forgetManual();renderCatalog();renderSelected();}
+function reorder(id,action){
+ try{ids=changeReadingPath(ids,id,action,approved);render();}
+ catch{status.textContent='Could not change your reading path.';}
+}
+search.addEventListener('input',()=>{forgetManual();renderCatalog();});
+title.addEventListener('input',forgetManual);
+el('path-reset').addEventListener('click',()=>{
+ ids=[];title.value='My 24GOTOP reading path';render();
+ status.textContent='Path cleared from this tab. No account data was changed.';
+});
+async function copyValue(value){
+ try{
+  if(!navigator.clipboard?.writeText)throw Error('no_clipboard');
+  await navigator.clipboard.writeText(value);
+  forgetManual();copyStatus.textContent='Copied. Share it with another reader.';
+ }catch{showManual(value);}
+}
+el('path-copy-link').addEventListener('click',()=>{
+ try{
+  const state=normalizeReadingPath({title:title.value,ids},approved,{requireItems:true});
+  const url=new URL('./paths.html',window.location.href);
+  url.hash=encodeReadingPath(state,approved);
+  void copyValue(url.href);
+ }catch{copyStatus.textContent='Check your title and select at least one article.';}
+});
+el('path-copy-markdown').addEventListener('click',()=>{
+ try{void copyValue(readingPathMarkdown({title:title.value,ids},approved));}
+ catch{copyStatus.textContent='Check your title and select at least one article.';}
+});
+async function load(){
+ try{
+  const response=await fetch('./feed.json',{credentials:'omit',cache:'no-store',
+   headers:{accept:'application/feed+json, application/json'}});
+  if(!response.ok)throw Error('catalog_unavailable');
+  approved=approvedReadingArticles(await response.json());
+  if(window.location.hash){
+   try{
+    const shared=decodeReadingPath(window.location.hash,approved);
+    if(shared){ids=[...shared.ids];title.value=shared.title;}
+    status.textContent='Shared reading path loaded from the URL fragment.';
+   }catch{
+    status.textContent='The shared path is invalid or contains missing articles. Start a new path below.';
+   }
+  }else{
+   status.textContent='Choose from '+approved.length+' original public engineering articles.';
+  }
+  render();
+ }catch{
+  status.textContent='The article catalog is unavailable. Use the engineering archive link instead.';
+  search.disabled=true;title.disabled=true;
+ }
+}
+void load();
