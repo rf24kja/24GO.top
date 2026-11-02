@@ -369,5 +369,5 @@ test('a delayed clipboard rejection cannot expose stale links after the user cha
  assert.equal(app.elements['reading-list-items'].children[0].children[0].href,'./research-two.html');
  assert.match(html,/aria-label="Selected Markdown links to your saved public articles for manual copying"/);
  assert.match(readFileSync(new URL('../site/engineering/notes.css',import.meta.url),'utf8'),
-  /\\.reading-list__manual-copy\\[hidden\\]\\{display:none\\}/);
+  /\.reading-list__manual-copy\[hidden\]\{display:none\}/);
 });
