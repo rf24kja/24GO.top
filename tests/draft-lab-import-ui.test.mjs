@@ -635,9 +635,9 @@ test('single-match replacement controls have all 8 translations and mobile focus
  const css=readFileSync(new URL('../site/draft-lab.css',import.meta.url),'utf8');
  assert.match(html,/id="draftReplaceText"[^>]+maxlength="160"/);
  assert.match(html,/id="draftFindReplace"[^>]+disabled/);
- assert.match(css,/\\.draft-find__replace button:disabled/);
- assert.match(css,/\\.draft-find__controls button:focus-visible/);
- assert.doesNotMatch(source,/fetch\\(|sendBeacon|XMLHttpRequest|eval\\(/);
+ assert.match(css,/\.draft-find__replace button:disabled/);
+ assert.match(css,/\.draft-find__controls button:focus-visible/);
+ assert.doesNotMatch(source,/fetch\(|sendBeacon|XMLHttpRequest|eval\(/);
 });
 
 test('textarea-only Ctrl/Cmd+B and I format selection using same safe toolbar path',()=>{
