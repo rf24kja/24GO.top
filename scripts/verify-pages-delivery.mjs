@@ -94,7 +94,7 @@ async function readBoundedPage(response){
 }
 
 export async function verifyEssentialPublicPages({
- runId,fetchImpl=globalThis.fetch,attempts=3,pauseMs=3000,
+ runId,fetchImpl=globalThis.fetch,attempts=2,pauseMs=1500,
  wait=ms=>new Promise(resolve=>setTimeout(resolve,ms))
 }={}){
  if(typeof runId!=='string'||!RUN.test(runId)||
