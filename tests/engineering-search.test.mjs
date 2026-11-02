@@ -92,9 +92,29 @@ function setUp({missing=false,badTopic=false,query='',clipboard='ok',index='none
  const indexFetch=async(url,options)=>{
   fetchCalls.push({url,options});
   if(index==='fail')throw Error('offline');
-  return {ok:true,json:async()=>index==='corrupt'?{version:1,articles:[]}:staticData};
+  if(index==='badUtf8')return new Response(new Uint8Array([
+    0x7b,0x22,0x62,0x61,0x64,0x22,0x3a,0x22,0xc3,0x28,0x22,0x7d]));
+  if(index==='large'){
+    const stream=new ReadableStream({
+      start(controller){controller.enqueue(new Uint8Array(262144));controller.enqueue(new Uint8Array(262145));},
+      cancel(){fetchCalls.cancelled=true;}
+    });
+    return new Response(stream);
+  }
+  if(index==='manyChunks'){
+    const stream=new ReadableStream({
+      start(controller){for(let i=0;i<520;i++)controller.enqueue(new Uint8Array(0));},
+      cancel(){fetchCalls.cancelled=true;}
+    });
+    return new Response(stream);
+  }
+  if(index==='headerLarge')return new Response('{}',
+    {headers:{'content-length':'999999'}});
+  const value=index==='corrupt'?{version:1,articles:[]}:staticData;
+  return new Response(JSON.stringify(value),{
+    status:200,headers:{'content-type':'application/json'}});
  };
- runInNewContext(code,{document,window,navigator,URL,
+ runInNewContext(code,{document,window,navigator,URL,TextDecoder,AbortSignal,
   ...(index==='none'?{}:{fetch:indexFetch})},{timeout:1000});
  return {form,input,status,empty,reset,share,copyResults,shareStatus,cards,topics,listeners,window,location,copied,fetchCalls,
   clickTopic:t=>topics.find(x=>x.dataset.engineeringTopic===t).listeners.click()};
@@ -237,6 +257,8 @@ test('full-text search finds article-body terms missing from card titles and sum
  assert.deepEqual(app.fetchCalls.map(x=>x.url),['./search-index.json']);
  assert.equal(app.fetchCalls[0].options.credentials,'omit');
  assert.equal(app.fetchCalls[0].options.referrerPolicy,'no-referrer');
+ assert.equal(app.fetchCalls[0].options.redirect,'error');
+ assert.equal(app.fetchCalls[0].options.signal.aborted,false);
  assert.deepEqual(app.cards.map(c=>c.hidden),[false,true,true]);
  assert.equal(app.status.textContent,'1 of 3 articles');
  app.clickTopic('discovery');
@@ -246,8 +268,8 @@ test('full-text search finds article-body terms missing from card titles and sum
  assert.deepEqual(app.cards.map(c=>c.hidden),[true,false,true]);
 });
 
-test('offline or malformed static index falls back to card-only search',async()=>{
- for(const index of ['fail','corrupt']){
+test('offline or malformed and oversized static indexes fall back to card-only search',async()=>{
+ for(const index of ['fail','corrupt','badUtf8','large','manyChunks','headerLarge']){
   const app=setUp({index,query:'?q=JavaScript'});
   await new Promise(resolve=>setImmediate(resolve));
   assert.equal(app.form.hidden,false);
@@ -255,6 +277,8 @@ test('offline or malformed static index falls back to card-only search',async()=
   app.input.value='circuit breaker';
   app.listeners.input();
   assert.deepEqual(app.cards.map(c=>c.hidden),[true,true,true]);
+  if(index==='large'||index==='manyChunks')
+   assert.equal(app.fetchCalls.cancelled,true,'reject before reading the whole index');
  }
 });
 
