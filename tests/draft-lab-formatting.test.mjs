@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {formatDraftSelection,countDraftWords,findDraftText} from '../site/draft-lab-logic.js';
+import {formatDraftSelection,countDraftWords,findDraftText,replaceDraftFindMatch} from '../site/draft-lab-logic.js';
 import {parsePreviewBlocks} from '../site/draft-lab-preview.js';
 function apply(value,start,end,action){
  const edit=formatDraftSelection(value,start,end,action);
@@ -167,4 +167,38 @@ test('local manuscript search rejects invalid direction, offsets and oversized i
   [null,'a',0,'next']
  ];
  for(const args of bad)assert.throws(()=>findDraftText(...args),TypeError);
+});
+
+test('explicit replace changes exactly one literal match and returns textarea offsets',()=>{
+ const body='alpha BETA alpha';
+ const replace=replaceDraftFindMatch(body,'alpha','beta',0,5);
+ assert.deepEqual({...replace},{replacement:'beta',selectionStart:4,selectionEnd:4});
+ const result=body.slice(0,0)+replace.replacement+body.slice(5);
+ assert.equal(result,'beta BETA alpha');
+ const erase=replaceDraftFindMatch(body,'alpha','',11,16);
+ assert.deepEqual({...erase},{replacement:'',selectionStart:11,selectionEnd:11});
+ assert.equal(body.slice(0,11)+erase.replacement+body.slice(16),'alpha BETA ');
+ const unicode='Привет 🚀';
+ const match=replaceDraftFindMatch(unicode,'🚀','🌍',7,9);
+ assert.equal(unicode.slice(0,7)+match.replacement+unicode.slice(9),'Привет 🌍');
+ assert.equal(match.selectionStart,9);
+});
+
+test('replace rejects stale selection and bounded overflow without writing',()=>{
+ const body='cat dog cat';
+ assert.equal(replaceDraftFindMatch(body,'cat','wolf',1,4),null);
+ assert.equal(replaceDraftFindMatch(body,'cat','wolf',0,2),null);
+ assert.equal(replaceDraftFindMatch(body,'CAT','wolf',0,3),null);
+ assert.equal(replaceDraftFindMatch(body,'cat','wolf',7,10),null);
+ for(const args of [
+  [null,'cat','x',0,3],
+  ['abc','', 'x',0,0],
+  ['abc','a'.repeat(81),'x',0,3],
+  ['abc','abc','x'.repeat(161),0,3],
+  ['abc','abc','x',-1,3],
+  ['abc','abc','x',0,4],
+  ['abc','abc',null,0,3]
+ ])assert.throws(()=>replaceDraftFindMatch(...args),TypeError);
+ assert.throws(()=>replaceDraftFindMatch('a'.repeat(12000),'a','too long',0,1),
+  RangeError);
 });

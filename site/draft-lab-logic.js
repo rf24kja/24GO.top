@@ -214,6 +214,24 @@ export function findDraftText(body,query,from=0,direction='next'){
  return Object.freeze({start,end:start+query.length});
 }
 
+/** Replace precisely one already selected literal match, never replace-all.
+ * Caller must apply this with setRangeText to preserve native textarea undo.
+ * The pure guard refuses stale/moved selections and output over the 12k cap.
+ */
+export function replaceDraftFindMatch(body,query,replacement,start,end){
+ if(typeof body!=='string'||body.length>12000||
+    typeof query!=='string'||query.length===0||query.length>80||
+    typeof replacement!=='string'||replacement.length>160||
+    !Number.isSafeInteger(start)||!Number.isSafeInteger(end)||
+    start<0||end>body.length||end<start)
+  throw new TypeError('Invalid manuscript replacement');
+ if(end-start!==query.length||body.slice(start,end)!==query)return null;
+ if(body.length-query.length+replacement.length>12000)
+  throw new RangeError('Manuscript length limit');
+ return Object.freeze({replacement,selectionStart:start+replacement.length,
+  selectionEnd:start+replacement.length});
+}
+
 /** Compare the current tab to the last explicitly reopened local file.
  * A download click/clipboard copy is never proof the browser saved a file.
  */

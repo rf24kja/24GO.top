@@ -1,5 +1,13 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-02 — Explicit single-match replacement in private Markdown drafts
+
+- Extend the browser-only Draft Lab's eight-language **Find in article** controls with **Replace selected**. The user must explicitly find an exact match before replacing; changing the manuscript, search query or textarea selection invalidates the current match, and replacing never edits every occurrence automatically.
+- Guard replacement lengths (160-character input and existing 12,000-character manuscript limit) and stale selections, including UTF-16 Unicode characters. The edit uses the native textarea API, marks the draft as changed, updates the preview and cancels any pending private review-package export. There are **no automatic saves, uploads, external requests or AI calls**.
+- Translate new action/error feedback into EN/RU/TH/ES/FR/DE/PT/ZH and add browser and pure logic regression tests for single occurrence, case-sensitive matches, empty replacement, stale input, unsaved exit and oversized edits.
+- Public MIT static-only feature; no hosted backend publication, privacy-setting changes or database migration. Rollback: revert this PR.
+
+
 ## 2026-11-02 — Find exact text inside a private Markdown article draft
 
 - Add **Find in article** directly to the public browser-only Draft Lab, with keyboard-friendly **Next / Previous** navigation for exact, case-sensitive words and phrases. Select matching text inside the author textarea, wrap around at either end, and preserve literal Unicode/emoji offsets.
