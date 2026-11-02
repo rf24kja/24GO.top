@@ -1,5 +1,12 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-02 — Link author-selected text to the original source in Draft Lab
+
+- The browser-only Article Draft Lab **Link** toolbar now uses the author's already-entered and validated `Original source` HTTP(S) URL. This avoids copying a dummy `example.org` target into citations that the author intended to reference their real source.
+- Preserve existing editable example-link behavior when the source field is empty. Reject invalid/credential-bearing URLs instead of inserting a disguised placeholder; encode literal parentheses so the Markdown preview can parse the actual link correctly. The original metadata and manuscript are never uploaded or automatically saved.
+- Add pure formatter and browser UI regressions for source reuse, selection behavior, malformed and unsafe links. Static public change only; no private Core or hosted publishing capability. Rollback: revert the public PR.
+
+
 ## 2026-11-02 — Cancel stale asynchronous private review-package downloads
 
 - Fix a privacy race in the browser-only author Draft Lab. When SHA-256 review-package generation was pending, clearing the editor caused `hasUnexportedChanges()` to return false by design (empty drafts do not trigger navigation warnings), so the previously captured full manuscript could still be downloaded after Clear.
