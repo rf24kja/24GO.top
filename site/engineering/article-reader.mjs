@@ -122,6 +122,24 @@ export function mountArticleReader(doc,view){
    status.textContent='Clipboard unavailable. The text is selected below for manual copying.';
   }
  };
+ // Only reviewed, static code examples on canonical article pages.
+ // Add an adjacent button rather than modifying the pre/code text: code stays
+ // readable and selectable without JavaScript, on print and with a keyboard.
+ const snippets=[...article.querySelectorAll('pre > code')];
+ if(snippets.length<=20){
+  for(const code of snippets){
+   const value=code.textContent;
+   const pre=code.parentNode;
+   if(typeof value!=='string'||!value.length||value.length>8192||
+      !pre||pre.tagName?.toLowerCase()!=='pre'||!pre.parentNode?.insertBefore)
+    continue;
+   const button=create('button','article-reader__copy-code','Copy code');
+   button.type='button';
+   button.setAttribute('aria-label','Copy this public code example');
+   button.addEventListener('click',()=>copyText(value));
+   pre.parentNode.insertBefore(button,pre);
+  }
+ }
  for(const [label,value] of [
   ['Copy Markdown citation',citations.markdown],
   ['Copy text reference',citations.plain],
