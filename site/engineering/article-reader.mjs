@@ -46,6 +46,9 @@ export function articleCitations(meta){
 // The public archive reading list stores ONLY reviewed article filenames.
 // Preserve its v1 wire format and fail closed on corrupt/oversized local data.
 // Reading here never repairs or overwrites another tab's saved preferences.
+// Canonical static filenames must match the archive; regression tests enforce parity.
+export const PUBLIC_READING_FILES=Object.freeze(["read-only-mcp-server-for-technical-articles.html","multilingual-markdown-editor-without-losing-drafts.html","verify-github-pages-deploy-not-just-ci.html","safe-markdown-citation-links-without-xss.html","javascript-sdk-api-key-leak-prevention.html","discoverable-technical-articles.html","postgres-insert-returning-least-privilege.html","submit-is-not-publish.html","markdown-preview-safety.html","why-draft-lab-first.html"]);
+const APPROVED_READING_FILES=new Set(PUBLIC_READING_FILES);
 export const PUBLIC_READING_LIST_KEY='24gotop-public-reading-list-v1';
 export function validatedPublicReadingList(raw){
  if(raw===null)return [];
@@ -53,9 +56,10 @@ export function validatedPublicReadingList(raw){
   throw new TypeError('Invalid public reading list storage');
  const saved=JSON.parse(raw);
  if(saved?.version!==1||!Array.isArray(saved.files)||
-    saved.files.length>50||new Set(saved.files).size!==saved.files.length||
+    saved.files.length>APPROVED_READING_FILES.size||
+    new Set(saved.files).size!==saved.files.length||
     saved.files.some(file=>typeof file!=='string'||file.length>120||
-      !/^[a-z0-9-]+\\.html$/.test(file)))
+      !APPROVED_READING_FILES.has(file)))
   throw new TypeError('Invalid public reading list');
  return saved.files;
 }
@@ -173,6 +177,7 @@ export function mountArticleReader(doc,view){
  // Save the currently open, reviewed PUBLIC article to the exact same local
  // list used by the engineering archive. This never writes on first visit.
  const file=meta.url.slice('https://24go.top/engineering/'.length);
+ if(APPROVED_READING_FILES.has(file)){
  const bookmark=create('button','article-reader__button','Save for later');
  bookmark.type='button';
  let storage;
@@ -204,7 +209,7 @@ export function mountArticleReader(doc,view){
    // Re-read after the user click; never rely on stale initial tab state.
    const files=readSaved();
    const active=files.includes(file);
-   if(!active&&files.length>=50)
+   if(!active&&files.length>=APPROVED_READING_FILES.size)
     throw new RangeError('Reading list is full');
    const next=active?files.filter(saved=>saved!==file):[...files,file];
    storage.setItem(PUBLIC_READING_LIST_KEY,JSON.stringify({version:1,files:next}));
@@ -224,6 +229,7 @@ export function mountArticleReader(doc,view){
   if(event.storageArea&&event.storageArea!==storage)return;
   refreshBookmark(); // A notification is read-only, even across tabs.
  });
+ }
  tools.append(actions,status,manual);
  main.insertBefore(tools,article);
  // Scroll progress is a transient in-page visualization. No persistence.
