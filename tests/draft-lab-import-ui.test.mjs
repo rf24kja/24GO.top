@@ -484,6 +484,82 @@ test('oversized title and body focus the correct control, including programmatic
  assert.equal(el.postBody.attributes['aria-invalid'],'true');
 });
 
+test('textarea-only Ctrl/Cmd+B and I format selection using same safe toolbar path',()=>{
+ for(const modifier of ['ctrlKey','metaKey']){
+  for(const [key,expected] of [['b','**original research**'],['i','*original research*']]){
+   const app=build();
+   const node=app.elements.postBody;
+   node.value='original research';
+   node.selectionStart=0;node.selectionEnd=node.value.length;
+   const event={key,ctrlKey:false,metaKey:false,shiftKey:false,altKey:false,
+    repeat:false,isComposing:false,preventDefault(){this.prevented=true;}};
+   event[modifier]=true;
+   node.listeners.keydown(event);
+   assert.equal(event.prevented,true,'author key must be handled only in textarea');
+   assert.equal(node.value,expected);
+   assert.equal(node.focused,true);
+   assert.equal(node.selectionStart,node.selectionEnd);
+   assert.match(app.elements.formStatus.textContent,/locally/);
+   assert.equal(app.beforeUnload().prevented,true);
+  }
+ }
+});
+
+test('Ctrl/Cmd+K inserts validated original source citation without overwriting it',()=>{
+ const app=build();
+ const node=app.elements.postBody;
+ node.value='Verified documentation';
+ node.selectionStart=0;node.selectionEnd=8;
+ app.elements.postSource.value='https://example.org/citation(v2)';
+ const event={key:'K',ctrlKey:false,metaKey:true,shiftKey:false,altKey:false,
+  repeat:false,isComposing:false,preventDefault(){this.prevented=true;}};
+ node.listeners.keydown(event);
+ assert.equal(event.prevented,true);
+ assert.equal(node.value,
+  '[Verified](https://example.org/citation%28v2%29) documentation');
+ assert.equal(app.elements.postSource.value,'https://example.org/citation(v2)');
+ assert.equal(node.selectionStart,node.selectionEnd);
+});
+
+test('Markdown shortcuts leave native browser, IME and other modifier keys alone',()=>{
+ const app=build(),node=app.elements.postBody;
+ node.value='No formatting here';
+ for(const props of [
+  {key:'b',ctrlKey:false,metaKey:false},
+  {key:'b',ctrlKey:true,metaKey:true},
+  {key:'b',ctrlKey:true,altKey:true},
+  {key:'i',metaKey:true,shiftKey:true},
+  {key:'k',ctrlKey:true,isComposing:true},
+  {key:'b',ctrlKey:true,repeat:true},
+  {key:'s',ctrlKey:true},
+  {key:'z',ctrlKey:true}
+ ]){
+  const event={key:'',ctrlKey:false,metaKey:false,altKey:false,
+   shiftKey:false,repeat:false,isComposing:false,
+   ...props,preventDefault(){this.prevented=true;}};
+  node.listeners.keydown(event);
+  assert.equal(event.prevented,undefined);
+  assert.equal(node.value,'No formatting here');
+ }
+ assert.equal(app.elements.postTitle.listeners.keydown,undefined,
+  'article-title keyboard input must keep native browser behavior');
+ assert.equal(app.elements.postSource.listeners.keydown,undefined,
+  'source field must not hijack shortcuts');
+});
+
+test('invalid source makes keyboard citation fail closed without changing draft',()=>{
+ const app=build(),node=app.elements.postBody;
+ node.value='Keep citation text untouched';
+ node.selectionStart=0;node.selectionEnd=4;
+ app.elements.postSource.value='https://user:password@example.org/private';
+ const event={key:'k',ctrlKey:true,metaKey:false,altKey:false,shiftKey:false,
+  repeat:false,isComposing:false,preventDefault(){this.prevented=true;}};
+ node.listeners.keydown(event);
+ assert.equal(event.prevented,true);
+ assert.equal(node.value,'Keep citation text untouched');
+ assert.equal(app.elements.formStatus.dataset.error,'true');
+});
+
 test('Ctrl+S / Cmd+S routes only the explicit local export, never browser writes',()=>{
  const app=build();
  const shortcut=app.document.listeners.keydown;
