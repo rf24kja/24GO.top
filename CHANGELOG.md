@@ -1,5 +1,11 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-02 — Visible GitHub Pages release evidence on Development
+
+- Add a compact, accessible public release-evidence section to `/progress.html`. It reads the same-origin `release.json` receipt created during the Pages workflow and links to its exact 40-character GitHub commit and Pages Actions run, with no tokens, storage, tracking or external API requests.
+- Strictly validate the receipt and fail visibly closed on missing, malformed, oversized or non-200 responses rather than claiming a site is deployed from green source CI alone. The receipt identifies the static build, not live community publishing or search indexing.
+- Add negative tests and syntax validation. Rollback: revert this static public PR and redeploy Pages; no private code, Auth, database or DNS change.
+
 ## 2026-11-02 — Preserve author source citation integrity in Draft Lab
 
 - Reject raw backslashes in author-supplied citation URLs rather than silently accepting WHATWG normalization to forward slashes. This prevents a changed link from being exported, stored manually in the browser vault, or displayed as if it were the author's original URL.
