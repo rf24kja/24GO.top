@@ -2,7 +2,7 @@
 
 ## 2026-11-02 — Create and share real technical learning paths
 
-- Add a new public, mobile-first Reading Paths builder at /engineering/paths.html. Visitors can choose up to ten existing original engineering articles, filter the catalog, arrange the reading order, name their path and share the selected collection via a URL fragment or a Markdown list.
+- Add a new public, mobile-first Reading Paths builder at /engineering/reading-paths/. Visitors can choose up to ten existing original engineering articles, filter the catalog, arrange the reading order, name their path and share the selected collection via a URL fragment or a Markdown list.
 - The catalog uses the actual same-origin generated JSON Feed. The shared fragment contains only the chosen public filenames and optional reader-entered title; no article body, private draft, user account, new post, storage, analytics or paid AI service is introduced. Only canonical allowlisted article links are accepted on import, with clipboard fallback for browsers without permission.
 - Link the new experience from the English home navigation and archive, add a verified sitemap entry and regression tests for reorder, bounded import, Unicode, unsafe links and public article provenance.
 - This is a functional public reading experience during pre-launch, not the still-gated private hosted publishing service. Rollback: revert this public MIT static feature; there is no data migration.
