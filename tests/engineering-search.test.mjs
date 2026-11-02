@@ -381,6 +381,73 @@ test('all-word search spans trusted card and indexed body, respects topic and bo
  assert.deepEqual(app.cards.map(x=>x.hidden),[false,true,true]);
 });
 
+test('matched article excerpts explain full-text results without editing original cards',async()=>{
+ const app=setUp({index:'good',query:'?q=circuit'});
+ assert.ok(app.cards.every(c=>c.children.length===0),
+  'no excerpt or DOM changes before static index is ready');
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.deepEqual(app.cards.map(c=>c.hidden),[false,true,true]);
+ assert.equal(app.cards[0].children.length,1);
+ const excerpt=app.cards[0].children[0];
+ assert.equal(excerpt.tagName,'P');
+ assert.equal(excerpt.className,'note-search__excerpt');
+ assert.equal(excerpt.attributes['aria-label'],
+  'Excerpt from matched published article text');
+ assert.match(excerpt.textContent,/In article:.*circuit breaker/);
+ assert.equal(excerpt.hidden,false);
+ assert.equal(app.cards[0].textContent,'Security | Prevent JavaScript SDK API key leaks');
+ assert.deepEqual(app.fetchCalls.map(x=>x.url),['./search-index.json']);
+ app.input.value='does-not-exist';app.listeners.input();
+ assert.equal(excerpt.hidden,true);
+ assert.equal(excerpt.textContent,'','stale excerpt never remains copyable');
+ app.input.value='circuit';app.listeners.input();
+ assert.equal(excerpt.hidden,false);
+ assert.equal(app.cards[0].children.length,1,'repeated searches reuse the paragraph');
+ app.listeners['reset-click']();
+ assert.equal(excerpt.hidden,true);
+ assert.equal(excerpt.textContent,'');
+});
+
+test('full-text snippets remain literal text even when indexed text contains HTML-like tokens',async()=>{
+ const app=setUp({index:'html',query:'?q=onerror'});
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(app.cards[0].hidden,false);
+ assert.equal(app.cards[0].children.length,1);
+ const snippet=app.cards[0].children[0];
+ assert.match(snippet.textContent,/<img src=x onerror=alert\\(1\\)>/);
+ assert.equal(snippet.tagName,'P');
+ assert.deepEqual(Object.keys(snippet.attributes),['aria-label']);
+ assert.doesNotMatch(code,/innerHTML|insertAdjacentHTML|DOMParser|createRange\\(/);
+ assert.equal(app.fetchCalls.length,1,'only reviewed static corpus was fetched');
+});
+
+test('index unavailable never displays misleading excerpts, and topic filters hide them',async()=>{
+ for(const index of ['fail','badUtf8','corrupt','large']){
+  const app=setUp({index,query:'?q=circuit'});
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(app.indexStatus.textContent.includes('Full-text search unavailable'),true);
+  assert.ok(app.cards.every(c=>c.children.length===0));
+  assert.ok(app.cards.every(c=>c.hidden));
+ }
+ const recovered=setUp({index:'good',query:'?q=circuit'});
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(recovered.cards[0].children[0].hidden,false);
+ recovered.clickTopic('discovery');
+ assert.equal(recovered.cards[0].children[0].hidden,true,
+  'full-text snippet must not show for a topic-filtered-out card');
+ recovered.clickTopic('security');
+ assert.equal(recovered.cards[0].children[0].hidden,false);
+});
+
+test('public search snippets are bounded, source-only and do not require JavaScript to read articles',()=>{
+ assert.match(code,/createElement\\('p'\\)/);
+ assert.match(code,/el\\.textContent='In article: '/);
+ assert.match(code,/const end=Math\\.min\\(indexed\\.length,first\\+115\\)/);
+ assert.match(style,/\\.note-search__excerpt\\[hidden\\]\\{display:none\\}/);
+ assert.match(html,/<article class="card" data-note-card/);
+ assert.doesNotMatch(code,/XMLHttpRequest|sendBeacon|localStorage|sessionStorage|innerHTML|eval\\s*\\(/);
+});
+
 test('offline full-text fallback still applies all-word matching and preserves no-JS archive',async()=>{
  const app=setUp({index:'fail',query:'?q=security%20leaks'});
  await new Promise(resolve=>setImmediate(resolve));
