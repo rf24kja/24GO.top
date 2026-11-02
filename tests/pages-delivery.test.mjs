@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {expectedReceipt,verifyPagesDelivery} from '../scripts/verify-pages-delivery.mjs';
+import {expectedReceipt,verifyPagesDelivery,verifyEssentialPublicPages,ESSENTIAL_PUBLIC_ROUTES} from '../scripts/verify-pages-delivery.mjs';
 
 const SHA='845531da1202f1abf9dfb414191842d714fdd7bb';
 const RUN='41396728819';
@@ -125,4 +125,100 @@ test('Pages deployment workflow verifies the exact successful deployment runner 
  assert.match(yaml,/EXPECTED_PAGES_RUN_ID: \$\{\{ github\.run_id \}\}/);
  assert.match(yaml,/node-version: '22'/);
  assert.match(yaml,/paths:[\s\S]*?site\/\*\*/);
+});
+
+test('five actual public route contracts are checked without user-controlled URLs',async()=>{
+ const seen=[];
+ const result=await verifyEssentialPublicPages({
+  runId:RUN,attempts:1,
+  fetchImpl:async(url,options)=>{
+   seen.push(url);
+   const route=ESSENTIAL_PUBLIC_ROUTES[seen.length-1];
+   assert.equal(url,'https://24go.top'+route.path+'?pages_audit='+RUN);
+   assert.equal(options.redirect,'error');
+   assert.equal(options.cache,'no-store');
+   assert.equal(options.method,'GET');
+   assert.equal(typeof options.signal?.aborted,'boolean');
+   assert.ok(!JSON.stringify(options).includes('authorization'));
+   return response('static header '+route.marker+' static footer');
+  }
+ });
+ assert.deepEqual({...result},{verified:true,checked:5});
+ assert.equal(new Set(seen).size,5);
+});
+
+test('stale critical editor asset blocks public deployment confirmation',async()=>{
+ let calls=0,waits=0;
+ await assert.rejects(verifyEssentialPublicPages({
+  runId:RUN,attempts:2,pauseMs:0,wait:async()=>{waits++;},
+  fetchImpl:async url=>{
+   calls++;
+   const path=new URL(url).pathname;
+   const route=ESSENTIAL_PUBLIC_ROUTES.find(item=>item.path===path);
+   return response(path==='/draft-lab.js'?'stale old editor':route.marker);
+  }
+ }),/asset unavailable or outdated: \/draft-lab\.js/);
+ assert.equal(calls,4,'homepage then two attempts at stale editor script');
+ assert.equal(waits,1);
+});
+
+test('critical route verification fails closed on redirect, oversized and invalid UTF-8',async()=>{
+ for(const mocked of [
+  async()=>response('wrong',404),
+  async()=>response('Moved',302),
+  async()=>response(new Uint8Array([0xc3,0x28])),
+  async()=>{throw new Error('offline');},
+  async()=>{
+   const stream=new ReadableStream({
+    start(controller){controller.enqueue(new Uint8Array(32768));
+      controller.enqueue(new Uint8Array(32769));}
+   });
+   return new Response(stream);
+  }
+ ]){
+  await assert.rejects(verifyEssentialPublicPages({
+   runId:RUN,attempts:1,fetchImpl:mocked
+  }),/asset unavailable or outdated: \//);
+ }
+});
+
+test('critical page body is not consumed beyond the strict byte limit',async()=>{
+ let cancelled=false;
+ const stream=new ReadableStream({
+  start(controller){controller.enqueue(new Uint8Array(50000));
+   controller.enqueue(new Uint8Array(25000));},
+  cancel(){cancelled=true;}
+ });
+ await assert.rejects(verifyEssentialPublicPages({
+  runId:RUN,attempts:1,fetchImpl:async()=>new Response(stream)
+ }),/asset unavailable or outdated/);
+ assert.equal(cancelled,true);
+});
+
+test('critical route config fails before any network when run ID is invalid',async()=>{
+ let fetches=0;
+ const fetchImpl=async()=>{fetches++;throw Error('not allowed');};
+ for(const args of [
+  {runId:'1/../secret'},
+  {runId:'0'},
+  {runId:RUN,attempts:0},
+  {runId:RUN,attempts:4},
+  {runId:RUN,pauseMs:100000}
+ ])
+  await assert.rejects(verifyEssentialPublicPages({...args,fetchImpl}),TypeError);
+ assert.equal(fetches,0);
+});
+
+test('all critical deployed markers exist in reviewed public static source',()=>{
+ const files=new Map([
+  ['/',readFileSync(new URL('../site/index.html',import.meta.url),'utf8')],
+  ['/draft-lab.html',readFileSync(new URL('../site/draft-lab.html',import.meta.url),'utf8')],
+  ['/draft-lab.js',readFileSync(new URL('../site/draft-lab.js',import.meta.url),'utf8')],
+  ['/engineering/',readFileSync(new URL('../site/engineering/index.html',import.meta.url),'utf8')],
+  ['/engineering/search.js',readFileSync(new URL('../site/engineering/search.js',import.meta.url),'utf8')]
+ ]);
+ for(const {path,marker} of ESSENTIAL_PUBLIC_ROUTES){
+  assert.ok(files.get(path).includes(marker),
+   'critical public marker must exist in the deployed static artifact: '+path);
+ }
 });

@@ -1,5 +1,13 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-02 — Post-deployment smoke test for public reader and author flows
+
+- Strengthen the existing GitHub Pages post-deployment verification: after confirming the exact commit and Pages workflow run via `release.json`, independently fetch and verify five **actual public assets** — homepage, Draft Lab HTML and its authoring JavaScript, engineering article archive and client-side search script.
+- Bound each HTTPS response (65,536 bytes / 256 chunks), disallow redirects and cookies, apply a request timeout and short retries for static-CDN propagation. Require reviewed content markers from each source file; a Pages receipt alone does not count as evidence that the editor or search is being served. Failed checks make the workflow red rather than announcing an unverified release.
+- Add automated positive/negative tests for real routes, stale editor code, missing pages, corrupt/oversized response streams and fixed host/URL provenance. This is an **external read-only smoke test**, not a hosted account, public write or production backend launch.
+- Rollback: revert this static CI/probe PR; no migrations, DNS, Pages settings, paid resources or application data changes.
+
+
 ## 2026-11-02 — Verify actual Pages CDN delivery after each public deploy
 
 - Add a **read-only, independent HTTPS release attestation** after GitHub Pages `deploy-pages` finishes. The GitHub-hosted runner fetches `https://24go.top/release.json` with a cache-busting run identifier and requires its full bounded contents to exactly match the current workflow's commit SHA and run ID.
