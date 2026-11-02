@@ -281,7 +281,7 @@ replaceButton.addEventListener('click',()=>{
   change=replaceDraftFindMatch(body.value,findQuery.value,replaceInput.value,
    body.selectionStart,body.selectionEnd);
  }catch(error){
-  findStatus.textContent=ui(error instanceof RangeError?'replaceLimit':'replaceStale');
+  findStatus.textContent=ui(error?.name==='RangeError'?'replaceLimit':'replaceStale');
   return;
  }
  if(!change){
