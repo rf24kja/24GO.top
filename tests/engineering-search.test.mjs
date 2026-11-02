@@ -414,10 +414,10 @@ test('full-text snippets remain literal text even when indexed text contains HTM
  assert.equal(app.cards[0].hidden,false);
  assert.equal(app.cards[0].children.length,1);
  const snippet=app.cards[0].children[0];
- assert.match(snippet.textContent,/<img src=x onerror=alert\\(1\\)>/);
+ assert.match(snippet.textContent,/<img src=x onerror=alert\(1\)>/);
  assert.equal(snippet.tagName,'P');
  assert.deepEqual(Object.keys(snippet.attributes),['aria-label']);
- assert.doesNotMatch(code,/innerHTML|insertAdjacentHTML|DOMParser|createRange\\(/);
+ assert.doesNotMatch(code,/innerHTML|insertAdjacentHTML|DOMParser|createRange\(/);
  assert.equal(app.fetchCalls.length,1,'only reviewed static corpus was fetched');
 });
 
@@ -440,12 +440,12 @@ test('index unavailable never displays misleading excerpts, and topic filters hi
 });
 
 test('public search snippets are bounded, source-only and do not require JavaScript to read articles',()=>{
- assert.match(code,/createElement\\('p'\\)/);
- assert.match(code,/el\\.textContent='In article: '/);
- assert.match(code,/const end=Math\\.min\\(indexed\\.length,first\\+115\\)/);
- assert.match(style,/\\.note-search__excerpt\\[hidden\\]\\{display:none\\}/);
+ assert.match(code,/createElement\('p'\)/);
+ assert.match(code,/el\.textContent='In article: '/);
+ assert.match(code,/const end=Math\.min\(indexed\.length,first\+115\)/);
+ assert.match(style,/\.note-search__excerpt\[hidden\]\{display:none\}/);
  assert.match(html,/<article class="card" data-note-card/);
- assert.doesNotMatch(code,/XMLHttpRequest|sendBeacon|localStorage|sessionStorage|innerHTML|eval\\s*\\(/);
+ assert.doesNotMatch(code,/XMLHttpRequest|sendBeacon|localStorage|sessionStorage|innerHTML|eval\s*\(/);
 });
 
 test('offline full-text fallback still applies all-word matching and preserves no-JS archive',async()=>{
