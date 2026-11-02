@@ -6,6 +6,7 @@ import {renderEngineeringFeed} from './build-engineering-json-feed.mjs';
 const root=new URL('../site/',import.meta.url);
 const origin='https://24go.top';
 const staticPaths=['contribute.html','progress.html','engineering/index.html',
+ 'engineering/reading-paths/index.html',
  'engineering/topics/security.html','engineering/topics/writing.html',
  'engineering/topics/infrastructure.html','engineering/topics/publishing.html'];
 const invalid=reason=>{throw new Error('Sitemap integrity: '+reason)};
