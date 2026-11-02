@@ -1,5 +1,13 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-02 — Keyboard-first Markdown formatting in Draft Lab
+
+- Add `Ctrl/⌘+B` (bold), `Ctrl/⌘+I` (italic) and `Ctrl/⌘+K` (source link) **only while focus is in the article textarea**, sharing the same safe formatter as the existing toolbar buttons. Leave title, original-source field, IME composition, other modifiers and browser shortcuts alone.
+- Both keyboard and toolbar edits trigger the existing in-memory draft-change/review-export invalidation, preserve Markdown source text and update the preview without uploads. The Link shortcut prefers the validated Original source URL; unsafe addresses fail closed.
+- Make shortcuts discoverable in the formatting guidance for all eight UI locales (EN/RU/TH/ES/FR/DE/PT/ZH). Add browser-simulation tests for Windows/Mac modifiers, selections, citations, errors and non-interference. Draft Lab remains a browser-only, explicitly exported prototype—not hosted publishing or autosave.
+- Rollback: revert this public static PR; no authentication, private Core code, database migrations, deployment settings or paid services involved.
+
+
 ## 2026-11-02 — Trigger GitHub Pages when deployment verification changes
 
 - Fix a release-pipeline oversight discovered after public PR #161: the Pages workflow watched `site/**` and its own YAML, but **not** `scripts/verify-pages-delivery.mjs`. Changes to the CDN verifier could pass source CI and merge without running a new Pages attestation.

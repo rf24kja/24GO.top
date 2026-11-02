@@ -185,28 +185,41 @@ for (const control of [title,body,locale,category,source]) {
 }
 
 
-for(const [id,action] of [['formatBold','bold'],['formatItalic','italic'],
-  ['formatInlineCode','inlineCode'],['formatHeading','heading'],['formatList','list'],['formatOrderedList','orderedList'],
-  ['formatQuote','quote'],['formatCode','code'],['formatTable','table'],['formatLink','link']]){
- field(id).addEventListener('click',()=>{
-  try{
-   // Use the author-confirmed original citation when available. Invalid source
-   // fields abort safely instead of inserting a disguised placeholder link.
-   const edit=formatDraftSelection(body.value,body.selectionStart,body.selectionEnd,
-     action,action==='link'?source.value:'');
-   body.setRangeText(edit.replacement,body.selectionStart,body.selectionEnd,'end');
-   editorChanged();
-   body.focus();
-   body.setSelectionRange(edit.selectionStart,edit.selectionEnd);
-   preview();
-   message(ui('formatDone'));
-  }catch(error){
-   message(error instanceof RangeError
-    ? ui('formatLimit')
-    : ui('formatInvalid'),true);
-  }
- });
+// Buttons and keyboard shortcuts share precisely the same formatting path.
+// This keeps input validation, revision state and pending review-export
+// invalidation consistent regardless of how the author edits the textarea.
+function applyDraftFormatting(action){
+ try{
+  // Use the author's validated Original source for explicit citation links.
+  const edit=formatDraftSelection(body.value,body.selectionStart,body.selectionEnd,
+   action,action==='link'?source.value:'');
+  body.setRangeText(edit.replacement,body.selectionStart,body.selectionEnd,'end');
+  editorChanged();
+  body.focus();
+  body.setSelectionRange(edit.selectionStart,edit.selectionEnd);
+  preview();
+  message(ui('formatDone'));
+ }catch(error){
+  message(error instanceof RangeError?ui('formatLimit'):ui('formatInvalid'),true);
+ }
 }
+for(const [id,action] of [['formatBold','bold'],['formatItalic','italic'],
+ ['formatInlineCode','inlineCode'],['formatHeading','heading'],['formatList','list'],
+ ['formatOrderedList','orderedList'],['formatQuote','quote'],['formatCode','code'],
+ ['formatTable','table'],['formatLink','link']]){
+ field(id).addEventListener('click',()=>applyDraftFormatting(action));
+}
+// Only the article textarea receives these shortcuts. Other page controls,
+// browser shortcuts (including Ctrl/Cmd+S) and composing IME input are untouched.
+const inlineShortcuts=Object.freeze({b:'bold',i:'italic',k:'link'});
+body.addEventListener('keydown',event=>{
+ if(event.isComposing||event.repeat||event.altKey||event.shiftKey||
+    Boolean(event.ctrlKey)===Boolean(event.metaKey))return;
+ const action=inlineShortcuts[event.key?.toLowerCase()];
+ if(!action)return;
+ event.preventDefault();
+ applyDraftFormatting(action);
+});
 
 // Explicit, append-only template action. Never replace unsaved text or make
 // a background write; inserted TODO hints are part of the editable Markdown.
