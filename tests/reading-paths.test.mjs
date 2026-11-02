@@ -81,7 +81,7 @@ test('Markdown sharing points only to the approved ordered public corpus',()=>{
  assert.throws(()=>readingPathMarkdown({title:'Empty',ids:[]},articles));
 });
 test('the feature is a genuine accessible, browser-only workflow linked from archive',()=>{
- const html=readFileSync(new URL('../site/engineering/paths.html',import.meta.url),'utf8');
+ const html=readFileSync(new URL('../site/engineering/reading-paths/index.html',import.meta.url),'utf8');
  const js=readFileSync(new URL('../site/engineering/paths.js',import.meta.url),'utf8');
  assert.match(html,/id="path-catalog"/);
  assert.match(html,/id="path-selected"/);
@@ -89,12 +89,12 @@ test('the feature is a genuine accessible, browser-only workflow linked from arc
  assert.match(html,/id="path-copy-markdown"/);
  assert.match(html,/id="path-manual-copy"/);
  assert.match(html,/role="status"/);
- assert.match(html,/canonical" href="https:\/\/24go.top\/engineering\/paths.html"/);
- assert.match(js,/fetch\('\.\/feed\.json'/);
+ assert.match(html,/canonical" href="https:\/\/24go.top\/engineering\/reading-paths\/"/);
+ assert.match(js,/fetch\('\.\.\/feed\.json'/);
  assert.match(js,/encodeReadingPath\(/);
  assert.match(js,/navigator\.clipboard/);
  assert.match(js,/textContent/);
  assert.doesNotMatch(js,/\binnerHTML\b|localStorage|sessionStorage|document\.cookie|supabase/i);
  const archive=readFileSync(new URL('../site/engineering/index.html',import.meta.url),'utf8');
- assert.match(archive,/href="\.\/paths\.html"/);
+ assert.match(archive,/href="\.\/reading-paths\/"/);
 });
