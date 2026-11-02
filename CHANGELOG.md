@@ -1,5 +1,11 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-02 — Lossless Unicode safety for private local drafts
+
+- Prevent silent replacement of unpaired UTF-16 surrogates during browser-only Markdown export, copy, manual vault save or editorial hand-off. `Blob` and `TextEncoder` replace malformed code units with U+FFFD; the Draft Lab now rejects those damaged title, article body and source-link inputs before any claimed successful export/save.
+- Preserve valid surrogate pairs, emoji and original text across all eight available article locales. Add pure regression coverage for lone high/low surrogates, mixed-language round-trips and non-destructive vault write denials.
+- Public static MIT-only change. No hosted write API, backend, Supabase/Auth changes, remote uploads, analytics, secrets or production schema migration. Rollback: revert this small public-source change.
+
 ## 2026-11-02 — Exact-source GitHub Pages delivery proof
 
 - Harden the PUBLIC GitHub Pages post-deploy verification: after matching the run-specific `release.json` receipt, compare **all decoded source text**, byte-for-byte equivalent UTF-8, for five fixed essential HTTPS routes (home, Draft Lab HTML and JS, Engineering archive HTML and search JS) against the **exact checked-out commit**. The previous stable-marker-only checks could pass when a cached old asset retained an unchanged marker; stale source now fails closed even if the marker is still present.
