@@ -61,6 +61,20 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 .format-tools button:hover{border-color:var(--accent);color:var(--accent);background:var(--secondary-hover)}
 .format-tools button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 .format-help{margin:8px 0 5px}
+.draft-find{margin:14px 0 8px;padding:12px;border:1px solid var(--border);
+ border-radius:10px;background:var(--field)}
+.draft-find label{display:block;margin-bottom:7px;font-size:13px;font-weight:750;color:var(--text)}
+.draft-find__controls{display:flex;gap:8px;flex-wrap:wrap}
+.draft-find__controls input{flex:1 1 180px;min-width:0;margin:0}
+.draft-find__controls button{min-height:44px;padding:8px 13px;font:inherit;
+ font-size:13px;font-weight:700;cursor:pointer;color:var(--text);
+ background:var(--panel);border:1px solid var(--border);border-radius:8px}
+.draft-find__controls button:hover{border-color:var(--accent);color:var(--accent)}
+.draft-find__controls button:focus-visible,.draft-find__controls input:focus-visible{
+ outline:3px solid var(--accent);outline-offset:3px}
+.draft-find__status{font-size:12px;min-height:18px;color:var(--muted);margin:8px 0 0}
+@media(max-width:550px){.draft-find__controls input{flex-basis:100%}
+ .draft-find__controls button{flex:1 1 calc(50% - 8px)}}
 @media(max-width:550px){.format-tools button{flex:1 1 calc(50% - 8px)}}
 
 /* Editor UI language is separate from authored content language. */

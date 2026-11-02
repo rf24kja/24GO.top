@@ -2,6 +2,14 @@
 // or translations of the user's article. English is the explicit fallback.
 export const UI_LOCALES=Object.freeze(['en','ru','th','es','fr','de','pt','zh']);
 const EN={
+ findGroup:"Find exact text in article",
+ findLabel:"Find in article (exact text)",
+ findPlaceholder:"Find a word or phrase",
+ findNext:"Next",
+ findPrevious:"Previous",
+ findFound:"Match selected in article. No text changed.",
+ findMissing:"No exact match in article.",
+ findEmpty:"Enter text to find.",
  reviewPackDownload:"Export review package",
  reviewPackVerify:"Check review package",
  reviewPackPrivacy:"A review package contains your complete manuscript in plaintext and a SHA-256 checksum. Share only with a trusted reviewer after removing secrets. No automatic upload; checksum is not author identity or approval.",
@@ -141,6 +149,14 @@ const EN={
  clearCanceled:'Draft kept. Nothing was erased.',cleared:'Draft cleared from this browser tab.'
 };
 const RU={
+ findGroup:"Поиск точного текста в статье",
+ findLabel:"Найти в статье (точное совпадение)",
+ findPlaceholder:"Слово или фраза",
+ findNext:"Далее",
+ findPrevious:"Назад",
+ findFound:"Совпадение выделено. Текст не изменён.",
+ findMissing:"Точного совпадения нет.",
+ findEmpty:"Введите текст для поиска.",
  reviewPackDownload:"Выгрузить пакет для рецензии",
  reviewPackVerify:"Проверить пакет рецензии",
  reviewPackPrivacy:"Пакет содержит всю рукопись открытым текстом и SHA-256. Передавайте только доверенному рецензенту после удаления секретов. Ничего не отправляется автоматически; хеш не подтверждает автора или одобрение.",
@@ -279,6 +295,14 @@ const RU={
  clearCanceled:'Черновик оставлен без изменений.',cleared:'Черновик очищен в этой вкладке.'
 };
 const TH={
+ findGroup:"ค้นหาข้อความตรงตัวในบทความ",
+ findLabel:"ค้นหาในบทความ (ตรงตัว)",
+ findPlaceholder:"คำหรือวลีที่ต้องการค้นหา",
+ findNext:"ถัดไป",
+ findPrevious:"ก่อนหน้า",
+ findFound:"เลือกข้อความที่ตรงกันแล้ว ไม่ได้แก้ไขบทความ",
+ findMissing:"ไม่พบข้อความที่ตรงกัน",
+ findEmpty:"กรอกข้อความที่ต้องการค้นหา",
  reviewPackDownload:"ส่งออกชุดเอกสารสำหรับตรวจทาน",
  reviewPackVerify:"ตรวจสอบชุดเอกสาร",
  reviewPackPrivacy:"ชุดเอกสารมีต้นฉบับทั้งหมดเป็นข้อความธรรมดาพร้อม SHA-256 โปรดลบข้อมูลลับก่อนแบ่งปัน ไม่มีการอัปโหลดอัตโนมัติ และแฮชไม่ยืนยันผู้เขียน",
@@ -416,6 +440,14 @@ const TH={
  clearCanceled:'เก็บร่างเดิมไว้',cleared:'ล้างร่างในแท็บนี้แล้ว'
 };
 const ES={
+ findGroup:"Buscar texto exacto en el artículo",
+ findLabel:"Buscar en el artículo (texto exacto)",
+ findPlaceholder:"Palabra o frase",
+ findNext:"Siguiente",
+ findPrevious:"Anterior",
+ findFound:"Coincidencia seleccionada. No se modificó el artículo.",
+ findMissing:"No se encontró ninguna coincidencia exacta.",
+ findEmpty:"Escribe el texto que deseas buscar.",
  reviewPackDownload:"Exportar paquete para revisión",
  reviewPackVerify:"Verificar paquete de revisión",
  reviewPackPrivacy:"El paquete contiene el manuscrito completo sin cifrar y una suma SHA-256. Elimina secretos antes de compartirlo. No hay carga automática; la suma no verifica la autoría.",
@@ -553,6 +585,14 @@ const ES={
  clearCanceled:'Borrador conservado.',cleared:'Borrador borrado de esta pestaña.'
 };
 const FR={
+ findGroup:"Rechercher un texte exact dans l’article",
+ findLabel:"Rechercher dans l’article (texte exact)",
+ findPlaceholder:"Mot ou expression",
+ findNext:"Suivant",
+ findPrevious:"Précédent",
+ findFound:"Correspondance sélectionnée. Texte inchangé.",
+ findMissing:"Aucune correspondance exacte.",
+ findEmpty:"Saisissez un texte à rechercher.",
  reviewPackDownload:"Exporter un dossier de relecture",
  reviewPackVerify:"Vérifier le dossier de relecture",
  reviewPackPrivacy:"Le dossier contient le manuscrit entier en clair et une empreinte SHA-256. Retirez les secrets avant partage. Aucun envoi automatique ; l’empreinte ne prouve pas l’auteur.",
@@ -690,6 +730,14 @@ const FR={
  clearCanceled:'Brouillon conservé.',cleared:'Brouillon effacé de cet onglet.'
 };
 const DE={
+ findGroup:"Exakten Text im Artikel suchen",
+ findLabel:"Im Artikel suchen (exakter Text)",
+ findPlaceholder:"Wort oder Ausdruck",
+ findNext:"Weiter",
+ findPrevious:"Zurück",
+ findFound:"Fundstelle markiert. Text unverändert.",
+ findMissing:"Keine exakte Übereinstimmung gefunden.",
+ findEmpty:"Suchtext eingeben.",
  reviewPackDownload:"Prüfpaket exportieren",
  reviewPackVerify:"Prüfpaket verifizieren",
  reviewPackPrivacy:"Das Paket enthält den gesamten Manuskripttext unverschlüsselt mit SHA-256. Vor dem Teilen Geheimnisse entfernen. Kein automatischer Upload; der Hash beweist keine Urheberschaft.",
@@ -827,6 +875,14 @@ const DE={
  clearCanceled:'Entwurf beibehalten.',cleared:'Entwurf aus diesem Tab gelöscht.'
 };
 const PT={
+ findGroup:"Encontrar texto exato no artigo",
+ findLabel:"Encontrar no artigo (texto exato)",
+ findPlaceholder:"Palavra ou expressão",
+ findNext:"Seguinte",
+ findPrevious:"Anterior",
+ findFound:"Correspondência selecionada. O texto não foi alterado.",
+ findMissing:"Nenhuma correspondência exata.",
+ findEmpty:"Introduza texto para pesquisar.",
  reviewPackDownload:"Exportar pacote de revisão",
  reviewPackVerify:"Verificar pacote de revisão",
  reviewPackPrivacy:"O pacote contém todo o manuscrito em texto simples e SHA-256. Remova segredos antes de partilhar. Sem envio automático; o hash não comprova autoria.",
@@ -964,6 +1020,14 @@ const PT={
  clearCanceled:'Rascunho mantido.',cleared:'Rascunho apagado desta aba.'
 };
 const ZH={
+ findGroup:"在文章中查找完全匹配的文本",
+ findLabel:"在文章中查找（精确匹配）",
+ findPlaceholder:"查找词语或短语",
+ findNext:"下一个",
+ findPrevious:"上一个",
+ findFound:"已选中匹配内容，文章未更改。",
+ findMissing:"未找到完全匹配的内容。",
+ findEmpty:"请输入查找内容。",
  reviewPackDownload:"导出审稿资料包",
  reviewPackVerify:"验证审稿资料包",
  reviewPackPrivacy:"资料包包含完整的明文稿件和 SHA-256 校验值。分享前请移除机密信息。不会自动上传；校验值不能证明作者身份。",

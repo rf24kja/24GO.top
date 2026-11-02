@@ -1,5 +1,13 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-02 — Find exact text inside a private Markdown article draft
+
+- Add **Find in article** directly to the public browser-only Draft Lab, with keyboard-friendly **Next / Previous** navigation for exact, case-sensitive words and phrases. Select matching text inside the author textarea, wrap around at either end, and preserve literal Unicode/emoji offsets.
+- Searches operate entirely on the current in-memory manuscript. They **never modify** the draft, import baseline, optional browser vault, previous review consent, or any network service. Enter in the find field navigates without submitting the editor form; IME composition and native browser shortcuts remain untouched. Search queries are limited to 80 characters.
+- Translate labels, placeholder and result feedback in all eight interface languages; style for small mobile screens, keyboard focus and visible live-status feedback. Add pure-selection and browser-interaction regression tests.
+- PUBLIC static reader/editor change only. This is not autosave, server-side search or hosted publishing. Rollback: revert this PR; no stored-data migrations.
+
+
 ## 2026-11-02 — Save published articles from the article reader
 
 - Add **Save for later** / **Remove from reading list** directly to each canonical, reviewed public engineering article. It writes only the approved article's filename into the **same on-device v1 reading list** used by the engineering archive; no accounts, API requests, article-body data or automatic first-visit writes. Existing saved links appear as selected after opening an article.

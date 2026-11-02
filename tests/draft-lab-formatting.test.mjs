@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {formatDraftSelection,countDraftWords} from '../site/draft-lab-logic.js';
+import {formatDraftSelection,countDraftWords,findDraftText} from '../site/draft-lab-logic.js';
 import {parsePreviewBlocks} from '../site/draft-lab-preview.js';
 function apply(value,start,end,action){
  const edit=formatDraftSelection(value,start,end,action);
@@ -142,4 +142,29 @@ test('word meter counts separated and unspaced writing without mutating the auth
  assert.equal(countDraftWords('two words','unexpected'),2);
  assert.throws(()=>countDraftWords(null),TypeError);
  assert.throws(()=>countDraftWords('x'.repeat(12001)),RangeError);
+});
+
+test('exact local manuscript search selects UTF-16 offsets and wraps both ways',()=>{
+ const text='alpha beta alpha — 中文 🚀 alpha';
+ assert.deepEqual({...findDraftText(text,'alpha',0,'next')},{start:0,end:5});
+ assert.deepEqual({...findDraftText(text,'alpha',5,'next')},{start:11,end:16});
+ assert.deepEqual({...findDraftText(text,'alpha',text.length,'next')},{start:0,end:5});
+ assert.deepEqual({...findDraftText(text,'alpha',0,'previous')},{start:text.lastIndexOf('alpha'),end:text.length});
+ assert.deepEqual({...findDraftText(text,'alpha',11,'previous')},{start:0,end:5});
+ assert.deepEqual({...findDraftText(text,'中文 🚀',0,'next')},{start:19,end:24});
+ assert.equal(findDraftText(text,'ALPHA',0,'next'),null,'search is deliberately case-sensitive');
+ assert.equal(findDraftText(text,'not found',0,'next'),null);
+});
+
+test('local manuscript search rejects invalid direction, offsets and oversized inputs',()=>{
+ const bad=[
+  ['abc','',0,'next'],
+  ['abc','x'.repeat(81),0,'next'],
+  ['abc','a',-1,'next'],
+  ['abc','a',4,'next'],
+  ['abc','a',0,'replace'],
+  ['a'.repeat(12001),'a',0,'next'],
+  [null,'a',0,'next']
+ ];
+ for(const args of bad)assert.throws(()=>findDraftText(...args),TypeError);
 });

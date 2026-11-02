@@ -192,6 +192,28 @@ export function matchesDraftExportSnapshot(expected,current){
    typeof expected[key]==='string'&&current[key]===expected[key]));
 }
 
+/** Find an exact, case-sensitive literal string in a local manuscript.
+ * Returns UTF-16 textarea selection offsets; no replacements or side effects.
+ * A match wraps to the other end when the cursor has passed it.
+ */
+export function findDraftText(body,query,from=0,direction='next'){
+ if(typeof body!=='string'||body.length>12000||
+    typeof query!=='string'||query.length===0||query.length>80||
+    !Number.isSafeInteger(from)||from<0||from>body.length||
+    !['next','previous'].includes(direction))
+  throw new TypeError('Invalid local manuscript search');
+ let start;
+ if(direction==='next'){
+  start=body.indexOf(query,from);
+  if(start===-1)start=body.indexOf(query,0);
+ }else{
+  start=from>0?body.lastIndexOf(query,from-1):-1;
+  if(start===-1)start=body.lastIndexOf(query);
+ }
+ if(start===-1)return null;
+ return Object.freeze({start,end:start+query.length});
+}
+
 /** Compare the current tab to the last explicitly reopened local file.
  * A download click/clipboard copy is never proof the browser saved a file.
  */

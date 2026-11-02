@@ -54,6 +54,15 @@
             <button id="formatTable" type="button" aria-label="Insert Markdown table" data-ui-label="table" data-ui="table">Table</button>
             <button id="formatLink" type="button" aria-label="Insert HTTP or HTTPS citation link" data-ui-label="link" data-ui="link">Link</button>
           </div>
+          <div class="draft-find" role="group" aria-label="Find exact text in article" data-ui-label="findGroup">
+            <label for="draftFindQuery" data-ui="findLabel">Find in article (exact text)</label>
+            <div class="draft-find__controls">
+              <input id="draftFindQuery" type="search" maxlength="80" autocomplete="off" spellcheck="false" placeholder="Find a word or phrase" data-ui-placeholder="findPlaceholder" aria-controls="postBody">
+              <button id="draftFindNext" type="button" data-ui="findNext">Next</button>
+              <button id="draftFindPrevious" type="button" data-ui="findPrevious">Previous</button>
+            </div>
+            <p id="draftFindStatus" class="draft-find__status" role="status" aria-live="polite" aria-atomic="true"></p>
+          </div>
           <p class="hint format-help" data-ui="formatHelp">Select text to format it, or place the cursor to insert an editable placeholder. Export to keep changes. In the article field: Ctrl/⌘+B bold, Ctrl/⌘+I italic, Ctrl/⌘+K link.</p>
           <section class="draft-starters" aria-labelledby="templateHeading">
             <h3 id="templateHeading" data-ui="templateHeading">Article starters</h3>
