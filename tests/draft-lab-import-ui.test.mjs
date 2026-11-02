@@ -546,6 +546,100 @@ test('Find controls use translated labels in all eight locales, with no network 
  assert.doesNotMatch(source,/fetch\(|sendBeacon|XMLHttpRequest|eval\(/);
 });
 
+test('Replace selected makes one explicit local edit and leaves remaining matches',()=>{
+ const app=build(),body=app.elements.postBody,query=app.elements.draftFindQuery;
+ const text=app.elements.draftReplaceText,button=app.elements.draftFindReplace;
+ body.value='cat and cat and cat';
+ body.selectionStart=0;body.selectionEnd=0;
+ query.value='cat';text.value='dog';
+ assert.equal(button.disabled,true);
+ const vaultBefore=app.localStorage.getItem(VAULT_KEY);
+ app.elements.draftFindNext.listeners.click();
+ assert.equal(button.disabled,false);
+ assert.deepEqual([body.selectionStart,body.selectionEnd],[0,3]);
+ button.listeners.click();
+ assert.equal(body.value,'dog and cat and cat');
+ assert.equal(button.disabled,true);
+ assert.deepEqual([body.selectionStart,body.selectionEnd],[3,3]);
+ assert.equal(app.elements.draftFindStatus.textContent,uiText('en','replaceDone'));
+ assert.equal(app.localStorage.getItem(VAULT_KEY),vaultBefore);
+ assert.equal(app.beforeUnload().prevented,true);
+ // A second click cannot silently replace another match.
+ button.listeners.click();
+ assert.equal(body.value,'dog and cat and cat');
+ assert.equal(app.elements.draftFindStatus.textContent,uiText('en','replaceStale'));
+ app.elements.draftFindNext.listeners.click();
+ assert.deepEqual([body.selectionStart,body.selectionEnd],[8,11]);
+ button.listeners.click();
+ assert.equal(body.value,'dog and dog and cat');
+});
+
+test('replace supports empty and Unicode replacements without rewriting the rest',()=>{
+ const app=build(),body=app.elements.postBody,query=app.elements.draftFindQuery;
+ body.value='Тест 🚀 Тест';body.selectionStart=0;body.selectionEnd=0;
+ query.value='🚀';app.elements.draftReplaceText.value='';
+ app.elements.draftFindNext.listeners.click();
+ app.elements.draftFindReplace.listeners.click();
+ assert.equal(body.value,'Тест  Тест');
+ assert.equal(app.elements.draftFindStatus.textContent,uiText('en','replaceDone'));
+ assert.equal(app.elements.previewBody.textContent,'Тест  Тест');
+});
+
+test('replace aborts on stale match, edited manuscript, moved selection or query',()=>{
+ const modes=['body-edit','selection','query','format'];
+ for(const mode of modes){
+  const app=build(),body=app.elements.postBody,query=app.elements.draftFindQuery;
+  body.value='cat and cat';query.value='cat';
+  app.elements.draftReplaceText.value='dog';
+  app.elements.draftFindNext.listeners.click();
+  const before=body.value;
+  if(mode==='body-edit'){
+   body.value='cat and cats';body.listeners.input();
+  }else if(mode==='selection'){
+   body.setSelectionRange(8,11);
+  }else if(mode==='query'){
+   query.value='and';query.listeners.input();
+  }else{
+   app.elements.formatBold.listeners.click();
+  }
+  const now=body.value;
+  app.elements.draftFindReplace.listeners.click();
+  assert.equal(body.value,now,mode+' should not replace a stale match');
+  assert.equal(app.elements.draftFindReplace.disabled,true);
+  assert.equal(app.elements.draftFindStatus.textContent,uiText('en','replaceStale'));
+  assert.ok(body.value===before||mode==='body-edit'||mode==='format');
+ }
+});
+
+test('replace refuses exceeding 12k article cap and retains the found match',()=>{
+ const app=build(),body=app.elements.postBody,query=app.elements.draftFindQuery;
+ body.value='a'.repeat(12000);
+ query.value='a';app.elements.draftReplaceText.value='longer';
+ app.elements.draftFindNext.listeners.click();
+ const before=body.value;
+ app.elements.draftFindReplace.listeners.click();
+ assert.equal(body.value,before);
+ assert.equal(app.elements.draftFindStatus.textContent,uiText('en','replaceLimit'));
+ assert.equal(app.elements.draftFindReplace.disabled,false);
+ assert.equal(app.localStorage.getItem(VAULT_KEY),null);
+});
+
+test('single-match replacement controls have all 8 translations and mobile focus affordances',()=>{
+ for(const lang of ['en','ru','th','es','fr','de','pt','zh']){
+  for(const key of ['replaceLabel','replacePlaceholder','replaceButton','replaceDone','replaceStale','replaceLimit']){
+   const value=uiText(lang,key);
+   assert.ok(typeof value==='string'&&value.length>0,lang+' '+key);
+  }
+ }
+ const html=readFileSync(new URL('../site/draft-lab.html',import.meta.url),'utf8');
+ const css=readFileSync(new URL('../site/draft-lab.css',import.meta.url),'utf8');
+ assert.match(html,/id="draftReplaceText"[^>]+maxlength="160"/);
+ assert.match(html,/id="draftFindReplace"[^>]+disabled/);
+ assert.match(css,/\\.draft-find__replace button:disabled/);
+ assert.match(css,/\\.draft-find__controls button:focus-visible/);
+ assert.doesNotMatch(source,/fetch\\(|sendBeacon|XMLHttpRequest|eval\\(/);
+});
+
 test('textarea-only Ctrl/Cmd+B and I format selection using same safe toolbar path',()=>{
  for(const modifier of ['ctrlKey','metaKey']){
   for(const [key,expected] of [['b','**original research**'],['i','*original research*']]){
