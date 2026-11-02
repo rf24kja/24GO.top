@@ -2,6 +2,12 @@
 // or translations of the user's article. English is the explicit fallback.
 export const UI_LOCALES=Object.freeze(['en','ru','th','es','fr','de','pt','zh']);
 const EN={
+ replaceLabel:"Replace selected match with",
+ replacePlaceholder:"Replacement text (can be empty)",
+ replaceButton:"Replace selected",
+ replaceDone:"Selected match replaced locally. Export to keep changes.",
+ replaceStale:"Find that text again before replacing. No changes made.",
+ replaceLimit:"Replacement would exceed the article length limit. No changes made.",
  findGroup:"Find exact text in article",
  findLabel:"Find in article (exact text)",
  findPlaceholder:"Find a word or phrase",
@@ -149,6 +155,12 @@ const EN={
  clearCanceled:'Draft kept. Nothing was erased.',cleared:'Draft cleared from this browser tab.'
 };
 const RU={
+ replaceLabel:"Заменить найденное совпадение на",
+ replacePlaceholder:"Новый текст (можно оставить пустым)",
+ replaceButton:"Заменить найденное",
+ replaceDone:"Одно совпадение заменено локально. Сохраните изменения экспортом.",
+ replaceStale:"Сначала найдите это совпадение ещё раз. Текст не изменён.",
+ replaceLimit:"После замены статья превысит лимит длины. Изменений нет.",
  findGroup:"Поиск точного текста в статье",
  findLabel:"Найти в статье (точное совпадение)",
  findPlaceholder:"Слово или фраза",
@@ -295,6 +307,12 @@ const RU={
  clearCanceled:'Черновик оставлен без изменений.',cleared:'Черновик очищен в этой вкладке.'
 };
 const TH={
+ replaceLabel:"แทนที่ข้อความที่เลือกด้วย",
+ replacePlaceholder:"ข้อความใหม่ (เว้นว่างได้)",
+ replaceButton:"แทนที่ที่เลือก",
+ replaceDone:"แทนที่หนึ่งตำแหน่งในเครื่องแล้ว ส่งออกเพื่อเก็บการเปลี่ยนแปลง",
+ replaceStale:"ค้นหาข้อความอีกครั้งก่อนแทนที่ ไม่มีการแก้ไข",
+ replaceLimit:"การแทนที่จะเกินขีดจำกัดความยาวบทความ ไม่มีการแก้ไข",
  findGroup:"ค้นหาข้อความตรงตัวในบทความ",
  findLabel:"ค้นหาในบทความ (ตรงตัว)",
  findPlaceholder:"คำหรือวลีที่ต้องการค้นหา",
@@ -440,6 +458,12 @@ const TH={
  clearCanceled:'เก็บร่างเดิมไว้',cleared:'ล้างร่างในแท็บนี้แล้ว'
 };
 const ES={
+ replaceLabel:"Sustituir la coincidencia por",
+ replacePlaceholder:"Texto nuevo (puede estar vacío)",
+ replaceButton:"Sustituir selección",
+ replaceDone:"Se sustituyó una coincidencia localmente. Exporta para guardar.",
+ replaceStale:"Busca esa coincidencia de nuevo antes de sustituir. Sin cambios.",
+ replaceLimit:"El texto superaría el límite de longitud. Sin cambios.",
  findGroup:"Buscar texto exacto en el artículo",
  findLabel:"Buscar en el artículo (texto exacto)",
  findPlaceholder:"Palabra o frase",
@@ -585,6 +609,12 @@ const ES={
  clearCanceled:'Borrador conservado.',cleared:'Borrador borrado de esta pestaña.'
 };
 const FR={
+ replaceLabel:"Remplacer la correspondance par",
+ replacePlaceholder:"Nouveau texte (peut être vide)",
+ replaceButton:"Remplacer la sélection",
+ replaceDone:"Une correspondance remplacée localement. Exportez pour conserver.",
+ replaceStale:"Recherchez à nouveau avant de remplacer. Aucun changement.",
+ replaceLimit:"Le texte dépasserait la limite de longueur. Aucun changement.",
  findGroup:"Rechercher un texte exact dans l’article",
  findLabel:"Rechercher dans l’article (texte exact)",
  findPlaceholder:"Mot ou expression",
@@ -730,6 +760,12 @@ const FR={
  clearCanceled:'Brouillon conservé.',cleared:'Brouillon effacé de cet onglet.'
 };
 const DE={
+ replaceLabel:"Gefundene Stelle ersetzen durch",
+ replacePlaceholder:"Neuer Text (darf leer sein)",
+ replaceButton:"Auswahl ersetzen",
+ replaceDone:"Eine Fundstelle lokal ersetzt. Zum Behalten exportieren.",
+ replaceStale:"Fundstelle vor dem Ersetzen erneut suchen. Nichts geändert.",
+ replaceLimit:"Der Artikel wäre nach dem Ersetzen zu lang. Nichts geändert.",
  findGroup:"Exakten Text im Artikel suchen",
  findLabel:"Im Artikel suchen (exakter Text)",
  findPlaceholder:"Wort oder Ausdruck",
@@ -875,6 +911,12 @@ const DE={
  clearCanceled:'Entwurf beibehalten.',cleared:'Entwurf aus diesem Tab gelöscht.'
 };
 const PT={
+ replaceLabel:"Substituir correspondência por",
+ replacePlaceholder:"Novo texto (pode ficar vazio)",
+ replaceButton:"Substituir seleção",
+ replaceDone:"Uma ocorrência substituída localmente. Exporte para guardar.",
+ replaceStale:"Procure novamente antes de substituir. Sem alterações.",
+ replaceLimit:"O artigo ultrapassaria o limite de tamanho. Sem alterações.",
  findGroup:"Encontrar texto exato no artigo",
  findLabel:"Encontrar no artigo (texto exato)",
  findPlaceholder:"Palavra ou expressão",
@@ -1020,6 +1062,12 @@ const PT={
  clearCanceled:'Rascunho mantido.',cleared:'Rascunho apagado desta aba.'
 };
 const ZH={
+ replaceLabel:"将选中的匹配内容替换为",
+ replacePlaceholder:"新文本（可留空）",
+ replaceButton:"替换所选内容",
+ replaceDone:"已在本地替换一处匹配。请导出以保留更改。",
+ replaceStale:"请重新查找后再替换。未修改文章。",
+ replaceLimit:"替换后会超过文章长度限制。未修改文章。",
  findGroup:"在文章中查找完全匹配的文本",
  findLabel:"在文章中查找（精确匹配）",
  findPlaceholder:"查找词语或短语",
