@@ -37,6 +37,8 @@ test('source URLs permit only HTTP(S) and disallow credentials or script URLs',(
 
 test('source citations reject lossy parser normalization before export or local persistence',()=>{
  const unsafe=[
+  String.raw`https://example.org\\@attacker.invalid/page`,
+  String.raw`https://example.org/path\\subdir`,
   'https://example.org/a\nb','https://example.org/a\tb',
   'https://example.org/a\rb','https://example.org/a\u0000b',
   'https://example.org/a\u007fb',' https://example.org/source',
