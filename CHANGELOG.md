@@ -1,5 +1,13 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-02 — Copy public article search results without Clipboard API
+
+- Fix both **Copy filtered link** and **Copy matching article links** in the static Engineering archive when the browser denies or does not expose Clipboard API. After an explicit reader action, a read-only, keyboard-selectable text field displays the same canonical public URL or multiline Markdown links for manual copying. Successful native clipboard copy leaves this field hidden.
+- Use the same bounded, already visible public article search results; no additional endpoint, search-query upload, accounts, storage, automatic writes or analytics. Clear manual copy contents on search text, topic, reset, history navigation or full-text-index results changing. A version gate prevents delayed clipboard denial from exposing an obsolete result after filters change.
+- Add browser-simulated regression tests for refused/missing clipboard, exact public links, manual selection, stale content clearing and deferred clipboard denial. Accessible mobile textarea styles and source-only rollback. No changes to hosted backend, Auth, DB, DNS or billing.
+- Rollback: revert this PUBLIC MIT static PR; the browser stores no new information.
+
+
 ## 2026-11-02 — Evidence snippets for full-text public article searches
 
 - Show a short, bounded **matched passage** within each filtered engineering article card when the optional same-origin full-text index successfully loads. Readers can now understand why a technical article matched a term that is absent from its title and summary, without having to open every result.
