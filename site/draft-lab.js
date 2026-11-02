@@ -1,6 +1,6 @@
 'use strict';
 
-import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, readDraftFileStrict, formatDraftSelection, countDraftWords, createDraftImportGate, matchesDraftExportSnapshot, invalidDraftField, findDraftText } from './draft-lab-logic.js';
+import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, readDraftFileStrict, formatDraftSelection, countDraftWords, createDraftImportGate, matchesDraftExportSnapshot, invalidDraftField, findDraftText, replaceDraftFindMatch } from './draft-lab-logic.js';
 import { renderMarkdownPreview,renderPreviewOutline } from './draft-lab-preview.js';
 import {appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS} from './draft-lab-guidance.js';
 import {captureDraftRevision,compareDraftRevisions,revisionSummary} from './draft-lab-revisions.js';
@@ -72,9 +72,17 @@ const importGate=createDraftImportGate();
 // Separate token for pending review-package digests: it is invalidated by
 // every editor action, including Clear and a change later reverted to text.
 const reviewExportGate=createDraftImportGate();
+// A match is valid only until the next editor action or search term change.
+let activeFindMatch=null;
+function clearFindSelection(){
+ activeFindMatch=null;
+ field('draftFindReplace').disabled=true;
+}
 function editorChanged(){
  importGate.changed();
  reviewExportGate.changed();
+ clearFindSelection();
+ field('draftFindStatus').textContent='';
 }
 let activeSavedId=null,activeSavedVersion=null;
 function getDraftVault(){return createDraftVault(window.localStorage);}
@@ -225,7 +233,10 @@ body.addEventListener('keydown',event=>{
 // read-only: it cannot update export baselines, vault data or remote services.
 const findQuery=field('draftFindQuery');
 const findStatus=field('draftFindStatus');
+const replaceInput=field('draftReplaceText');
+const replaceButton=field('draftFindReplace');
 function findInDraft(direction){
+ clearFindSelection();
  const query=findQuery.value;
  if(!query.trim()){
   findStatus.textContent=ui('findEmpty');
@@ -243,11 +254,50 @@ function findInDraft(direction){
  }
  body.focus();
  body.setSelectionRange(match.start,match.end);
+ activeFindMatch={...match,query,original:body.value};
+ replaceButton.disabled=false;
  findStatus.textContent=ui('findFound');
 }
 field('draftFindNext').addEventListener('click',()=>findInDraft('next'));
 field('draftFindPrevious').addEventListener('click',()=>findInDraft('previous'));
-findQuery.addEventListener('input',()=>{findStatus.textContent='';});
+findQuery.addEventListener('input',()=>{
+ clearFindSelection();
+ findStatus.textContent='';
+});
+replaceButton.addEventListener('click',()=>{
+ const previous=activeFindMatch;
+ // A replacement must be preceded by a find action in the current revision
+ // and must still select exactly the same word and range, never all matches.
+ if(!previous||previous.query!==findQuery.value||
+    previous.original!==body.value||
+    previous.start!==body.selectionStart||
+    previous.end!==body.selectionEnd){
+  clearFindSelection();
+  findStatus.textContent=ui('replaceStale');
+  return;
+ }
+ let change;
+ try{
+  change=replaceDraftFindMatch(body.value,findQuery.value,replaceInput.value,
+   body.selectionStart,body.selectionEnd);
+ }catch(error){
+  findStatus.textContent=ui(error instanceof RangeError?'replaceLimit':'replaceStale');
+  return;
+ }
+ if(!change){
+  clearFindSelection();
+  findStatus.textContent=ui('replaceStale');
+  return;
+ }
+ body.setRangeText(change.replacement,body.selectionStart,body.selectionEnd,'end');
+ editorChanged(); // Invalidate old review exports; do not persist or upload.
+ clearFieldError(body);
+ body.focus();
+ body.setSelectionRange(change.selectionStart,change.selectionEnd);
+ preview();
+ updateValidationNotice();
+ findStatus.textContent=ui('replaceDone');
+});
 findQuery.addEventListener('keydown',event=>{
  if(event.key==='Enter'&&!event.isComposing){
   event.preventDefault();
