@@ -1,5 +1,13 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-02 — Manual Markdown copy fallback for saved reading links
+
+- Improve the private-on-device public engineering reading list: `Copy shown links` now offers an accessible, selectable, read-only Markdown textarea when the browser lacks Clipboard API access or rejects an explicit clipboard write. The fallback contains exactly the links shown by the current saved-title filter, without network requests or new persistence.
+- Clear the fallback whenever the saved filter or another tab's local reading list changes; reject an asynchronous clipboard error from a previous selection to avoid presenting stale links as current. A successful clipboard copy keeps the fallback hidden.
+- Add deterministic UI tests for unavailable/rejected clipboard, exact filtered links, manual selection, cross-tab changes and delayed denial. Source-only static website change; no production Core, secrets, SDK permissions or paid services.
+- Rollback: revert this public PR; saved browser reading-list data format remains unchanged.
+
+
 ## 2026-11-02 — One-click code example copying in public engineering articles
 
 - Add accessible **Copy code** buttons beside bounded, already published `pre > code` examples on source-reviewed canonical engineering articles. They copy the literal snippet as plaintext; markup-like text remains inert. The source `pre`, `code` and article prose are not rewritten, so examples remain legible with JavaScript disabled.
