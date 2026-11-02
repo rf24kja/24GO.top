@@ -168,6 +168,16 @@ export function draftFilename(draft) {
     hash.toString(16).padStart(16, '0') + '.md';
 }
 
+/** Strict equality for an async export begun with a validated snapshot.
+ * Unlike hasUnexportedChanges(), clearing every field MUST count as changed:
+ * that helper intentionally treats an empty editor as safe for unload.
+ */
+export function matchesDraftExportSnapshot(expected,current){
+ const fields=['title','body','locale','category','source'];
+ return Boolean(expected&&current&&fields.every(key=>
+   typeof expected[key]==='string'&&current[key]===expected[key]));
+}
+
 /** Compare the current tab to the last explicitly reopened local file.
  * A download click/clipboard copy is never proof the browser saved a file.
  */
