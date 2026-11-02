@@ -189,7 +189,7 @@ test('replace rejects stale selection and bounded overflow without writing',()=>
  assert.equal(replaceDraftFindMatch(body,'cat','wolf',1,4),null);
  assert.equal(replaceDraftFindMatch(body,'cat','wolf',0,2),null);
  assert.equal(replaceDraftFindMatch(body,'CAT','wolf',0,3),null);
- assert.equal(replaceDraftFindMatch(body,'cat','wolf',8,11),null);
+ assert.equal(replaceDraftFindMatch(body,'cat','wolf',7,10),null);
  for(const args of [
   [null,'cat','x',0,3],
   ['abc','', 'x',0,0],
