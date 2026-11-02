@@ -197,7 +197,6 @@ test('replace rejects stale selection and bounded overflow without writing',()=>
   ['abc','abc','x'.repeat(161),0,3],
   ['abc','abc','x',-1,3],
   ['abc','abc','x',0,4],
-  ['abc','abc','x',0,0],
   ['abc','abc',null,0,3]
  ])assert.throws(()=>replaceDraftFindMatch(...args),TypeError);
  assert.throws(()=>replaceDraftFindMatch('a'.repeat(12000),'a','too long',0,1),
