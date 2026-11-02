@@ -19,6 +19,9 @@ test('archive publishes 10 crawlable articles, discoverable topic controls and a
  assert.match(html,/<label for="engineering-filter">Find a technical article<\/label>/);
  assert.match(html,/aria-controls="engineering-list"/);
  assert.match(html,/id="engineering-search-status" role="status" aria-live="polite"/);
+ assert.match(html,/id="engineering-index-status" role="status" aria-live="polite"/);
+ assert.match(html,/id="engineering-index-retry" hidden/);
+ assert.match(style,/\.note-search__index-state/);
  assert.match(html,/id="engineering-no-results" hidden/);
  assert.match(html,/type="button" id="engineering-reset" hidden/);
  assert.match(html,/id="engineering-share" hidden/);
@@ -52,6 +55,9 @@ function setUp({missing=false,badTopic=false,query='',clipboard='ok',index='none
   reset={hidden:true,focused:false,addEventListener(name,fn){listeners['reset-'+name]=fn;}};
  const share={hidden:true,listeners:{},addEventListener(name,fn){this.listeners[name]=fn;}};
  const shareStatus={textContent:''};
+ const indexStatus={textContent:''};
+ const retryIndex={hidden:true,disabled:false,listeners:{},
+  addEventListener(name,fn){this.listeners[name]=fn;}};
  const copyResults={hidden:true,listeners:{},addEventListener(name,fn){this.listeners[name]=fn;}};
  const form={hidden:true,addEventListener(name,fn){listeners['form-'+name]=fn;}};
  const input={value:'',focused:false,addEventListener(name,fn){listeners[name]=fn;},
@@ -72,7 +78,9 @@ function setUp({missing=false,badTopic=false,query='',clipboard='ok',index='none
    'engineering-filter':input,'engineering-search-status':status,
    'engineering-no-results':empty,'engineering-reset':reset,
    'engineering-share':share,'engineering-share-status':shareStatus,
-   'engineering-copy-results':copyResults})[id];}
+   'engineering-copy-results':copyResults,
+   'engineering-index-status':indexStatus,
+   'engineering-index-retry':retryIndex})[id];}
  };
  const copied=[];
  const location={href:'https://24go.top/engineering/'+query};
@@ -92,6 +100,7 @@ function setUp({missing=false,badTopic=false,query='',clipboard='ok',index='none
  const indexFetch=async(url,options)=>{
   fetchCalls.push({url,options});
   if(index==='fail')throw Error('offline');
+  if(index==='recover'&&fetchCalls.length===1)throw Error('temporary outage');
   if(index==='badUtf8')return new Response(new Uint8Array([
     0x7b,0x22,0x62,0x61,0x64,0x22,0x3a,0x22,0xc3,0x28,0x22,0x7d]));
   if(index==='large'){
@@ -116,7 +125,7 @@ function setUp({missing=false,badTopic=false,query='',clipboard='ok',index='none
  };
  runInNewContext(code,{document,window,navigator,URL,TextDecoder,AbortSignal,
   ...(index==='none'?{}:{fetch:indexFetch})},{timeout:1000});
- return {form,input,status,empty,reset,share,copyResults,shareStatus,cards,topics,listeners,window,location,copied,fetchCalls,
+ return {form,input,status,empty,reset,share,copyResults,shareStatus,indexStatus,retryIndex,cards,topics,listeners,window,location,copied,fetchCalls,
   clickTopic:t=>topics.find(x=>x.dataset.engineeringTopic===t).listeners.click()};
 }
 test('search works with all topics and Escape clears only query',()=>{
@@ -282,6 +291,55 @@ test('offline or malformed and oversized static indexes fall back to card-only s
  }
 });
 
+
+test('full-text search reports actual readiness separately from article result count',async()=>{
+ const app=setUp({index:'good',query:'?q=circuit%20breaker'});
+ assert.match(app.indexStatus.textContent,/titles and summaries while full-text search loads/);
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(app.status.textContent,'1 of 3 articles');
+ assert.equal(app.indexStatus.textContent,'Full article text is searchable.');
+ assert.equal(app.retryIndex.hidden,true);
+ const noFetch=setUp({index:'none'});
+ assert.match(noFetch.indexStatus.textContent,/Only titles and summaries/);
+ assert.equal(noFetch.retryIndex.hidden,true);
+});
+
+test('a failed full-text index can be retried explicitly without losing the query or topic',async()=>{
+ const app=setUp({index:'recover',query:'?q=circuit%20security&topic=security'});
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.match(app.indexStatus.textContent,/Full-text search unavailable/);
+ assert.equal(app.retryIndex.hidden,false);
+ assert.deepEqual(app.cards.map(c=>c.hidden),[true,true,true]);
+ assert.equal(app.status.textContent,'0 of 3 articles');
+ assert.equal(app.input.value,'circuit security');
+ const originalUrl=app.location.href;
+ await app.retryIndex.listeners.click();
+ assert.equal(app.indexStatus.textContent,'Full article text is searchable.');
+ assert.equal(app.retryIndex.hidden,true);
+ assert.equal(app.retryIndex.disabled,false);
+ assert.deepEqual(app.cards.map(c=>c.hidden),[false,true,true]);
+ assert.equal(app.status.textContent,'1 of 3 articles');
+ assert.equal(app.location.href,originalUrl);
+ assert.deepEqual(app.fetchCalls.map(c=>c.url),['./search-index.json','./search-index.json']);
+ for(const call of app.fetchCalls){
+  assert.equal(call.options.credentials,'omit');
+  assert.equal(call.options.redirect,'error');
+  assert.equal(call.options.referrerPolicy,'no-referrer');
+ }
+});
+
+test('retry remains explicit and never hides crawlable article cards after repeated failures',async()=>{
+ const app=setUp({index:'fail',query:'?q=JavaScript&topic=security'});
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(app.retryIndex.hidden,false);
+ await app.retryIndex.listeners.click();
+ assert.match(app.indexStatus.textContent,/Only titles and summaries/);
+ assert.equal(app.retryIndex.hidden,false);
+ assert.equal(app.input.value,'JavaScript');
+ assert.deepEqual(app.cards.map(c=>c.hidden),[false,true,true]);
+ assert.equal(app.fetchCalls.length,2);
+ assert.equal(app.form.hidden,false);
+});
 
 test('multi-word queries match across card fields even when terms are nonadjacent',()=>{
  const app=setUp({query:'?q=leaks%20security'});

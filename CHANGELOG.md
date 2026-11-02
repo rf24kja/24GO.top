@@ -1,5 +1,12 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-02 — Transparent article search fallback and one-click retry
+
+- Make the public Engineering article search honest about its **full-text index status**. Previously, a network or malformed-index failure silently reduced search to card titles and summaries while the interface continued to claim full article-body search. The new accessible live-status message distinguishes loading, full-text ready and title/summary-only fallback.
+- Show **Retry full-text search** only on an actual failed optional same-origin index fetch; keep the query, selected topic, bookmark URL and all crawlable static article cards intact. Retry the same bounded, credential-free `./search-index.json` request only when requested by the reader, not in a background loop.
+- Add browser-simulated tests for failure, explicit recovery, URL stability, honest status and repeated offline retries. This public static reader update has no hosted account, private Core, database, analytics or publication endpoint. Rollback: revert the PR.
+
+
 ## 2026-11-02 — Keyboard-first Markdown formatting in Draft Lab
 
 - Add `Ctrl/⌘+B` (bold), `Ctrl/⌘+I` (italic) and `Ctrl/⌘+K` (source link) **only while focus is in the article textarea**, sharing the same safe formatter as the existing toolbar buttons. Leave title, original-source field, IME composition, other modifiers and browser shortcuts alone.

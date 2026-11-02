@@ -9,9 +9,12 @@
   const share=document.getElementById('engineering-share');
   const copyResults=document.getElementById('engineering-copy-results');
   const shareStatus=document.getElementById('engineering-share-status');
+  const indexStatus=document.getElementById('engineering-index-status');
+  const retryIndex=document.getElementById('engineering-index-retry');
   const cards=[...document.querySelectorAll('[data-note-card]')];
   const topics=[...document.querySelectorAll('[data-engineering-topic]')];
   if(!form||!input||!status||!empty||!reset||!share||!shareStatus||!copyResults||
+     !indexStatus||!retryIndex||
      cards.length===0||topics.length===0)return;
 
   const entries=cards.map(card=>({
@@ -29,6 +32,16 @@
     entries.some(entry=>!validTopics.has(entry.topic)))return;
   let selected='all';
   let fullText=null;
+  let indexState='loading';
+  const setIndexState=state=>{
+    indexState=state;
+    indexStatus.textContent=state==='ready'
+      ?'Full article text is searchable.'
+      :state==='loading'
+        ?'Searching titles and summaries while full-text search loads.'
+        :'Full-text search unavailable. Only titles and summaries are being searched.';
+    retryIndex.hidden=state!=='unavailable'||typeof fetch!=='function';
+  };
 
   // Optional same-origin, read-only static index. No query or private draft
   // is transmitted; the request URL is always exactly ./search-index.json.
@@ -62,7 +75,12 @@
     return JSON.parse(new TextDecoder('utf-8',{fatal:true,ignoreBOM:true}).decode(bytes));
   };
   const loadIndex=async()=>{
-    if(typeof fetch!=='function')return;
+    if(typeof fetch!=='function'){
+      setIndexState('unavailable');return;
+    }
+    if(indexState==='loading'&&retryIndex.disabled)return;
+    retryIndex.disabled=true;
+    setIndexState('loading');
     try{
       const response=await fetch('./search-index.json',
         {credentials:'omit',redirect:'error',referrerPolicy:'no-referrer',
@@ -83,9 +101,15 @@
       if(entries.some(entry=>!byFile.has(entry.file)))
         throw Error('Static index does not match visible article cards');
       fullText=byFile;
+      setIndexState('ready');
       update();
     }catch{
       // Search falls back to card titles/summaries; never obscure articles.
+      fullText=null;
+      setIndexState('unavailable');
+      update();
+    }finally{
+      retryIndex.disabled=false;
     }
   };
 
@@ -160,6 +184,9 @@
     update(true);
     input.focus();
   });
+  retryIndex.addEventListener('click',()=>{
+    if(indexState==='unavailable'&&!retryIndex.disabled)return loadIndex();
+  });
   form.addEventListener('submit',event=>event.preventDefault());
   input.addEventListener('input',()=>update(true));
   input.addEventListener('keydown',event=>{
@@ -212,5 +239,6 @@
   readUrl();
   update();
   form.hidden=false;
+  setIndexState('loading');
   void loadIndex();
 })();
