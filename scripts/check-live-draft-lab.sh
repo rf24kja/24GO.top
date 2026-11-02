@@ -96,7 +96,9 @@ require "const table=tableAt(lines,index)" "$tmp/preview.js" 'safe Markdown tabl
 require "case 'table':" "$tmp/preview.js" 'semantic Markdown table rendering'
 require "action==='table'" "$tmp/logic.js" 'bounded local table generator'
 require 'does not publish, upload or automatically save your writing' "$tmp/draft.html" 'no-backend warning'
-require "['formatQuote','quote'],['formatCode','code'],['formatTable','table'],['formatLink','link']" "$tmp/editor.js" 'wired toolbar action'
+# Enforce the exact ordered toolbar wiring while tolerating source line wraps.
+# grep reads only the normalized temporary stream, never the response body in logs.
+require "['formatQuote','quote'],['formatCode','code'],['formatTable','table'],['formatLink','link']" <(tr -d '[:space:]' < "$tmp/editor.js") 'wired toolbar action'
 require "if(action==='link')" "$tmp/logic.js" 'Markdown Link pure edit'
 require 'export function safeCitationUrl' "$tmp/preview.js" 'bounded safe citation preview'
 require 'noopener noreferrer ugc' "$tmp/preview.js" 'user-generated external link security'

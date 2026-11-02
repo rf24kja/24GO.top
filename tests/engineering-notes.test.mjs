@@ -29,8 +29,13 @@ test('all relative navigation links in engineering collection resolve to package
     const html = read(path);
     for (const [, value] of html.matchAll(/\bhref="([^"]+)"/g)) {
       if (/^(https?:|mailto:|#)/i.test(value)) continue;
-      const target = new URL(value, url);
+      // Browser root-relative URLs resolve under the Pages publish root,
+      // not under the filesystem root. fileURLToPath removes cache queries.
+      const target = value.startsWith('/')
+        ? new URL(value.slice(1), new URL('../site/', import.meta.url))
+        : new URL(value, url);
       let targetPath = fileURLToPath(target);
+      assert.ok(targetPath.startsWith(root), path + ' link escapes packaged site: ' + value);
       if (targetPath.endsWith('/')) targetPath += 'index.html';
       assert.ok(existsSync(targetPath), path + ' has broken relative link: ' + value);
     }

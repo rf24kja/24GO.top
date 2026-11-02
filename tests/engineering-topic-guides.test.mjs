@@ -33,8 +33,11 @@ test('topic reading paths are real canonical pages with reviewed, topic-matched 
   const url=new URL(page,root);
   for(const [,href] of html.matchAll(/\bhref="([^"]+)"/g)){
    if(/^(https?:|mailto:|#)/.test(href))continue;
-   const target=new URL(href,url);
+   // Root-relative asset links belong to site/, even when cache-busted.
+   const siteRoot=new URL('../site/',import.meta.url);
+   const target=href.startsWith('/')?new URL(href.slice(1),siteRoot):new URL(href,url);
    const dest=fileURLToPath(target)+(target.pathname.endsWith('/')?'index.html':'');
+   assert.ok(dest.startsWith(fileURLToPath(siteRoot)),'topic link escapes site/: '+href);
    assert.ok(existsSync(dest),'broken topic link: '+topic+' '+href);
   }
  }
