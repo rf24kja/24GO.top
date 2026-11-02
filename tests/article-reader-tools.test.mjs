@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readdirSync,readFileSync} from 'node:fs';
-import {articleCitations,validatedReaderMetadata,mountArticleReader}
+import {articleCitations,validatedReaderMetadata,mountArticleReader,
+ validatedPublicReadingList,PUBLIC_READING_LIST_KEY,PUBLIC_READING_FILES}
  from '../site/engineering/article-reader.mjs';
 
 const dir=new URL('../site/engineering/',import.meta.url);
@@ -77,7 +78,8 @@ function el(tag,text=''){
  };
  return node;
 }
-function stub({clipboard=true,malformed=false,codeText='const result = "<script>alert(1)</script>";'}={}){
+function stub({clipboard=true,malformed=false,codeText='const result = "<script>alert(1)</script>";',
+ storageAccess=true,storageWritable=true,storedRaw=null}={}){
  const canonical='https://24go.top/engineering/markdown-preview-safety.html';
  const json={
   '@context':'https://schema.org','@type':'Article',
@@ -119,13 +121,23 @@ function stub({clipboard=true,malformed=false,codeText='const result = "<script>
   querySelectorAll:s=>s==='script[type="application/ld+json"]'?[jsonScript]:[]
  };
  const copied=[],listeners={},prints=[];
+ const stored=new Map(),writes=[];
+ if(storedRaw!==null)stored.set(PUBLIC_READING_LIST_KEY,storedRaw);
+ const storage={
+  getItem(key){return stored.get(key)??null;},
+  setItem(key,value){
+   if(!storageWritable)throw new Error('Storage quota denied');
+   writes.push([key,value]);stored.set(key,value);
+  }
+ };
  const view={
   navigator:clipboard?{clipboard:{async writeText(v){copied.push(v);}}}:{},
+  get localStorage(){if(!storageAccess)throw new Error('Storage blocked');return storage;},
   innerHeight:800,scrollY:0,
   addEventListener(event,fn){listeners[event]=fn;},
   print(){prints.push('print');}
  };
- return {doc,view,main,article,headings,listeners,copied,prints,code,pre,codeParent};
+ return {doc,view,main,article,headings,listeners,copied,prints,code,pre,codeParent,storage,stored,writes};
 }
 test('render safe TOC and interactive citations without changing the reviewed article data',async()=>{
  const env=stub();
@@ -142,7 +154,7 @@ test('render safe TOC and interactive citations without changing the reviewed ar
  assert.equal(toc.children[1].children[0].attributes.href,'#section-strict-utf-8');
  const buttons=actions.children.filter(x=>x.tagName==='BUTTON');
  assert.deepEqual(buttons.map(b=>b.textContent),
-  ['Copy Markdown citation','Copy text reference','Copy BibTeX','Print article']);
+  ['Copy Markdown citation','Copy text reference','Copy BibTeX','Print article','Save for later']);
  await buttons[0].listeners.click();
  assert.equal(env.copied.length,1);
  assert.match(env.copied[0],/A safe technical guide/);
