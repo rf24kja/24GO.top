@@ -65,6 +65,7 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
   elements.uiLocale.value='en';
   elements.postLocale.value='en';
   elements.postCategory.value='guides';
+  elements.draftFindReplace.disabled=true;
   elements.draftTemplate.value='guide';
   const downloads=[],blobUrls=new Map();
   class BrowserURL extends URL{
