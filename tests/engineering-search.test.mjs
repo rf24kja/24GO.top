@@ -283,6 +283,16 @@ test('manual copy is cleared after filter changes',async()=>{
  a.window.listeners.popstate();
  assert.equal(a.manualCopy.value,'');
 });
+test('deferred clipboard refusal cannot reopen stale filtered URLs',async()=>{
+ const app=setUp({clipboard:'pending',query:'?topic=security'});
+ const writing=app.copyResults.listeners.click();
+ app.clickTopic('discovery');
+ app.rejectPending();
+ await writing;
+ assert.equal(app.manualCopy.hidden,true);
+ assert.equal(app.manualCopy.value,'');
+ assert.equal(app.copied.length,0);
+});
 test('browser navigation restores the URL state without altering article data',()=>{
  const app=setUp({query:'?topic=security'});
  app.location.href='https://24go.top/engineering/?q=PostgreSQL&topic=infrastructure';
