@@ -1,5 +1,12 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-02 — Bounded full-text article search loading
+
+- Protect the public engineering archive's optional same-origin `search-index.json` loader from oversized or malformed responses: stream no more than 512,000 decoded bytes in 512 chunks, abort the request after eight seconds, reject redirects and decode UTF-8 strictly. The published index was about 63 KB when this change was prepared.
+- On network, parsing, integrity or size failure, preserve all crawlable article cards and fall back to existing title/summary search. Never transmit query text, credentials or author drafts to the server.
+- Extend browser-simulation tests for valid index search, offline/invalid index, malformed UTF-8, excessive bytes and pathological chunk counts. No API, Supabase, private Core or login change. Revert this public PR for rollback.
+
+
 ## 2026-11-02 — Bounded GitHub Pages release receipt streaming
 
 - Fix a bounded-response security bug in the read-only Development page release checker: the previous code fetched an entire response with `response.text()` before enforcing its 256-character limit. Now read at most 256 **decoded bytes** and 32 chunks, cancel oversized responses immediately, and reject malformed UTF-8 rather than converting bad bytes.
