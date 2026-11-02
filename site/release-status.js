@@ -31,7 +31,7 @@ export async function fetchReleaseReceipt(fetchImpl=globalThis.fetch){
   method:'GET',credentials:'omit',redirect:'error',cache:'no-store',
   headers:{accept:'application/json'},signal:AbortSignal.timeout(8000)
  });
- if(response?.status!==200 || typeof response.text!=='function')
+ if(response?.status!==200)
   throw new Error('Pages release receipt unavailable');
  // A declared size is only a hint: compression and chunked transfer can
  // exceed it. Bound decoded response bytes WHILE reading, not after text().
