@@ -190,7 +190,10 @@ for(const [id,action] of [['formatBold','bold'],['formatItalic','italic'],
   ['formatQuote','quote'],['formatCode','code'],['formatTable','table'],['formatLink','link']]){
  field(id).addEventListener('click',()=>{
   try{
-   const edit=formatDraftSelection(body.value,body.selectionStart,body.selectionEnd,action);
+   // Use the author-confirmed original citation when available. Invalid source
+   // fields abort safely instead of inserting a disguised placeholder link.
+   const edit=formatDraftSelection(body.value,body.selectionStart,body.selectionEnd,
+     action,action==='link'?source.value:'');
    body.setRangeText(edit.replacement,body.selectionStart,body.selectionEnd,'end');
    editorChanged();
    body.focus();

@@ -261,6 +261,31 @@ test('public Link tool writes only Markdown and selects an editable HTTPS destin
  assert.equal(app.beforeUnload().prevented,true);
  assert.match(app.elements.formStatus.textContent,/locally/);
 });
+test('Link toolbar uses the author-supplied original source without editing it',()=>{
+ const app=build();
+ app.elements.postSource.value='https://example.org/paper(v3)';
+ app.elements.postBody.value='Original research documents the API.';
+ app.elements.postBody.selectionStart=0;
+ app.elements.postBody.selectionEnd=8; // Original
+ app.elements.formatLink.listeners.click();
+ assert.equal(app.elements.postBody.value,
+  '[Original](https://example.org/paper%28v3%29) research documents the API.');
+ assert.equal(app.elements.postSource.value,'https://example.org/paper(v3)');
+ assert.equal(app.elements.postBody.selectionStart,app.elements.postBody.selectionEnd);
+ assert.equal(app.elements.formStatus.dataset.error,'false');
+});
+test('unsafe source cannot be silently inserted by Link toolbar',()=>{
+ const app=build();
+ app.elements.postSource.value='https://user:password@example.org/private';
+ app.elements.postBody.value='The citation text.';
+ app.elements.postBody.selectionStart=4;
+ app.elements.postBody.selectionEnd=12;
+ const before=app.elements.postBody.value;
+ app.elements.formatLink.listeners.click();
+ assert.equal(app.elements.postBody.value,before);
+ assert.equal(app.elements.formStatus.dataset.error,'true');
+});
+
 test('invalid multiline Link selection keeps local author text untouched',()=>{
  const app=build();
  app.elements.postBody.value='one\ntwo with extra detail';
