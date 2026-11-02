@@ -157,7 +157,7 @@ test('stale critical editor asset blocks public deployment confirmation',async()
    const route=ESSENTIAL_PUBLIC_ROUTES.find(item=>item.path===path);
    return response(path==='/draft-lab.js'?'stale old editor':route.marker);
   }
- }),/asset unavailable or outdated: \\/draft-lab\\.js/);
+ }),/asset unavailable or outdated: \/draft-lab\.js/);
  assert.equal(calls,4,'homepage then two attempts at stale editor script');
  assert.equal(waits,1);
 });
@@ -178,7 +178,7 @@ test('critical route verification fails closed on redirect, oversized and invali
  ]){
   await assert.rejects(verifyEssentialPublicPages({
    runId:RUN,attempts:1,fetchImpl:mocked
-  }),/asset unavailable or outdated: \\//);
+  }),/asset unavailable or outdated: \//);
  }
 });
 
