@@ -141,6 +141,13 @@ header{background:rgba(249,252,249,.9)}a:hover,.navlinks a:hover{color:#07593f}.
 .reading-list li a{flex:1 1 220px;min-width:0}
 .reading-list__remove{flex:0 0 auto}
 #reading-list-feedback{margin-top:10px;min-height:18px}
+.reading-list__manual-copy{display:block;width:100%;min-width:0;box-sizing:border-box;
+ min-height:110px;max-height:280px;margin:10px 0 0;padding:12px;
+ border:1px solid var(--border);border-radius:9px;background:var(--bg);
+ color:var(--text);font:13px/1.55 ui-monospace,Consolas,monospace;
+ overflow:auto;resize:vertical}
+.reading-list__manual-copy[hidden]{display:none}
+.reading-list__manual-copy:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 @media(max-width:580px){.reading-list__actions{flex-direction:column}
  .reading-list__actions>button{width:100%}.reading-list__remove{width:100%}}
 @media(prefers-color-scheme:light){.reading-list__actions>button:hover,.reading-list__remove:hover{color:#fff}}
