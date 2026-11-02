@@ -249,7 +249,7 @@ test('copy filtered link is explicit, accessible and gracefully handles denied c
  assert.match(denied.shareStatus.textContent,/Clipboard unavailable/);
  const missing=setUp({query:'?topic=security',clipboard:'none'});
  await missing.share.listeners.click();
- assert.match(missing.shareStatus.textContent,/address bar/);
+ assert.match(missing.shareStatus.textContent,/manual copying/);
 });
 
 test('copy denied clipboard exposes selectable canonical URL',async()=>{
