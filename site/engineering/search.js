@@ -32,14 +32,42 @@
 
   // Optional same-origin, read-only static index. No query or private draft
   // is transmitted; the request URL is always exactly ./search-index.json.
-  // On invalid/unavailable index, ordinary title/summary search still works.
+  // A failed/oversized index never hides the server-rendered article cards.
+  const INDEX_MAX_BYTES=512000,INDEX_MAX_CHUNKS=512;
+  const readIndex=async response=>{
+    if(!response?.ok || !response.body?.getReader)
+      throw new TypeError('Static search index unavailable');
+    const length=response.headers?.get?.('content-length');
+    if(length && /^\d+$/.test(length) && Number(length)>INDEX_MAX_BYTES)
+      throw new RangeError('Static search index too large');
+    const reader=response.body.getReader();
+    const chunks=[];
+    let size=0,count=0;
+    try{
+      for(;;){
+        const {done,value}=await reader.read();
+        if(done)break;
+        if(!ArrayBuffer.isView(value) || value.BYTES_PER_ELEMENT!==1 ||
+           ++count>INDEX_MAX_CHUNKS || size+value.byteLength>INDEX_MAX_BYTES){
+          await reader.cancel().catch(()=>{});
+          throw new RangeError('Static search index stream exceeds budget');
+        }
+        size+=value.byteLength;
+        chunks.push(value);
+      }
+    }finally{reader.releaseLock();}
+    const bytes=new Uint8Array(size);
+    let offset=0;
+    for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.byteLength;}
+    return JSON.parse(new TextDecoder('utf-8',{fatal:true,ignoreBOM:true}).decode(bytes));
+  };
   const loadIndex=async()=>{
     if(typeof fetch!=='function')return;
     try{
       const response=await fetch('./search-index.json',
-        {credentials:'omit',referrerPolicy:'no-referrer',cache:'default'});
-      if(!response.ok)throw Error('Static search index unavailable');
-      const data=await response.json();
+        {credentials:'omit',redirect:'error',referrerPolicy:'no-referrer',
+          cache:'default',signal:AbortSignal.timeout(8000)});
+      const data=await readIndex(response);
       if(data?.version!==1||!Array.isArray(data.articles)||
          data.articles.length!==entries.length)
         throw Error('Unexpected static search index');
