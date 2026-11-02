@@ -1,5 +1,14 @@
 # 24GOTOP public deployment — verification log
 
+## 2 November 2026 — strengthened Pages verification (source implementation, delivery pending)
+
+The public Pages deploy verifier now checks the complete UTF-8 response from five fixed critical routes against the same public source checkout used to construct the Pages artifact, **in addition to** the exact commit + workflow-run release receipt. Previously it checked stable markers; old cached assets with the same marker could pass a superficial route check. On actual GitHub-hosted workflow success it publishes an Actions job summary linking the exact deployed SHA and workflow ID.
+
+**Evidence boundary:** this section documents a source/test improvement; it does not retroactively verify the current live CDN. Recent public main commits after the historical 31 October Pages proof still require an independently observed, successful *push-triggered* Pages job for their exact SHA. GitHub PR CI alone and a source merge are not deployment evidence. Keep the earlier 31 October successful HTTP audit as historical evidence of that earlier release only.
+
+To check the newest delivery, open [Pages workflow runs](https://github.com/rf24kja/24GO.top/actions/workflows/pages.yml), find the **main push** run for the latest public commit, and verify its final `Verify CDN actually serves this exact Pages workflow release` step is green. Open the job **Summary** for the five exact source-content matches and compare its SHA to the current main. If the Pages job did not run or verification failed, do not claim the new code is live; investigate Pages/DNS/cache and retry only after identifying the cause.
+
+
 **Maintainer record, updated 2026-10-31.** This log distinguishes code merges, GitHub Actions output, owner observations and independent external checks. It is not an uptime guarantee.
 
 | Area | What is confirmed | Evidence / verification boundary |
