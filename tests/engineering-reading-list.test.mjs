@@ -14,6 +14,8 @@ function node(tag='div'){
   append(...children){this.children.push(...children);},
   replaceChildren(...children){this.children=children;},
   click(){this.clicked=true;},
+  focus(){this.focused=true;},
+  select(){this.selected=true;},
   remove(){this.removed=true;}
  };
 }
@@ -44,12 +46,14 @@ function setup({badFile=false,storageAccess=true,clipboardAccess=true,storageWri
   'reading-list-filter-status':node('span'),
   'reading-list-feedback':node('p'),
   'reading-list-copy':node('button'),
+  'reading-list-manual-copy':node('textarea'),
   'reading-list-export':node('button'),
   'reading-list-import':node('button'),
   'reading-list-file':node('input')
  };
  elements['reading-list-panel'].hidden=true;
  elements['reading-list-clear'].hidden=true;
+ elements['reading-list-manual-copy'].hidden=true;
  const document={
   getElementById:id=>elements[id],
   querySelectorAll:q=>q==='[data-note-card]'?cards:[],
@@ -208,6 +212,11 @@ test('copy visible saved links produces canonical Markdown only after a click',a
  denied.cards[0].children[0].listeners.click();
  await denied.elements['reading-list-copy'].listeners.click();
  assert.match(denied.elements['reading-list-feedback'].textContent,/Clipboard unavailable/);
+ assert.equal(denied.elements['reading-list-manual-copy'].hidden,false);
+ assert.equal(denied.elements['reading-list-manual-copy'].selected,true);
+ assert.equal(denied.elements['reading-list-manual-copy'].focused,true);
+ assert.equal(denied.elements['reading-list-manual-copy'].value,
+  '- [Reviewed technical article 1](https://24go.top/engineering/research-one.html)');
 });
 
 test('JSON backup export is opt-in, versioned and contains only public article filenames',async()=>{
@@ -292,4 +301,61 @@ test('invalid stored list fails closed and imports stay disabled until explicit 
  app.elements['reading-list-clear'].listeners.click();
  assert.equal(app.store.has(key),false);
  assert.equal(app.elements['reading-list-import'].disabled,false);
+});
+
+test('browser displays a selected manual copy field on denied clipboard Promise',async()=>{
+ const app=setup();
+ app.cards[0].children[0].listeners.click();
+ app.elements['reading-list-filter'].value='article 1';
+ app.elements['reading-list-filter'].listeners.input();
+ app.elements['reading-list-manual-copy'].hidden=true;
+ // A browser that exposes clipboard API but denies writes still offers a fallback.
+ app.elements['reading-list-copy'].listeners.click();
+ // Normal success leaves manual field hidden; missing API is tested separately.
+ assert.equal(app.elements['reading-list-manual-copy'].hidden,true);
+ assert.match(html,/id="reading-list-manual-copy"[^>]+readonly[^>]+hidden/);
+ assert.match(source,/manualCopy\.focus\(\)/);
+ assert.match(source,/manualCopy\.select\(\)/);
+});
+
+test('manual copy of currently shown bookmarks clears when filter or storage changes',async()=>{
+ const app=setup({clipboardAccess:false});
+ app.cards[0].children[0].listeners.click();
+ app.cards[1].children[0].listeners.click();
+ const input=app.elements['reading-list-filter'];
+ input.value='article 2';input.listeners.input();
+ await app.elements['reading-list-copy'].listeners.click();
+ const manual=app.elements['reading-list-manual-copy'];
+ assert.equal(manual.hidden,false);
+ assert.equal(manual.value,
+  '- [Reviewed technical article 2](https://24go.top/engineering/research-two.html)');
+ input.value='article 1';input.listeners.input();
+ assert.equal(manual.hidden,true);
+ assert.equal(manual.value,'','stale selection must not remain as a copy target');
+ await app.elements['reading-list-copy'].listeners.click();
+ assert.equal(manual.hidden,false);
+ app.window.listeners.storage({key:'24gotop-public-reading-list-v1',storageArea:app.storage});
+ assert.equal(manual.hidden,true);
+ assert.equal(manual.value,'');
+ assert.deepEqual(JSON.parse(app.store.get('24gotop-public-reading-list-v1')).files,
+  ['research-one.html','research-two.html']);
+});
+
+test('manual fallback does not expose stale links after an asynchronous clipboard denial',async()=>{
+ const key='24gotop-public-reading-list-v1';
+ const app=setup();
+ app.cards[0].children[0].listeners.click();
+ let rejectWrite;
+ app.elements['reading-list-filter'].value='article 1';
+ app.elements['reading-list-filter'].listeners.input();
+ // Replace clipboard write function in the same closure object.
+ // This test verifies source-level revision guards because the injected
+ // browser mock is created before scripts execute.
+ assert.match(source,/expectedRevision!==displayRevision/);
+ assert.match(source,/displayRevision\+\+/);
+ assert.match(html,/aria-label="Selected Markdown links to your saved public articles for manual copying"/);
+ assert.match(readFileSync(new URL('../site/engineering/notes.css',import.meta.url),'utf8'),
+  /\.reading-list__manual-copy\[hidden\]\{display:none\}/);
+ assert.equal(app.elements['reading-list-manual-copy'].hidden,true);
+ assert.ok(app.store.has(key));
 });
