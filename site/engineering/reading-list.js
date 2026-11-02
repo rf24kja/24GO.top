@@ -52,12 +52,14 @@
   return files.filter(file=>!needle||
     approved.get(file).title.normalize('NFC').toLocaleLowerCase().includes(needle));
  };
+ let displayRevision=0;
  const mark=message=>{feedback.textContent=message;};
  const clearManual=()=>{
   manualCopy.hidden=true;
   manualCopy.value='';
  };
  const render=()=>{
+  displayRevision++;
   // Never show an obsolete export after another tab or the filter changes.
   clearManual();
   let files=[],invalid=false;
@@ -136,7 +138,11 @@
   clearManual();
   const markdown=files.map(file=>
    '- ['+cleanTitle(approved.get(file).title)+'](https://24go.top/engineering/'+file+')').join('\n');
+  const expectedRevision=displayRevision;
   const offerManualCopy=()=>{
+   // If a filter or another tab changed the selection while clipboard
+   // permission was pending, do not expose stale links as current.
+   if(expectedRevision!==displayRevision)return;
    manualCopy.value=markdown;
    manualCopy.hidden=false;
    manualCopy.focus();
@@ -146,7 +152,8 @@
   if(!navigator.clipboard?.writeText){offerManualCopy();return;}
   try{
    await navigator.clipboard.writeText(markdown);
-   mark(files.length+' saved link(s) copied as Markdown.');
+   if(expectedRevision===displayRevision)
+    mark(files.length+' saved link(s) copied as Markdown.');
   }catch{offerManualCopy();}
  });
  exportButton.addEventListener('click',()=>{
