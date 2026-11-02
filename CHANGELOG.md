@@ -1,5 +1,12 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-02 — One-click code example copying in public engineering articles
+
+- Add accessible **Copy code** buttons beside bounded, already published `pre > code` examples on source-reviewed canonical engineering articles. They copy the literal snippet as plaintext; markup-like text remains inert. The source `pre`, `code` and article prose are not rewritten, so examples remain legible with JavaScript disabled.
+- Reuse the existing clipboard handling and selectable manual fallback for denied permissions, with visible status feedback. Limit enhancement to at most 20 blocks per article and 8,192 characters per snippet; ignore empty/oversized samples.
+- Add tests for exact snippet integrity, denied clipboard fallback, size limits, keyboard focus styling and hidden controls in print. No API, hosted article publication, new storage, third-party requests, credentials or private code. Rollback: revert this static public PR.
+
+
 ## 2026-11-02 — Transparent article search fallback and one-click retry
 
 - Make the public Engineering article search honest about its **full-text index status**. Previously, a network or malformed-index failure silently reduced search to card titles and summaries while the interface continued to claim full article-body search. The new accessible live-status message distinguishes loading, full-text ready and title/summary-only fallback.
