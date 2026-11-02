@@ -42,7 +42,7 @@ export function safeSourceUrl(input) {
 
 
 /** Prepare a native textarea edit without rendering, saving or executing content. */
-export function formatDraftSelection(value,start,end,action){
+export function formatDraftSelection(value,start,end,action,sourceUrl=''){
  if(typeof value!=='string'||value.length>12000||
     !Number.isSafeInteger(start)||!Number.isSafeInteger(end)||
     start<0||end<start||end>value.length)throw new TypeError('Invalid article selection');
@@ -60,7 +60,15 @@ export function formatDraftSelection(value,start,end,action){
    if(selected.length>200||/[\[\]\r\n]/.test(selected))
      throw new TypeError('Select up to 200 characters of a single line');
    content ||= 'documentation';
-   const target='https://example.org';
+   // Prefer the explicitly entered Original source, never an unvalidated
+   // link from selection text. The old editable example remains when blank.
+   const validated=sourceUrl===''?'':safeSourceUrl(sourceUrl);
+   if(validated===null)throw new TypeError('Invalid original source URL');
+   const target=validated
+     ? validated.replace(/\(/g,'%28').replace(/\)/g,'%29')
+     : 'https://example.org';
+   // Preview renders only bounded, balanced inline citations.
+   if(target.length>1500)throw new TypeError('Citation URL exceeds preview limit');
    replacement='['+content+']('+target+')';
    innerOffset=content.length+3;
  }else if(action==='heading'){
@@ -95,6 +103,12 @@ export function formatDraftSelection(value,start,end,action){
    return {replacement,selectionStart,selectionEnd:selectionStart+content.length};
  }
  if(action==='link'){
+   if(sourceUrl!==''){
+     // A real source URL should not be selected for accidental overwrite.
+     // For an empty selection, highlight the editable label instead.
+     const at=start+(selected?replacement.length:1);
+     return {replacement,selectionStart:at,selectionEnd:at+(selected?0:content.length)};
+   }
    const selectionStart=start+innerOffset;
    return {replacement,selectionStart,selectionEnd:selectionStart+'https://example.org'.length};
  }
