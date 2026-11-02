@@ -1,5 +1,13 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-02 — Exact-source GitHub Pages delivery proof
+
+- Harden the PUBLIC GitHub Pages post-deploy verification: after matching the run-specific `release.json` receipt, compare **all decoded source text**, byte-for-byte equivalent UTF-8, for five fixed essential HTTPS routes (home, Draft Lab HTML and JS, Engineering archive HTML and search JS) against the **exact checked-out commit**. The previous stable-marker-only checks could pass when a cached old asset retained an unchanged marker; stale source now fails closed even if the marker is still present.
+- Keep existing strict HTTPS origin, no redirects, cache-busting run ID, byte/chunk/time budgets, no credentials and no user-controlled URLs. Do not add extra CDN round trips or exceed the existing smoke verification timeout by duplicating probes.
+- On verified success, produce a short GitHub Actions job summary with deployed SHA, Pages run URL, same-SHA release receipt, and 5/5 exact static route matches. No summary claiming success on a failed check. This proves only the five static assets at test time, **not** hosted publishing, ongoing availability, sign-in, search-engine indexing or production Core.
+- Regression tests cover full checked-out-source parity, correct exact match, stale content retaining the marker, invalid expectation data, and complete validated summary. Rollback: revert this public CI/verification PR; no DNS, secrets, backend, DB, user data, pricing or provider settings changed.
+
+
 ## 2026-11-02 — Copy public article search results without Clipboard API
 
 - Fix both **Copy filtered link** and **Copy matching article links** in the static Engineering archive when the browser denies or does not expose Clipboard API. After an explicit reader action, a read-only, keyboard-selectable text field displays the same canonical public URL or multiline Markdown links for manual copying. Successful native clipboard copy leaves this field hidden.
