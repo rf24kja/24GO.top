@@ -121,8 +121,8 @@ test('Pages deployment workflow verifies the exact successful deployment runner 
  const verifier=yaml.indexOf('run: node scripts/verify-pages-delivery.mjs');
  assert.ok(deploy>0&&verifier>deploy,
   'CDN verification must happen after the GitHub Pages deploy action');
- assert.match(yaml,/EXPECTED_PAGES_SHA: \\$\\{\\{ github\\.sha \\}\\}/);
- assert.match(yaml,/EXPECTED_PAGES_RUN_ID: \\$\\{\\{ github\\.run_id \\}\\}/);
+ assert.match(yaml,/EXPECTED_PAGES_SHA: \$\{\{ github\.sha \}\}/);
+ assert.match(yaml,/EXPECTED_PAGES_RUN_ID: \$\{\{ github\.run_id \}\}/);
  assert.match(yaml,/node-version: '22'/);
- assert.match(yaml,/paths:[\\s\\S]*?site\\/\\*\\*/);
+ assert.match(yaml,/paths:[\s\S]*?site\/\*\*/);
 });
