@@ -19,6 +19,9 @@ test('archive publishes 10 crawlable articles, discoverable topic controls and a
  assert.match(html,/<label for="engineering-filter">Find a technical article<\/label>/);
  assert.match(html,/aria-controls="engineering-list"/);
  assert.match(html,/id="engineering-search-status" role="status" aria-live="polite"/);
+ assert.match(html,/id="engineering-index-status" role="status" aria-live="polite"/);
+ assert.match(html,/id="engineering-index-retry" hidden/);
+ assert.match(style,/\.note-search__index-state/);
  assert.match(html,/id="engineering-no-results" hidden/);
  assert.match(html,/type="button" id="engineering-reset" hidden/);
  assert.match(html,/id="engineering-share" hidden/);
@@ -52,6 +55,9 @@ function setUp({missing=false,badTopic=false,query='',clipboard='ok',index='none
   reset={hidden:true,focused:false,addEventListener(name,fn){listeners['reset-'+name]=fn;}};
  const share={hidden:true,listeners:{},addEventListener(name,fn){this.listeners[name]=fn;}};
  const shareStatus={textContent:''};
+ const indexStatus={textContent:''};
+ const retryIndex={hidden:true,disabled:false,listeners:{},
+  addEventListener(name,fn){this.listeners[name]=fn;}};
  const copyResults={hidden:true,listeners:{},addEventListener(name,fn){this.listeners[name]=fn;}};
  const form={hidden:true,addEventListener(name,fn){listeners['form-'+name]=fn;}};
  const input={value:'',focused:false,addEventListener(name,fn){listeners[name]=fn;},
@@ -72,7 +78,9 @@ function setUp({missing=false,badTopic=false,query='',clipboard='ok',index='none
    'engineering-filter':input,'engineering-search-status':status,
    'engineering-no-results':empty,'engineering-reset':reset,
    'engineering-share':share,'engineering-share-status':shareStatus,
-   'engineering-copy-results':copyResults})[id];}
+   'engineering-copy-results':copyResults,
+   'engineering-index-status':indexStatus,
+   'engineering-index-retry':retryIndex})[id];}
  };
  const copied=[];
  const location={href:'https://24go.top/engineering/'+query};
@@ -92,6 +100,7 @@ function setUp({missing=false,badTopic=false,query='',clipboard='ok',index='none
  const indexFetch=async(url,options)=>{
   fetchCalls.push({url,options});
   if(index==='fail')throw Error('offline');
+  if(index==='recover'&&fetchCalls.length===1)throw Error('temporary outage');
   if(index==='badUtf8')return new Response(new Uint8Array([
     0x7b,0x22,0x62,0x61,0x64,0x22,0x3a,0x22,0xc3,0x28,0x22,0x7d]));
   if(index==='large'){
@@ -116,7 +125,7 @@ function setUp({missing=false,badTopic=false,query='',clipboard='ok',index='none
  };
  runInNewContext(code,{document,window,navigator,URL,TextDecoder,AbortSignal,
   ...(index==='none'?{}:{fetch:indexFetch})},{timeout:1000});
- return {form,input,status,empty,reset,share,copyResults,shareStatus,cards,topics,listeners,window,location,copied,fetchCalls,
+ return {form,input,status,empty,reset,share,copyResults,shareStatus,indexStatus,retryIndex,cards,topics,listeners,window,location,copied,fetchCalls,
   clickTopic:t=>topics.find(x=>x.dataset.engineeringTopic===t).listeners.click()};
 }
 test('search works with all topics and Escape clears only query',()=>{
