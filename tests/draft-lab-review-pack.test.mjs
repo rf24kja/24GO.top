@@ -7,7 +7,8 @@ import {createEditorialReviewPack,verifyEditorialReviewPack,
  readEditorialReviewPackFile,REVIEW_PACK_KIND,MAX_REVIEW_PACK_BYTES}
  from '../site/draft-lab-review-pack.js';
 import {verifyReviewPackAtPath} from '../scripts/verify-editorial-review-pack.mjs';
-import {formatDraft} from '../site/draft-lab-logic.js';
+import {formatDraft,matchesDraftExportSnapshot,createDraftImportGate} from '../site/draft-lab-logic.js';
+import {readFileSync} from 'node:fs';
 const fence=String.fromCharCode(96).repeat(3);
 const draft={
  title:'Secure multilingual article handoff',locale:'ru',category:'guides',
@@ -86,4 +87,44 @@ test('manual CLI verifies on-disk package without logging any manuscript content
   await writeFile(path,'{"modified":true}');
   await assert.rejects(verifyReviewPackAtPath(path));
  }finally{await rm(dir,{recursive:true,force:true});}
+});
+
+test('editor clear is never an unchanged async export snapshot',()=>{
+ const before={...draft};
+ const empty={title:'',body:'',source:'',locale:'en',category:'guides'};
+ assert.equal(matchesDraftExportSnapshot(before,before),true);
+ assert.equal(matchesDraftExportSnapshot(before,empty),false,
+  'empty current editor must not authorize the old private manuscript');
+ assert.equal(matchesDraftExportSnapshot(before,{...before,body:'new text'}),false);
+ assert.equal(matchesDraftExportSnapshot(before,{...before,locale:'en'}),false);
+ assert.equal(matchesDraftExportSnapshot(before,null),false);
+ assert.equal(matchesDraftExportSnapshot(null,before),false);
+});
+
+test('pending review digest cannot export after any change, even if undone',()=>{
+ const gate=createDraftImportGate();
+ const before={...draft};
+ const first=gate.begin();
+ assert.equal(gate.canApply(first)&&matchesDraftExportSnapshot(before,{...before}),true);
+ gate.changed();
+ assert.equal(gate.canApply(first)&&matchesDraftExportSnapshot(before,{...before}),false,
+  'returning to identical content does not revive stale consent');
+ const second=gate.begin();
+ assert.equal(gate.canApply(second),true);
+ const third=gate.begin();
+ assert.equal(gate.canApply(second),false,'newer export invalidates older pending export');
+ assert.equal(gate.canApply(third),true);
+ gate.changed();
+ assert.equal(gate.canApply(third),false,'clear or programmatic import invalidates digest');
+});
+
+test('public editor invalidates pending review exports at every existing mutation path',()=>{
+ const editor=readFileSync(new URL('../site/draft-lab.js',import.meta.url),'utf8');
+ assert.match(editor,/const reviewExportGate=createDraftImportGate\(\)/);
+ assert.match(editor,/function editorChanged\(\)\{\s*importGate\.changed\(\);\s*reviewExportGate\.changed\(\)/);
+ assert.equal((editor.match(/editorChanged\(\);/g)||[]).length,7,
+  'typing, format, templates, opening, saved drafts and clear all invalidate digest');
+ assert.match(editor,/reviewExportGate\.canApply\(ticket\)/);
+ assert.match(editor,/matchesDraftExportSnapshot\(draft,currentDraft\(\)\)/);
+ assert.doesNotMatch(editor,/hasUnexportedChanges\(currentDraft\(\),draft\)/);
 });
