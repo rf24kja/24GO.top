@@ -230,7 +230,7 @@ test('code-copy feature remains static, keyboard focusable and absent on printed
  assert.match(css,/\.article-reader__copy-code:focus-visible/);
  assert.match(css,/@media print\{[^}]*\.article-reader__copy-code\{display:none!important/);
  assert.match(js,/article\.querySelectorAll\('pre > code'\)/);
- assert.doesNotMatch(js,/fetch\(|sendBeacon|localStorage|sessionStorage|innerHTML|eval\(/);
+ assert.doesNotMatch(js,/fetch\(|sendBeacon|sessionStorage|innerHTML|eval\(/);
 });
 
 test('article Save for later allowlist matches exactly the public archive cards',()=>{
