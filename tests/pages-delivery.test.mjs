@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {expectedReceipt,verifyPagesDelivery,verifyEssentialPublicPages,ESSENTIAL_PUBLIC_ROUTES} from '../scripts/verify-pages-delivery.mjs';
+import {expectedReceipt,verifyPagesDelivery,verifyEssentialPublicPages,ESSENTIAL_PUBLIC_ROUTES,loadEssentialPublicAssets} from '../scripts/verify-pages-delivery.mjs';
 
 const SHA='845531da1202f1abf9dfb414191842d714fdd7bb';
 const RUN='41396728819';
@@ -147,6 +147,74 @@ test('five actual public route contracts are checked without user-controlled URL
  });
  assert.deepEqual({...result},{verified:true,checked:5});
  assert.equal(new Set(seen).size,5);
+});
+
+test('checked-out public source is the strict exact-asset baseline for all five routes',async()=>{
+ const expected=await loadEssentialPublicAssets();
+ assert.deepEqual(Object.keys(expected),ESSENTIAL_PUBLIC_ROUTES.map(x=>x.path));
+ assert.equal(Object.isFrozen(expected),true);
+ for(const route of ESSENTIAL_PUBLIC_ROUTES){
+  assert.ok(expected[route.path].includes(route.marker));
+  assert.equal(expected[route.path],readFileSync(new URL(route.source,
+   new URL('../scripts/verify-pages-delivery.mjs',import.meta.url)),'utf8'));
+ }
+});
+
+test('post-deploy proof accepts only byte-for-byte matching public asset payloads',async()=>{
+ const expected=await loadEssentialPublicAssets();
+ const calls=[];
+ const result=await verifyEssentialPublicPages({
+  runId:RUN,attempts:1,expectedAssets:expected,
+  fetchImpl:async(url,options)=>{
+   const path=new URL(url).pathname;
+   calls.push(path);
+   assert.equal(options.redirect,'error');
+   assert.equal(options.cache,'no-store');
+   return response(expected[path]);
+  }
+ });
+ assert.deepEqual({...result},{verified:true,checked:5});
+ assert.deepEqual(calls,ESSENTIAL_PUBLIC_ROUTES.map(x=>x.path));
+});
+
+test('stale page with matching old marker fails exact-byte verification',async()=>{
+ const expected=await loadEssentialPublicAssets();
+ let calls=0;
+ await assert.rejects(verifyEssentialPublicPages({
+  runId:RUN,attempts:1,expectedAssets:expected,
+  fetchImpl:async url=>{
+   calls++;
+   const path=new URL(url).pathname;
+   const body=path==='/draft-lab.js'
+    ?expected[path].replace('reviewExportGate.canApply(ticket)',
+      'reviewExportGate.canApply(ticket) /* obsolete static script */')
+    :expected[path];
+   return response(body);
+  }
+ }),/asset unavailable or outdated: \/draft-lab\.js/);
+ assert.equal(calls,3,'stop after mismatched asset even if stable marker is present');
+});
+
+test('invalid exact-asset expectations never trigger public network calls',async()=>{
+ const expected=await loadEssentialPublicAssets();
+ let calls=0;
+ const fetchImpl=async()=>{calls++;throw Error('unexpected fetch');};
+ for(const bad of [
+  {},[],{...expected,'/unknown':'evil'},
+  {...expected,'/engineering/':'missing required heading'},
+  {...expected,'/draft-lab.js':undefined},
+  {...expected,'/draft-lab.js':'x'.repeat(65537)}
+ ])await assert.rejects(verifyEssentialPublicPages({
+  runId:RUN,expectedAssets:bad,fetchImpl
+ }),TypeError);
+ assert.equal(calls,0);
+});
+
+test('workflow command loads exact checked-out source files before CDN verification',()=>{
+ const src=readFileSync(new URL('../scripts/verify-pages-delivery.mjs',import.meta.url),'utf8');
+ assert.match(src,/const expectedAssets=await loadEssentialPublicAssets\(\)/);
+ assert.match(src,/runId:result\.runId,expectedAssets/);
+ assert.match(src,/data===expectedAssets\[entry\.path\]/);
 });
 
 test('stale critical editor asset blocks public deployment confirmation',async()=>{
