@@ -38,12 +38,13 @@ test('all real public article pages have matching visible byline, canonical meta
    assert.equal(json.author.name,'rf24kja');
   }else assert.equal(json.author.name,'24GOTOP Engineering');
   assert.match(html,/<link rel="alternate" type="application\/rss\+xml"/,file);
-  // Exactly one reviewed same-origin reader module may execute on article pages.
+  // Only the reviewed reader and consent-gated analytics entrypoint may execute.
   // Keep every other active script and all embedded remote scripts forbidden.
   const scripts=[...html.matchAll(/<script\b([^>]*)>/g)];
-  assert.equal(scripts.length,2,'one Article JSON-LD plus one first-party reader module: '+file);
+  assert.equal(scripts.length,3,'Article JSON-LD, first-party reader and consent-gated analytics: '+file);
   assert.deepEqual(scripts.map(x=>x[0]).sort(),[
     '<script type="application/ld+json">',
+    '<script src="/analytics.js" defer>',
     '<script type="module" src="./article-reader.mjs">'
   ].sort(),file);
   assert.doesNotMatch(html,/<iframe\b|sb_secret_|PUBLISH_API_KEY|service_role/i,file);

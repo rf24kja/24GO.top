@@ -20,7 +20,7 @@ test('topic reading paths are real canonical pages with reviewed, topic-matched 
   assert.match(html,/id="reading-heading"/);
   assert.match(html,/id="questions-heading"/);
   assert.match(html,/Pre-launch transparency/);
-  assert.doesNotMatch(html,/<script|noindex|AggregateRating|SearchAction/);
+  assert.doesNotMatch(html,/<script\b(?! src="\/analytics\.js" defer>)|noindex|AggregateRating|SearchAction/);
   assert.ok(archive.includes('href="./topics/'+topic+'.html"'));
   const links=[...html.matchAll(/<li><span class="topic-order">0\d<\/span><div><h3><a href="\.\.\/([^"]+)"/g)]
    .map(x=>x[1]);

@@ -54,7 +54,7 @@ test('all thirteen actual Pages documents use one coherent visual system',()=>{
   const linked=[...html.matchAll(/<link rel="stylesheet" href="([^"]+)"/g)];
   assert.ok(linked.length>=2,path+' needs page and shared CSS');
   for(const [,href] of linked){
-   const destination=resolve(folder,href);
+   const destination=href.startsWith('/')?resolve(site,'.'+href):resolve(folder,href);
    assert.ok(withinSite(destination),path+' resolves inside site');
    assert.ok(existsSync(destination),path+' missing '+href);
   }

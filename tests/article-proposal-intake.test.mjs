@@ -40,9 +40,9 @@ test('real article proposal page is a crawlable, privacy-first, human-reviewed a
  assert.match(page,/https:\/\/github\.com\/rf24kja\/24GO\.top\/issues\/new\?template=article_proposal\.yml/);
  assert.match(page,/docs\/EDITORIAL_CONTRIBUTIONS\.md/);
  assert.match(page,/existing MIT licensing context/);
- // One reviewed same-origin module is allowed only for opt-in public issue discovery.
+ // Public issue discovery and the separately consent-gated analytics loader are explicit allowlist entries.
  assert.deepEqual([...page.matchAll(/<script\b[^>]*>/gi)].map(m=>m[0]),
-  ['<script type="module" src="./contribute-board.js">']);
+  ['<script type="module" src="./contribute-board.js">','<script src="/analytics.js" defer>']);
  assert.doesNotMatch(page,/<form\b|<iframe\b|<base\b|onerror=|onclick=|fetch\s*\(/i);
  assert.match(page,/id="loadProposals"/);
  assert.doesNotMatch(page,/sb_secret_|service_role|PUBLISH_API_KEY|localStorage|tracking/i);
