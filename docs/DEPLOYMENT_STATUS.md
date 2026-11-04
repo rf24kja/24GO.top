@@ -1,5 +1,11 @@
 # 24GOTOP public deployment — verification log
 
+## 5 November 2026 — Reading Paths CDN release verification expansion (source only)
+
+The public Reading Paths builder now loads its catalog through a bounded, strict same-origin stream rather than raw `response.json()`. Source tests verify the 512 KiB/512-chunk cap, strict UTF-8/media type, no credentials, redirects or referrers, timeout and graceful fallback.
+
+The GitHub Pages postdeploy verifier now requires **eight** exact source byte matches on canonical HTTPS: home, Draft Lab HTML+JS, engineering archive+search JS, Reading Paths HTML+controller JS+catalog loader. The workflow receipt still binds the `main` SHA and Pages run ID. **Status remains source-only until the push-triggered Pages deployment and independent CDN check complete successfully for the exact merged SHA.** Do not infer live deployment from passing PR tests or source alone.
+
 ## 2 November 2026 — strengthened Pages verification (source implementation, delivery pending)
 
 The public Pages deploy verifier now checks the complete UTF-8 response from five fixed critical routes against the same public source checkout used to construct the Pages artifact, **in addition to** the exact commit + workflow-run release receipt. Previously it checked stable markers; old cached assets with the same marker could pass a superficial route check. On actual GitHub-hosted workflow success it publishes an Actions job summary linking the exact deployed SHA and workflow ID.
