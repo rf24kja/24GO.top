@@ -290,16 +290,11 @@ test('critical route config fails before any network when run ID is invalid',asy
  assert.equal(fetches,0);
 });
 
-test('all critical deployed markers exist in reviewed public static source',()=>{
- const files=new Map([
-  ['/',readFileSync(new URL('../site/index.html',import.meta.url),'utf8')],
-  ['/draft-lab.html',readFileSync(new URL('../site/draft-lab.html',import.meta.url),'utf8')],
-  ['/draft-lab.js',readFileSync(new URL('../site/draft-lab.js',import.meta.url),'utf8')],
-  ['/engineering/',readFileSync(new URL('../site/engineering/index.html',import.meta.url),'utf8')],
-  ['/engineering/search.js',readFileSync(new URL('../site/engineering/search.js',import.meta.url),'utf8')]
- ]);
+test('all critical deployed markers exist in reviewed public static source',async()=>{
+ const files=await loadEssentialPublicAssets();
+ assert.equal(Object.keys(files).length,ESSENTIAL_PUBLIC_ROUTES.length);
  for(const {path,marker} of ESSENTIAL_PUBLIC_ROUTES){
-  assert.ok(files.get(path).includes(marker),
+  assert.ok(files[path]?.includes(marker),
    'critical public marker must exist in the deployed static artifact: '+path);
  }
 });
