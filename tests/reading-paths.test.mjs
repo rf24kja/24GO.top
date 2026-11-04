@@ -90,7 +90,7 @@ test('the feature is a genuine accessible, browser-only workflow linked from arc
  assert.match(html,/id="path-manual-copy"/);
  assert.match(html,/role="status"/);
  assert.match(html,/canonical" href="https:\/\/24go.top\/engineering\/reading-paths\/"/);
- assert.match(js,/fetch\('\.\.\/feed\.json'/);
+ assert.match(js,/loadStaticReadingPathCatalog\(\)/);
  assert.match(js,/encodeReadingPath\(/);
  assert.match(js,/navigator\.clipboard/);
  assert.match(js,/textContent/);

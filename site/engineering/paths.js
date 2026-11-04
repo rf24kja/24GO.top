@@ -1,6 +1,7 @@
-import {approvedReadingArticles,normalizeReadingPath,encodeReadingPath,
+import {normalizeReadingPath,encodeReadingPath,
  decodeReadingPath,changeReadingPath,readingPathMarkdown,MAX_READING_PATH_ITEMS}
  from './paths-logic.mjs';
+import {loadStaticReadingPathCatalog} from './paths-feed.mjs';
 
 // This screen consumes only the already published, same-origin JSON Feed.
 // It does not store drafts, call an author API or publish new content.
@@ -110,10 +111,7 @@ el('path-copy-markdown').addEventListener('click',()=>{
 });
 async function load(){
  try{
-  const response=await fetch('../feed.json',{credentials:'omit',cache:'no-store',
-   headers:{accept:'application/feed+json, application/json'}});
-  if(!response.ok)throw Error('catalog_unavailable');
-  approved=approvedReadingArticles(await response.json());
+  approved=await loadStaticReadingPathCatalog();
   if(window.location.hash){
    try{
     const shared=decodeReadingPath(window.location.hash,approved);

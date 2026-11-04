@@ -70,10 +70,13 @@ export const ESSENTIAL_PUBLIC_ROUTES=Object.freeze([
  Object.freeze({path:'/draft-lab.html',marker:'id="postTitle"',source:'../site/draft-lab.html'}),
  Object.freeze({path:'/draft-lab.js',marker:'reviewExportGate.canApply(ticket)',source:'../site/draft-lab.js'}),
  Object.freeze({path:'/engineering/',marker:'<h1>Engineering notes</h1>',source:'../site/engineering/index.html'}),
- Object.freeze({path:'/engineering/search.js',marker:'INDEX_MAX_BYTES=512000',source:'../site/engineering/search.js'})
+ Object.freeze({path:'/engineering/search.js',marker:'INDEX_MAX_BYTES=512000',source:'../site/engineering/search.js'}),
+ Object.freeze({path:'/engineering/reading-paths/',marker:'Build a reading path.',source:'../site/engineering/reading-paths/index.html'}),
+ Object.freeze({path:'/engineering/paths.js',marker:'loadStaticReadingPathCatalog',source:'../site/engineering/paths.js'}),
+ Object.freeze({path:'/engineering/paths-feed.mjs',marker:'MAX_FEED_BYTES=512*1024',source:'../site/engineering/paths-feed.mjs'})
 ]);
 
-// Check the COMPLETE five deployed assets against the checked-out public
+// Check the COMPLETE eight deployed assets against the checked-out public
 // commit, not just a stable marker left over in an older CDN-cached file.
 // Paths are source-authored fixed allowlist entries, never request inputs.
 export async function loadEssentialPublicAssets(){
@@ -152,7 +155,7 @@ export async function verifyEssentialPublicPages({
 }
 
 // This is written to GitHub's Actions job summary ONLY after exact-SHA receipt
-// and all five byte-for-byte public CDN checks pass. It is an audit record,
+// and all eight byte-for-byte public CDN checks pass. It is an audit record,
 // not a guarantee of continuous uptime, indexing or hosted publishing.
 export function formatPagesEvidenceSummary(sha,runId,checked){
  expectedReceipt(sha,runId);
@@ -163,7 +166,7 @@ export function formatPagesEvidenceSummary(sha,runId,checked){
   '- Deployed commit: [`'+sha+'`]('+repo+'/commit/'+sha+')\n'+
   '- GitHub Pages run: [`'+runId+'`]('+repo+'/actions/runs/'+runId+')\n'+
   '- External HTTPS provenance: **exact commit + workflow receipt**\n'+
-  '- Five essential live routes: **5/5 exact source-content matches**\n'+
+  '- Eight essential live routes: **8/8 exact source-content matches**\n'+
   '- Scope: PUBLIC static assets only, not accounts, publishing, user data or uptime.\n';
 }
 

@@ -1,5 +1,12 @@
 # 24GOTOP — Public Change Log
 
+## 2026-11-05 — Safe bounded Reading Paths catalog ingestion (PUBLIC OSS)
+
+- Fixed the existing public Reading Paths builder's unbounded `fetch('../feed.json').json()` operation. A stalled/oversized/misdirected CDN response could previously stall the catalog UI or allocate unbounded browser memory. No live provider failure or data leak is alleged.
+- New `site/engineering/paths-feed.mjs` reads only the fixed same-origin public JSON Feed, with `credentials:'omit'`, no redirects, no referrer, no-store, an 8-second deadline, validated JSON media type, a streaming 512 KiB/512-chunk cap, strict UTF-8 decoding and the existing canonical reviewed-article validator.
+- The existing Reading Paths UI keeps the same authored links, local-only state and graceful no-catalog fallback. Added tests for valid static corpus, wrong MIME, redirects, invalid JSON/UTF-8, oversized headers and streaming bodies, and provider failures. Public CI now syntax-checks the new module.
+- Extended the GitHub Pages **post-deployment exact-byte source verification** from five to eight critical routes, including the real Reading Paths page, its controller and its new JSON Feed loader. A green test/PR alone does not claim the CDN serves this revision. No application account, paid AI, draft upload, backend, login, domain or hosting configuration changed.
+
 ## 2026-11-02 — Create and share real technical learning paths
 
 - Add a new public, mobile-first Reading Paths builder at /engineering/reading-paths/. Visitors can choose up to ten existing original engineering articles, filter the catalog, arrange the reading order, name their path and share the selected collection via a URL fragment or a Markdown list.
