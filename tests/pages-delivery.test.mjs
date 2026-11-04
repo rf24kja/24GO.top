@@ -129,7 +129,7 @@ test('Pages deployment workflow verifies the exact successful deployment runner 
  assert.match(yaml,/paths:[\s\S]*?site\/\*\*/);
 });
 
-test('five actual public route contracts are checked without user-controlled URLs',async()=>{
+test('eight actual public route contracts are checked without user-controlled URLs',async()=>{
  const seen=[];
  const result=await verifyEssentialPublicPages({
   runId:RUN,attempts:1,
@@ -145,11 +145,11 @@ test('five actual public route contracts are checked without user-controlled URL
    return response('static header '+route.marker+' static footer');
   }
  });
- assert.deepEqual({...result},{verified:true,checked:5});
- assert.equal(new Set(seen).size,5);
+ assert.deepEqual({...result},{verified:true,checked:8});
+ assert.equal(new Set(seen).size,8);
 });
 
-test('checked-out public source is the strict exact-asset baseline for all five routes',async()=>{
+test('checked-out public source is the strict exact-asset baseline for all eight routes',async()=>{
  const expected=await loadEssentialPublicAssets();
  assert.deepEqual(Object.keys(expected),ESSENTIAL_PUBLIC_ROUTES.map(x=>x.path));
  assert.equal(Object.isFrozen(expected),true);
@@ -173,7 +173,7 @@ test('post-deploy proof accepts only byte-for-byte matching public asset payload
    return response(expected[path]);
   }
  });
- assert.deepEqual({...result},{verified:true,checked:5});
+ assert.deepEqual({...result},{verified:true,checked:8});
  assert.deepEqual(calls,ESSENTIAL_PUBLIC_ROUTES.map(x=>x.path));
 });
 
@@ -211,13 +211,13 @@ test('invalid exact-asset expectations never trigger public network calls',async
 });
 
 test('successful Pages check exposes trustworthy exact-match evidence in job summary',()=>{
- const report=formatPagesEvidenceSummary(SHA,RUN,5);
+ const report=formatPagesEvidenceSummary(SHA,RUN,8);
  assert.match(report,/Verified static 24GOTOP Pages delivery/);
  assert.ok(report.includes('/commit/'+SHA));
  assert.ok(report.includes('/actions/runs/'+RUN));
- assert.match(report,/5\/5 exact source-content matches/);
+ assert.match(report,/8\/8 exact source-content matches/);
  assert.match(report,/PUBLIC static assets only/);
- for(const options of [[SHA,RUN,4],['main',RUN,5],[SHA,'bad',5]])
+ for(const options of [[SHA,RUN,4],['main',RUN,8],[SHA,'bad',8]])
   assert.throws(()=>formatPagesEvidenceSummary(...options),TypeError);
 });
 
