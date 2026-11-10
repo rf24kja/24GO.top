@@ -79,3 +79,15 @@ test('all real canonical routes have reviewed nonempty static source assets',asy
   assert.ok(file.size>0&&file.size<=512*1024,'out-of-budget source '+route);
  }
 });
+
+test('independent CDN audit checks layout CSS, not merely HTML routes',()=>{
+ const css=[
+  '/landing.css','/localized.css','/interior.css','/draft-lab.css',
+  '/contribute.css','/progress.css','/engineering/notes.css','/engineering/paths.css'
+ ];
+ for(const route of css){
+  assert.ok(FIXED_ROUTES.includes(route),'missing exact public CSS audit route: '+route);
+  assert.ok(sourcePath(route).pathname.endsWith('/site'+route));
+ }
+ assert.equal(new Set(css).size,css.length);
+});
