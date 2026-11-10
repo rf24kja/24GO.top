@@ -1,3 +1,8 @@
+## Unreleased — race-safe browser vault backup restoration
+
+- Reject outdated asynchronous backup reads if another JSON file is selected, the vault changes in this/another tab, or a newer restore has completed. A pending older backup cannot open a stale confirmation, write an obsolete backup or clear the latest file picker.
+- Preserve strict UTF-8, size limits, manual consent and the vault's empty-library-only atomic restore; no drafts are auto-saved, uploaded or transmitted. Add targeted regression checks.
+
 ## Unreleased — live mobile author-navigation verification
 
 - Extend the existing post-Pages HTTPS smoke test to check the deployed Draft Lab editor-to-preview/return links, keyboard focus target, 44px mobile CSS, localized navigation labels and IME-safe export guard.
