@@ -1,6 +1,5 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFile} from 'node:fs/promises';
 import {FIXED_ROUTES,sourcePath,sitemapRoutes,releaseRoutes,verifyPublicStatic} from '../scripts/verify-public-static.mjs';
 const SAMPLE='<?xml version="1.0"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+
  ['/','/ru/','/th/','/es/','/fr/','/de/','/pt/','/zh/','/engineering/','/engineering/x.html']
