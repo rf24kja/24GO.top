@@ -117,7 +117,12 @@ function exerciseEditor(){
  return {title,titleCleared,body,bodyCleared,source,draft:$('postBody').value,
   locale:$('uiLocale').value,storage:localStorage.length,
   width:document.documentElement.clientWidth,
-  scroll:Math.max(document.documentElement.scrollWidth,document.body.scrollWidth)};
+  scroll:Math.max(document.documentElement.scrollWidth,document.body.scrollWidth),
+  offenders:[...document.body.querySelectorAll('*')].map(el=>{
+   const r=el.getBoundingClientRect();
+   return {tag:el.tagName.toLowerCase(),className:typeof el.className==='string'?el.className:'',
+    id:el.id,left:Math.round(r.left),right:Math.round(r.right)};
+  }).filter(x=>x.right>document.documentElement.clientWidth+1&&x.left<document.documentElement.clientWidth).slice(0,15)};
 }
 function switchLanguage(locale){
  const $=id=>document.getElementById(id);
