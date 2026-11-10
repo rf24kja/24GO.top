@@ -131,15 +131,23 @@ function currentDraft() {
 
 const validatedFields=Object.freeze({title,body,locale,category,source});
 const validationLabels=Object.freeze({title:'invalidTitle',body:'invalidBody',locale:'invalidLocale',category:'invalidCategory',source:'invalidSource'});
+const validationErrors=Object.freeze({title:field('postTitleError'),body:field('postBodyError'),locale:field('postLocaleError'),category:field('postCategoryError'),source:field('postSourceError')});
 function clearFieldError(node){
   node.removeAttribute('aria-invalid');
   node.removeAttribute('aria-describedby');
+  node.removeAttribute('aria-errormessage');
+  const key=Object.keys(validatedFields).find(key=>validatedFields[key]===node);
+  if(key){validationErrors[key].hidden=true;validationErrors[key].textContent='';}
 }
 function clearFieldErrors(){for(const node of Object.values(validatedFields))clearFieldError(node);}
 function updateValidationNotice(){
   const failed=Object.keys(validatedFields).find(
     key=>validatedFields[key].getAttribute('aria-invalid')==='true');
   // Locale changes and unrelated field edits must not hide an active error.
+  for(const key of Object.keys(validatedFields)){
+    if(validatedFields[key].getAttribute('aria-invalid')==='true')
+      validationErrors[key].textContent=ui(validationLabels[key]);
+  }
   message(failed ? ui(validationLabels[failed]) : '',Boolean(failed));
 }
 
@@ -376,8 +384,12 @@ function readyToExport() {
   const invalid=invalidDraftField(currentDraft());
   if(!invalid)return true;
   const control=validatedFields[invalid];
+  const error=validationErrors[invalid];
+  error.textContent=ui(validationLabels[invalid]);
+  error.hidden=false;
   control.setAttribute('aria-invalid','true');
-  control.setAttribute('aria-describedby','formStatus');
+  control.setAttribute('aria-describedby',error.id);
+  control.setAttribute('aria-errormessage',error.id);
   message(ui(validationLabels[invalid]),true);
   control.focus();
   return false;

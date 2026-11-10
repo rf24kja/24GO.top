@@ -1,3 +1,10 @@
+## Unreleased — accessible Draft Lab validation and localized mobile overflow
+
+- Display the exact translated validation error directly next to each invalid Draft Lab title, article body, language, category or source field. Link invalid controls to their visible messages with `aria-invalid`, `aria-describedby` and `aria-errormessage`, preserve keyboard focus and hide stale messages when fields are corrected. Keep the draft content and explicit local-only export/privacy boundary unchanged.
+- Fix document-wide horizontal scrolling from unwrappable panel badges and long translated hero headings at 320px without clipping navigation or content.
+- Add a real Chromium Draft Lab UI regression run to **PUBLIC** CI with no external network or automatic browser-storage writes. Verify three invalid fields, eight interface languages, and 320px screen bounds in the live JS app; retain the existing 98 responsive source-layout checks.
+- This does not complete physical-device screen-reader testing or the five-volunteer Draft Lab pilot (Issues #7 and #29); neither private 24GO.online nor its GitHub Actions is used.
+
 ## Unreleased — deterministic public editorial sync command
 
 - Consolidate the trusted reviewed static article/RSS/catalogue inputs into a local-only, fail-closed generator for JSON Feed, full-text index, sitemap, related-reading HTML and the reader's approved saved-article list. Compute the complete plan before any local write; never send author drafts to servers or publish automatically.

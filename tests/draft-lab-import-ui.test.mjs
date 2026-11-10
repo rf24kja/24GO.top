@@ -34,6 +34,7 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
   reviewPackGenerator=createEditorialReviewPack}={}) {
   const ids = [
     'postTitle','postBody','postLocale','postCategory','postSource','formStatus',
+    'postTitleError','postBodyError','postLocaleError','postCategoryError','postSourceError',
     'previewHeading','previewBody','previewLocale','previewCategory','bodyCount','bodyWordCount','draftReadingTime','guidanceScore',
     'guideTitleState','guideBodyState','guideHeadingsState','guideStepsState','guideSourceState','guideCompleteState','draftTemplate','insertTemplate',
     'revisionCapture','revisionCompare','revisionCopy','revisionClear','revisionStatus','revisionFields','revisionLines',
@@ -62,6 +63,7 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
     };
     return [id,el];
   }));
+  for(const key of ['postTitleError','postBodyError','postLocaleError','postCategoryError','postSourceError'])elements[key].hidden=true;
   elements.uiLocale.value='en';
   elements.postLocale.value='en';
   elements.postCategory.value='guides';
@@ -460,7 +462,10 @@ test('exact failing field receives keyboard focus and accessible error, not unre
   await el.copyDraft.listeners.click();
   assert.equal(el[id].focused,true,id+' receives focus');
   assert.equal(el[id].attributes['aria-invalid'],'true',id+' invalid state');
-  assert.equal(el[id].attributes['aria-describedby'],'formStatus',id+' screen reader help');
+  assert.equal(el[id].attributes['aria-describedby'],id+'Error',id+' screen reader help');
+  assert.equal(el[id].attributes['aria-errormessage'],id+'Error');
+  assert.equal(el[id+'Error'].hidden,false);
+  assert.equal(el[id+'Error'].textContent,uiText('en',key));
   assert.equal(el.formStatus.textContent,uiText('en',key));
   assert.equal(el.formStatus.dataset.error,'true');
   for(const [other] of cases)if(other!==id)
@@ -469,6 +474,8 @@ test('exact failing field receives keyboard focus and accessible error, not unre
   el[id].listeners.input();
   assert.equal(el[id].attributes['aria-invalid'],undefined,'corrected error clears immediately');
   assert.equal(el[id].attributes['aria-describedby'],undefined,'corrected association cleared');
+  assert.equal(el[id].attributes['aria-errormessage'],undefined);
+  assert.equal(el[id+'Error'].hidden,true);
  }
 });
 
@@ -768,11 +775,14 @@ test('language switch translates an active field error without modifying the dra
  await el.copyDraft.listeners.click();
  assert.equal(el.formStatus.textContent,uiText('en','invalidLocale'));
  assert.equal(el.postLocale.attributes['aria-invalid'],'true');
- assert.equal(el.postLocale.attributes['aria-describedby'],'formStatus');
+ assert.equal(el.postLocale.attributes['aria-describedby'],'postLocaleError');
+ assert.equal(el.postLocaleError.textContent,uiText('en','invalidLocale'));
 
  el.uiLocale.value='ru';el.uiLocale.listeners.change();
  assert.equal(el.postLocale.value,'unknown','the author content locale is unchanged');
  assert.equal(el.formStatus.textContent,uiText('ru','invalidLocale'));
+ assert.equal(el.postLocaleError.textContent,uiText('ru','invalidLocale'));
+ assert.equal(el.postLocaleError.hidden,false);
  assert.equal(el.formStatus.dataset.error,'true');
  assert.equal(el.postLocale.attributes['aria-invalid'],'true');
 
@@ -783,6 +793,7 @@ test('language switch translates an active field error without modifying the dra
  el.postLocale.value='en';el.postLocale.listeners.change();
  assert.equal(el.postLocale.attributes['aria-invalid'],undefined);
  assert.equal(el.postLocale.attributes['aria-describedby'],undefined);
+ assert.equal(el.postLocaleError.hidden,true);
  assert.equal(el.formStatus.textContent,'');
  assert.equal(el.formStatus.dataset.error,'false');
 });

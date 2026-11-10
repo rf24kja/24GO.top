@@ -35,6 +35,12 @@ The production identity and moderation architecture is not ready yet. This proto
 - Capture the top three requested improvements with exact actionable acceptance criteria.
 - Rework interface if two or more testers encounter the same blocking problem.
 
+## Field validation accessibility and real browser regression
+
+The public editor now keeps each validation error adjacent to the responsible title, body, language, category or source field. Invalid controls receive `aria-invalid`, `aria-describedby` and `aria-errormessage` pointing to the visible error. Focus moves to the incorrect field without discarding a draft. Editing the field removes its stale error, and changing the interface language re-translates any still-active error without modifying the manuscript.
+
+Public CI executes `npm run draft:a11y` with a fresh Chromium profile and a loopback-only static server, using the actual shipped JS and CSS rather than replacing scripts with fixtures. It checks three invalid fields, focused and linked error announcements, correction behavior, eight interface languages and 320px document width. It forbids unexpected external network requests and unexpected localStorage writes during validation. This is automated browser evidence, not a claim of manual VoiceOver/TalkBack testing or five independent author interviews; those remain separate acceptance gates in Issue #29. This test never reaches the private hosted Core.
+
 ## Engineering verification
 
 - Node `--check` validation for the Draft Lab JS.
