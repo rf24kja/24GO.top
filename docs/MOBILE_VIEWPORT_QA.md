@@ -10,6 +10,12 @@ The updated `site/landing.css` places tablet header navigation in a three-column
 
 A second isolated Chromium reproduction with the new header rules passed at 320, 360, 375, 390, 430, 520, 760, 768, 900, 1024, 1120 and 1200 CSS px (document width never exceeded viewport). This tests the header reproduction, **not** an independently captured production-device screenshot or every rendered page. Source regression tests cover eight localized homepages and important interior routes.
 
+## Automated full-page browser regression (PUBLIC only)
+
+The public CI now runs `npm run mobile:check` using the Chromium installed on the PUBLIC runner (or `CHROME_BIN` locally). This source-rendered smoke test loads actual checked-in page HTML with all same-repository CSS inlined, strips executable scripts, and measures `documentElement.scrollWidth` and `body.scrollWidth` against the browser's layout viewport. It covers all eight translated homepages plus the editor, proposal page, progress, archive, Reading Paths and a technical article, across 320/360/375/390/430/768/1024px. Any document-level rightward overflow fails CI with up to five offending elements. Intentional inner code/table scrolling is not itself a failure.
+
+This is browser layout evidence, but **not** proof of current CDN bytes, functioning JavaScript interactions, real-device Safari/iOS behavior, or human accessibility testing. The separate PUBLIC Pages release audit still verifies the actual static CSS delivered via canonical HTTPS.
+
 ## Real browser and postdeploy acceptance
 
 On the final PUBLIC Pages deployment, inspect in browser responsive mode and on at least one real phone:
