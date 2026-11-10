@@ -3,7 +3,7 @@
 // No network request, browser write keys, or private hosted Core integration.
 import {stat,readFile,writeFile} from 'node:fs/promises';
 import {pathToFileURL} from 'node:url';
-import {parseDraftFile,MAX_DRAFT_FILE_BYTES,safeSourceUrl} from '../site/draft-lab-logic.js';
+import {parseDraftFile,formatDraft,MAX_DRAFT_FILE_BYTES,safeSourceUrl} from '../site/draft-lab-logic.js';
 import {parsePreviewBlocks,safeCitationUrl} from '../site/draft-lab-preview.js';
 
 const INLINE=/\[(?<label>[^\[\]\n]{1,200})\]\((?<url>https?:\/\/[^<>\s()\\]{1,1500})\)|(?<code>\x60(?<codeText>[^\x60\n]{1,1000})\x60)|(?<bold>\*\*(?<boldText>[^*\n]{1,1000})\*\*)|(?<italic>\*(?<italicText>[^*\n]{1,1000})\*)/g;
@@ -53,7 +53,7 @@ function renderBlock(block){
 }
 export function renderEditorialReviewPreview(draft){
  // Revalidate via the exact exported Draft Lab grammar, even for direct callers.
- const validated=parseDraftFile((awaitingFormatDraft())(draft));
+ const validated=parseDraftFile(formatDraft(draft));
  const title=escapeReviewHtml(validated.title.trim());
  const source=safeSourceUrl(validated.source);
  const sourceLine=source?'<p class="source">Original source: <a href="'+escapeReviewHtml(source)+'" rel="noopener noreferrer ugc" target="_blank" referrerpolicy="no-referrer">'+escapeReviewHtml(source)+'</a></p>':'';
@@ -69,10 +69,6 @@ export function renderEditorialReviewPreview(draft){
  '</head><body><aside class="notice" role="note"><strong>UNPUBLISHED — LOCAL REVIEW COPY.</strong> This file is not a public 24GOTOP article. A real publication requires source, rights, metadata, human editorial approval and a verified HTTPS release.</aside>'+
  '<main><article><h1>'+title+'</h1><p class="meta">Language: '+validated.locale+' · Category: '+validated.category+'</p>'+sourceLine+markup+'</article></main></body></html>\n';
 }
-// Lazy import-free bridge: use the existing public export validator directly.
-import {formatDraft} from '../site/draft-lab-logic.js';
-function awaitingFormatDraft(){return formatDraft;}
-
 export async function makeReviewFile(inputPath,outputPath){
  if(typeof inputPath!=='string'||!inputPath.endsWith('.md')||
     typeof outputPath!=='string'||!outputPath.endsWith('.html'))
