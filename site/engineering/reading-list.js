@@ -6,6 +6,7 @@
  const MAX=50,MAX_BACKUP_BYTES=16384;
  const id=name=>document.getElementById(name);
  const panel=id('reading-list-panel'),list=id('reading-list-items');
+ const heading=id('reading-list-heading');
  const count=id('reading-list-status'),feedback=id('reading-list-feedback');
  const clear=id('reading-list-clear'),filter=id('reading-list-filter');
  const filterStatus=id('reading-list-filter-status');
@@ -13,7 +14,7 @@
  const manualCopy=id('reading-list-manual-copy');
  const importButton=id('reading-list-import'),fileInput=id('reading-list-file');
  const cards=[...document.querySelectorAll('[data-note-card]')];
- if([panel,list,count,feedback,clear,filter,filterStatus,copy,manualCopy,
+ if([panel,list,heading,count,feedback,clear,filter,filterStatus,copy,manualCopy,
     exportButton,importButton,fileInput].some(x=>!x)||!cards.length)return;
  let storage;
  try{storage=window.localStorage;}catch{return;}
@@ -87,9 +88,15 @@
    remove.textContent='Remove';
    remove.setAttribute('aria-label','Remove '+approved.get(file).title+' from reading list');
    remove.addEventListener('click',()=>{
+    // Rebuilding the list replaces the activated button. Transfer focus to
+    // the next visible remove action, or its stable heading when empty.
+    const previousIndex=visible.indexOf(file);
     try{save(current().filter(saved=>saved!==file));mark('Saved link removed.');}
     catch{mark('Browser storage unavailable; no changes saved.');}
     render();
+    const remaining=list.querySelectorAll('.reading-list__remove');
+    const next=remaining[Math.min(previousIndex,remaining.length-1)];
+    (next||heading).focus();
    });
    li.append(link,remove);
    list.append(li);
@@ -130,6 +137,8 @@
   try{storage.removeItem(KEY);mark('Saved links cleared.');}
   catch{mark('Could not clear browser storage.');}
   render();
+  // Clear hides this control; restore focus to a stable, readable landmark.
+  heading.focus();
  });
  copy.addEventListener('click',async()=>{
   let files;

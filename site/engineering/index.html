@@ -48,13 +48,13 @@
 <div class="note-search__share-row"><button type="button" class="note-search__reset" id="engineering-index-retry" hidden>Retry full-text search</button><button type="button" class="note-search__share" id="engineering-share" hidden>Copy filtered link</button><button type="button" class="note-search__share note-search__export" id="engineering-copy-results" hidden>Copy matching article links</button><span class="note-search__help" id="engineering-search-help">Find articles containing all search words, in any order, across titles, summaries and published text. Press Enter to focus the first matching article, or Escape to clear the query. Press / outside a form or link to focus search. Filters update the shareable URL without an account.</span><span class="note-search__feedback" id="engineering-share-status" role="status" aria-live="polite" aria-atomic="true"></span><textarea id="engineering-manual-copy" class="note-search__manual-copy" rows="4" readonly spellcheck="false" aria-label="Selected public article links for manual copying when clipboard access is unavailable" hidden></textarea></div>
 </form>
 <section id="reading-list-panel" class="reading-list" aria-labelledby="reading-list-heading" hidden>
-<h3 id="reading-list-heading">Saved articles · on this device</h3>
+<h3 id="reading-list-heading" tabindex="-1">Saved articles · on this device</h3>
 <p>Save published articles for later with the button on each card. Only public article links are stored in this browser, unencrypted. Clearing browser data removes them. Nothing is sent to 24GOTOP.</p>
 <p id="reading-list-status" role="status" aria-live="polite">Saved public articles: 0</p>
 <div class="reading-list__search">
 <label for="reading-list-filter">Find in saved articles</label>
 <input id="reading-list-filter" type="search" maxlength="80" autocomplete="off" placeholder="Filter saved titles">
-<span id="reading-list-filter-status" class="reading-list__filter-status">0 saved links shown.</span>
+<span id="reading-list-filter-status" class="reading-list__filter-status" role="status" aria-live="polite" aria-atomic="true">0 saved links shown.</span>
 </div>
 <ul id="reading-list-items"></ul>
 <div class="reading-list__actions">

@@ -13,6 +13,11 @@ function node(tag='div'){
   addEventListener(name,fn){this.listeners[name]=fn;},
   append(...children){this.children.push(...children);},
   replaceChildren(...children){this.children=children;},
+  querySelectorAll(selector){
+   if(selector!=='.reading-list__remove')return [];
+   return this.children.flatMap(item=>(item.children||[])
+    .filter(child=>child.className==='reading-list__remove'));
+  },
   click(){this.clicked=true;},
   focus(){this.focused=true;},
   select(){this.selected=true;},
@@ -39,6 +44,7 @@ function setup({badFile=false,storageAccess=true,clipboardAccess=true,storageWri
  });
  const elements={
   'reading-list-panel':node('section'),
+  'reading-list-heading':node('h3'),
   'reading-list-items':node('ul'),
   'reading-list-status':node('p'),
   'reading-list-clear':node('button'),
@@ -99,6 +105,8 @@ function setup({badFile=false,storageAccess=true,clipboardAccess=true,storageWri
 test('published archive exposes a progressive, explicitly local reader list',()=>{
  assert.match(html,/src="\.\/reading-list\.js" defer/);
  assert.match(html,/id="reading-list-panel"[^>]+hidden/);
+ assert.match(html,/id="reading-list-heading" tabindex="-1"/);
+ assert.match(html,/id="reading-list-filter-status"[^>]*role="status" aria-live="polite"/);
  assert.match(html,/Only public article links are stored in this browser, unencrypted/);
  assert.doesNotMatch(source,/innerHTML|fetch\(|XMLHttpRequest|sendBeacon|eval\(/);
  const app=setup();
@@ -159,6 +167,8 @@ test('clearing saved links requires confirmation; denied clearing preserves them
  assert.equal(app.store.has('24gotop-public-reading-list-v1'),false);
  assert.equal(clear.hidden,true);
  assert.equal(app.elements['reading-list-items'].children.length,0);
+ assert.equal(app.elements['reading-list-heading'].focused,true,
+  'clearing a hidden button must restore keyboard focus to the list heading');
 });
 test('no browser storage or unexpected article filename leaves static reading intact',()=>{
  for(const opts of [{storageAccess:false},{badFile:true}]){
@@ -202,6 +212,11 @@ test('row removal keeps remaining bookmarks without clearing the entire reading 
   ['research-two.html']);
  assert.equal(app.elements['reading-list-items'].children.length,1);
  assert.equal(app.cards[0].children[0].attributes['aria-pressed'],'false');
+ assert.equal(app.elements['reading-list-items'].children[0].children[1].focused,true,
+  'keyboard focus moves to next saved entry after removing a row');
+ app.elements['reading-list-items'].children[0].children[1].listeners.click();
+ assert.equal(app.elements['reading-list-heading'].focused,true,
+  'last removal moves focus to stable section heading');
 });
 
 test('copy visible saved links produces canonical Markdown only after a click',async()=>{
