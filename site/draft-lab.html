@@ -103,6 +103,7 @@
           </div>
           <p class="tiny" data-ui="reviewPackPrivacy">Review packages contain your entire manuscript in plaintext, plus a checksum. Only share with an intended reviewer after checking for secrets. No automatic upload; a checksum is not proof of identity or acceptance.</p>
           <p class="tiny" id="saveShortcutHelp" data-ui="shortcutHelp">Keyboard shortcut: Ctrl+S (Windows/Linux) or ⌘+S (Mac) downloads a local .md file; it does not autosave or publish.</p>
+          <p class="draft-jump-row"><a class="draft-jump-link" href="#preview-title" data-ui="jumpPreview">Jump to reader preview ↓</a></p>
           <p id="draftSafety" class="tiny" data-ui="safetyEmpty">No draft content yet. Draft Lab never automatically saves your work.</p>
           <p id="formStatus" role="status" aria-live="polite"></p>
         </form>
@@ -131,7 +132,8 @@
         </aside>
       </section>
       <section class="panel preview" aria-labelledby="preview-title">
-        <div class="panel-head"><div><span class="eyebrow" data-ui="review">02 / REVIEW</span><h2 id="preview-title" data-ui="reader">Reader preview</h2></div><span class="pill" data-ui="local">Local only</span></div>
+        <div class="panel-head"><div><span class="eyebrow" data-ui="review">02 / REVIEW</span><h2 id="preview-title" tabindex="-1" data-ui="reader">Reader preview</h2></div><span class="pill" data-ui="local">Local only</span></div>
+        <p class="draft-jump-row draft-jump-row--back"><a class="draft-jump-link" href="#postBody" data-ui="jumpEditor">Back to article editor ↑</a></p>
         <div class="preview-meta"><span id="previewCategory">Guides</span><span id="previewLocale">EN</span><span data-ui="notPublished">Draft · Not published</span></div>
         <h3 id="previewHeading" data-ui="emptyTitle">Your title will appear here.</h3>
         <section class="draft-guidance" aria-labelledby="guidanceHeading">

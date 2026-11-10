@@ -132,3 +132,13 @@ test('offline review handoff is translated in every UI language and declares ful
  assert.match(code,/readEditorialReviewPackFile/);
  assert.doesNotMatch(code,/sendBeacon|XMLHttpRequest/);
 });
+
+test('author-review jump navigation is translated in all eight languages',()=>{
+ for(const locale of UI_LOCALES){
+  assert.ok(uiText(locale,'jumpPreview').length>8,locale);
+  assert.ok(uiText(locale,'jumpEditor').length>8,locale);
+  assert.notEqual(uiText(locale,'jumpPreview'),uiText(locale,'jumpEditor'));
+ }
+ assert.match(html,/href="#preview-title" data-ui="jumpPreview"/);
+ assert.match(html,/href="#postBody" data-ui="jumpEditor"/);
+});

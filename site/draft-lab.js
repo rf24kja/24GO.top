@@ -651,8 +651,8 @@ field('reviewPackFile').addEventListener('change',async event=>{
 // On this local editor only, Ctrl/Cmd+S explicitly downloads the Markdown
 // export. Do not intercept other browser shortcuts, and never imply autosave.
 document.addEventListener('keydown',event=>{
-  if(event.key?.toLowerCase()!=='s'||event.repeat||
-     event.altKey||event.shiftKey||(!event.ctrlKey&&!event.metaKey))return;
+  if(event.key?.toLowerCase()!=='s'||event.isComposing||event.repeat||
+     event.altKey||event.shiftKey||Boolean(event.ctrlKey)===Boolean(event.metaKey))return;
   event.preventDefault();
   field('downloadDraft').click();
 });

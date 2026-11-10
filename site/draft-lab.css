@@ -184,3 +184,14 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
  .revision-review__actions button{width:100%;flex:auto}}
 @media(prefers-contrast:more){.revision-review,.revision-review__lines{border-width:2px}}
 
+
+/* Mobile and keyboard author-review navigation; native fragments, no script or upload. */
+.draft-jump-row{margin:14px 0 7px;min-width:0}
+.draft-jump-row--back{margin:0 0 18px}
+.draft-jump-link{display:inline-flex;align-items:center;min-height:44px;padding:8px 13px;border:1px solid var(--input-border);border-radius:9px;color:var(--accent);text-decoration:none;font-size:14px;font-weight:750;line-height:1.4;overflow-wrap:anywhere}
+.draft-jump-link:hover{background:var(--secondary-hover)}
+.draft-jump-link:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+#preview-title{scroll-margin-top:116px}
+#postBody{scroll-margin-top:116px}
+@media(max-width:550px){.draft-jump-row{margin-top:16px}.draft-jump-link{width:100%;justify-content:center;text-align:center}}
+@media(prefers-contrast:more){.draft-jump-link{border-width:2px}}
