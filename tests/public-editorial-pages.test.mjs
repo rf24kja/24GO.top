@@ -27,7 +27,7 @@ function responder(assets,{mutate=null,status=200,record=[]}={}){
 test('editorial source catalog has fixed distinct paths and byte budgets',async()=>{
  const assets=await loadEditorialPublicAssets();
  assert.equal(EDITORIAL_PUBLIC_ROUTES.length,9);
- assert.equal(new Set(EDITORIAL_PUBLIC_ROUTES.map(v=>v.path)).size,8);
+ assert.equal(new Set(EDITORIAL_PUBLIC_ROUTES.map(v=>v.path)).size,9);
  assert.deepEqual(Object.keys(assets),EDITORIAL_PUBLIC_ROUTES.map(v=>v.path));
  for(const entry of EDITORIAL_PUBLIC_ROUTES){
   assert.match(entry.path,/^\/[a-z0-9/.\-]+$/);

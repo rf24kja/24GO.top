@@ -8,7 +8,7 @@ const read=name=>readFileSync(fileURLToPath(
   new URL('../site/engineering/'+name,import.meta.url)),'utf8');
 const html=read('index.html'),style=read('notes.css'),code=read('search.js');
 const topicNames=['all','security','writing','infrastructure','publishing','discovery'];
-const cardTopics=['security','writing','infrastructure','security','security','discovery',
+const cardTopics=['security','security','writing','infrastructure','security','security','discovery',
   'infrastructure','publishing','writing','publishing'];
 
 test('archive publishes 11 crawlable articles, discoverable topic controls and a JS-only enhancement',()=>{

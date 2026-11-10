@@ -18,10 +18,10 @@
 <p class="lead">A public article proposal board needs to remain responsive when an upstream API returns an oversized body, malformed JSON or unexpectedly shaped issue data. Our public 24GOTOP contribution interface reads GitHub issues without granting browser visitors a publishing credential. In <a href="https://github.com/rf24kja/24GO.top/pull/179">PR #179</a> we hardened that read boundary and protected already loaded proposals from a failed refresh.</p>
 <p class="details">By <a href="https://github.com/rf24kja/24GO.top">24GOTOP Engineering</a> · <time datetime="2026-11-10">10 November 2026</time> · <a href="https://github.com/rf24kja/24GO.top/pull/179">Merged source PR #179</a></p>
 <div class="note" role="note"><strong>Scope:</strong> this is a static, read-only browser interface over public GitHub issue metadata. It is not authenticated user publication, a moderated PostgreSQL service or a hosted agent API. Search-engine indexing and real-user uptake are not claimed.</div>
-<h2 id="read-budgets">Why read-only responses still need budgets</h2>
+<h2 id="section-read-budgets">Why read-only responses still need budgets</h2>
 <p>A network response can have a successful status without containing safe, bounded JSON. Directly calling <code>response.json()</code> delegates memory and parsing work to a body with no application-controlled byte ceiling. Oversized responses can consume unnecessary memory, and malformed data can leave the interface in an inconsistent state. This is an availability and data-integrity problem even though the endpoint exposes public information.</p>
 <p>We use a 256 KiB limit on GitHub issue metadata response bodies, enforced as bytes arrive. A size check performed only after <code>response.json()</code> would be too late. HTTP status and media type checks, deadlines, unexpected redirects and response shape validation are separate concerns, and all matter in a robust client. Exact behavior should be checked in the <a href="https://github.com/rf24kja/24GO.top/blob/main/site/contribute-board.js">maintained source</a> and its <a href="https://github.com/rf24kja/24GO.top/blob/main/tests/contribute-board.test.mjs">regression suite</a>.</p>
-<h2 id="bounded-streaming-example">A minimal bounded-streaming pattern</h2>
+<h2 id="section-bounded-streaming-example">A minimal bounded-streaming pattern</h2>
 <p>The illustrative function below rejects a response after its accepted byte budget is exceeded. It is not a drop-in production fetch client: a deadline, redirect restrictions and schema checks must surround it. Importantly, it reads bytes before decoding and parsing the final JSON document.</p>
 <pre><code>async function parseLimitedJson(response, maxBytes = 256 * 1024) {
   if (!response.ok || !response.body) throw Error('Unavailable');
@@ -48,10 +48,10 @@
   return JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
 }</code></pre>
 <p>After parsing, treat data as untrusted: validate the array length and each accepted issue field. Render external issue titles as literal text rather than injecting them as HTML. When a transport or validation error occurs, show an explicit error state instead of pretending that an empty result proves the repository has no proposals.</p>
-<h2 id="preserving-good-results">Do not discard valid results on refresh failure</h2>
+<h2 id="section-preserving-good-results">Do not discard valid results on refresh failure</h2>
 <p>The second principle in <a href="https://github.com/rf24kja/24GO.top/pull/179">the reviewed patch</a> is to preserve previously loaded and validated proposal cards if the next network request fails. A failed refresh should not turn a populated browsing experience into an empty page. On the first-ever request, however, there may be no valid cached result, so the interface should show an error and offer retry rather than falsely claim there are zero matching proposals.</p>
 <p>This distinction makes the browser interface useful under real mobile-network faults. It also keeps stale data and unavailable data from being misrepresented as verified fresh results. Public GitHub issue metadata can change, and this interface does not guarantee that a previously observed issue remains open at any later moment.</p>
-<h2 id="how-to-test">Negative cases worth testing</h2>
+<h2 id="section-how-to-test">Negative cases worth testing</h2>
 <ul>
 <li>Valid public JSON succeeds under the size ceiling and yields only accepted fields.</li>
 <li>Unexpected JSON types, malformed UTF-8, malformed JSON and response errors fail closed.</li>
@@ -60,7 +60,7 @@
 <li>Issue titles and summaries are treated as external data, not executable markup.</li>
 </ul>
 <p>These are useful boundaries for a GitHub issues integration, not evidence that the entire publishing product is launched. The public <a href="https://github.com/rf24kja/24GO.top/pull/179">review and implementation</a> establish the source changes, while a separate <a href="./verify-github-pages-deploy-not-just-ci.html">GitHub Pages delivery verification</a> is required to show that the released static client reaches readers over HTTPS. CI success alone does not establish CDN delivery.</p>
-<h2 id="limits-and-next-steps">The broader editorial boundary</h2>
+<h2 id="section-limits-and-next-steps">The broader editorial boundary</h2>
 <p>24GOTOP's hosted author-to-publication path remains a distinct product milestone requiring authenticated identities, auditability, moderation, PostgreSQL transactions, RLS and tested recovery. The public proposal board neither bypasses those gates nor claims to solve them. Its useful job today is to safely display external suggestions and let contributors participate through GitHub.</p>
 <p>We welcome review of this exact implementation and its edge cases, without collecting draft content or private credentials. Developers can also <a href="../draft-lab.html">experiment with the browser-only Draft Lab</a> while that hosted workflow is not available.</p>
 <p class="source">Primary evidence: <a href="https://github.com/rf24kja/24GO.top/pull/179">merged PR #179</a>, public <a href="https://github.com/rf24kja/24GO.top/blob/main/site/contribute-board.js">source</a>, and <a href="https://github.com/rf24kja/24GO.top/blob/main/tests/contribute-board.test.mjs">tests</a>. No invented users, traffic or deployment claims.</p>

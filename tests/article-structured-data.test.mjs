@@ -23,7 +23,7 @@ test('all real public article pages have matching visible byline, canonical meta
   assert.equal(json.publisher.name,'24GOTOP',file);
   assert.equal(json.mainEntityOfPage['@id'],canonical,file);
   assert.equal(json.inLanguage,'en',file);
-  assert.match(json.datePublished,/^2026-(?:11-(?:26|29|30|31)|11-11)T/,file);
+  assert.match(json.datePublished,/^2026-(?:10-(?:26|29|30|31)|11-10)T/,file);
   assert.ok(Number.isFinite(Date.parse(json.datePublished)),file);
   assert.ok(html.includes('content="'+json.datePublished+'"'),'date metadata: '+file);
   assert.equal(json.isAccessibleForFree,true,file);
