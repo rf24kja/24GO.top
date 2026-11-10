@@ -1,3 +1,8 @@
+## Unreleased — live mobile author-navigation verification
+
+- Extend the existing post-Pages HTTPS smoke test to check the deployed Draft Lab editor-to-preview/return links, keyboard focus target, 44px mobile CSS, localized navigation labels and IME-safe export guard.
+- These are read-only public asset checks. The script never sends draft content or claims real-device manual accessibility results.
+
 ## Unreleased — Draft Lab mobile author/preview navigation
 
 - Add two accessible native-fragment links between the author form and reader preview, with 44px touch targets, visible focus, reduced-motion-safe behavior and eight complete interface translations. This improves one-column editing without reading/writing the manuscript or adding any request.
