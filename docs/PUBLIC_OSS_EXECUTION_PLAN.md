@@ -1,6 +1,6 @@
 # 24GOTOP public OSS delivery plan — temporary public-only focus
 
-Updated: 2026-11-10. Scope: **PUBLIC rf24kja/24GO.top and https://24go.top only.**
+Updated: 2026-11-11 (Asia/Bangkok). Scope: **PUBLIC rf24kja/24GO.top and https://24go.top only.**
 
 ## Founder release/CI decision (2026-11-10)
 
@@ -32,13 +32,13 @@ Public static Pages cannot implement verified accounts, hosted writer drafts, mo
 
 ## Current verified work and next sequence
 
-1. Public PRs #177–#185 advanced metadata pagination, editorial content, safety and Draft Lab usability. Their merge alone is not proof of the newest live release.
-2. **Current public slice:** expand independent canonical HTTPS verification from fixed core/editorial assets to the complete reviewed sitemap plus fixed author/reader dependencies. Public PR CI executes new unit tests; public Pages post-deploy verification runs the read-only check.
-3. **Next:** use one genuine original article contribution through a reviewed static PR. Verify RSS, JSON Feed, full-text search, related reading, sitemap and actual canonical HTTPS after public Pages deploy.
-4. Continue public SDK/MCP, accessibility, mobile QA and real author research without fake adoption claims.
+1. **Verified public release:** PRs #187–#191 established independent source/CDN auditing, safe local review copies and 98 real Chromium layout tests. The 11 November Bangkok release in public PR #192 published the twelfth original engineering article and was verified on 49 canonical/fixed HTTPS routes, including exact CSS and metadata.
+2. **Current public slice:** consolidate the approved RSS + article HTML + archive inputs into a one-command, local-only synchronization of all derived discovery outputs and the verified reader Save-for-later manifest. The public Node/Chromium suite must stay green.
+3. **Next:** test the Draft Lab and GitHub proposal path with five consenting real contributors (Issue #29), then improve keyboard, screen-reader and localized mobile UX using observed findings, not invented completion statistics.
+4. Continue public read-only SDK/MCP and SEO/discovery improvements. The protected hosted-account, moderation and database publication P0 remains separately blocked by the explicit private-repository pause.
 
 ## Related issues
 
 - [#29](https://github.com/rf24kja/24GO.top/issues/29): independent Draft Lab usability pilot
 - [#94](https://github.com/rf24kja/24GO.top/issues/94): branch protection
-- [#186](https://github.com/rf24kja/24GO.top/issues/186): superseded no-Actions migration proposal, replaced by this founder clarification
+- [#186](https://github.com/rf24kja/24GO.top/issues/186): completed public-only release-audit hardening (Actions permitted in PUBLIC, prohibited in PRIVATE)

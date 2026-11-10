@@ -35,7 +35,7 @@ A complete PR should contain:
 1. Original article HTML with one verified self-canonical URL, visible original language, useful answer, specific technical example, constraints and source attribution. No fabricated authors, statistics, AI citations, benchmarks or external testimonial.
 2. Safe rendering: article HTML is treated as untrusted human-authored input during review; no executable scripts, arbitrary third-party iframes, secrets or unchecked customer data.
 3. Accurate page title, meta/OG description and `Article` JSON-LD matching the visible byline/date. Do not invent a publication date; use the actual accepted publication event.
-4. Explicit index link, sitemap location and synchronized `site/engineering/feed.xml` and `site/engineering/feed.json`. Run `npm run feed:write` only after metadata and source content have been reviewed, then `npm run feed:check`.
+4. Explicit index card, reviewed RSS metadata, reading-path context and rights clearance. After manually reviewing the article HTML, RSS and archive card, run `npm run editorial:write` to regenerate JSON Feed, full-text search, sitemap, related-reading links and the reader's approved Save-for-later list. Inspect every resulting diff, then run `npm run editorial:check` and the full public tests. This command never creates a public article, changes author identity or deploys anything.
 5. Tests relevant to the new page and `npm run check` plus `npm test` (Node 22+); no assumption that a green pull-request check means the public site is deployed.
 6. A distinct, genuinely translated page with correct canonical/hreflang **only** when a translated full article exists. Language-specific homepages by themselves do not justify translation links for an English-only article.
 
