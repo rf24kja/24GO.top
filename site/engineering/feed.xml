@@ -4,6 +4,12 @@
 <link>https://24go.top/engineering/</link>
 <description>Source-backed articles about building the 24GOTOP AI-native knowledge platform. Early-stage development, not a live publishing community.</description>
 <language>en</language>
+<item><title>How to fix mobile horizontal overflow with real Chromium layout tests</title>
+<link>https://24go.top/engineering/fix-mobile-horizontal-overflow-with-chromium-tests.html</link>
+<guid isPermaLink="true">https://24go.top/engineering/fix-mobile-horizontal-overflow-with-chromium-tests.html</guid>
+<description>Trace viewport overflow to non-wrapping navigation and long localized headings, then verify 98 browser layouts and exact live CSS delivery.</description>
+<pubDate>Tue, 10 Nov 2026 17:45:00 GMT</pubDate>
+</item>
 <item><title>How to safely bound public GitHub API article proposals</title>
 <link>https://24go.top/engineering/bounded-github-api-article-proposals.html</link>
 <guid isPermaLink="true">https://24go.top/engineering/bounded-github-api-article-proposals.html</guid>

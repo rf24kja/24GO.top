@@ -1,3 +1,9 @@
+## Unreleased — source-backed mobile overflow engineering publication
+
+- Publish an original, reproducible technical case study grounded in reviewed public PRs #189–#191 and recorded Chromium/Pages runs. Explain both real document-width defects (unwrapped navigation and long localized headings), safe CSS fixes, 98 browser layout checks and exact CSS CDN verification.
+- Update the reviewed static article, catalogue, infrastructure reading path, RSS, JSON Feed, full-text search, related-reading graph, sitemap and `llms.txt`, with negative/source-backed regression tests. No fabricated community posts, search ranking or user adoption.
+- A reviewed PR, green public CI and successful canonical HTTPS delivery remain distinct release states. Hosted accounts, moderated PostgreSQL publication and private 24GO.online remain out of scope.
+
 ## Unreleased — lossless editorial proposal headline validation
 
 - Reuse exactly the same Unicode-safe 5–160-character draft title validation for local Markdown export and user-confirmed public GitHub issue proposal links. Reject lone UTF-16 surrogates, control characters and Unicode line/paragraph separators rather than allowing URL normalization to silently alter an author's headline.

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1411">
+<meta name="description" content="Trace viewport overflow to non-wrapping navigation and long localized headings, then verify 98 browser layouts and exact live CSS delivery.">
+<meta property="og:type" content="article"><meta property="og:title" content="How to fix mobile horizontal overflow with real Chromium layout tests — 24GOTOP">
+<meta property="og:description" content="Trace viewport overflow to non-wrapping navigation and long localized headings, then verify 98 browser layouts and exact live CSS delivery.">
+<meta property="og:url" content="https://24go.top/engineering/fix-mobile-horizontal-overflow-with-chromium-tests.html">
+<meta property="article:published_time" content="2026-11-10T17:45:00Z"><meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://24go.top/engineering/fix-mobile-horizontal-overflow-with-chromium-tests.html">
+<title>How to fix mobile horizontal overflow with real Chromium layout tests — 24GOTOP</title>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"How to fix mobile horizontal overflow with real Chromium layout tests","description":"Trace viewport overflow to non-wrapping navigation and long localized headings, then verify 98 browser layouts and exact live CSS delivery.","datePublished":"2026-11-10T17:45:00Z","dateModified":"2026-11-10T17:45:00Z","inLanguage":"en","author":{"@type":"Organization","name":"24GOTOP Engineering","url":"https://github.com/rf24kja/24GO.top"},"publisher":{"@type":"Organization","name":"24GOTOP"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://24go.top/engineering/fix-mobile-horizontal-overflow-with-chromium-tests.html"},"isAccessibleForFree":true}</script>
+<link rel="stylesheet" href="./notes.css"><link rel="stylesheet" href="../interior.css"><link rel="alternate" type="application/rss+xml" title="24GOTOP engineering notes" href="./feed.xml">
+<script type="module" src="./article-reader.mjs"></script><link rel="icon" type="image/svg+xml" href="/favicon.svg?v=portfolio3"><link rel="icon" href="/favicon.ico?v=portfolio3" sizes="16x16 32x32 48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180"><link rel="stylesheet" href="/analytics.css"><script src="/analytics.js" defer></script></head><body><a class="skip" href="#main-content">Skip to article content</a>
+<header class="interior-header"><nav class="wrap interior-nav" aria-label="Main navigation"><a class="interior-brand" href="../" aria-label="24GOTOP home">24GO<span>TOP</span><span class="interior-brand__dot" aria-hidden="true"></span></a><div class="interior-links"><a href="../">Home</a><a href="./">Articles</a><a href="../draft-lab.html">Draft Lab</a><a href="../progress.html">Development</a><a href="https://github.com/rf24kja/24GO.top">GitHub ↗</a></div></nav></header>
+<main class="wrap" id="main-content" tabindex="-1"><article class="article">
+<span class="eyebrow">Engineering note · 11 November 2026 · Responsive UI &amp; release QA</span>
+<h1>How to fix mobile horizontal overflow with real Chromium layout tests</h1>
+<p class="lead">A mobile site can look like it has a broken right-hand menu when the entire page is actually wider than the viewport. We reproduced this on the open 24GOTOP site, fixed the intrinsic layout constraints, and added headless Chromium checks so the same class of regression fails public CI.</p>
+<p class="details">By <a href="https://github.com/rf24kja/24GO.top">24GOTOP Engineering</a> · <time datetime="2026-11-11">11 November 2026</time> · Source fixes <a href="https://github.com/rf24kja/24GO.top/pull/189">PR #189</a>, <a href="https://github.com/rf24kja/24GO.top/pull/190">PR #190</a> and <a href="https://github.com/rf24kja/24GO.top/pull/191">PR #191</a></p>
+<div class="note" role="note"><strong>Evidence boundary:</strong> the verified results below are from real automated Chromium source-layout checks and public GitHub Pages release logs. They do not prove that a human tested every physical Android or iOS device, that search engines indexed the page, or that the pre-launch site offers hosted accounts or community publication.</div>
+<h2 id="section-reproduce-overflow">Reproduce page-level overflow before choosing a fix</h2>
+<p>In the old header, six navigation links used <code>white-space:nowrap</code> in a flex row. The parent moved to a full-width second header line at narrow breakpoints, but its contents were still not allowed to wrap. In an isolated Chromium reproduction of the original header CSS, a 320 CSS-pixel viewport produced a 526-pixel-wide document; at 768 pixels, document width reached 914 pixels. The page itself could slide to the right, not just the menu.</p>
+<p>Inspect the layout viewport, not the physical device pixel count. Run this in browser DevTools on a representative page:</p>
+<pre><code>const width = document.documentElement.clientWidth;
+const page = Math.max(
+  document.documentElement.scrollWidth,
+  document.body.scrollWidth
+);
+console.log({ width, overflow: page - width });</code></pre>
+<p>Any positive difference merits investigation. A wide <code>&lt;pre&gt;</code> can be intentional if its own container scrolls horizontally; a document-wide scrollbar is not. Find the offending nodes with their bounding rectangles and inspect computed <code>min-width</code>, <code>white-space</code>, grid tracks and flex wrapping before changing overflow policy.</p>
+<h2 id="section-fix-layout-not-mask">Fix the intrinsic width, not the symptom</h2>
+<p>The public header correction uses a grid with <code>minmax(0,1fr)</code> tracks and permits the text inside each navigation item to wrap. It offers three columns at tablet widths and two columns on phones. Navigation remains in normal DOM order and all links keep a minimum 44-pixel touch target. This is different from clipping the page.</p>
+<pre><code>@media (max-width: 1120px) {
+  .site-header .header-inner &gt; nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
+    min-width: 0;
+  }
+  .site-header .header-inner &gt; nav a {
+    min-height: 44px;
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+@media (max-width: 520px) {
+  .site-header .header-inner &gt; nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}</code></pre>
+<p>The exact released selectors and responsive spacing are in <a href="https://github.com/rf24kja/24GO.top/blob/main/site/landing.css">landing.css</a>. Do not apply global <code>overflow-x:hidden</code> as a substitute: it can conceal inaccessible content, focus indicators and genuine layout regressions. A code block or wide table can scroll locally without moving the document horizontally.</p>
+<h2 id="section-localization-hidden-regression">Test localized pages independently</h2>
+<p>Fixing the English menu was not sufficient. A subsequent real Chromium run found that <a href="../de/">the German homepage</a> still widened to 418 pixels at a 320-pixel viewport. The culprit was a different mobile grid: a long localized roadmap heading increased the intrinsic width of a <code>1fr</code> track. This was caught by the public PR #191 test, not by guessing from English screenshots.</p>
+<p>The separate correction uses <code>grid-template-columns:minmax(0,1fr)</code> for that narrow track, constrains children, and uses <code>overflow-wrap:anywhere</code> on long headings. It retains the full German text; no translation is shortened just to fit a test. Similar checks matter for Thai, Russian, Portuguese and Chinese because scripts and word-breaking behavior differ.</p>
+<h2 id="section-browser-ci">Fail public CI on real browser dimensions</h2>
+<p>A static assertion that the stylesheet contains <code>flex-wrap</code> or a breakpoint does not prove the rendered document fits. We added a dependency-free Chromium DevTools Protocol smoke test using the checked-in HTML and CSS. It measures <code>scrollWidth</code> after layout for eight localized homepages and six important interior pages at seven viewport widths: 320, 360, 375, 390, 430, 768 and 1024 pixels.</p>
+<p>That produces <strong>98 layout combinations</strong>. The first run failed and identified the German page with a wider document. After the targeted change, <a href="https://github.com/rf24kja/24GO.top/actions/runs/42863517188">the public CI recorded 98 passing Chromium layouts</a>. A later <a href="https://github.com/rf24kja/24GO.top/actions/runs/42863705970">post-merge CI run</a> passed the same suite. The source and diagnostic output are available in <a href="https://github.com/rf24kja/24GO.top/blob/main/scripts/check-mobile-layout.mjs">check-mobile-layout.mjs</a>.</p>
+<pre><code># Run on a workstation with Chromium/Chrome and Node.js 22+
+CHROME_BIN=/path/to/chrome npm run mobile:check
+npm run check
+npm test</code></pre>
+<p>The smoke test measures source-rendered markup and styles. It intentionally does not assert a working authenticated session, script-powered navigation, or touch interactions in Safari. A real-device accessibility pass remains a separate acceptance gate.</p>
+<h2 id="section-prove-delivery">Prove that the corrected CSS reached HTTPS</h2>
+<p>Passing CI on source code is not proof that a content delivery network serves that revision. Public PR #190 extended the existing read-only HTTPS audit to compare eight CSS assets with the checked-out release source, not just HTML and JS. On the reviewed mobile fix, the <a href="https://github.com/rf24kja/24GO.top/actions/runs/42863705951">public GitHub Pages release</a> verified a matching commit/run receipt and 48 exact static files. Both the source-layout check and the postdeployment byte check are necessary evidence.</p>
+<p>This release verification is specific to the public static site; it never uses private <code>24GO.online</code> workflows, credentials or hosted production data. GitHub Actions are permitted only for this public repository under the current founder directive. The stronger gate demonstrates that the expected CSS was delivered at the time of the audit, not continuous uptime or search indexing.</p>
+<h2 id="section-acceptance">A reusable mobile-release checklist</h2>
+<ul>
+<li>Measure whole-document width at 320, 360, 390, 430, 768 and 1024 CSS pixels; identify the element widening the page.</li>
+<li>Check navigation labels, the longest localized headings, grids, forms, illustrations, footers and focusable elements.</li>
+<li>Keep all links keyboard-accessible with visible focus and sufficiently large touch targets; never hide clipped menu items to silence a test.</li>
+<li>Distinguish intentionally scrollable code/table containers from a page that drags sideways.</li>
+<li>Run browser layout tests, then independently verify the exact deployed CSS and canonical HTTPS route.</li>
+<li>Retest manually on physical iOS and Android, including dynamic UI and accessibility, before claiming full device coverage.</li>
+</ul>
+<p>The public repository includes a <a href="https://github.com/rf24kja/24GO.top/blob/main/docs/MOBILE_VIEWPORT_QA.md">mobile QA procedure</a>. For the more general principle of release proof, see <a href="./verify-github-pages-deploy-not-just-ci.html">how to verify a deployed GitHub Pages release</a>. The work does not turn a browser-only Draft Lab into an authenticated publishing system.</p>
+<p class="source">Primary evidence: reviewed public <a href="https://github.com/rf24kja/24GO.top/pull/189">header fix #189</a>, <a href="https://github.com/rf24kja/24GO.top/pull/190">CSS delivery proof #190</a>, <a href="https://github.com/rf24kja/24GO.top/pull/191">Chromium regression #191</a>, and their linked public CI/Pages logs. All numbers describe these runs, not invented users or traffic.</p>
+<p><a class="cta" href="./">Explore more original engineering notes ↗</a></p>
+<aside class="article-report" aria-label="Report a problem with this article">
+<strong>Help improve this article</strong><p>Found an incorrect statement, broken example or attribution issue? <a href="https://github.com/rf24kja/24GO.top/issues/new?template=article_report.yml&amp;title=Article%20report%3A%20fix-mobile-horizontal-overflow-with-chromium-tests" rel="noopener noreferrer">Report the article on GitHub ↗</a>; do not post secrets or personal data.</p><p>Use our <a href="https://github.com/rf24kja/24GO.top/blob/main/SECURITY.md">private security reporting guidance</a> for vulnerabilities.</p>
+</aside>
+</article>
+<nav class="related-reading" aria-label="Continue reading">
+  <h2>Continue reading</h2>
+  <ul>
+    <li><a href="./verify-github-pages-deploy-not-just-ci.html">How to verify a GitHub Pages deployment—not just a green CI badge</a></li>
+    <li><a href="./bounded-github-api-article-proposals.html">How to safely bound public GitHub API article proposals</a></li>
+  </ul>
+  <p><a href="./">Explore all engineering notes</a></p>
+</nav>
+</main><footer class="interior-footer"><div class="wrap">24GOTOP · Open engineering notes · <a href="./">All notes</a> · <a href="./feed.xml">RSS</a></div></footer>
+</body></html>
