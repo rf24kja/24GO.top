@@ -189,7 +189,7 @@ async function main(){
    assert(state.value===locale&&state.text===UI_STRINGS[locale].invalidSource &&
     state.visible&&state.invalid==='true'&&state.draft===result.draft,
     'Active error is not translated safely: '+locale);
-   assert(state.scroll<=state.width+1,'Localized error widens page: '+locale);
+   assert(state.scroll<=state.width+1,'Localized error widens page: '+locale+' '+JSON.stringify(state));
   }
   const cleared=await c.call(correctSource,sessionId);
   assert(cleared.hidden&&cleared.invalid===null&&cleared.aria===null,'Corrected source still invalid');
