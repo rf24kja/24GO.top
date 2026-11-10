@@ -91,14 +91,15 @@ class CDP{
   return r.result?.value;
  }
 }
-function inspectError(id){
+function exerciseEditor(){
+ function inspectError(id){
  const field=document.getElementById(id),e=document.getElementById(id+'Error');
  return {invalid:field.getAttribute('aria-invalid'),
   desc:field.getAttribute('aria-describedby'),
   msg:field.getAttribute('aria-errormessage'),
   visible:!e.hidden,text:e.textContent,focused:document.activeElement===field};
 }
-function exerciseEditor(){
+
  const $=id=>document.getElementById(id);
  const save=()=>$('downloadDraft').click();
  const set=(id,value)=>{$(id).value=value;$(id).dispatchEvent(new Event('input',{bubbles:true}));};
