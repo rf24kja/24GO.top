@@ -33,9 +33,10 @@ Public static Pages cannot implement verified accounts, hosted writer drafts, mo
 ## Current verified work and next sequence
 
 1. **Verified public release:** PRs #187–#191 established independent source/CDN auditing, safe local review copies and 98 real Chromium layout tests. The 11 November Bangkok release in public PR #192 published the twelfth original engineering article and was verified on 49 canonical/fixed HTTPS routes, including exact CSS and metadata.
-2. **Current public slice:** consolidate the approved RSS + article HTML + archive inputs into a one-command, local-only synchronization of all derived discovery outputs and the verified reader Save-for-later manifest. The public Node/Chromium suite must stay green.
-3. **Next:** test the Draft Lab and GitHub proposal path with five consenting real contributors (Issue #29), then improve keyboard, screen-reader and localized mobile UX using observed findings, not invented completion statistics.
-4. Continue public read-only SDK/MCP and SEO/discovery improvements. The protected hosted-account, moderation and database publication P0 remains separately blocked by the explicit private-repository pause.
+2. **Verified public work:** PR #193 added the local-only editorial discovery synchronization gate; PR #194 shipped translated inline Draft Lab validation and real browser mobile checks; PR #195 shipped keyboard-first reader search with 511 passing Node tests, 98 Chromium layouts, and verified public Pages delivery. None of these provides hosted registration or community publication.
+3. **Current public slice:** retain keyboard focus and live status when a reader filters or deletes optional on-device saved public article links. Continue the public Node/Chromium and source/HTTPS release gates.
+4. **Next:** recruit five consenting independent authors for the Draft Lab and GitHub proposal UX pilot (Issue #29), and perform real VoiceOver/TalkBack and mobile keyboard audits (Issue #7). Do not invent participants or mark manual device testing completed.
+5. Continue public read-only SDK/MCP and SEO/discovery improvements. The protected hosted-account, moderation and database publication P0 remains separately blocked by the explicit private-repository pause.
 
 ## Related issues
 
