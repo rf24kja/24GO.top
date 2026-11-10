@@ -4,6 +4,12 @@
 <link>https://24go.top/engineering/</link>
 <description>Source-backed articles about building the 24GOTOP AI-native knowledge platform. Early-stage development, not a live publishing community.</description>
 <language>en</language>
+<item><title>How to safely bound public GitHub API article proposals</title>
+<link>https://24go.top/engineering/bounded-github-api-article-proposals.html</link>
+<guid isPermaLink="true">https://24go.top/engineering/bounded-github-api-article-proposals.html</guid>
+<description>Use streaming limits and strict metadata validation to keep public GitHub proposal browsing resilient without erasing previously loaded articles.</description>
+<pubDate>Tue, 10 Nov 2026 11:40:00 GMT</pubDate>
+</item>
 <item><title>How to expose published technical articles to AI agents with a read-only MCP server</title>
 <link>https://24go.top/engineering/read-only-mcp-server-for-technical-articles.html</link>
 <guid isPermaLink="true">https://24go.top/engineering/read-only-mcp-server-for-technical-articles.html</guid>
