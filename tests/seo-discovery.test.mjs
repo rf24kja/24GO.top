@@ -9,6 +9,7 @@ const canonicalHost='https://24go.top';
 const sitemap=read('sitemap.xml');
 const robots=read('robots.txt');
 const articles=[
+ 'engineering/bounded-github-api-article-proposals.html',
  'engineering/multilingual-markdown-editor-without-losing-drafts.html',
  'engineering/verify-github-pages-deploy-not-just-ci.html',
  'engineering/safe-markdown-citation-links-without-xss.html',
