@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { LOCALES, CATEGORIES, safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, parseDraftFile, MAX_DRAFT_FILE_BYTES, createDraftImportGate, invalidDraftField } from '../site/draft-lab-logic.js';
+import { LOCALES, CATEGORIES, safeSourceUrl, validDraftTitle, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, parseDraftFile, MAX_DRAFT_FILE_BYTES, createDraftImportGate, invalidDraftField } from '../site/draft-lab-logic.js';
 
 const valid = {
   title:'Making a secure publishing API',
@@ -297,4 +297,12 @@ test('validation identity never depends on translated error strings',()=>{
   assert.equal(invalidDraftField(input),field);
   assert.ok(validateDraft(input).length>10);
  }
+});
+
+test('reusable headline validation stays lossless for draft and GitHub hand-off',()=>{
+ for(const title of ['Practical technical article','技术文章审核流程 🧪','Reproducible evidence 101'])
+  assert.equal(validDraftTitle(title),true);
+ for(const title of ['Short','Wrong\nheader','Corrupted\uD800','Broken\uDC00',
+   'Invisible\u2028separator','Bad\u2029paragraph','x'.repeat(161)])
+  assert.equal(validDraftTitle(title),false);
 });

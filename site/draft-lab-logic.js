@@ -131,10 +131,15 @@ const DRAFT_ERRORS=Object.freeze({
 });
 
 /** A stable validation field identity, not a language-dependent error string. */
+// A public proposal is allowed to contain just a headline. Keep its
+// lossless title rules identical to .md export, local saves and review packs.
+export function validDraftTitle(title){
+ return typeof title==='string' && title.trim().length>=5 &&
+   title.length<=160 && !/[\u0000-\u001f\u007f\u2028\u2029]/u.test(title) &&
+   !hasUnpairedSurrogate(title);
+}
 export function invalidDraftField({title,body,locale,category,source}){
- if(typeof title!=='string'||title.trim().length<5||title.length>160||
-    /[\u0000-\u001f\u007f\u2028\u2029]/u.test(title)||
-    hasUnpairedSurrogate(title))return 'title';
+ if(!validDraftTitle(title))return 'title';
  if(typeof body!=='string'||body.trim().length<20||body.length>12000||
     hasUnpairedSurrogate(body))return 'body';
  if(!LOCALES.includes(locale))return 'locale';
