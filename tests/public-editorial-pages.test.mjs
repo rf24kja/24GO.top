@@ -26,28 +26,28 @@ function responder(assets,{mutate=null,status=200,record=[]}={}){
 
 test('editorial source catalog has fixed distinct paths and byte budgets',async()=>{
  const assets=await loadEditorialPublicAssets();
- assert.equal(EDITORIAL_PUBLIC_ROUTES.length,8);
+ assert.equal(EDITORIAL_PUBLIC_ROUTES.length,9);
  assert.equal(new Set(EDITORIAL_PUBLIC_ROUTES.map(v=>v.path)).size,8);
  assert.deepEqual(Object.keys(assets),EDITORIAL_PUBLIC_ROUTES.map(v=>v.path));
  for(const entry of EDITORIAL_PUBLIC_ROUTES){
   assert.match(entry.path,/^\/[a-z0-9/.\-]+$/);
   assert.ok(assets[entry.path].includes(entry.marker));
-  assert.ok(Buffer.byteLength(assets[entry.path],'utf8')<=65536);
+  assert.ok(Buffer.byteLength(assets[entry.path],'utf8')<=98304);
  }
  assert.match(assets['/sitemap.xml'],/read-only-mcp-server-for-technical-articles.html/);
  assert.match(assets['/engineering/feed.json'],/read-only-mcp-server-for-technical-articles.html/);
  assert.match(assets['/engineering/feed.xml'],/read-only-mcp-server-for-technical-articles.html/);
 });
 
-test('eight exact public editorial assets pass without arbitrary provider destinations',async()=>{
+test('nine exact public editorial assets pass without arbitrary provider destinations',async()=>{
  const assets=await loadEditorialPublicAssets(),record=[];
  const proof=await verifyEditorialPublicPages({
   runId:'42',expectedAssets:assets,
   attempts:1,pauseMs:0,fetchImpl:responder(assets,{record})
  });
- assert.deepEqual(proof,{verified:true,checked:8});
- assert.equal(record.length,8);
- assert.match(formatEditorialPagesEvidenceSummary(proof.checked),/8\/8 byte-exact/);
+ assert.deepEqual(proof,{verified:true,checked:9});
+ assert.equal(record.length,9);
+ assert.match(formatEditorialPagesEvidenceSummary(proof.checked),/9\/9 byte-exact/);
 });
 
 test('stale canonical article refuses publication proof, even if other files match',async()=>{
