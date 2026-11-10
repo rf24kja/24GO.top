@@ -242,10 +242,26 @@
   retryIndex.addEventListener('click',()=>{
     if(indexState==='unavailable'&&!retryIndex.disabled)return loadIndex();
   });
-  form.addEventListener('submit',event=>event.preventDefault());
+  // Enter should take keyboard readers to the first visible article instead of
+  // forcing them to Tab past every remaining search and topic control.
+  form.addEventListener('submit',event=>{
+    event.preventDefault();
+    const first=entries.find(entry=>!entry.card.hidden)?.card.querySelector?.('h3 a');
+    first?.focus?.();
+  });
+  // The / shortcut is opt-in from the page background only. Never steal typing,
+  // link activation, browser shortcuts, composition or focus in other controls.
+  document.addEventListener('keydown',event=>{
+    if(event.key!=='/'||event.altKey||event.ctrlKey||event.metaKey||event.shiftKey||
+       event.isComposing||event.repeat||event.target?.isContentEditable||
+       event.target?.closest?.('input,textarea,select,button,a,[contenteditable]'))return;
+    event.preventDefault();
+    input.focus();
+  });
   input.addEventListener('input',()=>update(true));
   input.addEventListener('keydown',event=>{
     if(event.key==='Escape'&&input.value){
+      event.preventDefault?.();
       input.value='';
       update(true);
     }

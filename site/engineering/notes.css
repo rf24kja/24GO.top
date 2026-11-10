@@ -6,7 +6,7 @@ header{position:sticky;top:0;z-index:10;background:rgba(11,20,17,.9);backdrop-fi
 .card{transition:border-color .18s ease,transform .18s ease}.card:hover{border-color:rgba(116,232,178,.56)}.card[hidden]{display:none}
 .note-search[hidden],.note-search__empty[hidden]{display:none}
 .note-search__reset[hidden]{display:none}
-.note-search__reset,.note-topics button{font:inherit;font-size:13px;font-weight:700;border:1px solid var(--border);color:var(--text);background:transparent;border-radius:999px;padding:8px 13px;cursor:pointer;min-height:40px}
+.note-search__reset,.note-topics button{font:inherit;font-size:13px;font-weight:700;border:1px solid var(--border);color:var(--text);background:transparent;border-radius:999px;padding:8px 13px;cursor:pointer;min-height:44px}
 .note-search__reset:hover,.note-topics button:hover{border-color:var(--accent);color:var(--accent)}
 .note-search__reset:focus-visible,.note-topics button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 .note-topics{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:15px}

@@ -1,3 +1,10 @@
+## Unreleased — keyboard-first accessible public article search
+
+- Add `/` to focus engineering search from a noninteractive page region, without stealing active input, link, button or IME focus or browser shortcuts.
+- Pressing Enter in the search box now focuses the first visible matching article; an empty result set retains the search focus, with an accessible live zero-result count. Escape clears search text only and keeps the chosen topic.
+- Connect visible keyboard instructions to search with `aria-describedby` and size topic/reset touch targets to at least 44px.
+- Extend real PUBLIC Chromium E2E to the fully scripted engineering archive at 320px, including source-only JSON search, keyboard shortcuts and empty states. No private backend, user draft transmission or production analytics.
+
 ## Unreleased — accessible Draft Lab validation and localized mobile overflow
 
 - Display the exact translated validation error directly next to each invalid Draft Lab title, article body, language, category or source field. Link invalid controls to their visible messages with `aria-invalid`, `aria-describedby` and `aria-errormessage`, preserve keyboard focus and hide stale messages when fields are corrected. Keep the draft content and explicit local-only export/privacy boundary unchanged.
