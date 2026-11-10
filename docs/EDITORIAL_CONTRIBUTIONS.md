@@ -63,10 +63,19 @@ validated positive issue numbers rather than provider-supplied URLs.
 On GitHub rate limiting/unavailability it leaves the page usable and
 offers the ordinary GitHub navigation link.
 
-The API covers a bounded latest-issue window, not a comprehensive
-search or a guarantee that every historical proposal is displayed. No
-real submitted issue was fabricated to populate the board. Public
-Pages and HTTPS release verification are required after merging.
+The public proposal board uses explicitly requested pagination: up to
+four pages of sixty recent GitHub issues, with at most twelve validated
+proposal cards. It never follows a GitHub-provided Link URL, never
+transmits the manuscript, and does not claim to index all historical
+proposals. No submitted issue was fabricated to populate the board.
+
+A reviewed article change is not public until the **Pages workflow**
+finishes and a read-only external HTTPS check matches the exact build.
+The public Pages verification checks its commit/workflow receipt, eight
+core assets and eight editorial assets byte-for-byte (including public
+proposal handling, the static article, RSS, JSON Feed, search index and
+sitemap). A successful check does not establish hosted author accounts,
+moderation or publication permissions.
 
 ## Optional local manuscript integrity handoff
 

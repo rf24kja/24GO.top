@@ -76,6 +76,29 @@ export const ESSENTIAL_PUBLIC_ROUTES=Object.freeze([
  Object.freeze({path:'/engineering/paths-feed.mjs',marker:'MAX_FEED_BYTES=512*1024',source:'../site/engineering/paths-feed.mjs'})
 ]);
 
+// Source-pinned proof of the PUBLIC editorial submission-to-reading path.
+// The eight core routes above stay unchanged for backwards-compatible tests.
+// These URLs are all fixed; no visitor-supplied path or provider Link is followed.
+export const EDITORIAL_PUBLIC_ROUTES=Object.freeze([
+ Object.freeze({path:'/contribute.html',source:'../site/contribute.html',
+  marker:'id="loadOlderProposals"'}),
+ Object.freeze({path:'/contribute-board.js',source:'../site/contribute-board.js',
+  marker:'MAX_CARDS=12,MAX_PAGES=4'}),
+ Object.freeze({path:'/draft-lab-proposal.js',source:'../site/draft-lab-proposal.js',
+  marker:'export function buildArticleProposalUrl'}),
+ Object.freeze({path:'/engineering/feed.xml',source:'../site/engineering/feed.xml',
+  marker:'<rss version="2.0">'}),
+ Object.freeze({path:'/engineering/feed.json',source:'../site/engineering/feed.json',
+  marker:'https://jsonfeed.org/version/1.1'}),
+ Object.freeze({path:'/engineering/search-index.json',
+  source:'../site/engineering/search-index.json',marker:'"articles": ['}),
+ Object.freeze({path:'/sitemap.xml',source:'../site/sitemap.xml',
+  marker:'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'}),
+ Object.freeze({path:'/engineering/read-only-mcp-server-for-technical-articles.html',
+  source:'../site/engineering/read-only-mcp-server-for-technical-articles.html',
+  marker:'<h1>How to expose published technical articles to AI agents with a read-only MCP server</h1>'})
+]);
+
 // Check the COMPLETE eight deployed assets against the checked-out public
 // commit, not just a stable marker left over in an older CDN-cached file.
 // Paths are source-authored fixed allowlist entries, never request inputs.
@@ -154,6 +177,67 @@ export async function verifyEssentialPublicPages({
  return Object.freeze({verified:true,checked:ESSENTIAL_PUBLIC_ROUTES.length});
 }
 
+// Editorial proof is separate from the eight essential routes: same strict
+// 64-KiB per-file bound, same byte-for-byte CDN requirement and a fixed list.
+export async function loadEditorialPublicAssets(){
+ const entries=await Promise.all(EDITORIAL_PUBLIC_ROUTES.map(async entry=>{
+  const text=await readFile(new URL(entry.source,import.meta.url),'utf8');
+  if(Buffer.byteLength(text,'utf8')>65536)
+   throw new RangeError('Editorial source exceeds public audit budget: '+entry.path);
+  if(!text.includes(entry.marker))
+   throw new Error('Reviewed editorial source missing marker: '+entry.path);
+  return [entry.path,text];
+ }));
+ return Object.freeze(Object.fromEntries(entries));
+}
+
+export async function verifyEditorialPublicPages({
+ runId,fetchImpl=globalThis.fetch,expectedAssets,
+ attempts=2,pauseMs=1500,wait=ms=>new Promise(resolve=>setTimeout(resolve,ms))
+}={}){
+ if(typeof runId!=='string'||!RUN.test(runId)||
+    typeof fetchImpl!=='function'||typeof wait!=='function'||
+    !Number.isSafeInteger(attempts)||attempts<1||attempts>3||
+    !Number.isSafeInteger(pauseMs)||pauseMs<0||pauseMs>5000||
+    !expectedAssets||typeof expectedAssets!=='object'||
+    Array.isArray(expectedAssets)||
+    Object.keys(expectedAssets).length!==EDITORIAL_PUBLIC_ROUTES.length||
+    EDITORIAL_PUBLIC_ROUTES.some(route=>
+      typeof expectedAssets[route.path]!=='string'||
+      Buffer.byteLength(expectedAssets[route.path],'utf8')>65536||
+      !expectedAssets[route.path].includes(route.marker)))
+  throw new TypeError('Invalid exact editorial Pages expectations');
+ for(const route of EDITORIAL_PUBLIC_ROUTES){
+  let matched=false;
+  for(let attempt=1;attempt<=attempts;attempt++){
+   try{
+    const response=await fetchImpl('https://24go.top'+route.path+
+      '?pages_audit='+runId,{
+       method:'GET',credentials:'omit',referrerPolicy:'no-referrer',
+       redirect:'error',cache:'no-store',
+       headers:{accept:'text/html,application/javascript,application/json,application/xml',
+        'cache-control':'no-cache'},
+       signal:AbortSignal.timeout(20000)
+      });
+    if(await readBoundedPage(response)===expectedAssets[route.path]){
+     matched=true;break;
+    }
+   }catch{/* Keep CDN/HTTP content out of workflow output. */}
+   if(attempt<attempts)await wait(pauseMs);
+  }
+  if(!matched)
+   throw new Error('Public editorial Pages asset missing or outdated: '+route.path);
+ }
+ return Object.freeze({verified:true,checked:EDITORIAL_PUBLIC_ROUTES.length});
+}
+
+export function formatEditorialPagesEvidenceSummary(checked){
+ if(checked!==EDITORIAL_PUBLIC_ROUTES.length)
+  throw new TypeError('Incomplete editorial Pages verification');
+ return '\n- Editorial proposal, JSON/RSS, search, sitemap and published article: **'+
+  checked+'/'+EDITORIAL_PUBLIC_ROUTES.length+' byte-exact HTTPS matches**\n';
+}
+
 // This is written to GitHub's Actions job summary ONLY after exact-SHA receipt
 // and all eight byte-for-byte public CDN checks pass. It is an audit record,
 // not a guarantee of continuous uptime, indexing or hosted publishing.
@@ -179,12 +263,18 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const assets=await verifyEssentialPublicPages({
    runId:result.runId,expectedAssets
   });
+  const expectedEditorial=await loadEditorialPublicAssets();
+  const editorial=await verifyEditorialPublicPages({
+   runId:result.runId,expectedAssets:expectedEditorial
+  });
   console.log('PASS external HTTPS Pages release: '+result.sha+
    ', workflow '+result.runId+', attempt '+result.attempt+
-   ', essential byte-exact public assets '+assets.checked+'/'+assets.checked);
+   ', essential byte-exact public assets '+assets.checked+'/'+assets.checked+
+   ', editorial assets '+editorial.checked+'/'+editorial.checked);
   if(process.env.GITHUB_STEP_SUMMARY)
    await appendFile(process.env.GITHUB_STEP_SUMMARY,
-    formatPagesEvidenceSummary(result.sha,result.runId,assets.checked),'utf8');
+    formatPagesEvidenceSummary(result.sha,result.runId,assets.checked)+
+    formatEditorialPagesEvidenceSummary(editorial.checked),'utf8');
  }catch(error){
   console.error('::error::'+error.message);
   process.exitCode=1;
