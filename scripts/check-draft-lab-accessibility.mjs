@@ -136,7 +136,14 @@ function switchLanguage(locale){
   scroll:Math.max(document.documentElement.scrollWidth,document.body.scrollWidth),
   offenders:[...document.body.querySelectorAll('*')].map(el=>{
    const r=el.getBoundingClientRect();return {tag:el.tagName.toLowerCase(),id:el.id,cls:typeof el.className==='string'?el.className:'',left:Math.round(r.left),right:Math.round(r.right)};
-  }).filter(x=>x.right>document.documentElement.clientWidth+1&&x.left<document.documentElement.clientWidth).slice(0,12)};
+  }).filter(x=>x.right>document.documentElement.clientWidth+1&&x.left<document.documentElement.clientWidth).slice(0,12),
+  scrollContainers:[...document.body.querySelectorAll('*')].map(el=>{
+   const r=el.getBoundingClientRect(),computed=getComputedStyle(el);
+   return {tag:el.tagName.toLowerCase(),id:el.id,cls:typeof el.className==='string'?el.className:'',
+    left:Math.round(r.left),right:Math.round(r.right),internal:el.scrollWidth,client:el.clientWidth,
+    overflowX:computed.overflowX};
+  }).filter(x=>x.client>0&&x.left+x.internal>document.documentElement.clientWidth+1&&
+    x.internal>x.client+1&&x.left<document.documentElement.clientWidth).slice(0,16)};
 }
 function correctSource(){
  const input=document.getElementById('postSource');
