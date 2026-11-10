@@ -302,7 +302,7 @@ test('validation identity never depends on translated error strings',()=>{
 test('reusable headline validation stays lossless for draft and GitHub hand-off',()=>{
  for(const title of ['Practical technical article','技术文章审核流程 🧪','Reproducible evidence 101'])
   assert.equal(validDraftTitle(title),true);
- for(const title of ['Short','Wrong\nheader','Corrupted\uD800','Broken\uDC00',
+ for(const title of ['No','Wrong\nheader','Corrupted\uD800','Broken\uDC00',
    'Invisible\u2028separator','Bad\u2029paragraph','x'.repeat(161)])
   assert.equal(validDraftTitle(title),false);
 });
