@@ -42,6 +42,17 @@ test('GitHub Pages deployment still uploads static site only', () => {
   assert.doesNotMatch(pages,/npm run (?:dev|start)/);
 });
 
+test('PUBLIC Pages runs independent exact static inventory audit after its release receipt',()=>{
+  const pages=workflows['pages.yml'];
+  const receipt=pages.indexOf('run: node scripts/verify-pages-delivery.mjs');
+  const fullInventory=pages.indexOf('run: node scripts/verify-public-static.mjs');
+  assert.ok(receipt>0&&fullInventory>receipt,
+    'full static audit must run after the exact Pages release receipt and critical delivery checks');
+  assert.ok(pages.includes('"scripts/verify-public-static.mjs"'),
+    'verifier changes should trigger a new public Pages release check');
+  assert.doesNotMatch(pages,/private.*24GO\.online|sb_secret_|SUPABASE_SERVICE_ROLE_KEY/);
+});
+
 test('read-only live SEO audit starts after successful Pages deployment, not in parallel',()=>{
   const seo=workflows['seo-live.yml'];
   assert.match(seo,/workflow_run:\s*\n\s+workflows: \["Deploy pre-launch landing"\]\s*\n\s+types: \[completed\]/);
