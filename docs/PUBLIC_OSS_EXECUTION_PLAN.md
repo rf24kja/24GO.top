@@ -23,6 +23,9 @@ Updated: 2026-11-10. Scope: **public rf24kja/24GO.top only** while the founder a
 
 The public static site cannot by itself provide authenticated hosted author publishing, protected moderation, PostgreSQL-backed comments or private Library uploads. Do not label the platform ready for general user registration based on OSS progress. Resume the separately protected private P0 release gates when the founder permits private Actions or supplies a verified alternative runner.
 
-## Immediate change in this iteration
+## Current public-only delivery sequence
 
-Fix consent-based proposal browsing so older real GitHub issues do not disappear merely because the newest 60 issues contain no matching titles. Fetch at most one page per explicit click and four pages per session, maximum twelve text-only cards, never follow provider Link URLs or load private manuscripts.
+1. **Completed in public PR #177:** consent-based editorial proposal pagination, one click per API page, fixed public GitHub origin, four-page budget, text-only cards and bounded metadata.
+2. **Current slice:** extend the existing GitHub Pages post-deploy smoke test to compare exact source bytes of the proposal UI, JSON/RSS article feeds, search index, sitemap and one genuinely published canonical article. Only the publicly shipped static release is in scope; no private backend deployment.
+3. **Next:** perform a real editorial contribution through a human-reviewed public PR, verify article metadata and complete discovery indexes, and retain live HTTPS release evidence before claiming a publication.
+4. Continue public SDK/MCP, accessibility and localization once the static editorial path is consistently verifiable.
