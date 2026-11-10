@@ -17,7 +17,9 @@ test('archive publishes 12 crawlable articles, discoverable topic controls and a
  assert.match(html,/<form class="note-search" role="search"[^>]+hidden>/);
  assert.match(html,/aria-label="Find engineering notes"/);
  assert.match(html,/<label for="engineering-filter">Find a technical article<\/label>/);
- assert.match(html,/aria-controls="engineering-list"/);
+ assert.match(html,/aria-controls="engineering-list" aria-describedby="engineering-search-help"/);
+ assert.match(html,/id="engineering-search-help"/);
+ assert.match(html,/Press Enter to focus the first matching article/);
  assert.match(html,/id="engineering-search-status" role="status" aria-live="polite"/);
  assert.match(html,/id="engineering-index-status" role="status" aria-live="polite"/);
  assert.match(html,/id="engineering-index-retry" hidden/);
@@ -75,6 +77,8 @@ function setUp({missing=false,badTopic=false,query='',clipboard='ok',index='none
  for(const card of cards){
   card.children=[];
   card.append=function(child){this.children.push(child);};
+  card.link={focused:false,focus(){this.focused=true;}};
+  card.querySelector=selector=>selector==='h3 a'?card.link:null;
  }
  const document={
   createElement(tag){
@@ -87,6 +91,7 @@ function setUp({missing=false,badTopic=false,query='',clipboard='ok',index='none
    if(s==='[data-note-card]')return cards;
    assert.equal(s,'[data-engineering-topic]');return topics;
   },
+  addEventListener(name,fn){listeners['document-'+name]=fn;},
   getElementById(id){return ({
    'engineering-filter':input,'engineering-search-status':status,
    'engineering-no-results':empty,'engineering-reset':reset,
@@ -149,6 +154,39 @@ function setUp({missing=false,badTopic=false,query='',clipboard='ok',index='none
   rejectPending:()=>rejectPending(new Error('Clipboard blocked')),
   clickTopic:t=>topics.find(x=>x.dataset.engineeringTopic===t).listeners.click()};
 }
+test('slash focuses search from the background but not while operating links, inputs or IME',()=>{
+ const app=setUp();
+ let prevented=0;
+ const base={key:'/',target:{closest(){return null;}},altKey:false,ctrlKey:false,metaKey:false,
+  shiftKey:false,isComposing:false,repeat:false,preventDefault(){prevented++;}};
+ app.listeners['document-keydown'](base);
+ assert.equal(prevented,1);
+ assert.equal(app.input.focused,true);
+ app.input.focused=false;
+ for(const changes of [{target:{closest:()=>({})}},{ctrlKey:true},{metaKey:true},
+  {shiftKey:true},{isComposing:true},{repeat:true},{key:'a'}]){
+  app.listeners['document-keydown']({...base,...changes});
+  assert.equal(app.input.focused,false,'do not steal keyboard focus');
+ }
+ assert.equal(prevented,1);
+});
+
+test('Enter focuses only the first visible matching article; empty results keep focus',()=>{
+ const app=setUp();
+ app.input.value='postgres';app.listeners.input();
+ let prevented=0;
+ app.listeners['form-submit']({preventDefault(){prevented++;}});
+ assert.equal(prevented,1);
+ assert.equal(app.cards[2].link.focused,true);
+ assert.equal(app.cards[0].link.focused,false);
+ app.cards.forEach(card=>card.link.focused=false);
+ app.input.value='no matching technical article';app.listeners.input();
+ app.listeners['form-submit']({preventDefault(){prevented++;}});
+ assert.equal(prevented,2);
+ assert.equal(app.empty.hidden,false);
+ assert.ok(app.cards.every(card=>!card.link.focused));
+});
+
 test('search works with all topics and Escape clears only query',()=>{
  const app=setUp();
  assert.equal(app.form.hidden,false);
