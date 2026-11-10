@@ -30,6 +30,35 @@ export function githubHasNextPage(header){
  return typeof header==='string'&&header.length<=4096&&
   /<[^>\r\n]{1,2000}>;\s*rel="next"(?:\s*,|\s*$)/.test(header);
 }
+// Bound decoded bytes WHILE receiving GitHub metadata. response.text()
+// would allocate an attacker-sized body before enforcing MAX_BODY.
+export async function readBoundedPublicIssues(response){
+ if(response?.status!==200||response.redirected===true||
+    !response.body||typeof response.body.getReader!=='function'||
+    !/^application\/(?:json|vnd\.github\+json)(?:\s*;|$)/i.test(
+      response.headers?.get?.('content-type')||''))
+  throw new TypeError('GitHub public issue response unavailable');
+ const declared=response.headers.get('content-length');
+ if(declared&&/^\d+$/.test(declared)&&Number(declared)>MAX_BODY)
+  throw new RangeError('GitHub metadata too large');
+ const reader=response.body.getReader(),parts=[];
+ let bytes=0,chunks=0;
+ try{
+  for(;;){
+   const {done,value}=await reader.read();
+   if(done)break;
+   if(!(value instanceof Uint8Array)||++chunks>512||
+      bytes+value.byteLength>MAX_BODY){
+    await reader.cancel().catch(()=>{});
+    throw new RangeError('GitHub metadata too large');
+   }
+   parts.push(value);bytes+=value.byteLength;
+  }
+ }finally{reader.releaseLock();}
+ const all=new Uint8Array(bytes);let at=0;
+ for(const chunk of parts){all.set(chunk,at);at+=chunk.byteLength;}
+ return JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(all));
+}
 export function setupProposalBoard({doc=globalThis.document,
  fetcher=globalThis.fetch}={}){
  const initial=doc?.getElementById('loadProposals');
@@ -53,14 +82,7 @@ export function setupProposalBoard({doc=globalThis.document,
     credentials:'omit',referrerPolicy:'no-referrer',
     headers:{accept:'application/vnd.github+json'},
     signal:AbortSignal.timeout(8000)});
-   if(!response.ok)throw Error('GitHub unavailable');
-   const declared=response.headers?.get('content-length');
-   if(declared&&/^\d+$/.test(declared)&&Number(declared)>MAX_BODY)
-    throw Error('GitHub metadata too large');
-   const content=await response.text();
-   if(new TextEncoder().encode(content).byteLength>MAX_BODY)
-    throw Error('GitHub metadata too large');
-   const items=publicProposalSummaries(JSON.parse(content));
+   const items=publicProposalSummaries(await readBoundedPublicIssues(response));
    if(page===1)list.replaceChildren();
    for(const item of items){
     if(displayed.has(item.number)||shown>=MAX_CARDS)continue;
