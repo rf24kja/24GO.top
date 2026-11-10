@@ -7,6 +7,7 @@ on:
       - "site/**"
       - ".github/workflows/pages.yml"
       - "scripts/verify-pages-delivery.mjs"
+      - "scripts/verify-public-static.mjs"
   workflow_dispatch:
 
 permissions:
@@ -64,3 +65,5 @@ jobs:
           EXPECTED_PAGES_SHA: ${{ github.sha }}
           EXPECTED_PAGES_RUN_ID: ${{ github.run_id }}
         run: node scripts/verify-pages-delivery.mjs
+      - name: Audit all published static routes against source (public only)
+        run: node scripts/verify-public-static.mjs
