@@ -228,6 +228,41 @@ function exerciseArchive(){
   scroll:Math.max(document.documentElement.scrollWidth,document.body.scrollWidth)};
 }
 
+
+function exerciseSavedLinks(){
+ const key='24gotop-public-reading-list-v1';
+ const list=document.getElementById('reading-list-items');
+ const heading=document.getElementById('reading-list-heading');
+ const filter=document.getElementById('reading-list-filter');
+ document.querySelector('[data-engineering-topic="all"]').click();
+ const cards=[...document.querySelectorAll('[data-note-card]')];
+ const toggles=cards.slice(0,2).map(card=>card.querySelector('.reading-list__toggle'));
+ const before=localStorage.getItem(key);
+ toggles[0].focus();toggles[0].click();
+ const first=JSON.parse(localStorage.getItem(key)).files;
+ const pressed=toggles[0].getAttribute('aria-pressed');
+ toggles[1].click();
+ const two=JSON.parse(localStorage.getItem(key)).files;
+ filter.value='mobile horizontal';
+ filter.dispatchEvent(new Event('input',{bubbles:true}));
+ const count=document.getElementById('reading-list-filter-status');
+ const filterFeedback={text:count.textContent,role:count.getAttribute('role'),
+  live:count.getAttribute('aria-live'),visible:list.children.length};
+ filter.value='';filter.dispatchEvent(new Event('input',{bubbles:true}));
+ const firstRemove=list.querySelector('.reading-list__remove');
+ firstRemove.focus();firstRemove.click();
+ const nextRemove=list.querySelector('.reading-list__remove');
+ const nextFocused=Boolean(nextRemove&&document.activeElement===nextRemove);
+ const afterFirst=JSON.parse(localStorage.getItem(key)).files;
+ nextRemove?.click();
+ const headingFocused=document.activeElement===heading;
+ const afterLast=JSON.parse(localStorage.getItem(key)).files;
+ return {before,first,pressed,two,filterFeedback,nextFocused,
+  afterFirst,headingFocused,afterLast,
+  width:document.documentElement.clientWidth,
+  scroll:Math.max(document.documentElement.scrollWidth,document.body.scrollWidth)};
+}
+
 async function main(){
  const site=localServer();
  let browser,ws;
@@ -287,6 +322,16 @@ async function main(){
   assert(!c.exceptions.length,'Unexpected browser JS exception '+c.exceptions.join('; '));
   assert(!c.external.length,'External network request '+c.external.join('; '));
   console.log('PASS Chromium reader search: 12 cards, / shortcut, Enter result focus, empty-state and 320px viewport');
+  const saved=await c.call(exerciseSavedLinks,sessionId);
+  requireArchive(saved.before===null&&saved.first.length===1&&saved.two.length===2&&
+    saved.pressed==='true','saved public links must be explicit and limited to filenames');
+  requireArchive(saved.filterFeedback.role==='status'&&saved.filterFeedback.live==='polite'&&
+    saved.filterFeedback.visible===1,'saved-title filtering must announce result count');
+  requireArchive(saved.afterFirst.length===1&&saved.nextFocused&&
+    saved.afterLast.length===0&&saved.headingFocused,
+    'removing saved links must preserve keyboard focus');
+  requireArchive(saved.scroll<=saved.width+1,'320px saved reading list must not overflow page');
+  console.log('PASS Chromium saved reading list: explicit save, live filtered count, next-item/heading focus at 320px');
  }finally{
   if(ws)ws.close();
   if(browser){
