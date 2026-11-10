@@ -36,12 +36,14 @@
         <form id="draftForm" novalidate>
           <label for="postTitle"><span data-ui="title">Title</span> <span class="hint" data-ui="titleHint">5–160 characters</span></label>
           <input id="postTitle" name="title" maxlength="160" placeholder="What did you build, learn or discover?" data-ui-placeholder="titlePlaceholder" autocomplete="off" required>
+          <p id="postTitleError" class="field-error" hidden></p>
           <div class="meta">
-            <div><label for="postLocale" data-ui="language">Language</label><select id="postLocale" name="locale"><option value="en">English</option><option value="ru">Русский</option><option value="th">ไทย</option><option value="es">Español</option><option value="fr">Français</option><option value="de">Deutsch</option><option value="pt">Português</option><option value="zh">中文</option></select></div>
-            <div><label for="postCategory" data-ui="category">Category</label><select id="postCategory" name="category"><option value="guides" data-ui="guides">Guides</option><option value="tools" data-ui="tools">Tools</option><option value="news" data-ui="news">News</option><option value="models" data-ui="models">Models</option></select></div>
+            <div><label for="postLocale" data-ui="language">Language</label><select id="postLocale" name="locale"><option value="en">English</option><option value="ru">Русский</option><option value="th">ไทย</option><option value="es">Español</option><option value="fr">Français</option><option value="de">Deutsch</option><option value="pt">Português</option><option value="zh">中文</option></select><p id="postLocaleError" class="field-error" hidden></p></div>
+            <div><label for="postCategory" data-ui="category">Category</label><select id="postCategory" name="category"><option value="guides" data-ui="guides">Guides</option><option value="tools" data-ui="tools">Tools</option><option value="news" data-ui="news">News</option><option value="models" data-ui="models">Models</option></select><p id="postCategoryError" class="field-error" hidden></p></div>
           </div>
           <label for="postBody"><span data-ui="body">Article</span> <span class="hint" data-ui="bodyHint">20–12,000 characters</span></label>
           <textarea id="postBody" name="body" rows="11" maxlength="12000" placeholder="Explain the problem, what you tried, the result and what others can reproduce." data-ui-placeholder="bodyPlaceholder" required></textarea>
+          <p id="postBodyError" class="field-error" hidden></p>
           <div class="format-tools" role="group" aria-label="Insert Markdown formatting" data-ui-label="formatGroup">
             <button id="formatBold" type="button" aria-label="Bold text" data-ui-label="bold" data-ui="bold">Bold</button>
             <button id="formatItalic" type="button" aria-label="Italic text" data-ui-label="italic" data-ui="italic">Italic</button>
@@ -86,6 +88,7 @@
           <div class="meter" id="draftReadingTime" aria-live="off">Approx. reading time: 0 min</div>
           <label for="postSource"><span data-ui="source">Original source</span> <span class="hint" data-ui="sourceHint">optional HTTPS/HTTP link</span></label>
           <input id="postSource" name="source" type="url" placeholder="https://example.org/research">
+          <p id="postSourceError" class="field-error" hidden></p>
           <p class="tiny" data-ui="importHint">Only files previously exported by Draft Lab can be reopened. Imported text stays in this browser tab; original files remain on your device. Export again to keep new changes.</p>
           <div class="buttons">
             <button id="downloadDraft" class="primary" type="button" aria-keyshortcuts="Control+S Meta+S" data-ui="download">Download .md</button>

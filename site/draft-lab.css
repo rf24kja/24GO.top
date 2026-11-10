@@ -195,3 +195,10 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 #postBody{scroll-margin-top:116px}
 @media(max-width:550px){.draft-jump-row{margin-top:16px}.draft-jump-link{width:100%;justify-content:center;text-align:center}}
 @media(prefers-contrast:more){.draft-jump-link{border-width:2px}}
+
+/* Readable, adjacent mobile errors connected to invalid fields for assistive tech. */
+.field-error{margin:6px 0 12px;padding:5px 9px;border-inline-start:3px solid #ffb29a;color:#ffb29a;font-size:14px;font-weight:650;overflow-wrap:anywhere}
+.field-error[hidden]{display:none!important}
+input[aria-invalid="true"],textarea[aria-invalid="true"],select[aria-invalid="true"]{border-color:#ffb29a;border-width:2px}
+@media(prefers-color-scheme:light){.field-error{border-color:#9b3528;color:#9b3528}input[aria-invalid="true"],textarea[aria-invalid="true"],select[aria-invalid="true"]{border-color:#9b3528}}
+@media(prefers-contrast:more){.field-error{border-width:4px}}
