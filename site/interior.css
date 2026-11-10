@@ -21,3 +21,15 @@ footer.interior-footer{border-top:1px solid var(--border);border-bottom:0;margin
 @media(prefers-color-scheme:light){body::before{background-image:linear-gradient(to right,rgba(27,104,67,.055) 1px,transparent 1px),linear-gradient(to bottom,rgba(27,104,67,.055) 1px,transparent 1px)}header.interior-header{background:rgba(247,250,248,.94)}footer.interior-footer{background:rgba(247,250,248,.76)}}
 @media(prefers-contrast:more){body::before{display:none}.interior-links a[aria-current="page"]{text-decoration:underline}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* Existing interior menus wrap; additionally allow long translated link labels
+   to break inside their available width on narrow phones. */
+@media(max-width:760px){
+ .interior-header .interior-nav,.interior-header .interior-links{
+  min-width:0;max-width:100%
+ }
+ .interior-header .interior-links a{
+  min-width:0;max-width:100%;min-height:44px;
+  white-space:normal;overflow-wrap:anywhere
+ }
+}
