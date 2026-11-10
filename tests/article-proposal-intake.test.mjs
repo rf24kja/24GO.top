@@ -55,7 +55,8 @@ test('public visitor can discover proposal path; it never silently submits edito
  assert.match(draft,/does not publish, upload or automatically save your writing/);
  assert.match(docs,/A GitHub issue is a \*proposal\*, not an article/);
  assert.match(docs,/Human review and the published state/);
- assert.match(docs,/npm run feed:check/);
+ assert.match(docs,/npm run editorial:write/);
+ assert.match(docs,/npm run editorial:check/);
  assert.match(docs,/Rights|rights/i);
  assert.match(sitemap,/<url><loc>https:\/\/24go\.top\/contribute\.html<\/loc><\/url>/);
 });
