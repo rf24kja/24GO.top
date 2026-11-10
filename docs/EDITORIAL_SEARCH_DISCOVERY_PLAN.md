@@ -76,3 +76,10 @@ for high-quality source-backed content. It is **not** a search ranking
 mechanism, public user post API, AI discovery protocol or evidence of
 indexing. Existing canonical HTML, human-readable originals, XML sitemap,
 RSS and interoperable JSON Feed remain the public discovery baseline.
+
+## Keyboard-first reader discovery (source change; deployment verified separately)
+
+The reviewed public engineering archive keeps all article links in static HTML with or without JavaScript. With progressive search enabled, keyboard users can press `/` from noninteractive page content to focus the search box, or Enter while searching to move focus to the first visible article link. Typing in links, inputs, buttons, editable content, active IME sessions, and modified shortcuts is never intercepted. Escape clears only the query and preserves the topic filter. If no articles match, Enter leaves the search field focused while the live status reports zero matches. The search hint is linked with `aria-describedby`; topic/reset controls have at least 44px height. None of these shortcuts publishes, saves or transmits author text.
+
+The existing public `draft:a11y` Chromium CI suite now tests the actual search.js with live local HTML/CSS, the 12 published article cards, safe shared-URL filtering and the 320px document width, in addition to Draft Lab. CI browser results are **not** human screen-reader validation or a claim of real reader usage. A green PR is not a deployed Pages release; check the exact merged SHA and HTTPS audit separately.
+

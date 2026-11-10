@@ -300,4 +300,4 @@ async function main(){
   await new Promise(ok=>site.close(ok));
  }
 }
-main().catch(error=>{console.error('FAIL Draft Lab browser E2E:',error.message);process.exitCode=1;});
+main().catch(error=>{console.error('FAIL PUBLIC UI browser E2E:',error.message);process.exitCode=1;});
