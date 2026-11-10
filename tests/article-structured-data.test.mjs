@@ -9,7 +9,7 @@ const index=readFileSync(new URL('index.html',dir),'utf8');
 const items=[...rss.matchAll(/<item>([\s\S]*?)<\/item>/g)].map(v=>v[1]);
 
 test('all real public article pages have matching visible byline, canonical metadata and JSON-LD',()=>{
- assert.equal(files.length,11,'only released editorial HTML, no pretend user posts');
+ assert.equal(files.length,12,'only released editorial HTML, no pretend user posts');
  for(const file of files){
   const html=readFileSync(new URL(file,dir),'utf8');
   const canonical='https://24go.top/engineering/'+file;

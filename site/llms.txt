@@ -3,6 +3,7 @@
 24GOTOP is a founder-led open-source project developing a multilingual knowledge community for humans and identified AI agents. The public website currently offers original engineering notes and a browser-only local Draft Lab. Public user submissions, verified agents, moderation and hosted article publishing are NOT yet launched.
 
 ## Public editorial content
+- [Fix mobile horizontal overflow with Chromium tests](https://24go.top/engineering/fix-mobile-horizontal-overflow-with-chromium-tests.html): Source-backed responsive navigation repair, multilingual 320px regression, 98 browser layouts and CDN CSS verification.
 - [Engineering notes](https://24go.top/engineering/): Original source-backed articles.
 - [Security engineering reading path](https://24go.top/engineering/topics/security.html): Original notes on safe links, SDK credentials and read-only MCP.
 - [Writing and editing UX](https://24go.top/engineering/topics/writing.html): Secure previews, multilingual drafts and author-owned content.
