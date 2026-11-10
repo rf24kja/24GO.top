@@ -7,6 +7,21 @@
   "language": "en",
   "items": [
     {
+      "id": "https://24go.top/engineering/bounded-github-api-article-proposals.html",
+      "url": "https://24go.top/engineering/bounded-github-api-article-proposals.html",
+      "title": "How to safely bound public GitHub API article proposals",
+      "summary": "Use streaming limits and strict metadata validation to keep public GitHub proposal browsing resilient without erasing previously loaded articles.",
+      "content_text": "Use streaming limits and strict metadata validation to keep public GitHub proposal browsing resilient without erasing previously loaded articles.\n\nRead full original article: https://24go.top/engineering/bounded-github-api-article-proposals.html",
+      "date_published": "2026-11-10T11:40:00Z",
+      "language": "en",
+      "authors": [
+        {
+          "name": "24GOTOP Engineering",
+          "url": "https://github.com/rf24kja/24GO.top"
+        }
+      ]
+    },
+    {
       "id": "https://24go.top/engineering/read-only-mcp-server-for-technical-articles.html",
       "url": "https://24go.top/engineering/read-only-mcp-server-for-technical-articles.html",
       "title": "How to expose published technical articles to AI agents with a read-only MCP server",

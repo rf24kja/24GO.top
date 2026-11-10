@@ -1,3 +1,8 @@
+## Unreleased — editorial source-backed API guide
+
+- Publish a technical case study for bounded public GitHub API article proposals, grounded in merged PR #179; extend article HTML, archive, RSS, JSON Feed, sitemap and static search index.
+- Preserve the distinction between public static editorial content, verified HTTPS delivery and as-yet-unverified search-engine indexing. This does not launch a hosted publishing API or modify private code.
+
 # 24GOTOP — Public Change Log
 
 ## 2026-11-05 — Safe bounded Reading Paths catalog ingestion (PUBLIC OSS)

@@ -14,8 +14,8 @@ test('tenth canonical article is safe, searchable and backed by merged MCP sourc
  assert.ok(article.includes('tests/mcp-public-articles.test.mjs'));
  assert.ok(article.includes('<link rel="canonical" href="'+canonical+'">'));
  assert.ok(article.includes('Hosted account-based publishing remains blocked'));
- assert.equal(feed.items.length,10);
- assert.equal(index.articles.length,10);
+ assert.equal(feed.items.length,11);
+ assert.equal(index.articles.length,11);
  assert.ok(feed.items.some(x=>x.url===canonical));
  assert.ok(index.articles.some(x=>x.file===leaf&&x.text.includes('database connection')));
  for(const file of ['engineering/index.html','sitemap.xml','llms.txt','index.html'])assert.ok(read(file).includes(leaf),file);

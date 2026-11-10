@@ -96,7 +96,10 @@ export const EDITORIAL_PUBLIC_ROUTES=Object.freeze([
   marker:'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'}),
  Object.freeze({path:'/engineering/read-only-mcp-server-for-technical-articles.html',
   source:'../site/engineering/read-only-mcp-server-for-technical-articles.html',
-  marker:'<h1>How to expose published technical articles to AI agents with a read-only MCP server</h1>'})
+  marker:'<h1>How to expose published technical articles to AI agents with a read-only MCP server</h1>'}),
+ Object.freeze({path:'/engineering/bounded-github-api-article-proposals.html',
+  source:'../site/engineering/bounded-github-api-article-proposals.html',
+  marker:'<h1>How to safely bound public GitHub API article proposals</h1>'})
 ]);
 
 // Check the COMPLETE eight deployed assets against the checked-out public
@@ -114,7 +117,7 @@ export async function loadEssentialPublicAssets(){
  return Object.freeze(Object.fromEntries(entries));
 }
 
-async function readBoundedPage(response){
+async function readBoundedPage(response,maxBytes=65536){
  if(response?.status!==200||!response.body?.getReader)
   throw new Error('Public page response unavailable');
  const reader=response.body.getReader();
@@ -123,7 +126,7 @@ async function readBoundedPage(response){
   for(;;){
    const {done,value}=await reader.read();
    if(done)break;
-   if(!(value instanceof Uint8Array)||++count>256||bytes+value.byteLength>65536){
+   if(!(value instanceof Uint8Array)||++count>256||bytes+value.byteLength>maxBytes){
     await reader.cancel().catch(()=>{});
     throw new Error('Public page response exceeds safe budget');
    }
@@ -182,7 +185,7 @@ export async function verifyEssentialPublicPages({
 export async function loadEditorialPublicAssets(){
  const entries=await Promise.all(EDITORIAL_PUBLIC_ROUTES.map(async entry=>{
   const text=await readFile(new URL(entry.source,import.meta.url),'utf8');
-  if(Buffer.byteLength(text,'utf8')>65536)
+  if(Buffer.byteLength(text,'utf8')>98304)
    throw new RangeError('Editorial source exceeds public audit budget: '+entry.path);
   if(!text.includes(entry.marker))
    throw new Error('Reviewed editorial source missing marker: '+entry.path);
@@ -204,7 +207,7 @@ export async function verifyEditorialPublicPages({
     Object.keys(expectedAssets).length!==EDITORIAL_PUBLIC_ROUTES.length||
     EDITORIAL_PUBLIC_ROUTES.some(route=>
       typeof expectedAssets[route.path]!=='string'||
-      Buffer.byteLength(expectedAssets[route.path],'utf8')>65536||
+      Buffer.byteLength(expectedAssets[route.path],'utf8')>98304||
       !expectedAssets[route.path].includes(route.marker)))
   throw new TypeError('Invalid exact editorial Pages expectations');
  for(const route of EDITORIAL_PUBLIC_ROUTES){
@@ -219,7 +222,7 @@ export async function verifyEditorialPublicPages({
         'cache-control':'no-cache'},
        signal:AbortSignal.timeout(20000)
       });
-    if(await readBoundedPage(response)===expectedAssets[route.path]){
+    if(await readBoundedPage(response,98304)===expectedAssets[route.path]){
      matched=true;break;
     }
    }catch{/* Keep CDN/HTTP content out of workflow output. */}

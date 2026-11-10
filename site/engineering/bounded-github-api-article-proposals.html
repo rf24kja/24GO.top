@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1411">
+<meta name="description" content="Use streaming limits and strict metadata validation to keep public GitHub proposal browsing resilient without erasing previously loaded articles.">
+<meta property="og:type" content="article"><meta property="og:title" content="How to safely bound public GitHub API article proposals — 24GOTOP">
+<meta property="og:description" content="Use streaming limits and strict metadata validation to keep public GitHub proposal browsing resilient without erasing previously loaded articles.">
+<meta property="og:url" content="https://24go.top/engineering/bounded-github-api-article-proposals.html">
+<meta property="article:published_time" content="2026-11-10T11:40:00Z"><meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://24go.top/engineering/bounded-github-api-article-proposals.html">
+<title>How to safely bound public GitHub API article proposals — 24GOTOP</title>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"How to safely bound public GitHub API article proposals","description":"Use streaming limits and strict metadata validation to keep public GitHub proposal browsing resilient without erasing previously loaded articles.","datePublished":"2026-11-10T11:40:00Z","dateModified":"2026-11-10T11:40:00Z","inLanguage":"en","author":{"@type":"Organization","name":"24GOTOP Engineering","url":"https://github.com/rf24kja/24GO.top"},"publisher":{"@type":"Organization","name":"24GOTOP"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://24go.top/engineering/bounded-github-api-article-proposals.html"},"isAccessibleForFree":true}</script>
+<link rel="stylesheet" href="./notes.css"><link rel="stylesheet" href="../interior.css"><link rel="alternate" type="application/rss+xml" title="24GOTOP engineering notes" href="./feed.xml">
+<script type="module" src="./article-reader.mjs"></script><link rel="icon" type="image/svg+xml" href="/favicon.svg?v=portfolio3"><link rel="icon" href="/favicon.ico?v=portfolio3" sizes="16x16 32x32 48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180"><link rel="stylesheet" href="/analytics.css"><script src="/analytics.js" defer></script></head><body><a class="skip" href="#main-content">Skip to article content</a>
+<header class="interior-header"><nav class="wrap interior-nav" aria-label="Main navigation"><a class="interior-brand" href="../" aria-label="24GOTOP home">24GO<span>TOP</span><span class="interior-brand__dot" aria-hidden="true"></span></a><div class="interior-links"><a href="../">Home</a><a href="./">Articles</a><a href="../draft-lab.html">Draft Lab</a><a href="../progress.html">Development</a><a href="https://github.com/rf24kja/24GO.top">GitHub ↗</a></div></nav></header>
+<main class="wrap" id="main-content" tabindex="-1"><article class="article">
+<span class="eyebrow">Engineering note · 10 November 2026 · GitHub API safety</span>
+<h1>How to safely bound public GitHub API article proposals</h1>
+<p class="lead">A public article proposal board needs to remain responsive when an upstream API returns an oversized body, malformed JSON or unexpectedly shaped issue data. Our public 24GOTOP contribution interface reads GitHub issues without granting browser visitors a publishing credential. In <a href="https://github.com/rf24kja/24GO.top/pull/179">PR #179</a> we hardened that read boundary and protected already loaded proposals from a failed refresh.</p>
+<p class="details">By <a href="https://github.com/rf24kja/24GO.top">24GOTOP Engineering</a> · <time datetime="2026-11-10">10 November 2026</time> · <a href="https://github.com/rf24kja/24GO.top/pull/179">Merged source PR #179</a></p>
+<div class="note" role="note"><strong>Scope:</strong> this is a static, read-only browser interface over public GitHub issue metadata. It is not authenticated user publication, a moderated PostgreSQL service or a hosted agent API. Search-engine indexing and real-user uptake are not claimed.</div>
+<h2 id="section-read-budgets">Why read-only responses still need budgets</h2>
+<p>A network response can have a successful status without containing safe, bounded JSON. Directly calling <code>response.json()</code> delegates memory and parsing work to a body with no application-controlled byte ceiling. Oversized responses can consume unnecessary memory, and malformed data can leave the interface in an inconsistent state. This is an availability and data-integrity problem even though the endpoint exposes public information.</p>
+<p>We use a 256 KiB limit on GitHub issue metadata response bodies, enforced as bytes arrive. A size check performed only after <code>response.json()</code> would be too late. HTTP status and media type checks, deadlines, unexpected redirects and response shape validation are separate concerns, and all matter in a robust client. Exact behavior should be checked in the <a href="https://github.com/rf24kja/24GO.top/blob/main/site/contribute-board.js">maintained source</a> and its <a href="https://github.com/rf24kja/24GO.top/blob/main/tests/contribute-board.test.mjs">regression suite</a>.</p>
+<h2 id="section-bounded-streaming-example">A minimal bounded-streaming pattern</h2>
+<p>The illustrative function below rejects a response after its accepted byte budget is exceeded. It is not a drop-in production fetch client: a deadline, redirect restrictions and schema checks must surround it. Importantly, it reads bytes before decoding and parsing the final JSON document.</p>
+<pre><code>async function parseLimitedJson(response, maxBytes = 256 * 1024) {
+  if (!response.ok || !response.body) throw Error('Unavailable');
+  const reader = response.body.getReader();
+  const chunks = [];
+  let length = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      length += value.byteLength;
+      if (length &gt; maxBytes) throw Error('Response too large');
+      chunks.push(value);
+    }
+  } finally {
+    await reader.cancel().catch(() =&gt; {});
+  }
+  const bytes = new Uint8Array(length);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
+}</code></pre>
+<p>After parsing, treat data as untrusted: validate the array length and each accepted issue field. Render external issue titles as literal text rather than injecting them as HTML. When a transport or validation error occurs, show an explicit error state instead of pretending that an empty result proves the repository has no proposals.</p>
+<h2 id="section-preserving-good-results">Do not discard valid results on refresh failure</h2>
+<p>The second principle in <a href="https://github.com/rf24kja/24GO.top/pull/179">the reviewed patch</a> is to preserve previously loaded and validated proposal cards if the next network request fails. A failed refresh should not turn a populated browsing experience into an empty page. On the first-ever request, however, there may be no valid cached result, so the interface should show an error and offer retry rather than falsely claim there are zero matching proposals.</p>
+<p>This distinction makes the browser interface useful under real mobile-network faults. It also keeps stale data and unavailable data from being misrepresented as verified fresh results. Public GitHub issue metadata can change, and this interface does not guarantee that a previously observed issue remains open at any later moment.</p>
+<h2 id="section-how-to-test">Negative cases worth testing</h2>
+<ul>
+<li>Valid public JSON succeeds under the size ceiling and yields only accepted fields.</li>
+<li>Unexpected JSON types, malformed UTF-8, malformed JSON and response errors fail closed.</li>
+<li>An oversized streaming payload is refused before whole-body parsing.</li>
+<li>Network failures and invalid follow-up pages do not erase previously rendered valid proposals.</li>
+<li>Issue titles and summaries are treated as external data, not executable markup.</li>
+</ul>
+<p>These are useful boundaries for a GitHub issues integration, not evidence that the entire publishing product is launched. The public <a href="https://github.com/rf24kja/24GO.top/pull/179">review and implementation</a> establish the source changes, while a separate <a href="./verify-github-pages-deploy-not-just-ci.html">GitHub Pages delivery verification</a> is required to show that the released static client reaches readers over HTTPS. CI success alone does not establish CDN delivery.</p>
+<h2 id="section-limits-and-next-steps">The broader editorial boundary</h2>
+<p>24GOTOP's hosted author-to-publication path remains a distinct product milestone requiring authenticated identities, auditability, moderation, PostgreSQL transactions, RLS and tested recovery. The public proposal board neither bypasses those gates nor claims to solve them. Its useful job today is to safely display external suggestions and let contributors participate through GitHub.</p>
+<p>We welcome review of this exact implementation and its edge cases, without collecting draft content or private credentials. Developers can also <a href="../draft-lab.html">experiment with the browser-only Draft Lab</a> while that hosted workflow is not available.</p>
+<p class="source">Primary evidence: <a href="https://github.com/rf24kja/24GO.top/pull/179">merged PR #179</a>, public <a href="https://github.com/rf24kja/24GO.top/blob/main/site/contribute-board.js">source</a>, and <a href="https://github.com/rf24kja/24GO.top/blob/main/tests/contribute-board.test.mjs">tests</a>. No invented users, traffic or deployment claims.</p>
+<p><a class="cta" href="./">Explore more original engineering notes ↗</a></p>
+<aside class="article-report" aria-label="Report a problem with this article">
+<strong>Help improve this article</strong><p>Found an incorrect statement, broken example or attribution issue? <a href="https://github.com/rf24kja/24GO.top/issues/new?template=article_report.yml&amp;title=Article%20report%3A%20bounded-github-api-article-proposals" rel="noopener noreferrer">Report the article on GitHub ↗</a>; do not post secrets or personal data.</p><p>Use our <a href="https://github.com/rf24kja/24GO.top/blob/main/SECURITY.md">private security reporting guidance</a> for vulnerabilities.</p>
+</aside>
+</article>
+<nav class="related-reading" aria-label="Continue reading">
+  <h2>Continue reading</h2>
+  <ul>
+    <li><a href="./read-only-mcp-server-for-technical-articles.html">How to expose published technical articles to AI agents with a read-only MCP server</a></li>
+    <li><a href="./safe-markdown-citation-links-without-xss.html">How to render Markdown citation links without introducing XSS</a></li>
+  </ul>
+  <p><a href="./">Explore all engineering notes</a></p>
+</nav>
+</main><footer class="interior-footer"><div class="wrap">24GOTOP · Open engineering notes · <a href="./">All notes</a> · <a href="./feed.xml">RSS</a></div></footer>
+</body></html>
