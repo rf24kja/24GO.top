@@ -18,6 +18,18 @@ The owner may ask questions, request reproducibility evidence or decline the pro
 
 For an approved idea, fork the PUBLIC MIT repository and open a focused PR. Real articles live as static HTML in `site/engineering/`, not as Draft Lab `.md` files in an unpublished-article database. The exported Draft Lab file can be used as your personal writing source, but it is **not** automatically compatible with the editorial HTML, metadata, RSS or JSON Feed build.
 
+### Optional, entirely offline HTML review preview (Node.js 22+)
+
+For contributors who already downloaded a valid Draft Lab `.md` file, the PUBLIC repository now contains a local, review-only converter:
+
+```sh
+npm run review:html -- ./my-draft.md ./my-review.html
+```
+
+The output is a **local UNPUBLISHED review copy** for an author or maintainer to inspect. It reuses the Draft Lab export parser and restricted Markdown block grammar, escapes user text, supports headings/code/lists/tables, and does not execute submitted HTML. It includes `noindex`, a restrictive CSP, and a prominent unpublished notice. It never uploads the manuscript, creates an issue, calls a write API, assigns authorship, invents a publication date, or modifies `site/engineering/`. The output file must not already exist; the command refuses to overwrite it.
+
+**Do not copy this file directly into the published website:** real article publication still requires verified rights and authorship, a separately reviewed HTML article, publication metadata/JSON-LD, canonical URL, archive/feed/search/sitemap updates, and confirmed HTTPS deployment. No arbitrary Markdown file is accepted; only our structured Draft Lab export is supported. `npm run review:html` runs on the contributor's machine, not on 24go.top.
+
 A complete PR should contain:
 
 1. Original article HTML with one verified self-canonical URL, visible original language, useful answer, specific technical example, constraints and source attribution. No fabricated authors, statistics, AI citations, benchmarks or external testimonial.
