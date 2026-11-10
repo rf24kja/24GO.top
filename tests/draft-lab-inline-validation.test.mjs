@@ -38,6 +38,7 @@ test('visible errors fit mobile widths and remain legible in light/dark and incr
  assert.match(css,/@media\(prefers-contrast:more\)\{\.field-error/);
  assert.match(css,/@media\(max-width:550px\)\{\.panel-head\{flex-wrap:wrap;min-width:0\}/);
  assert.match(css,/\.panel-head \.pill\{min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere\}/);
+ assert.match(css,/@media\(max-width:550px\)\{\.intro h1\{min-width:0;overflow-wrap:anywhere\}\}/);
  assert.match(browser,/UI_LOCALES,UI_STRINGS/);
  assert.match(browser,/Emulation.setDeviceMetricsOverride/);
  assert.match(browser,/browser\.proc\.kill\('SIGKILL'\)/);
