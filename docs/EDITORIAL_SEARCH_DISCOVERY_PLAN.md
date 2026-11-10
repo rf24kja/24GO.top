@@ -83,3 +83,9 @@ The reviewed public engineering archive keeps all article links in static HTML w
 
 The existing public `draft:a11y` Chromium CI suite now tests the actual search.js with live local HTML/CSS, the 12 published article cards, safe shared-URL filtering and the 320px document width, in addition to Draft Lab. CI browser results are **not** human screen-reader validation or a claim of real reader usage. A green PR is not a deployed Pages release; check the exact merged SHA and HTTPS audit separately.
 
+## Saved public links: focus and feedback when rows disappear
+
+The public reader's optional local reading list is explicitly activated by a visitor and stores only validated public article filenames in that browser. It is not a 24GOTOP account or server-synced library. A keyboard user who removes a saved row no longer loses focus when the list is rebuilt: focus moves to the next available Remove action, or to the saved-list heading when the list becomes empty. Clearing all entries also returns focus to that heading, and the filtered count is a polite `role=status` announcement. Focus handling never deletes additional entries or sends data to the server.
+
+The PUBLIC CI Node tests and real Chromium 320px flow verify an actual opt-in save, filtered count and row removal, alongside the 12-article search interaction. Real VoiceOver, TalkBack and keyboard-only sessions by independent people remain open evidence gates, not presumed success.
+

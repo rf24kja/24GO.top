@@ -1,3 +1,9 @@
+## Unreleased — accessible saved public article list
+
+- Preserve keyboard focus when a reader removes a saved article: move to the next visible remove control, or the stable saved-list heading when no entries remain. Clearing the entire list also restores focus to the heading instead of leaving focus on a hidden button.
+- Announce saved-title search counts through a polite, atomic status region, and keep opt-in on-device public-link storage with strict known article filenames and no auto-save or network upload.
+- Extend the PUBLIC real-Chromium editor/reader test with explicit save, filtered count, deletion focus, and narrow 320px viewport behavior. This is an actual browser UI regression, not a claim of assistive-technology user testing or hosted accounts.
+
 ## Unreleased — keyboard-first accessible public article search
 
 - Add `/` to focus engineering search from a noninteractive page region, without stealing active input, link, button or IME focus or browser shortcuts.
