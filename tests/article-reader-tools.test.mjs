@@ -14,7 +14,7 @@ const parse=file=>{
 };
 
 test('every canonical original published article has stable deep links and an opt-in reader enhancement',()=>{
- assert.equal(articles.length,10);
+ assert.equal(articles.length,11);
  for(const file of articles){
   const {html,json,url}=parse(file);
   const heading=html.match(/<h1>([^<]+)<\/h1>/)?.[1];
@@ -237,7 +237,7 @@ test('article Save for later allowlist matches exactly the public archive cards'
  const html=readFileSync(new URL('index.html',dir),'utf8');
  const listed=[...html.matchAll(/data-note-file="([a-z0-9-]+\.html)"/g)]
   .map(match=>match[1]);
- assert.equal(listed.length,10);
+ assert.equal(listed.length,11);
  assert.equal(new Set(listed).size,listed.length);
  assert.deepEqual([...PUBLIC_READING_FILES].sort(),listed.sort());
  assert.equal(PUBLIC_READING_LIST_KEY,'24gotop-public-reading-list-v1');
