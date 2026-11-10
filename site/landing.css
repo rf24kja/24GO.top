@@ -109,3 +109,34 @@
 
 /* Shared 24GO brand: emerald actions, accessible theme-aware text. */
 .button-primary{background:#10B981;color:#09090B}.button-primary:hover{background:#34D399;color:#09090B}
+
+
+/* Mobile/tablet navigation must fit the viewport, not create a horizontal page
+   scrollbar. Keep links visible in the document flow rather than hiding overflow. */
+@media(max-width:1120px){
+ .site-header .header-inner{flex-wrap:wrap;gap:10px 16px;padding-block:12px}
+ .site-header .header-inner>nav{
+  order:3;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  flex:0 0 100%;width:100%;min-width:0;margin:0;
+  gap:6px 12px;padding-top:10px;border-top:1px solid var(--line)
+ }
+ .site-header .header-inner>nav a{
+  display:flex;align-items:center;min-width:0;max-width:100%;min-height:44px;
+  padding:6px 10px;border-radius:8px;line-height:1.35;
+  white-space:normal;overflow-wrap:anywhere
+ }
+ .site-header .header-inner>.badge{
+  margin-left:auto;max-width:58%;white-space:normal;
+  overflow-wrap:anywhere;line-height:1.35;text-align:center
+ }
+}
+@media(max-width:760px){
+ .hero{grid-template-columns:minmax(0,1fr)}
+}
+@media(max-width:520px){
+ .site-header .header-inner>nav{
+  grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 8px
+ }
+ .site-header .header-inner>nav a{padding:6px 8px}
+ .footer-grid{grid-template-columns:minmax(0,1fr)}
+}
