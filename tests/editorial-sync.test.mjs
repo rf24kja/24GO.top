@@ -56,8 +56,8 @@ test('fail closed on duplicates, unsafe article URLs and manipulated manifest so
 
 test('source validation rejects poisoned RSS or executable article markup before a write',()=>{
  const input=sources();
- const attacked=input.rss.replace('https://24go.top/engineering/',
-   'https://attacker.invalid/engineering/');
+ const attacked=input.rss.replace('<link>'+feed.items[0].url+'</link>',
+   '<link>https://attacker.invalid/engineering/article.html</link>');
  assert.throws(()=>planEditorialSync({...input,rss:attacked}),/Noncanonical|duplicate/);
  const first=feed.items[0].url.split('/').at(-1);
  const malicious=path=>{
