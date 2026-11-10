@@ -14,6 +14,7 @@
 .contribution-steps p a,.contribution-rights a{color:var(--accent)}
 .contribution-steps .cta{margin-top:22px}
 .contribution .contribution-small{font-size:13px;color:var(--muted);margin-top:12px}
+.contribution-board__actions [hidden]{display:none!important}
 .contribution-action{display:inline-flex;min-height:42px;align-items:center;color:var(--accent);
  font-weight:800;font-size:14px;text-underline-offset:4px;margin-top:14px}
 .contribution-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
