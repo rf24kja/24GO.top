@@ -13,13 +13,14 @@ import {UI_LOCALES,UI_STRINGS} from '../site/draft-lab-i18n.js';
 const ROOT=resolve(fileURLToPath(new URL('../site/',import.meta.url)));
 const MIME={html:'text/html; charset=utf-8',css:'text/css; charset=utf-8',
  js:'text/javascript; charset=utf-8',mjs:'text/javascript; charset=utf-8',
- svg:'image/svg+xml',ico:'image/x-icon',png:'image/png'};
+ svg:'image/svg+xml',ico:'image/x-icon',png:'image/png',json:'application/json; charset=utf-8'};
 function localServer(){
  return createServer(async(req,res)=>{
   try{
    if(req.method!=='GET'){res.writeHead(405).end();return;}
    const pathname=new URL(req.url,'http://localhost').pathname;
-   const path=resolve(ROOT,'.'+(pathname==='/'?'/index.html':pathname));
+   const page=pathname==='/'?'/index.html':pathname.endsWith('/')?pathname+'index.html':pathname;
+   const path=resolve(ROOT,'.'+page);
    if(!path.startsWith(ROOT+sep)){res.writeHead(403).end();return;}
    const type=path.slice(path.lastIndexOf('.')+1);
    if(!Object.hasOwn(MIME,type)){res.writeHead(415).end();return;}
@@ -163,6 +164,70 @@ async function waitForEditor(){
  }
  throw Error('Editor module failed to initialize');
 }
+
+async function waitForArchive(){
+ const limit=Date.now()+12000;
+ while(Date.now()<limit){
+  const form=document.querySelector('[data-engineering-search]');
+  const count=document.getElementById('engineering-search-status')?.textContent;
+  const index=document.getElementById('engineering-index-status')?.textContent||'';
+  if(form&&!form.hidden&&count&&
+    (index.includes('Full article text is searchable')||index.includes('Full-text search unavailable')))
+   return true;
+  await new Promise(done=>setTimeout(done,50));
+ }
+ throw Error('Engineering article search failed to initialize');
+}
+function exerciseArchive(){
+ const f=id=>document.getElementById(id);
+ const input=f('engineering-filter');
+ const all=[...document.querySelectorAll('[data-note-card]')];
+ const slash=new KeyboardEvent('keydown',{key:'/',bubbles:true,cancelable:true});
+ document.body.dispatchEvent(slash);
+ const keyboardFocused=document.activeElement===input;
+ const keyboardPrevented=slash.defaultPrevented;
+ input.value='mobile horizontal overflow';
+ input.dispatchEvent(new Event('input',{bubbles:true}));
+ const visible=all.filter(card=>!card.hidden);
+ const first=visible[0]?.querySelector('h3 a');
+ const submit=new Event('submit',{bubbles:true,cancelable:true});
+ f('engineering-filter').focus();
+ document.querySelector('[data-engineering-search]').dispatchEvent(submit);
+ const resultFocused=Boolean(first&&document.activeElement===first);
+ const resultsStatus=f('engineering-search-status').textContent;
+ const urlHasQuery=new URL(window.location.href).searchParams.get('q')==='mobile horizontal overflow';
+ input.value='unmatchabletechnicalwordzzzw123987';
+ input.dispatchEvent(new Event('input',{bubbles:true}));
+ input.focus();
+ const beforeNoResultsFocus=document.activeElement===input;
+ document.querySelector('[data-engineering-search]').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));
+ const zeroFocusStayed=document.activeElement===input;
+ const zero=all.filter(card=>!card.hidden).length===0;
+ const emptyShown=!f('engineering-no-results').hidden;
+ const zeroStatus=f('engineering-search-status').textContent;
+ const escaped=new KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true});
+ input.dispatchEvent(escaped);
+ const escapedQueryCleared=input.value===''&&escaped.defaultPrevented;
+ const security=document.querySelector('[data-engineering-topic="security"]');
+ security.click();
+ const topicPressed=security.getAttribute('aria-pressed')==='true';
+ const urlTopic=new URL(window.location.href).searchParams.get('topic')==='security';
+ security.focus();
+ const ctrlSlash=new KeyboardEvent('keydown',{key:'/',ctrlKey:true,bubbles:true,cancelable:true});
+ document.body.dispatchEvent(ctrlSlash);
+ const shortcutIgnored=document.activeElement===security&&!ctrlSlash.defaultPrevented;
+ const inButtonSlash=new KeyboardEvent('keydown',{key:'/',bubbles:true,cancelable:true});
+ security.dispatchEvent(inButtonSlash);
+ const buttonIgnored=document.activeElement===security&&!inButtonSlash.defaultPrevented;
+ return {total:all.length,keyboardFocused,keyboardPrevented,
+  matches:visible.length,firstTitle:first?.textContent||'',
+  resultFocused,resultsStatus,urlHasQuery,submitPrevented:submit.defaultPrevented,
+  beforeNoResultsFocus,zeroFocusStayed,zero,emptyShown,zeroStatus,
+  escapedQueryCleared,topicPressed,urlTopic,shortcutIgnored,buttonIgnored,
+  width:document.documentElement.clientWidth,
+  scroll:Math.max(document.documentElement.scrollWidth,document.body.scrollWidth)};
+}
+
 async function main(){
  const site=localServer();
  let browser,ws;
@@ -203,6 +268,25 @@ async function main(){
   assert(!c.exceptions.length,'Unexpected browser JS exception '+c.exceptions.join('; '));
   assert(!c.external.length,'External network request '+c.external.join('; '));
   console.log('PASS Chromium Draft Lab: 3 invalid fields, 8 locales, accessible focus and no page overflow');
+  await c.send('Page.navigate',{url:origin+'/engineering/'},sessionId);
+  await c.call(waitForArchive,sessionId);
+  const archive=await c.call(exerciseArchive,sessionId);
+  const requireArchive=(condition,what)=>{
+    if(!condition)throw Error('Reader E2E: '+what+' '+JSON.stringify(archive));
+  };
+  requireArchive(archive.total===12,'12 reviewed public articles expected');
+  requireArchive(archive.keyboardFocused&&archive.keyboardPrevented,'/ must focus article search from page');
+  requireArchive(archive.matches>=1&&archive.firstTitle&&archive.resultFocused&&
+    archive.urlHasQuery&&archive.submitPrevented,'Enter must focus a matching article');
+  requireArchive(archive.zero&&archive.emptyShown&&archive.zeroStatus.startsWith('0 of ')&&
+    archive.beforeNoResultsFocus&&archive.zeroFocusStayed,'empty search must preserve input focus');
+  requireArchive(archive.escapedQueryCleared&&archive.topicPressed&&archive.urlTopic,
+    'Escape must clear query and topic filter must remain accessible');
+  requireArchive(archive.shortcutIgnored&&archive.buttonIgnored,'/ must not hijack interactive input');
+  requireArchive(archive.scroll<=archive.width+1,'320px article search must not overflow page');
+  assert(!c.exceptions.length,'Unexpected browser JS exception '+c.exceptions.join('; '));
+  assert(!c.external.length,'External network request '+c.external.join('; '));
+  console.log('PASS Chromium reader search: 12 cards, / shortcut, Enter result focus, empty-state and 320px viewport');
  }finally{
   if(ws)ws.close();
   if(browser){
