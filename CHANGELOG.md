@@ -1,3 +1,9 @@
+## Unreleased — Draft Lab mobile author/preview navigation
+
+- Add two accessible native-fragment links between the author form and reader preview, with 44px touch targets, visible focus, reduced-motion-safe behavior and eight complete interface translations. This improves one-column editing without reading/writing the manuscript or adding any request.
+- Prevent Ctrl/Cmd+S interception during IME text composition or ambiguous dual-modifier shortcuts. Keep explicit local Markdown downloads and beforeunload safety behavior unchanged.
+- Add regression checks for navigation, focus targets, responsive CSS, eight-language label coverage and shortcut guards. This remains a local/browser-only prototype, not a hosted publishing workflow.
+
 ## Unreleased — editorial source-backed API guide
 
 - Publish a technical case study for bounded public GitHub API article proposals, grounded in merged PR #179; extend article HTML, archive, RSS, JSON Feed, sitemap and static search index.

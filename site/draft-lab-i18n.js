@@ -2,6 +2,8 @@
 // or translations of the user's article. English is the explicit fallback.
 export const UI_LOCALES=Object.freeze(['en','ru','th','es','fr','de','pt','zh']);
 const EN={
+ jumpPreview:"Jump to reader preview ↓",
+ jumpEditor:"Back to article editor ↑",
  replaceLabel:"Replace selected match with",
  replacePlaceholder:"Replacement text (can be empty)",
  replaceButton:"Replace selected",
@@ -155,6 +157,8 @@ const EN={
  clearCanceled:'Draft kept. Nothing was erased.',cleared:'Draft cleared from this browser tab.'
 };
 const RU={
+ jumpPreview:"К предпросмотру статьи ↓",
+ jumpEditor:"Вернуться к редактированию ↑",
  replaceLabel:"Заменить найденное совпадение на",
  replacePlaceholder:"Новый текст (можно оставить пустым)",
  replaceButton:"Заменить найденное",
@@ -307,6 +311,8 @@ const RU={
  clearCanceled:'Черновик оставлен без изменений.',cleared:'Черновик очищен в этой вкладке.'
 };
 const TH={
+ jumpPreview:"ไปยังตัวอย่างบทความ ↓",
+ jumpEditor:"กลับไปแก้ไขบทความ ↑",
  replaceLabel:"แทนที่ข้อความที่เลือกด้วย",
  replacePlaceholder:"ข้อความใหม่ (เว้นว่างได้)",
  replaceButton:"แทนที่ที่เลือก",
@@ -458,6 +464,8 @@ const TH={
  clearCanceled:'เก็บร่างเดิมไว้',cleared:'ล้างร่างในแท็บนี้แล้ว'
 };
 const ES={
+ jumpPreview:"Ir a la vista previa ↓",
+ jumpEditor:"Volver al editor ↑",
  replaceLabel:"Sustituir la coincidencia por",
  replacePlaceholder:"Texto nuevo (puede estar vacío)",
  replaceButton:"Sustituir selección",
@@ -609,6 +617,8 @@ const ES={
  clearCanceled:'Borrador conservado.',cleared:'Borrador borrado de esta pestaña.'
 };
 const FR={
+ jumpPreview:"Aller à l’aperçu ↓",
+ jumpEditor:"Retour à l’éditeur ↑",
  replaceLabel:"Remplacer la correspondance par",
  replacePlaceholder:"Nouveau texte (peut être vide)",
  replaceButton:"Remplacer la sélection",
@@ -760,6 +770,8 @@ const FR={
  clearCanceled:'Brouillon conservé.',cleared:'Brouillon effacé de cet onglet.'
 };
 const DE={
+ jumpPreview:"Zur Lesevorschau ↓",
+ jumpEditor:"Zurück zum Editor ↑",
  replaceLabel:"Gefundene Stelle ersetzen durch",
  replacePlaceholder:"Neuer Text (darf leer sein)",
  replaceButton:"Auswahl ersetzen",
@@ -911,6 +923,8 @@ const DE={
  clearCanceled:'Entwurf beibehalten.',cleared:'Entwurf aus diesem Tab gelöscht.'
 };
 const PT={
+ jumpPreview:"Ir para a prévia ↓",
+ jumpEditor:"Voltar ao editor ↑",
  replaceLabel:"Substituir correspondência por",
  replacePlaceholder:"Novo texto (pode ficar vazio)",
  replaceButton:"Substituir seleção",
@@ -1062,6 +1076,8 @@ const PT={
  clearCanceled:'Rascunho mantido.',cleared:'Rascunho apagado desta aba.'
 };
 const ZH={
+ jumpPreview:"跳转到阅读预览 ↓",
+ jumpEditor:"返回文章编辑器 ↑",
  replaceLabel:"将选中的匹配内容替换为",
  replacePlaceholder:"新文本（可留空）",
  replaceButton:"替换所选内容",

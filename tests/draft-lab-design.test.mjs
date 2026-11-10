@@ -45,3 +45,20 @@ test('local drop target is labelled, translated and never a server upload',()=>{
  assert.match(css,/@media\(prefers-contrast:more\)\{\.draft-drop-zone/);
  assert.doesNotMatch(js,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|sessionStorage|innerHTML/);
 });
+
+test('keyboard and narrow-screen editors can navigate to preview and back without JS state changes',()=>{
+ assert.match(html,/<a class="draft-jump-link" href="#preview-title" data-ui="jumpPreview">/);
+ assert.match(html,/<h2 id="preview-title" tabindex="-1" data-ui="reader">/);
+ assert.match(html,/<a class="draft-jump-link" href="#postBody" data-ui="jumpEditor">/);
+ assert.match(html,/<textarea id="postBody" name="body"/);
+ assert.match(css,/\.draft-jump-link\{[^}]*min-height:44px/);
+ assert.match(css,/\.draft-jump-link:focus-visible\{outline:3px solid var\(--accent\)/);
+ assert.match(css,/@media\(max-width:550px\)\{\.draft-jump-row/);
+ assert.match(css,/#preview-title\{scroll-margin-top:116px\}/);
+ assert.doesNotMatch(js,/location\.hash|history\.pushState|scrollIntoView/);
+});
+test('download shortcut does not interrupt multilingual IME composition or mixed modifiers',()=>{
+ assert.match(js,/event\.isComposing\|\|event\.repeat/);
+ assert.match(js,/Boolean\(event\.ctrlKey\)===Boolean\(event\.metaKey\)/);
+ assert.match(html,/aria-keyshortcuts="Control\+S Meta\+S"/);
+});
