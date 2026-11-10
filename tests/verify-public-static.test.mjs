@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFile,stat} from 'node:fs/promises';
 import {FIXED_ROUTES,sourcePath,sitemapRoutes,releaseRoutes,verifyPublicStatic} from '../scripts/verify-public-static.mjs';
 const SAMPLE='<?xml version="1.0"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+
  ['/','/ru/','/th/','/es/','/fr/','/de/','/pt/','/zh/','/engineering/','/engineering/x.html']
@@ -66,4 +67,15 @@ test('does not run network requests without a valid sitemap',async()=>{
  await assert.rejects(verifyPublicStatic({sitemap:'<?xml?><urlset></urlset>',
   fetchImpl:async()=>{calls++}}),TypeError);
  assert.equal(calls,0);
+});
+
+test('all real canonical routes have reviewed nonempty static source assets',async()=>{
+ const xml=await readFile(sourcePath('/sitemap.xml'),'utf8');
+ const routes=releaseRoutes(xml);
+ assert.ok(routes.length>=30,'Expected canonical website inventory, not only a fixture');
+ for(const route of routes){
+  const file=await stat(sourcePath(route));
+  assert.ok(file.isFile(),'missing static source '+route);
+  assert.ok(file.size>0&&file.size<=512*1024,'out-of-budget source '+route);
+ }
 });
