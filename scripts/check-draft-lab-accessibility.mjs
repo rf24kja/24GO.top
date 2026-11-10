@@ -133,7 +133,10 @@ function switchLanguage(locale){
   invalid:$('postSource').getAttribute('aria-invalid'),
   draft:$('postBody').value,
   width:document.documentElement.clientWidth,
-  scroll:Math.max(document.documentElement.scrollWidth,document.body.scrollWidth)};
+  scroll:Math.max(document.documentElement.scrollWidth,document.body.scrollWidth),
+  offenders:[...document.body.querySelectorAll('*')].map(el=>{
+   const r=el.getBoundingClientRect();return {tag:el.tagName.toLowerCase(),id:el.id,cls:typeof el.className==='string'?el.className:'',left:Math.round(r.left),right:Math.round(r.right)};
+  }).filter(x=>x.right>document.documentElement.clientWidth+1&&x.left<document.documentElement.clientWidth).slice(0,12)};
 }
 function correctSource(){
  const input=document.getElementById('postSource');
