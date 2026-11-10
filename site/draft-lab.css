@@ -202,3 +202,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 input[aria-invalid="true"],textarea[aria-invalid="true"],select[aria-invalid="true"]{border-color:#ffb29a;border-width:2px}
 @media(prefers-color-scheme:light){.field-error{border-color:#9b3528;color:#9b3528}input[aria-invalid="true"],textarea[aria-invalid="true"],select[aria-invalid="true"]{border-color:#9b3528}}
 @media(prefers-contrast:more){.field-error{border-width:4px}}
+
+/* Editor header pills must wrap below translated headings on 320px phones. */
+@media(max-width:550px){.panel-head{flex-wrap:wrap;min-width:0}.panel-head>div{min-width:0;max-width:100%}.panel-head h2{overflow-wrap:anywhere}.panel-head .pill{min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere}}
