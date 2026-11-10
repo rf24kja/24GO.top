@@ -21,3 +21,13 @@ jobs:
         run: bash -n scripts/check-live-seo.sh
       - run: npm run check
       - run: npm test
+      - name: Real Chromium mobile layout smoke (PUBLIC repo only)
+        run: |
+          if command -v google-chrome >/dev/null 2>&1; then
+            CHROME_BIN="$(command -v google-chrome)" npm run mobile:check
+          elif command -v chromium >/dev/null 2>&1; then
+            CHROME_BIN="$(command -v chromium)" npm run mobile:check
+          else
+            echo "::error::No Chromium browser installed on public runner"
+            exit 1
+          fi
