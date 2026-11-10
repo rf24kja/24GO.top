@@ -1,3 +1,9 @@
+## Unreleased — lossless editorial proposal headline validation
+
+- Reuse exactly the same Unicode-safe 5–160-character draft title validation for local Markdown export and user-confirmed public GitHub issue proposal links. Reject lone UTF-16 surrogates, control characters and Unicode line/paragraph separators rather than allowing URL normalization to silently alter an author's headline.
+- Keep public proposal links strictly title-only, human-confirmed, HTTPS and free of manuscript body, source or tokens. Valid multilingual titles and proposal-only ideas remain supported.
+- Add regression cases covering malformed Unicode and eight-language headline formats without changing the backend or hosted publication status.
+
 ## Unreleased — race-safe browser vault backup restoration
 
 - Reject outdated asynchronous backup reads if another JSON file is selected, the vault changes in this/another tab, or a newer restore has completed. A pending older backup cannot open a stale confirmation, write an obsolete backup or clear the latest file picker.
