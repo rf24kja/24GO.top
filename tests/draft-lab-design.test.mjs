@@ -62,3 +62,15 @@ test('download shortcut does not interrupt multilingual IME composition or mixed
  assert.match(js,/Boolean\(event\.ctrlKey\)===Boolean\(event\.metaKey\)/);
  assert.match(html,/aria-keyshortcuts="Control\+S Meta\+S"/);
 });
+
+test('vault backup restoration invalidates stale async reads without data loss',()=>{
+ assert.match(js,/const restoreGate=createDraftImportGate\(\)/);
+ assert.match(js,/const ticket=restoreGate\.begin\(\)/);
+ assert.match(js,/if\(!restoreGate\.canApply\(ticket\)\)return;\n  if\(!window\.confirm\(ui\('backupRestoreConfirm'\)\)\)return;/);
+ assert.match(js,/if\(!restoreGate\.canApply\(ticket\)\)return;\n  const restored=getDraftVault\(\)\.restoreBackup\(text\)/);
+ assert.match(js,/restoreGate\.changed\(\);\n  refreshBrowserDrafts\(\)/);
+ assert.match(js,/if\(restoreGate\.isLatest\(ticket\)\)input\.value='';/);
+ assert.match(js,/window\.addEventListener\('storage',event=>\{[^}]*restoreGate\.changed\(\)/);
+ assert.match(js,/field\('saveBrowserDraft'\)\.addEventListener\('click',\(\)=>\{\n restoreGate\.changed\(\)/);
+ assert.match(js,/field\('deleteBrowserDraft'\)\.addEventListener\('click',\(\)=>\{\n restoreGate\.changed\(\)/);
+});

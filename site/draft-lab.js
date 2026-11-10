@@ -69,6 +69,9 @@ function revisionChanged(){
 }
 
 const importGate=createDraftImportGate();
+// Restoration is asynchronous too: an older selected backup must never win
+// over a newer selection or a changed manual browser library.
+const restoreGate=createDraftImportGate();
 // Separate token for pending review-package digests: it is invalidated by
 // every editor action, including Clear and a change later reverted to text.
 const reviewExportGate=createDraftImportGate();
@@ -473,6 +476,7 @@ for(const type of ['dragover','drop']){
 
 // Manual, unencrypted same-origin browser storage. Never autosave or sync.
 field('saveBrowserDraft').addEventListener('click',()=>{
+ restoreGate.changed();
  if(!readyToExport())return;
  try{
   const storage=window.localStorage;
@@ -512,6 +516,7 @@ field('openBrowserDraft').addEventListener('click',()=>{
  }catch(error){vaultError(error);}
 });
 field('deleteBrowserDraft').addEventListener('click',()=>{
+ restoreGate.changed();
  const id=field('savedBrowserDraft').value;
  if(!id||!window.confirm(ui('vaultDeleteConfirm')))return;
  try{
@@ -529,6 +534,7 @@ field('deleteBrowserDraft').addEventListener('click',()=>{
 // Storage notifications are read-only; no automatic save or network traffic.
 window.addEventListener('storage',event=>{
   if(event.key!==VAULT_KEY && event.key!==null)return;
+  restoreGate.changed();
   try{
     if(event.storageArea && event.storageArea!==window.localStorage)return;
   }catch{/* Storage access may be revoked; conservatively verify below. */}
@@ -574,6 +580,7 @@ field('restoreDraftLibrary').addEventListener('click',()=>{
 field('draftLibraryFile').addEventListener('change',async event=>{
  const input=event.currentTarget,file=input.files?.[0];
  if(!file)return;
+ const ticket=restoreGate.begin();
  try{
   if(!/\.json$/i.test(file.name)||!Number.isSafeInteger(file.size)||
     file.size<10||file.size>MAX_VAULT_BACKUP_BYTES)
@@ -582,14 +589,20 @@ field('draftLibraryFile').addEventListener('change',async event=>{
   if(buffer.byteLength!==file.size||buffer.byteLength>MAX_VAULT_BACKUP_BYTES)
    throw new TypeError('Invalid backup size');
   const text=new TextDecoder('utf-8',{fatal:true}).decode(buffer);
+  // Never open a confirmation for an obsolete read. Recheck after consent.
+  if(!restoreGate.canApply(ticket))return;
   if(!window.confirm(ui('backupRestoreConfirm')))return;
+  if(!restoreGate.canApply(ticket))return;
   const restored=getDraftVault().restoreBackup(text);
+  restoreGate.changed();
   refreshBrowserDrafts();
   message(ui('backupRestored')+' ('+restored+')');
  }catch(error){
-  message(ui(error?.message==='vault_conflict'?'backupConflict':'backupInvalid'),true);
+  if(restoreGate.canApply(ticket))
+   message(ui(error?.message==='vault_conflict'?'backupConflict':'backupInvalid'),true);
  }finally{
-  input.value='';
+  // An obsolete file read must never clear a newer selection in this picker.
+  if(restoreGate.isLatest(ticket))input.value='';
  }
 });
 
