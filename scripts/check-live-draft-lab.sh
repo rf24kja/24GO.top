@@ -32,6 +32,7 @@ download "$origin/draft-lab.js" "$tmp/editor.js"
 download "$origin/draft-lab-logic.js" "$tmp/logic.js"
 download "$origin/draft-lab-preview.js" "$tmp/preview.js"
 download "$origin/draft-lab-i18n.js" "$tmp/i18n.js"
+download "$origin/draft-lab.css" "$tmp/editor.css"
 download "$origin/draft-lab-vault.js" "$tmp/vault.js"
 require 'id="exportDraftLibrary"' "$tmp/draft.html" 'whole library export control'
 require 'id="restoreDraftLibrary"' "$tmp/draft.html" 'whole library restore control'
@@ -120,6 +121,18 @@ require 'export function renderPreviewOutline' "$tmp/preview.js" 'safe outline D
 require 'const INDENTED_CODE = /^(?: {4}|' "$tmp/preview.js" 'published restricted indented-code parser'
 require "body.value.trim() ? body.value : ui('emptyBody')" "$tmp/editor.js" 'untrimmed live preview matches exported source'
 require 'outlineTitle:' "$tmp/i18n.js" 'localized section navigation'
+# Mobile author-to-review navigation must be delivered as usable HTML/CSS,
+# not only source-tested. These checks never access unpublished manuscripts.
+require 'href="#preview-title" data-ui="jumpPreview"' "$tmp/draft.html" 'mobile jump to reader preview'
+require 'id="preview-title" tabindex="-1"' "$tmp/draft.html" 'keyboard-focusable preview heading'
+require 'href="#postBody" data-ui="jumpEditor"' "$tmp/draft.html" 'return to article textarea'
+require '.draft-jump-link{display:inline-flex' "$tmp/editor.css" 'touch-friendly navigation control'
+require 'min-height:44px' "$tmp/editor.css" 'minimum touch target'
+require '@media(max-width:550px){.draft-jump-row' "$tmp/editor.css" 'single-column navigation'
+require 'jumpPreview:' "$tmp/i18n.js" 'translated jump-to-preview label'
+require 'jumpEditor:' "$tmp/i18n.js" 'translated return-to-editor label'
+require 'event.isComposing||event.repeat' "$tmp/editor.js" 'safe multilingual IME shortcut guard'
+
 # Verify the newly published HTML articles and their discovery surfaces
 # after Pages completes. Do not mistake a successful Git merge for CDN delivery.
 download "$origin/engineering/" "$tmp/articles.html"
