@@ -67,7 +67,10 @@ The public proposal board uses explicitly requested pagination: up to
 four pages of sixty recent GitHub issues, with at most twelve validated
 proposal cards. It never follows a GitHub-provided Link URL, never
 transmits the manuscript, and does not claim to index all historical
-proposals. No submitted issue was fabricated to populate the board.
+proposals. GitHub metadata is consumed as a bounded stream (256 KiB of
+decoded bytes, 512 chunks maximum), before parsing or rendering; oversize,
+invalid UTF-8, bad MIME and redirects are rejected without losing cards
+already displayed. No submitted issue was fabricated to populate the board.
 
 A reviewed article change is not public until the **Pages workflow**
 finishes and a read-only external HTTPS check matches the exact build.

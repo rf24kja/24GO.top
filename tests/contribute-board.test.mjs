@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {publicProposalSummaries,githubHasNextPage,setupProposalBoard}
- from '../site/contribute-board.js';
+import {publicProposalSummaries,githubHasNextPage,setupProposalBoard,
+ readBoundedPublicIssues} from '../site/contribute-board.js';
 const root=new URL('../site/',import.meta.url);
 const page=readFileSync(new URL('contribute.html',root),'utf8');
 const script=readFileSync(new URL('contribute-board.js',root),'utf8');
@@ -26,11 +26,11 @@ const issue=(number,title='Reproducible technical guidance')=>({
  created_at:'2026-10-31T11:00:00Z'
 });
 function response(rows,{next=false,length=null}={}){
- return {ok:true,headers:{get:key=>
-   key==='link'&&next?
-    '<https://api.github.com/repos/rf24kja/24GO.top/issues?page=2>; rel="next"':
-    key==='content-length'?length:null},
-  text:async()=>JSON.stringify(rows)};
+ const headers={'content-type':'application/json'};
+ if(next)headers.link=
+  '<https://api.github.com/repos/rf24kja/24GO.top/issues?page=2>; rel="next"';
+ if(length!==null)headers['content-length']=length;
+ return new Response(JSON.stringify(rows),{status:200,headers});
 }
 test('network requests require an explicit user action; no content is auto-transmitted',()=>{
  assert.match(page,/id="loadProposals"/);
@@ -110,4 +110,70 @@ test('partial results survive rate limits and excessive response budgets',async(
  assert.match(els.proposalBoardStatus.textContent,/remain visible/);
  await els.loadOlderProposals.listeners.click();
  assert.equal(calls,3,'retries remain explicitly user-triggered');
+});
+
+test('public GitHub metadata stream rejects oversized bytes and cancels the reader',async()=>{
+ let cancelled=false,released=false,reads=0;
+ const reader={
+  async read(){reads++;return {done:false,value:new Uint8Array(262145)};},
+  async cancel(){cancelled=true;},
+  releaseLock(){released=true;}
+ };
+ const response={
+  status:200,redirected:false,
+  headers:{get:key=>key==='content-type'?'application/json':null},
+  body:{getReader:()=>reader}
+ };
+ await assert.rejects(readBoundedPublicIssues(response),/metadata too large/);
+ assert.equal(reads,1,'do not continue consuming oversized responses');
+ assert.equal(cancelled,true);
+ assert.equal(released,true);
+});
+
+test('metadata stream rejects invalid UTF-8, HTML, redirects and missing body',async()=>{
+ const type={'content-type':'application/json'};
+ const attempts=[
+  new Response(Uint8Array.of(0xff),{status:200,headers:type}),
+  new Response('[]',{status:200,headers:{'content-type':'text/html'}}),
+  new Response('[]',{status:404,headers:type}),
+  {status:200,redirected:true,headers:{get:()=> 'application/json'},
+   body:{getReader:()=>{throw Error('redirect must not be read');}}},
+  {status:200,headers:{get:()=> 'application/json'}}
+ ];
+ for(const candidate of attempts){
+  await assert.rejects(readBoundedPublicIssues(candidate));
+ }
+});
+
+test('bounded public JSON stream accepts chunked small results',async()=>{
+ const data=JSON.stringify([issue(101,'Safe streamed proposal')]);
+ const bytes=new TextEncoder().encode(data);
+ let index=0;
+ const reader={
+  async read(){
+   if(index===bytes.length)return {done:true};
+   const value=bytes.subarray(index,Math.min(bytes.length,index+3));
+   index+=value.length;return {done:false,value};
+  },
+  releaseLock(){}
+ };
+ const r={status:200,redirected:false,
+  headers:{get:k=>k==='content-type'?'application/vnd.github+json':null},
+  body:{getReader:()=>reader}};
+ assert.deepEqual(await readBoundedPublicIssues(r),[issue(101,'Safe streamed proposal')]);
+});
+
+test('a later malformed streamed page cannot remove already displayed issues',async()=>{
+ let calls=0;
+ const els=ui(async()=>{
+  calls++;
+  return calls===1?response([issue(50,'Confirmed first proposal')],{next:true}):
+   new Response('<script>malformed</script>',{status:200,
+    headers:{'content-type':'application/json'}});
+ });
+ await els.loadProposals.listeners.click();
+ await els.loadOlderProposals.listeners.click();
+ assert.equal(calls,2);
+ assert.equal(els.proposalBoardItems.children.length,1);
+ assert.match(els.proposalBoardStatus.textContent,/remain visible/);
 });
