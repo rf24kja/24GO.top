@@ -1,3 +1,8 @@
+## Unreleased — deterministic public editorial sync command
+
+- Consolidate the trusted reviewed static article/RSS/catalogue inputs into a local-only, fail-closed generator for JSON Feed, full-text index, sitemap, related-reading HTML and the reader's approved saved-article list. Compute the complete plan before any local write; never send author drafts to servers or publish automatically.
+- Add source-idempotence and hostile input tests, `npm run editorial:check` and `npm run editorial:write`, while preserving manual rights, authorship, Article JSON-LD and review/Pages release checks. This only reduces synchronisation mistakes; it is not a hosted publishing backend.
+
 ## Unreleased — source-backed mobile overflow engineering publication
 
 - Publish an original, reproducible technical case study grounded in reviewed public PRs #189–#191 and recorded Chromium/Pages runs. Explain both real document-width defects (unwrapped navigation and long localized headings), safe CSS fixes, 98 browser layout checks and exact CSS CDN verification.

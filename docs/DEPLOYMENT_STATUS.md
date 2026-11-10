@@ -1,5 +1,12 @@
 # 24GOTOP public deployment — verification log
 
+## 11 November 2026 (Bangkok) — confirmed 12th article and 49-route PUBLIC HTTPS release
+
+Original technical publication [mobile horizontal overflow with Chromium QA](https://24go.top/engineering/fix-mobile-horizontal-overflow-with-chromium-tests.html) was merged through [public PR #192](https://github.com/rf24kja/24GO.top/pull/192), commit [`5084f674ba9e1d93d4259745e51b4f061f8ae78f`](https://github.com/rf24kja/24GO.top/commit/5084f674ba9e1d93d4259745e51b4f061f8ae78f). The [PUBLIC post-merge CI #42868129166](https://github.com/rf24kja/24GO.top/actions/runs/42868129166) passed source validation, Node tests and Chromium layout checks; the [PUBLIC Pages deployment #42868129422](https://github.com/rf24kja/24GO.top/actions/runs/42868129422) succeeded for that exact SHA. Job logs confirmed the source-bound release receipt, 8/8 essential, 9/9 fixed editorial asset checks, and **49/49** byte-exact sitemap/fixed-route HTTPS matches. The [external SEO audit](https://github.com/rf24kja/24GO.top/actions/runs/42868209996) and [Draft Lab audit](https://github.com/rf24kja/24GO.top/actions/runs/42868209921) also succeeded.
+
+This proves a real PUBLIC static editorial article and its discovery assets were delivered at the observed moment, **not** search-engine indexing, signed-in community author publishing, private PostgreSQL writes, real-user adoption or continuous uptime. PRIVATE 24GO.online and private GitHub Actions were not involved. Roll back via a reviewed public PR revert followed by the same Pages HTTPS receipt and source audit.
+
+
 ## 5 November 2026 — Reading Paths CDN release verification expansion (source only)
 
 The public Reading Paths builder now loads its catalog through a bounded, strict same-origin stream rather than raw `response.json()`. Source tests verify the 512 KiB/512-chunk cap, strict UTF-8/media type, no credentials, redirects or referrers, timeout and graceful fallback.
