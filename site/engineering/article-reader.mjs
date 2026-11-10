@@ -48,7 +48,7 @@ export function articleCitations(meta){
 // Preserve its v1 wire format and fail closed on corrupt/oversized local data.
 // Reading here never repairs or overwrites another tab's saved preferences.
 // Canonical static filenames must match the archive; regression tests enforce parity.
-export const PUBLIC_READING_FILES=Object.freeze(["bounded-github-api-article-proposals.html","read-only-mcp-server-for-technical-articles.html","multilingual-markdown-editor-without-losing-drafts.html","verify-github-pages-deploy-not-just-ci.html","safe-markdown-citation-links-without-xss.html","javascript-sdk-api-key-leak-prevention.html","discoverable-technical-articles.html","postgres-insert-returning-least-privilege.html","submit-is-not-publish.html","markdown-preview-safety.html","why-draft-lab-first.html"]);
+export const PUBLIC_READING_FILES=Object.freeze(["fix-mobile-horizontal-overflow-with-chromium-tests.html","bounded-github-api-article-proposals.html","read-only-mcp-server-for-technical-articles.html","multilingual-markdown-editor-without-losing-drafts.html","verify-github-pages-deploy-not-just-ci.html","safe-markdown-citation-links-without-xss.html","javascript-sdk-api-key-leak-prevention.html","discoverable-technical-articles.html","postgres-insert-returning-least-privilege.html","submit-is-not-publish.html","markdown-preview-safety.html","why-draft-lab-first.html"]);
 const APPROVED_READING_FILES=new Set(PUBLIC_READING_FILES);
 export const PUBLIC_READING_LIST_KEY='24gotop-public-reading-list-v1';
 export function validatedPublicReadingList(raw){
