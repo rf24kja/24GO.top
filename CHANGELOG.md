@@ -1,3 +1,9 @@
+## Unreleased — protect on-device saved article links during clear consent
+
+- Capture the current public reading-list snapshot **before** the user confirms clearing it. If a second browser tab changes saved links while the confirmation is open, refuse the stale destructive action rather than deleting newly saved articles.
+- Keep the updated list visible, notify the reader, and retain keyboard focus on the still-visible Clear button; successful clearing still moves focus to the stable list heading.
+- Add a deterministic cross-tab conflict regression. This remains opt-in, unencrypted browser storage for PUBLIC article URLs only—no private drafts or remote synchronization.
+
 ## Unreleased — verify anonymous read-only query results
 
 - Fail closed if the public Supabase/PostgREST adapter receives any published row whose locale, category or article ID does not match the exact requested GET filter. A malicious/misconfigured upstream cannot substitute a different article under the canonical ID or mix languages in a public archive response.
