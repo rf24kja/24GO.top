@@ -1,3 +1,8 @@
+## Unreleased — stricter local draft backup metadata
+
+- Reject impossible ISO calendar timestamps in opt-in browser draft snapshots and imported JSON backups, including dates silently normalized by JavaScript (`February 30`, `November 31`, `24:00`). Preserve exact canonical timestamps and fail closed without partial storage writes.
+- Add regression tests for rejected damaged backups and successful restoration of the original valid multilingual draft. No network calls or hosted publishing authority.
+
 ## Unreleased — race-safe saved article backup selection
 
 - Ignore earlier asynchronous JSON backup reads when the reader chooses a newer file, including stale read errors and cleanup; only the latest selected import can ask for consent, merge public links, or update UI feedback.
