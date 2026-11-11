@@ -59,6 +59,9 @@ test('invalid query and URL arguments fail before a request',async()=>{
  for(const limit of [0,21,1.25,'5']){
   await assert.rejects(client.searchArticles({query:'valid',limit}),RangeError);
  }
+ for(const offset of [-1,201,1.5,'2',Number.NaN,Infinity]){
+  await assert.rejects(client.searchArticles({query:'valid',offset}),RangeError);
+ }
  for(const url of [
   'https://another.example/engineering/article.html',
   'https://24go.top/engineering/../article.html',
@@ -107,4 +110,53 @@ test('numeric response-size preflight refuses a declared oversized stream',async
   return true;
  });
  assert.ok(cancelled>=1);
+});
+
+
+test('offset pages return deterministic nonoverlapping results and an explicit end',async()=>{
+ const {client,calls}=makeClient();
+ const query='security';
+ const all=await client.searchArticles({query,limit:20});
+ assert.ok(all.total>=7,'published corpus has enough source-backed results to page');
+ assert.equal(all.offset,0);
+ assert.equal(all.nextOffset,null,'a single large page covers every match');
+ const found=[];
+ let offset=0,numberOfPages=0;
+ while(offset!==null && numberOfPages<10){
+  const page=await client.searchArticles({query,limit:3,offset});
+  assert.equal(page.total,all.total);
+  assert.equal(page.offset,offset);
+  assert.ok(page.articles.length>=1 && page.articles.length<=3);
+  assert.ok(page.articles.every(item=>feed.items.some(f=>f.url===item.url)));
+  found.push(...page.articles.map(item=>item.url));
+  numberOfPages++;
+  offset=page.nextOffset;
+  if(offset!==null)assert.equal(offset,found.length);
+ }
+ assert.equal(offset,null,'pagination must terminate without an extra empty fetch');
+ assert.equal(new Set(found).size,found.length);
+ assert.deepEqual(found,all.articles.map(item=>item.url));
+ assert.equal(calls.length,2*(numberOfPages+1),
+  'each public search page reads exactly the two fixed first-party GET endpoints');
+ assert.ok(calls.every(call=>!call.url.includes('security')&&
+  call.options.headers?.authorization===undefined));
+});
+
+test('search offsets beyond matches return an empty terminal page without leaking query',async()=>{
+ const {client,calls}=makeClient();
+ const result=await client.searchArticles({query:'security',limit:2,offset:200});
+ assert.equal(result.offset,200);
+ assert.equal(result.total,9);
+ assert.deepEqual(result.articles,[]);
+ assert.equal(result.nextOffset,null);
+ assert.equal(calls.length,2);
+});
+
+test('search page boundaries are backward compatible with a default offset of zero',async()=>{
+ const {client}=makeClient();
+ const first=await client.searchArticles({query:'security',limit:2});
+ const explicit=await client.searchArticles({query:'security',limit:2,offset:0});
+ assert.deepEqual(first,explicit);
+ assert.equal(first.nextOffset,2);
+ assert.equal(first.offset,0);
 });
