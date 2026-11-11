@@ -169,8 +169,20 @@ export function createSupabaseReadStore({
     }
     if (!response?.ok) throw new StoreUnavailable();
     const rows = await readBoundedRows(response);
-    if (!Array.isArray(rows) || rows.length > 50) throw new StoreUnavailable('Post store sent unexpected data');
-    return rows.map(safePost);
+    const requestedLimit = Number(filters.limit);
+    if (!Array.isArray(rows) || rows.length > 50 ||
+        !Number.isSafeInteger(requestedLimit) || requestedLimit < 1 ||
+        rows.length > requestedLimit)
+      throw new StoreUnavailable('Post store sent unexpected data');
+    const posts = rows.map(safePost);
+    // Query parameters do not authorize an upstream response to ignore its
+    // own filters. Validate returned public row identity before any output.
+    if (posts.some(post =>
+      (filters.locale && filters.locale !== 'eq.' + post.locale) ||
+      (filters.category && filters.category !== 'eq.' + post.category) ||
+      (filters.id && filters.id !== 'eq.' + post.id.toLowerCase())))
+      throw new StoreUnavailable('Post store returned rows outside requested filters');
+    return posts;
   }
   return {
     mode: 'supabase-readonly',

@@ -217,3 +217,53 @@ test('read-only HTTP endpoint fails closed on upstream byte overflow without exp
   assert.doesNotMatch(body, /this secret upstream value/);
   assert.match(body, /size limit/);
 });
+
+
+test('read-only adapter fails closed when upstream ignores exact public filters', async () => {
+  const foreignId='bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
+  const cases=[
+    {name:'different locale',rows:[{...row,locale:'ru'}],
+      read:store=>store.list({locale:'en'})},
+    {name:'different category',rows:[{...row,category:'news'}],
+      read:store=>store.list({locale:'en',category:'tools'})},
+    {name:'different article id',rows:[{...row,id:foreignId}],
+      read:store=>store.get(id)},
+    {name:'more rows than requested limit',rows:[row,{...row,id:foreignId}],
+      read:store=>store.list({locale:'en',limit:1})}
+  ];
+  for (const item of cases) {
+    const {fetchImpl} = mockFetch(item.rows);
+    const store = createSupabaseReadStore({url, publishableKey:key, fetchImpl});
+    await assert.rejects(item.read(store), error =>
+      error instanceof StoreUnavailable && error.status===503,
+      item.name);
+  }
+});
+
+test('HTTP read-only API never returns an upstream article outside requested locale', async t => {
+  const upstreamTitle='A published article from the wrong locale';
+  const {fetchImpl} = mockFetch([{...row,locale:'ru',title:upstreamTitle}]);
+  const server=createApp({storeMode:'supabase-readonly',
+    supabaseUrl:url,publishableKey:key,fetchImpl});
+  server.listen(0,'127.0.0.1');
+  await once(server,'listening');
+  t.after(()=>new Promise(resolve=>server.close(resolve)));
+  const base='http://127.0.0.1:'+server.address().port;
+  const response=await fetch(base+'/api/posts?locale=en');
+  assert.equal(response.status,503);
+  const output=await response.text();
+  assert.doesNotMatch(output,/A published article from the wrong locale/);
+  assert.match(output,/outside requested filters/);
+});
+
+test('correct locale, category, identifier and requested limit remain readable', async () => {
+  const {calls,fetchImpl}=mockFetch([row]);
+  const store=createSupabaseReadStore({url,publishableKey:key,fetchImpl});
+  const listed=await store.list({locale:'en',category:'tools',limit:1});
+  assert.deepEqual(listed.map(post=>post.id),[id]);
+  const single=await store.get(id);
+  assert.equal(single.id,id);
+  assert.equal(calls.length,2);
+  assert.equal(calls[0].requestUrl.searchParams.get('limit'),'1');
+  assert.equal(calls[1].requestUrl.searchParams.get('id'),'eq.'+id);
+});

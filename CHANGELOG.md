@@ -1,3 +1,9 @@
+## Unreleased — verify anonymous read-only query results
+
+- Fail closed if the public Supabase/PostgREST adapter receives any published row whose locale, category or article ID does not match the exact requested GET filter. A malicious/misconfigured upstream cannot substitute a different article under the canonical ID or mix languages in a public archive response.
+- Enforce the requested row limit after streaming validation, not just the global 50-row cap. Add negative adapter and actual HTTP tests, plus successful exact-filter reads.
+- These checks validate already public, anonymous read-only data. They do not change RLS, credentials, moderated publishing or the PRIVATE hosted Core.
+
 ## Unreleased — bounded anonymous PostgreSQL feed ingestion
 
 - Replace unbounded `Response.json()` in the **PUBLIC read-only Supabase/PostgREST adapter** with a strictly limited streamed JSON decoder (2 MiB total, 512 chunks, fatal UTF-8). Reject oversized reported lengths early and reject actually oversized streams even when their Content-Length lies, cancelling the body before parsing.
