@@ -1,3 +1,9 @@
+## Unreleased — protect manual drafts against cross-tab edits during consent
+
+- Capture the exact saved-draft revision before showing the browser confirmation for opening or deleting it. Check the same selected ID and revision after consent so another tab cannot update a draft and then have that newer revision silently deleted or replace unsaved text.
+- Reuse the existing optimistic version conflict guard, preserve the current editor content and stored entries on failure, and add two deterministic two-tab/confirmation regression tests.
+- This is local opt-in browser storage safety, not server-side drafts, recovery sync, hosted accounts or moderation.
+
 ## Unreleased — deterministic offline editorial review-package verification
 
 - Treat JSON review-package verification as last-file-selection-wins in the public browser-only Draft Lab. Clear the prior integrity verdict when a new file is selected; reject stale success or failure messages and prevent an older file read from clearing the newer selection.

@@ -511,10 +511,17 @@ field('savedBrowserDraft').addEventListener('change',()=>refreshBrowserDrafts())
 field('openBrowserDraft').addEventListener('click',()=>{
  const id=field('savedBrowserDraft').value;
  if(!id)return;
+ // Snapshot the selected revision BEFORE asking to overwrite the editor.
+ // Another browser tab may change a saved draft while the prompt is open.
+ let saved;
+ try{saved=getDraftVault().load(id);}
+ catch(error){vaultError(error);return;}
  if(hasDraftContent(currentDraft()) &&
     !window.confirm(ui('vaultReplace')))return;
  try{
-  const saved=getDraftVault().load(id);
+  if(field('savedBrowserDraft').value!==id||
+     getDraftVault().load(id).version!==saved.version)
+   throw new Error('vault_conflict');
   title.value=saved.draft.title;
   body.value=saved.draft.body;
   locale.value=saved.draft.locale;
@@ -533,9 +540,16 @@ field('openBrowserDraft').addEventListener('click',()=>{
 field('deleteBrowserDraft').addEventListener('click',()=>{
  restoreGate.changed();
  const id=field('savedBrowserDraft').value;
- if(!id||!window.confirm(ui('vaultDeleteConfirm')))return;
+ if(!id)return;
+ // Capture the exact revision the author intended to delete, not whatever
+ // another tab may have written while the native confirmation was open.
+ let loaded;
+ try{loaded=getDraftVault().load(id);}
+ catch(error){vaultError(error);return;}
+ if(!window.confirm(ui('vaultDeleteConfirm')))return;
  try{
-  const loaded=getDraftVault().load(id);
+  if(field('savedBrowserDraft').value!==id)
+   throw new Error('vault_conflict');
   getDraftVault().remove(id,{version:loaded.version});
   if(activeSavedId===id)resetSavedSlot();
   refreshBrowserDrafts();
