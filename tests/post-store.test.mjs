@@ -128,3 +128,92 @@ test('read-only HTTP mode serves feed and rejects ALL publication attempts', asy
   assert.match((await attemptedWrite.json()).error, /disabled/);
   assert.ok(calls.every(call => call.options.method === 'GET'));
 });
+
+
+test('read-only adapter rejects oversized Content-Length without parsing and cancels stream', async () => {
+  let cancelled = 0;
+  const fetchImpl = async () => new Response(new ReadableStream({
+    start(controller) { controller.enqueue(new Uint8Array([91])); },
+    cancel() { cancelled++; }
+  }), { headers: { 'content-length': String(3 * 1024 * 1024) } });
+  const store = createSupabaseReadStore({url, publishableKey:key, fetchImpl});
+  await assert.rejects(store.list({locale:'en'}), error =>
+    error instanceof StoreUnavailable && /size limit/.test(error.message));
+  assert.equal(cancelled, 1, 'reject advertised oversize before reading payload');
+});
+
+test('read-only adapter stops malicious streaming JSON at the actual byte limit', async () => {
+  let cancelled = 0, pulls = 0;
+  const fetchImpl = async () => new Response(new ReadableStream({
+    pull(controller) {
+      pulls++;
+      controller.enqueue(new Uint8Array(1024 * 1024));
+    },
+    cancel() { cancelled++; }
+  }), { headers: { 'content-length':'1' } }); // deliberately false
+  const store = createSupabaseReadStore({url, publishableKey:key, fetchImpl});
+  await assert.rejects(store.get(id), error =>
+    error instanceof StoreUnavailable && /size limit/.test(error.message));
+  assert.equal(cancelled, 1);
+  assert.ok(pulls <= 5, 'upstream cannot stream an unbounded JSON response');
+});
+
+test('read-only adapter bounds excessive tiny chunks even below byte limit', async () => {
+  let cancelled = 0, pulls = 0;
+  const fetchImpl = async () => new Response(new ReadableStream({
+    pull(controller) {
+      pulls++;
+      controller.enqueue(Uint8Array.of(32));
+    },
+    cancel() { cancelled++; }
+  }));
+  const store = createSupabaseReadStore({url, publishableKey:key, fetchImpl});
+  await assert.rejects(store.list({locale:'en'}), StoreUnavailable);
+  assert.equal(cancelled, 1);
+  assert.ok(pulls <= 515, 'small chunks must not create unlimited allocations');
+});
+
+test('read-only adapter rejects invalid UTF-8 rather than rewriting article text', async () => {
+  const bytes = Uint8Array.of(91, 34, 255, 34, 93);
+  const store = createSupabaseReadStore({
+    url, publishableKey:key, fetchImpl:async () => new Response(bytes)
+  });
+  await assert.rejects(store.list({locale:'en'}), error =>
+    error instanceof StoreUnavailable && /invalid JSON/.test(error.message));
+});
+
+test('read-only adapter preserves Thai and Chinese split across streamed UTF-8 chunks', async () => {
+  const multilingual = {...row, title:'Read-only ภาษาไทย 中文', body:row.body+' ภาษาไทย 中文'};
+  const bytes = new TextEncoder().encode(JSON.stringify([multilingual]));
+  const at = bytes.findIndex(value => value >= 0xe0);
+  assert.ok(at > 0, 'fixture contains multi-byte Unicode');
+  const fetchImpl = async () => new Response(new ReadableStream({
+    start(controller) {
+      controller.enqueue(bytes.slice(0, at + 1));
+      controller.enqueue(bytes.slice(at + 1));
+      controller.close();
+    }
+  }));
+  const store = createSupabaseReadStore({url, publishableKey:key, fetchImpl});
+  const [post] = await store.list({locale:'en'});
+  assert.equal(post.title, multilingual.title);
+  assert.equal(post.body, multilingual.body);
+});
+
+test('read-only HTTP endpoint fails closed on upstream byte overflow without exposing body', async t => {
+  const secretText = 'this secret upstream value must never reach the API response';
+  const fetchImpl = async () => new Response(new ReadableStream({
+    pull(controller) { controller.enqueue(new TextEncoder().encode(secretText.repeat(20000))); }
+  }));
+  const server = createApp({storeMode:'supabase-readonly',
+    supabaseUrl:url, publishableKey:key, fetchImpl});
+  server.listen(0, '127.0.0.1');
+  await once(server, 'listening');
+  t.after(() => new Promise(resolve => server.close(resolve)));
+  const base = 'http://127.0.0.1:' + server.address().port;
+  const response = await fetch(base + '/api/posts?locale=en');
+  assert.equal(response.status, 503);
+  const body = await response.text();
+  assert.doesNotMatch(body, /this secret upstream value/);
+  assert.match(body, /size limit/);
+});
