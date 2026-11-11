@@ -386,3 +386,63 @@ test('a delayed clipboard rejection cannot expose stale links after the user cha
  assert.match(readFileSync(new URL('../site/engineering/notes.css',import.meta.url),'utf8'),
   /\.reading-list__manual-copy\[hidden\]\{display:none\}/);
 });
+
+
+test('an earlier pending backup cannot merge after a newer file selection',async()=>{
+ const app=setup(),input=app.elements['reading-list-file'];
+ const key='24gotop-public-reading-list-v1';
+ const makeBackup=files=>{
+  const bytes=new TextEncoder().encode(JSON.stringify({
+   kind:'24gotop-public-reading-list-backup',version:1,files
+  }));
+  return {size:bytes.length,buffer:bytes.buffer};
+ };
+ const older=makeBackup(['research-one.html']);
+ const newer=makeBackup(['research-two.html']);
+ let releaseOld,releaseNew,confirmations=0;
+ const oldBuffer=new Promise(resolve=>{releaseOld=resolve;});
+ const newBuffer=new Promise(resolve=>{releaseNew=resolve;});
+ app.setConfirmHook(()=>{confirmations++;});
+ input.files=[{name:'old.json',size:older.size,arrayBuffer:()=>oldBuffer}];
+ const first=input.listeners.change();
+ input.files=[{name:'new.json',size:newer.size,arrayBuffer:()=>newBuffer}];
+ input.value='new-file-selected';
+ const second=input.listeners.change();
+ releaseOld(older.buffer);
+ await first;
+ assert.equal(app.store.get(key),undefined,'stale backup must not create storage');
+ assert.equal(input.value,'new-file-selected',
+  'stale file cleanup must not clear a newer pending selection');
+ assert.equal(confirmations,0,'stale imports cannot ask to merge');
+ releaseNew(newer.buffer);
+ await second;
+ assert.equal(input.value,'');
+ assert.equal(confirmations,1);
+ assert.deepEqual(JSON.parse(app.store.get(key)).files,['research-two.html']);
+ assert.match(app.elements['reading-list-feedback'].textContent,/Imported public links/);
+});
+
+test('a stale invalid backup cannot overwrite newer import feedback',async()=>{
+ const app=setup(),input=app.elements['reading-list-file'];
+ let rejectOld,releaseNew;
+ const firstBytes=new TextEncoder().encode('not a valid saved-links JSON');
+ const lastBytes=new TextEncoder().encode(JSON.stringify({
+  kind:'24gotop-public-reading-list-backup',version:1,
+  files:['research-two.html']
+ }));
+ input.files=[{name:'old.json',size:firstBytes.length,
+  arrayBuffer:()=>new Promise((_resolve,reject)=>{rejectOld=reject;})}];
+ const first=input.listeners.change();
+ input.files=[{name:'new.json',size:lastBytes.length,
+  arrayBuffer:()=>new Promise(resolve=>{releaseNew=resolve;})}];
+ const second=input.listeners.change();
+ app.elements['reading-list-feedback'].textContent='New backup selected';
+ rejectOld(new Error('Read denied'));
+ await first;
+ assert.equal(app.elements['reading-list-feedback'].textContent,'New backup selected');
+ releaseNew(lastBytes.buffer);
+ await second;
+ assert.deepEqual(JSON.parse(app.store.get('24gotop-public-reading-list-v1')).files,
+  ['research-two.html']);
+ assert.match(app.elements['reading-list-feedback'].textContent,/Imported public links/);
+});

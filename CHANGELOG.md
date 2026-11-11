@@ -1,3 +1,8 @@
+## Unreleased — race-safe saved article backup selection
+
+- Ignore earlier asynchronous JSON backup reads when the reader chooses a newer file, including stale read errors and cleanup; only the latest selected import can ask for consent, merge public links, or update UI feedback.
+- Add deterministic delayed-file and failed-file regression tests. Keep strictly allowlisted static article links, explicit confirmations, local-only browser storage, and no private author draft access.
+
 ## Unreleased — accessible saved public article list
 
 - Preserve keyboard focus when a reader removes a saved article: move to the next visible remove control, or the stable saved-list heading when no entries remain. Clearing the entire list also restores focus to the heading instead of leaving focus on a hidden button.

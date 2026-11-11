@@ -54,6 +54,9 @@
     approved.get(file).title.normalize('NFC').toLocaleLowerCase().includes(needle));
  };
  let displayRevision=0;
+ // Last user-selected backup wins. A previous asynchronous file read must
+ // never import, overwrite feedback, or clear the newer file selection.
+ let importRevision=0;
  const mark=message=>{feedback.textContent=message;};
  const clearManual=()=>{
   manualCopy.hidden=true;
@@ -187,6 +190,7 @@
  });
  importButton.addEventListener('click',()=>fileInput.click());
  fileInput.addEventListener('change',async()=>{
+  const ticket=++importRevision;
   const file=fileInput.files?.[0];
   if(!file)return;
   try{
@@ -194,6 +198,7 @@
       file.size<12||file.size>MAX_BACKUP_BYTES)
     throw new TypeError('Invalid backup file');
    const buffer=await file.arrayBuffer();
+   if(ticket!==importRevision)return;
    if(buffer.byteLength!==file.size||buffer.byteLength>MAX_BACKUP_BYTES)
     throw new TypeError('Invalid backup length');
    const raw=new TextDecoder('utf-8',{fatal:true}).decode(buffer);
@@ -210,10 +215,13 @@
    if(combined.length)save(combined);
    mark('Imported public links. Existing saved links were kept.');
   }catch{
-   mark('Import rejected. Use a 24GOTOP public reading list JSON backup containing only current published links.');
+   if(ticket===importRevision)
+    mark('Import rejected. Use a 24GOTOP public reading list JSON backup containing only current published links.');
   }finally{
-   fileInput.value='';
-   render();
+   if(ticket===importRevision){
+    fileInput.value='';
+    render();
+   }
   }
  });
  window.addEventListener('storage',event=>{
