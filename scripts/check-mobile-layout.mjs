@@ -1,12 +1,10 @@
 // Source-rendered, real Chromium layout check for the PUBLIC 24GOTOP site.
 // No npm browser dependency, network requests, credentials or private services.
 // Inline only reviewed local CSS so every page can be tested offline.
-import {spawn} from 'node:child_process';
-import {readFile,mkdtemp,rm} from 'node:fs/promises';
-import {join,resolve,dirname,sep} from 'node:path';
-import {tmpdir} from 'node:os';
-import {setTimeout as delay} from 'node:timers/promises';
+import {readFile,rm} from 'node:fs/promises';
+import {resolve,dirname,sep} from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {launchChromium} from './chromium-startup.mjs';
 
 const ROOT=resolve(fileURLToPath(new URL('../site/',import.meta.url)));
 const WIDTHS=[320,360,375,390,430,768,1024];
@@ -36,36 +34,7 @@ async function inlinePage(path){
  return result.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,'');
 }
 
-async function startBrowser(){
- const profile=await mkdtemp(join(tmpdir(),'24gotop-mobile-'));
- const binary=process.env.CHROME_BIN||'google-chrome';
- const proc=spawn(binary,[
-  '--headless=new','--no-sandbox','--disable-gpu','--disable-dev-shm-usage',
-  '--disable-background-networking','--no-first-run','--no-default-browser-check',
-  '--remote-debugging-port=0','--user-data-dir='+profile,'about:blank'
- ],{stdio:['ignore','ignore','pipe']});
- try{
-  const address=await Promise.race([
-   new Promise((ok,bad)=>{
-    let output='';
-    proc.once('error',bad);
-    proc.once('exit',code=>bad(new Error('Chromium exited '+code)));
-    proc.stderr.on('data',data=>{
-     output+=data.toString();
-     if(output.length>8192)output=output.slice(-4096);
-     const match=output.match(/DevTools listening on (ws:\/\/[^\s]+)/);
-     if(match)ok(match[1]);
-    });
-   }),
-   delay(12000).then(()=>{throw new Error('Chromium debugging endpoint unavailable');})
-  ]);
-  return {proc,profile,address};
- }catch(error){
-  proc.kill('SIGKILL');
-  await rm(profile,{recursive:true,force:true,maxRetries:5,retryDelay:100});
-  throw error;
- }
-}
+const startBrowser=()=>launchChromium({profilePrefix:'24gotop-mobile-'});
 
 class CDP{
  constructor(ws){
