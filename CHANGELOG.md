@@ -1,3 +1,10 @@
+## Unreleased — fail-closed Chromium startup resilience for public CI
+
+- Investigated the post-merge PUBLIC `Tests and checks` failure on commit `261dd3c9`: 531/531 Node tests passed, but the 320px Chromium layout smoke hit its 12-second debugging-endpoint startup timeout. Rerunning the exact workflow passed. This is evidence of an intermittent browser-startup failure, **not** a passing first attempt or a proven page defect.
+- Share a narrowly scoped Chromium launcher between the PUBLIC mobile-layout and browser accessibility E2E checks. Retry **once only** when the DevTools startup endpoint fails to appear on time, using a fresh isolated temporary profile; terminate/clean the failed process and cancel readiness timers. Browser crashes, spawn failures, invalid conditions and actual layout/accessibility assertions remain hard failures.
+- Add five pure Node tests for split stderr, one successful startup, bounded recovery, two failed timeouts, immediate crash/errors and invalid retry windows. Both existing real Chromium test commands still run and must pass before merge.
+- No change to site behavior, user content, private backend, deployment secrets or server APIs. This does not replace manual assistive-technology evaluation.
+
 ## Unreleased — bounded public editorial search pagination in the source SDK
 
 - Add optional `offset` (safe integer 0–200; default 0) to `TopEditorialClient.searchArticles`, preserving existing search ranking and array results. Return `offset` and `nextOffset` (`null` on the last page) alongside the existing `total`, article summaries and canonical links.
