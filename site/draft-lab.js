@@ -668,6 +668,8 @@ field('reviewPackFile').addEventListener('change',async event=>{
  const ticket=reviewVerifyGate.begin();
  const input=event.currentTarget,file=input.files?.[0];
  if(!file)return;
+ // The previous file's success must not remain visible while checking a new one.
+ message('');
  try{
   const result=await readEditorialReviewPackFile(file);
   // A previously selected package can complete AFTER a newer one. Never
