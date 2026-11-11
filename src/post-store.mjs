@@ -58,6 +58,55 @@ function validateSupabaseConfig({ url, publishableKey, fetchImpl }) {
   return parsed.origin;
 }
 
+// Anonymous upstream data is still untrusted. Bound streamed bytes before
+// decoding/parsing rather than relying on Response.json() or Content-Length.
+const MAX_UPSTREAM_BYTES = 2 * 1024 * 1024;
+const MAX_UPSTREAM_CHUNKS = 512;
+async function readBoundedRows(response) {
+  const reported = response.headers?.get?.('content-length');
+  if (typeof reported === 'string' && /^\d+$/.test(reported) &&
+      BigInt(reported) > BigInt(MAX_UPSTREAM_BYTES)) {
+    try { await response.body?.cancel(); } catch { /* best effort */ }
+    throw new StoreUnavailable('Post store response exceeds size limit');
+  }
+  if (!response.body || typeof response.body.getReader !== 'function') {
+    throw new StoreUnavailable('Post store response cannot be streamed');
+  }
+  const reader = response.body.getReader();
+  const chunks = [];
+  let size = 0, count = 0;
+  try {
+    for (;;) {
+      const {done, value} = await reader.read();
+      if (done) break;
+      if (!(value instanceof Uint8Array) ||
+          ++count > MAX_UPSTREAM_CHUNKS ||
+          size + value.byteLength > MAX_UPSTREAM_BYTES) {
+        throw new StoreUnavailable('Post store response exceeds size limit');
+      }
+      size += value.byteLength;
+      chunks.push(value);
+    }
+  } catch (error) {
+    try { await reader.cancel(); } catch { /* best effort */ }
+    if (error instanceof StoreUnavailable) throw error;
+    throw new StoreUnavailable('Post store response could not be read');
+  } finally {
+    reader.releaseLock();
+  }
+  const bytes = new Uint8Array(size);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  try {
+    return JSON.parse(new TextDecoder('utf-8', {fatal: true}).decode(bytes));
+  } catch {
+    throw new StoreUnavailable('Post store sent invalid JSON');
+  }
+}
+
 function safePost(row) {
   // Allowlist output: database internals (author_id, private state) never leave this adapter.
   if (!row || typeof row !== 'object' || Array.isArray(row)
@@ -118,13 +167,8 @@ export function createSupabaseReadStore({
     } catch {
       throw new StoreUnavailable();
     }
-    if (!response.ok) throw new StoreUnavailable();
-    let rows;
-    try {
-      rows = await response.json();
-    } catch {
-      throw new StoreUnavailable('Post store sent invalid JSON');
-    }
+    if (!response?.ok) throw new StoreUnavailable();
+    const rows = await readBoundedRows(response);
     if (!Array.isArray(rows) || rows.length > 50) throw new StoreUnavailable('Post store sent unexpected data');
     return rows.map(safePost);
   }

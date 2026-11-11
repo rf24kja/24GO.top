@@ -1,3 +1,9 @@
+## Unreleased — bounded anonymous PostgreSQL feed ingestion
+
+- Replace unbounded `Response.json()` in the **PUBLIC read-only Supabase/PostgREST adapter** with a strictly limited streamed JSON decoder (2 MiB total, 512 chunks, fatal UTF-8). Reject oversized reported lengths early and reject actually oversized streams even when their Content-Length lies, cancelling the body before parsing.
+- Fail closed with a sanitized 503 response on invalid streams, malformed UTF-8 or oversized upstream data. Add integration tests for split Thai/Chinese Unicode, hostile large/tiny chunks and HTTP error privacy.
+- Read-only anonymous permissions, publishable key, exact GET filters and hosted-core boundaries remain unchanged. This does **not** enable public account registration, moderation or PostgreSQL publishing.
+
 ## Unreleased — protect manual drafts against cross-tab edits during consent
 
 - Capture the exact saved-draft revision before showing the browser confirmation for opening or deleting it. Check the same selected ID and revision after consent so another tab cannot update a draft and then have that newer revision silently deleted or replace unsaved text.
