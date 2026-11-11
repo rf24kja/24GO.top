@@ -446,3 +446,32 @@ test('a stale invalid backup cannot overwrite newer import feedback',async()=>{
   ['research-two.html']);
  assert.match(app.elements['reading-list-feedback'].textContent,/Imported public links/);
 });
+
+
+test('clear confirmation cannot erase links saved by a different tab during consent',()=>{
+ const app=setup(),key='24gotop-public-reading-list-v1';
+ app.cards[0].children[0].listeners.click();
+ const previous=app.store.get(key);
+ const clear=app.elements['reading-list-clear'];
+ assert.equal(clear.hidden,false);
+ app.setConfirmHook(()=>{
+  // A second browser tab saves another reviewed article while the native
+  // confirmation prompt is open. The original user's consent is now stale.
+  app.store.set(key,JSON.stringify({version:1,
+   files:['research-one.html','research-two.html']}));
+ });
+ const beforeWrites=app.writes.length;
+ clear.listeners.click();
+ assert.notEqual(app.store.get(key),previous);
+ assert.deepEqual(JSON.parse(app.store.get(key)).files,
+  ['research-one.html','research-two.html'],
+  'the newly added public link must remain saved');
+ assert.equal(app.writes.length,beforeWrites,
+  'cancelled stale clearing must not write or remove browser data');
+ assert.equal(clear.hidden,false);
+ assert.equal(clear.focused,true,
+  'clear button remains available for a new explicit consent');
+ assert.match(app.elements['reading-list-feedback'].textContent,
+  /changed in another tab/);
+ assert.equal(app.elements['reading-list-items'].children.length,2);
+});
