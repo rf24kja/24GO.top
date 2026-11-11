@@ -1,3 +1,10 @@
+## Unreleased — predictable article citation copy and keyboard focus
+
+- Keep the PUBLIC engineering article reader's citation, section-link and code-copy feedback tied to the most recent user action. If an older asynchronous clipboard permission result arrives after a newer copy, it cannot replace the current success/error message, expose stale manual text or steal keyboard focus.
+- Invalidate pending clipboard feedback when a reader deliberately saves/removes a public article bookmark, so delayed permission failures cannot overwrite the confirmed save status.
+- Add three deterministic out-of-order clipboard/reader interaction tests, retaining keyboard-selectable manual fallback when the *latest* copy fails. Browser clipboard writes themselves cannot be cancelled and users should verify the final clipboard content after overlapping OS permission prompts.
+- No network calls, private drafts, automatic storage writes or hosted publishing capabilities were added.
+
 ## Unreleased — protect on-device saved article links during clear consent
 
 - Capture the current public reading-list snapshot **before** the user confirms clearing it. If a second browser tab changes saved links while the confirmation is open, refuse the stale destructive action rather than deleting newly saved articles.
