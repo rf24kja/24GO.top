@@ -75,8 +75,8 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
    static createObjectURL(blob){const url='blob:24gotop/'+blobUrls.size;blobUrls.set(url,blob);return url;}
    static revokeObjectURL(url){blobUrls.delete(url);}
   }
-  let confirm = true;
-  const window = {listeners:{}, location:{href:uiHref}, confirm(){return confirm;}, addEventListener(type, callback){this.listeners[type]=callback;}};
+  let confirm = true, confirmHook = null;
+  const window = {listeners:{}, location:{href:uiHref}, confirm(){if(confirmHook)confirmHook();return confirm;}, addEventListener(type, callback){this.listeners[type]=callback;}};
   const browserItems=new Map();
   const localStorage={
     getItem(k){return browserItems.has(k)?browserItems.get(k):null;},
@@ -114,6 +114,7 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
       window.listeners.storage({key,storageArea});
     },
     setConfirm(value){confirm=value;},
+    setConfirmHook(fn){confirmHook=fn;},
     beforeUnload() {
       const event = {prevented:false, returnValue:undefined, preventDefault(){this.prevented=true;}};
       window.listeners.beforeunload(event);
@@ -1345,4 +1346,60 @@ test('older rejected review verification cannot override newer successful result
  assert.equal(app.elements.formStatus.dataset.error,'false');
  assert.equal(input.value,'');
  assert.equal(app.localStorage.getItem(VAULT_KEY),null);
+});
+
+
+test('delete consent cannot erase a draft updated in another tab during confirmation',()=>{
+ const app=build(),el=app.elements;
+ for(const [id,key] of [['postTitle','title'],['postBody','body'],
+  ['postLocale','locale'],['postCategory','category'],['postSource','source']])
+  el[id].value=sample[key];
+ el.saveBrowserDraft.listeners.click();
+ const before=JSON.parse(app.localStorage.getItem(VAULT_KEY));
+ const id=before.entries[0].id;
+ el.savedBrowserDraft.value=id;
+ let prompts=0;
+ app.setConfirmHook(()=>{
+  prompts++;
+  const changed=JSON.parse(app.localStorage.getItem(VAULT_KEY));
+  changed.entries[0].draft.title='A newer independently edited article';
+  changed.entries[0].updatedAt='2026-11-10T12:00:00.000Z';
+  app.localStorage.setItem(VAULT_KEY,JSON.stringify(changed));
+ });
+ el.deleteBrowserDraft.listeners.click();
+ const after=JSON.parse(app.localStorage.getItem(VAULT_KEY));
+ assert.equal(prompts,1);
+ assert.equal(after.entries.length,1,'newer draft revision must survive');
+ assert.equal(after.entries[0].id,id);
+ assert.equal(after.entries[0].draft.title,'A newer independently edited article');
+ assert.equal(el.formStatus.textContent,uiText('en','vaultConflict'));
+ assert.equal(el.formStatus.dataset.error,'true');
+});
+
+test('open consent preserves unsaved editor text if selected draft changed meanwhile',()=>{
+ const app=build(),el=app.elements;
+ for(const [id,key] of [['postTitle','title'],['postBody','body'],
+  ['postLocale','locale'],['postCategory','category'],['postSource','source']])
+  el[id].value=sample[key];
+ el.saveBrowserDraft.listeners.click();
+ const before=JSON.parse(app.localStorage.getItem(VAULT_KEY));
+ const id=before.entries[0].id;
+ el.savedBrowserDraft.value=id;
+ el.postTitle.value='Do not replace my unfinished editor text';
+ el.postBody.value='Unpublished changes which must remain visible after the conflict.';
+ el.postBody.listeners.input();
+ app.setConfirmHook(()=>{
+  const changed=JSON.parse(app.localStorage.getItem(VAULT_KEY));
+  changed.entries[0].draft.body='A different author-controlled saved version from a second tab.';
+  changed.entries[0].updatedAt='2026-11-10T12:00:00.000Z';
+  app.localStorage.setItem(VAULT_KEY,JSON.stringify(changed));
+ });
+ el.openBrowserDraft.listeners.click();
+ assert.equal(el.postTitle.value,'Do not replace my unfinished editor text');
+ assert.equal(el.postBody.value,'Unpublished changes which must remain visible after the conflict.');
+ assert.equal(app.beforeUnload().prevented,true,'current text still needs export');
+ assert.equal(el.formStatus.textContent,uiText('en','vaultConflict'));
+ assert.equal(el.formStatus.dataset.error,'true');
+ assert.equal(JSON.parse(app.localStorage.getItem(VAULT_KEY)).entries[0].draft.body,
+  'A different author-controlled saved version from a second tab.');
 });
