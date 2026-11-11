@@ -1,3 +1,9 @@
+## Unreleased — bounded public editorial search pagination in the source SDK
+
+- Add optional `offset` (safe integer 0–200; default 0) to `TopEditorialClient.searchArticles`, preserving existing search ranking and array results. Return `offset` and `nextOffset` (`null` on the last page) alongside the existing `total`, article summaries and canonical links.
+- Add deterministic regression tests for page stability and non-duplication, invalid arguments rejected before networking, explicit last-page and out-of-range offset behavior. The only requests remain the two fixed public read-only JSON assets, without query text or credentials in URLs.
+- Document page transitions and the caveat that a separately published static corpus revision can change result order between calls; offsets are not persistent snapshots or hosted API cursors. No private backend, publishing permissions, user account or npm release is implied.
+
 ## Unreleased — predictable article citation copy and keyboard focus
 
 - Keep the PUBLIC engineering article reader's citation, section-link and code-copy feedback tied to the most recent user action. If an older asynchronous clipboard permission result arrives after a newer copy, it cannot replace the current success/error message, expose stale manual text or steal keyboard focus.
