@@ -268,12 +268,16 @@ export class TopEditorialClient extends TopClient {
    * Search all reviewed public articles, including normalized full-text index.
    * Returns links and summaries, not authoritative/original article HTML.
    */
-  async searchArticles({ query, limit = 10, signal } = {}) {
+  async searchArticles({ query, limit = 10, offset = 0, signal } = {}) {
     if (typeof query !== 'string' || query.length > 80 ||
         /[\u0000-\u001f\u007f\u2028\u2029]/u.test(query) || !query.trim())
       throw new TypeError('query must be nonempty printable text (up to 80 characters)');
     if (!Number.isSafeInteger(limit) || limit < 1 || limit > 20)
       throw new RangeError('limit must be an integer between 1 and 20');
+    // The entire reviewed corpus has at most 200 entries. Bound page offsets
+    // independently of the result limit; do not add user-controlled URLs.
+    if (!Number.isSafeInteger(offset) || offset < 0 || offset > 200)
+      throw new RangeError('offset must be an integer between 0 and 200');
     const words = query.trim().normalize('NFC').toLocaleLowerCase().split(/\s+/u);
     const records = await this.#validatedCorpus(signal);
     const matches = [];
@@ -292,9 +296,13 @@ export class TopEditorialClient extends TopClient {
         _score:score, _order:index });
     });
     matches.sort((a,b)=>b._score-a._score||a._order-b._order);
+    const page = matches.slice(offset,offset+limit);
+    const nextOffset = offset+page.length < matches.length
+      ? offset+page.length : null;
     return {
-      articles: matches.slice(0,limit).map(({_score,_order,...article})=>article),
+      articles: page.map(({_score,_order,...article})=>article),
       total: matches.length,
+      offset, nextOffset,
       source: 'https://24go.top/engineering/search-index.json'
     };
   }

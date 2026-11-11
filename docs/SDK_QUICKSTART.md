@@ -87,8 +87,12 @@ npm run demo:search -- PostgreSQL permissions
 ```js
 import {TopEditorialClient} from './packages/sdk/index.mjs';
 const reader=new TopEditorialClient();
-const results=await reader.searchArticles({query:'PostgreSQL permissions',limit:5});
+const results=await reader.searchArticles({query:'PostgreSQL permissions',limit:5,offset:0});
 for(const article of results.articles)console.log(article.title,article.url,article.matchedIn);
+// Fetch another deterministic page only when the previous one advertises it.
+const nextPage=results.nextOffset===null?null:
+  await reader.searchArticles({query:'PostgreSQL permissions',limit:5,offset:results.nextOffset});
+if(nextPage)console.log('Additional public links:',nextPage.articles.length);
 const first=results.articles[0];
 if(first){
   const indexEntry=await reader.getArticleSearchText(first.url);
@@ -103,7 +107,16 @@ filenames and unique items, caps each search-text entry at 24,000 characters,
 and uses the transport's 2 MiB byte ceiling and strict UTF-8 decoding.
 Case-insensitive search requires **all words**, with deterministic
 title/summary/body relevance weighting; `total` is the count before the
-user-requested result limit (1–20). Both methods accept an `AbortSignal`.
+user-requested result limit (1–20). `searchArticles` also accepts an optional
+`offset` (integer 0–200, default 0), returns the effective `offset` and
+`nextOffset` (integer or `null`), and allows a caller to page without
+repeating or skipping a match **within the same published corpus version**.
+A page starting past the total is empty and terminal. No user query or
+offset is sent to an arbitrary endpoint; every page re-fetches the same two
+fixed public static JSON files. New editorial releases can change their
+contents and ordering between calls: this is **not a snapshot, a production
+API cursor, or a guarantee of stable pages across a deployment**. Both
+methods accept an `AbortSignal`.
 The reader accepts an article URL only if it exactly matches a reviewed feed
 entry, never a caller-chosen remote URL or filesystem path.
 
