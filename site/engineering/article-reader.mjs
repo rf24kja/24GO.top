@@ -130,13 +130,21 @@ export function mountArticleReader(doc,view){
  const manual=create('textarea','article-reader__manual');
  manual.readOnly=true;manual.hidden=true;
  manual.setAttribute('aria-label','Select and copy this public citation or section link manually');
+ // Browser clipboard permissions and writes are asynchronous. A denied
+ // earlier attempt must not hijack focus, reveal a stale manual fallback or
+ // replace feedback for the reader's latest copy/save action.
+ let copyRevision=0;
  const copyText=async value=>{
+  const ticket=++copyRevision;
   manual.hidden=true;
+  manual.value='';
+  status.textContent='Copying selected public text…';
   try{
    if(!view.navigator?.clipboard?.writeText)throw Error('Clipboard unavailable');
    await view.navigator.clipboard.writeText(value);
-   status.textContent='Copied to clipboard.';
+   if(ticket===copyRevision)status.textContent='Copied to clipboard.';
   }catch{
+   if(ticket!==copyRevision)return;
    manual.value=value;
    manual.hidden=false;
    manual.focus();
@@ -206,6 +214,9 @@ export function mountArticleReader(doc,view){
   }
  };
  bookmark.addEventListener('click',()=>{
+  // Bookmarking is a newer user action than any pending clipboard prompt.
+  // Preserve its saved-state feedback and keyboard focus on delayed denial.
+  ++copyRevision;
   try{
    // Re-read after the user click; never rely on stale initial tab state.
    const files=readSaved();

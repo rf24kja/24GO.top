@@ -79,7 +79,7 @@ function el(tag,text=''){
  return node;
 }
 function stub({clipboard=true,malformed=false,codeText='const result = "<script>alert(1)</script>";',
- storageAccess=true,storageWritable=true,storedRaw=null}={}){
+ storageAccess=true,storageWritable=true,storedRaw=null,clipboardWriter=null}={}){
  const canonical='https://24go.top/engineering/markdown-preview-safety.html';
  const json={
   '@context':'https://schema.org','@type':'Article',
@@ -131,7 +131,10 @@ function stub({clipboard=true,malformed=false,codeText='const result = "<script>
   }
  };
  const view={
-  navigator:clipboard?{clipboard:{async writeText(v){copied.push(v);}}}:{},
+  navigator:clipboard?{clipboard:{writeText(v){
+   if(clipboardWriter)return clipboardWriter(v);
+   copied.push(v);return Promise.resolve();
+  }}}:{},
   get localStorage(){if(!storageAccess)throw new Error('Storage blocked');return storage;},
   innerHeight:800,scrollY:0,
   addEventListener(event,fn){listeners[event]=fn;},
@@ -339,4 +342,74 @@ test('article saving is visibly local and source copy remains independent',()=>{
  tools.children[1].children.at(-1).listeners.click();
  assert.equal(env.writes.length,1);
  assert.equal(tools.children[3].hidden,true);
+});
+
+
+test('older denied clipboard action cannot hijack a later successful citation copy',async()=>{
+ const pending=[];
+ const env=stub({clipboardWriter:value=>new Promise((resolve,reject)=>{
+  pending.push({value,resolve,reject});
+ })});
+ assert.equal(mountArticleReader(env.doc,env.view),true);
+ const tools=env.main.inserted[0],actions=tools.children[1];
+ const markdown=actions.children[1],bibtex=actions.children[3];
+ const old=markdown.listeners.click();
+ const newest=bibtex.listeners.click();
+ assert.equal(pending.length,2);
+ assert.match(pending[0].value,/^\[/);
+ assert.match(pending[1].value,/^@online/);
+ pending[1].resolve();
+ await newest;
+ assert.equal(tools.children[2].textContent,'Copied to clipboard.');
+ pending[0].reject(new Error('Older browser permission denied'));
+ await old;
+ const manual=tools.children[3];
+ assert.equal(manual.hidden,true,'obsolete denial must not expose a manual fallback');
+ assert.equal(manual.focused,false,'obsolete denial must not steal keyboard focus');
+ assert.equal(manual.value,'','no stale text is shown as the latest result');
+ assert.equal(tools.children[2].textContent,'Copied to clipboard.');
+});
+
+test('older successful copy cannot dismiss the newer denied-copy manual fallback',async()=>{
+ const pending=[];
+ const env=stub({clipboardWriter:value=>new Promise((resolve,reject)=>{
+  pending.push({value,resolve,reject});
+ })});
+ assert.equal(mountArticleReader(env.doc,env.view),true);
+ const tools=env.main.inserted[0],actions=tools.children[1];
+ const first=actions.children[1].listeners.click();
+ const second=actions.children[2].listeners.click();
+ pending[1].reject(new Error('Permission denied'));
+ await second;
+ const manual=tools.children[3];
+ assert.equal(manual.hidden,false);
+ assert.ok(manual.value.includes('24GOTOP Engineering.'));
+ assert.equal(manual.selected,true);
+ assert.match(tools.children[2].textContent,/manual copying/);
+ pending[0].resolve();
+ await first;
+ assert.equal(manual.hidden,false);
+ assert.ok(manual.value.includes('24GOTOP Engineering.'));
+ assert.match(tools.children[2].textContent,/manual copying/);
+});
+
+test('late clipboard denial cannot overwrite saved-link feedback or steal focus',async()=>{
+ let rejectPending;
+ const env=stub({clipboardWriter:()=>new Promise((_resolve,reject)=>{
+  rejectPending=reject;
+ })});
+ assert.equal(mountArticleReader(env.doc,env.view),true);
+ const tools=env.main.inserted[0],actions=tools.children[1];
+ const copying=actions.children[1].listeners.click();
+ assert.equal(typeof rejectPending,'function');
+ const bookmark=actions.children.at(-1);
+ bookmark.listeners.click();
+ assert.match(tools.children[2].textContent,/Saved this public article/);
+ assert.equal(env.writes.length,1);
+ rejectPending(new Error('Delayed permission denial'));
+ await copying;
+ assert.match(tools.children[2].textContent,/Saved this public article/);
+ assert.equal(tools.children[3].hidden,true);
+ assert.equal(tools.children[3].focused,false);
+ assert.equal(env.writes.length,1);
 });
