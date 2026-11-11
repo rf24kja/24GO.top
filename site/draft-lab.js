@@ -75,6 +75,9 @@ const restoreGate=createDraftImportGate();
 // Separate token for pending review-package digests: it is invalidated by
 // every editor action, including Clear and a change later reverted to text.
 const reviewExportGate=createDraftImportGate();
+// Offline review package verification is also asynchronous. Only the most
+// recently selected file may update the result or clear the file input.
+const reviewVerifyGate=createDraftImportGate();
 // A match is valid only until the next editor action or search term change.
 let activeFindMatch=null;
 function clearFindSelection(){
@@ -662,15 +665,24 @@ field('downloadReviewPack').addEventListener('click',async()=>{
 });
 field('verifyReviewPack').addEventListener('click',()=>field('reviewPackFile').click());
 field('reviewPackFile').addEventListener('change',async event=>{
+ const ticket=reviewVerifyGate.begin();
  const input=event.currentTarget,file=input.files?.[0];
  if(!file)return;
+ // The previous file's success must not remain visible while checking a new one.
+ message('');
  try{
   const result=await readEditorialReviewPackFile(file);
+  // A previously selected package can complete AFTER a newer one. Never
+  // report the old verification as current or erase the newer selection.
+  if(!reviewVerifyGate.isLatest(ticket))return;
   // Checking a package is non-destructive. Never replace the current draft,
   // browser vault, file import baseline or revision history.
   message(ui('reviewPackValid')+result.bytes.toLocaleString('en-US')+ui('reviewPackValidSuffix'));
- }catch{message(ui('reviewPackInvalid'),true);}
- finally{input.value='';}
+ }catch{
+  if(reviewVerifyGate.isLatest(ticket))message(ui('reviewPackInvalid'),true);
+ }finally{
+  if(reviewVerifyGate.isLatest(ticket))input.value='';
+ }
 });
 
 // On this local editor only, Ctrl/Cmd+S explicitly downloads the Markdown

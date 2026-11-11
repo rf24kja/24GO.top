@@ -31,7 +31,8 @@ const sample = {
 };
 
 function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
-  reviewPackGenerator=createEditorialReviewPack}={}) {
+  reviewPackGenerator=createEditorialReviewPack,
+  reviewPackReader=readEditorialReviewPackFile}={}) {
   const ids = [
     'postTitle','postBody','postLocale','postCategory','postSource','formStatus',
     'postTitleError','postBodyError','postLocaleError','postCategoryError','postSourceError',
@@ -100,7 +101,7 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
     document, window, navigator, URL:BrowserURL, Blob, setTimeout,
     safeSourceUrl,validateDraft,formatDraft,draftFilename,hasDraftContent,
     parseDraftFile,readDraftFileStrict,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,countDraftWords,createDraftImportGate,matchesDraftExportSnapshot,invalidDraftField,findDraftText,replaceDraftFindMatch,
-    uiText,applyUiLanguage,appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS,captureDraftRevision,compareDraftRevisions,revisionSummary,createEditorialReviewPack:reviewPackGenerator,readEditorialReviewPackFile,buildArticleProposalUrl,
+    uiText,applyUiLanguage,appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS,captureDraftRevision,compareDraftRevisions,revisionSummary,createEditorialReviewPack:reviewPackGenerator,readEditorialReviewPackFile:reviewPackReader,buildArticleProposalUrl,
     createDraftVault,MAX_SAVED_DRAFTS,MAX_VAULT_BACKUP_BYTES,VAULT_KEY,TextDecoder,
     renderMarkdownPreview(container, text) { container.textContent = text; },
     renderPreviewOutline(container,text) { container.textContent=text;return /^#{1,3} /m.test(text)?1:0; }
@@ -1297,4 +1298,51 @@ test('tampered review file fails closed and never modifies the editor',async()=>
  assert.equal(app.elements.postBody.value,'My private content should stay untouched.');
  assert.match(app.elements.formStatus.textContent,/Invalid, damaged/);
  assert.equal(app.elements.formStatus.dataset.error,'true');
+});
+
+
+test('older valid review verification cannot mask a newer invalid file',async()=>{
+ const pending=new Map();
+ const app=build({reviewPackReader:file=>new Promise((resolve,reject)=>{
+  pending.set(file.name,{resolve,reject});
+ })});
+ const input=app.elements.reviewPackFile;
+ input.files=[{name:'first-valid.json'}];
+ const first=input.listeners.change({currentTarget:input});
+ input.files=[{name:'second-invalid.json'}];
+ input.value='second-file-selected';
+ const second=input.listeners.change({currentTarget:input});
+ pending.get('first-valid.json').resolve({bytes:512});
+ await first;
+ assert.equal(input.value,'second-file-selected',
+  'old verification may not clear the selected newer file');
+ assert.doesNotMatch(app.elements.formStatus.textContent,/Valid local review package/);
+ pending.get('second-invalid.json').reject(new Error('Tampered package'));
+ await second;
+ assert.match(app.elements.formStatus.textContent,/Invalid, damaged/);
+ assert.equal(app.elements.formStatus.dataset.error,'true');
+ assert.equal(input.value,'');
+ assert.equal(app.localStorage.getItem(VAULT_KEY),null);
+});
+
+test('older rejected review verification cannot override newer successful result',async()=>{
+ const pending=new Map();
+ const app=build({reviewPackReader:file=>new Promise((resolve,reject)=>{
+  pending.set(file.name,{resolve,reject});
+ })});
+ const input=app.elements.reviewPackFile;
+ input.files=[{name:'old-corrupt.json'}];
+ const first=input.listeners.change({currentTarget:input});
+ input.files=[{name:'new-correct.json'}];
+ const second=input.listeners.change({currentTarget:input});
+ pending.get('new-correct.json').resolve({bytes:1024});
+ await second;
+ assert.match(app.elements.formStatus.textContent,/Valid local review package/);
+ assert.equal(app.elements.formStatus.dataset.error,'false');
+ pending.get('old-corrupt.json').reject(new Error('Old corrupted backup'));
+ await first;
+ assert.match(app.elements.formStatus.textContent,/Valid local review package/);
+ assert.equal(app.elements.formStatus.dataset.error,'false');
+ assert.equal(input.value,'');
+ assert.equal(app.localStorage.getItem(VAULT_KEY),null);
 });
