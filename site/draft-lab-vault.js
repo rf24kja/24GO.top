@@ -28,7 +28,9 @@ function readVault(storage){
   if(!record||!UUID.test(record.id)||ids.has(record.id)||
     typeof record.updatedAt!=='string'||
     !/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(record.updatedAt)||
-    !Number.isFinite(Date.parse(record.updatedAt)))error('vault_unavailable');
+    !Number.isFinite(Date.parse(record.updatedAt))||
+    new Date(record.updatedAt).toISOString()!==record.updatedAt)
+    error('vault_unavailable');
   ids.add(record.id);
   try{exactDraft(record.draft);}catch{error('vault_unavailable');}
  }

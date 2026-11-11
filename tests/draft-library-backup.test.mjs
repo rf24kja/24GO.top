@@ -59,3 +59,27 @@ test('browser offers explicit offline export and opt-in empty-library recovery',
  assert.match(js,/backupRestoreConfirm/);
  assert.doesNotMatch(js,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|innerHTML/);
 });
+
+
+test('restore rejects normalized invalid calendar timestamps before writing any drafts',()=>{
+ const original=setup(),fresh=setup();
+ original.vault.save(sample);
+ const valid=JSON.parse(original.vault.exportBackup());
+ const corruptTimes=[
+  '2026-02-30T15:00:00.000Z',
+  '2026-11-31T15:00:00.000Z',
+  '2026-10-31T24:00:00.000Z'
+ ];
+ for(const updatedAt of corruptTimes){
+  // Date.parse accepts these values by rolling them forward. A backup
+  // must preserve exact canonical timestamps, not silently rewrite dates.
+  assert.equal(Number.isFinite(Date.parse(updatedAt)),true);
+  const damaged={...valid,entries:valid.entries.map(entry=>({
+   ...entry,updatedAt
+  }))};
+  assert.throws(()=>fresh.vault.restoreBackup(JSON.stringify(damaged)),/vault_invalid/);
+  assert.equal(fresh.memory.size,0,'invalid backup must never partially persist');
+ }
+ assert.equal(fresh.vault.restoreBackup(JSON.stringify(valid)),1);
+ assert.deepEqual(fresh.vault.list(),original.vault.list());
+});
