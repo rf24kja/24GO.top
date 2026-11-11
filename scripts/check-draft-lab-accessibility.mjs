@@ -2,12 +2,10 @@
 // Runs entirely against loopback on a fresh headless Chromium profile.
 // Nothing reaches hosted Core, production drafts or external endpoints.
 import {createServer} from 'node:http';
-import {spawn} from 'node:child_process';
-import {readFile,mkdtemp,rm} from 'node:fs/promises';
-import {resolve,join,sep} from 'node:path';
-import {tmpdir} from 'node:os';
-import {setTimeout as delay} from 'node:timers/promises';
+import {readFile,rm} from 'node:fs/promises';
+import {resolve,sep} from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {launchChromium} from './chromium-startup.mjs';
 import {UI_LOCALES,UI_STRINGS} from '../site/draft-lab-i18n.js';
 
 const ROOT=resolve(fileURLToPath(new URL('../site/',import.meta.url)));
@@ -30,34 +28,7 @@ function localServer(){
   }catch{res.writeHead(404).end();}
  });
 }
-async function chromium(){
- const profile=await mkdtemp(join(tmpdir(),'24gotop-draft-e2e-'));
- const proc=spawn(process.env.CHROME_BIN||'google-chrome',[
-  '--headless=new','--no-sandbox','--disable-gpu','--disable-dev-shm-usage',
-  '--disable-background-networking','--no-first-run','--no-default-browser-check',
-  '--remote-debugging-port=0','--user-data-dir='+profile,'about:blank'
- ],{stdio:['ignore','ignore','pipe']});
- try{
-  const address=await Promise.race([
-   new Promise((ok,bad)=>{
-    let output='';
-    proc.once('error',bad);
-    proc.once('exit',code=>bad(Error('Chrome exited '+code)));
-    proc.stderr.on('data',chunk=>{
-     output=(output+chunk.toString()).slice(-8000);
-     const found=output.match(/DevTools listening on (ws:\/\/[^\s]+)/);
-     if(found)ok(found[1]);
-    });
-   }),
-   delay(12000).then(()=>{throw Error('Chrome debugging endpoint unavailable');})
-  ]);
-  return {proc,profile,address};
- }catch(error){
-  proc.kill('SIGKILL');
-  await rm(profile,{recursive:true,force:true,maxRetries:5,retryDelay:100});
-  throw error;
- }
-}
+const chromium=()=>launchChromium({profilePrefix:'24gotop-draft-e2e-'});
 class CDP{
  constructor(ws){
   this.ws=ws;this.id=0;this.pending=new Map();this.exceptions=[];this.external=[];
