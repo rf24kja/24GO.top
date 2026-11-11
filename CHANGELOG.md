@@ -1,3 +1,9 @@
+## Unreleased — deterministic offline editorial review-package verification
+
+- Treat JSON review-package verification as last-file-selection-wins in the public browser-only Draft Lab. Clear the prior integrity verdict when a new file is selected; reject stale success or failure messages and prevent an older file read from clearing the newer selection.
+- Add two controlled asynchronous regression cases (old success/new failure and old failure/new success), while preserving unchanged private manuscript text, no network upload and no browser-storage writes.
+- Verification still checks local package integrity only; it does not provide author identity, moderation approval or hosted publication.
+
 ## Unreleased — stricter local draft backup metadata
 
 - Reject impossible ISO calendar timestamps in opt-in browser draft snapshots and imported JSON backups, including dates silently normalized by JavaScript (`February 30`, `November 31`, `24:00`). Preserve exact canonical timestamps and fail closed without partial storage writes.
