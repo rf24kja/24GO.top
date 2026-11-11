@@ -136,12 +136,23 @@
  }
  filter.addEventListener('input',render);
  clear.addEventListener('click',()=>{
+  // Take a snapshot BEFORE asking for destructive consent. Another tab may
+  // save a public link while the browser confirmation is open.
+  let original;
+  try{original=storage.getItem(KEY);}
+  catch{mark('Could not read browser storage.');render();return;}
   if(!window.confirm('Clear all saved public article links from this browser?'))return;
-  try{storage.removeItem(KEY);mark('Saved links cleared.');}
-  catch{mark('Could not clear browser storage.');}
+  try{
+   if(storage.getItem(KEY)!==original)
+    mark('Saved links changed in another tab. Review them before clearing.');
+   else{
+    storage.removeItem(KEY);
+    mark('Saved links cleared.');
+   }
+  }catch{mark('Could not clear browser storage.');}
   render();
-  // Clear hides this control; restore focus to a stable, readable landmark.
-  heading.focus();
+  // A successful clear hides this control; an intervening change keeps it.
+  (clear.hidden?heading:clear).focus();
  });
  copy.addEventListener('click',async()=>{
   let files;
