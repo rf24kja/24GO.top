@@ -19,7 +19,7 @@ The PUBLIC [CI workflow](../.github/workflows/ci.yml) requires all four steps. `
 - **Desktop mode (`mobile:false`)** at 1280×800, 1440×900 and 1920×1080.
 - Representative DPR 1/2/3, touch emulation, light/dark color-scheme and reduced motion.
 
-The gate rejects document horizontal overflow, invisible/missing primary navigation, primary phone navigation links shorter than 44 CSS px or outside the viewport, and sticky multi-row headers occupying a short landscape viewport. Every failure names the viewport and route. It does **not** silently hide overflowing content. A separate Chromium E2E tests the functioning Draft Lab editor, search, keyboard focus and saved reading lists with JavaScript. `npm test` also enforces profile coverage, CSS reset inheritance and the supported 280px minimum.
+The gate rejects document horizontal overflow, invisible/missing primary navigation, primary phone navigation links shorter than 44 CSS px or outside the viewport, and sticky multi-row headers occupying a short landscape viewport. Every failure names the viewport and route. It does **not** silently hide overflowing content. A separate Chromium E2E tests the functioning Draft Lab editor, archive search and saved reading lists with JavaScript. It also drives the **real dynamic Reading Paths workflow** at 280px, 390px, 844×390 landscape and 1440px desktop, checking add/reorder/remove, recovered keyboard focus, at least 44px action targets, the loaded public feed and absence of unauthorized storage or external requests. `npm test` also enforces profile coverage, CSS reset inheritance and the supported 280px minimum.
 
 ## Issues uncovered by the larger matrix
 
