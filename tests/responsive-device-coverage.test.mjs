@@ -71,3 +71,15 @@ test('German and other long translated card labels cannot enlarge the 280px grid
  assert.match(landing,/\.card\{min-height:0;min-width:0;padding:24px;overflow-wrap:anywhere\}/);
  assert.ok(RESPONSIVE_VIEWPORTS.some(x=>x.width===280&&x.mobile));
 });
+
+test('reading path builder reuses the same reset and color tokens as the public engineering archive',()=>{
+ const html=read('site/engineering/reading-paths/index.html');
+ const styles=[...html.matchAll(/<link rel="stylesheet" href="([^"]+)">/g)]
+  .map(match=>match[1]);
+ assert.deepEqual(styles,['../notes.css','../../interior.css','../paths.css']);
+ const base=read('site/engineering/notes.css');
+ assert.match(base,/\*\{box-sizing:border-box\}/);
+ assert.match(base,/body\{margin:0/);
+ assert.match(base,/--text:/);
+ assert.match(base,/--border:/);
+});
