@@ -170,7 +170,7 @@ el('path-download-markdown').addEventListener('click',()=>{
  }finally{
   anchor?.remove();
   // Keep the temporary download URL alive long enough for the browser to
-  // begin saving it, then free its memory; never keep it in localStorage.
+  // begin saving it, then free its memory; this action stores nothing.
   if(downloadUrl)setTimeout(()=>URL.revokeObjectURL(downloadUrl),10000);
  }
 });
