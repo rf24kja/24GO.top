@@ -1,6 +1,7 @@
 ## Unreleased — complete static-route responsive CI coverage and privacy navigation
 
 - Replace the PUBLIC Chromium layout test's hardcoded 14-route subset with a bounded, symlink-safe discovery of every HTML page physically present under `site/`. Current public source has 30 HTML routes, so all 18 representative phone, landscape, tablet and desktop profiles now test an expected **540 route/viewport combinations**. Future reviewed HTML pages enter the test matrix automatically rather than silently being omitted.
+- Fix a newly discovered **real** 280px overflow on `engineering/topics/infrastructure.html`: the old 40px minimum heading could render the word “Infrastructure” wider than the tiny phone viewport. Narrow-screen engineering headings now scale/wrap, and topic-step flex text can shrink without clipping. The existing public CI initially failed at 321px document scroll width for 280px viewport; the correction is verified by rerunning the full matrix.
 - Repair the previously minimal analytics-privacy page header with accessible skip-to-content, primary navigation and the same 44px mobile touch-target styles as the main site. Check this page at 280–1920px including short landscape, light theme and desktop mode. Privacy consent behavior and analytics policy text are unchanged.
 - Add source-vs-discovered-inventory parity and privacy navigation regression tests. This checks source-rendered HTML/CSS in real Chromium, not browser interoperability on physical iOS/Android devices and not the hosted publication system.
 
