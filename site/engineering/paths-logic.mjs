@@ -66,10 +66,13 @@ export function changeReadingPath(ids,id,action,approved){
  return next;
 }
 const escapeLabel=value=>value.replace(/[\\\[\]]/g,'\\$&');
+// Public share-link titles are untrusted: preserve their visible text without
+// allowing embedded links, HTML or automatic URL/email linkification in .md.
+const escapeMarkdownHeading=value=>value.replace(/[\\\x60*_{}\[\]()#+.!|<>~:@]/g,'\\$&');
 export function readingPathMarkdown(value,approved){
  const state=normalizeReadingPath(value,approved,{requireItems:true});
  const byId=new Map(approved.map(item=>[item.id,item]));
- return '# '+state.title+'\n\n'+state.ids.map((id,i)=>{
+ return '# '+escapeMarkdownHeading(state.title)+'\n\n'+state.ids.map((id,i)=>{
   const item=byId.get(id);
   return (i+1)+'. ['+escapeLabel(item.title)+']('+item.url+')';
  }).join('\n')+'\n';
