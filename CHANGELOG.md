@@ -1,3 +1,10 @@
+## Unreleased — real interactive Reading Paths QA across devices
+
+- Extend the PUBLIC real-Chromium keyboard/accessibility E2E to exercise an actual JavaScript-rendered reading path with the reviewed JSON Feed: add two articles, reorder, remove, filter the catalog and retain private-on-device state. Test **280px compact phone, 390px phone, 844×390 landscape and 1440px real desktop**, not just initial server-rendered HTML/CSS.
+- Prevent the native keyboard focus from disappearing when the article catalog or selected path list is rebuilt after Add, Move or Remove. Restore focus to the same approved article link (or a stable field when none remains) and announce the successful change.
+- Enforce 44px minimum touch heights on the dynamically generated Reading Paths buttons. Fail CI if the live DOM creates horizontal overflow, loses focus, exposes non-public network requests or changes unrelated local-storage preferences.
+- Retain all 252 source-rendered Chromium responsive viewports and the existing independent editor/search accessibility checks. This does not simulate physical Safari/iOS, create hosted user paths or send private drafts anywhere.
+
 ## Unreleased — responsive layouts across phone rotation, tablet and desktop
 
 - Expand the PUBLIC real-Chromium source-rendered layout smoke from **98 (7 mobile-emulated widths × 14 routes)** to **252 (18 representative viewport/device profiles × the same 14 routes)**: compact 280–430px phones, larger handsets, four short-height landscape rotations, 600–1024px tablets, and **real desktop-mode** 1280/1440/1920px viewports. Sample device pixel ratios, touch, dark/light color schemes and reduced motion rather than treating 1024px mobile emulation as a desktop.
