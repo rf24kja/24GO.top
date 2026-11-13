@@ -1,3 +1,11 @@
+## Unreleased — responsive layouts across phone rotation, tablet and desktop
+
+- Expand the PUBLIC real-Chromium source-rendered layout smoke from **98 (7 mobile-emulated widths × 14 routes)** to **252 (18 representative viewport/device profiles × the same 14 routes)**: compact 280–430px phones, larger handsets, four short-height landscape rotations, 600–1024px tablets, and **real desktop-mode** 1280/1440/1920px viewports. Sample device pixel ratios, touch, dark/light color schemes and reduced motion rather than treating 1024px mobile emulation as a desktop.
+- Validate horizontal document overflow, mobile header navigation's minimum 44px tap target, visible navigation geometry and source-rendered light/reduced-motion media state across the entire matrix. Fail the PUBLIC CI on any regression; keep article/source-only scope explicit (no claim of physical iOS/Android/Safari coverage).
+- Fix two additional **observed failures from the expanded Chromium run**: the German homepage's 280px card grid overflow (a single track constrained by long localized labels), and the standalone Reading Paths page's missing shared CSS reset/theme tokens (default browser margins added horizontal overflow). Reuse established CSS rather than suppressing scrollbars.
+- On phone landscape viewports at most 450px high, make the multi-row homepage and interior headers scroll with the page rather than staying sticky and covering a large share of content. Preserve all links and focus treatment, with no `overflow-x:hidden` workaround.
+- Add reproducible Node coverage for profile invariants, real desktop/touch modes, navigation assertions and both CSS header systems. The original Chromium Draft Lab/reader keyboard E2E remains a separate required CI gate.
+
 ## Unreleased — fail-closed Chromium startup resilience for public CI
 
 - Investigated the post-merge PUBLIC `Tests and checks` failure on commit `261dd3c9`: 531/531 Node tests passed, but the 320px Chromium layout smoke hit its 12-second debugging-endpoint startup timeout. Rerunning the exact workflow passed. This is evidence of an intermittent browser-startup failure, **not** a passing first attempt or a proven page defect.

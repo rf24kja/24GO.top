@@ -33,3 +33,10 @@ footer.interior-footer{border-top:1px solid var(--border);border-bottom:0;margin
   white-space:normal;overflow-wrap:anywhere
  }
 }
+
+/* Short landscape viewports: a multi-row sticky navigation bar can consume
+   much of the 320–428px high screen. Keep all links visible and keyboard
+   reachable, but let the header scroll with the page instead of covering it. */
+@media(orientation:landscape) and (max-height:450px) and (max-width:950px){
+ header.interior-header{position:relative}
+}
