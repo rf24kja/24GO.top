@@ -5,9 +5,9 @@ import {readFile,rm} from 'node:fs/promises';
 import {resolve,dirname,sep} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {launchChromium} from './chromium-startup.mjs';
+import {RESPONSIVE_VIEWPORTS} from './responsive-viewports.mjs';
 
 const ROOT=resolve(fileURLToPath(new URL('../site/',import.meta.url)));
-const WIDTHS=[320,360,375,390,430,768,1024];
 const PATHS=[
  'index.html','ru/index.html','th/index.html','es/index.html',
  'fr/index.html','de/index.html','pt/index.html','zh/index.html',
@@ -79,9 +79,19 @@ async function main(){
   await c.send('Runtime.enable',{},sessionId);
   const frame=(await c.send('Page.getFrameTree',{},sessionId)).frameTree.frame.id;
   let passed=0;
-  for(const width of WIDTHS){
+  for(const profile of RESPONSIVE_VIEWPORTS){
    await c.send('Emulation.setDeviceMetricsOverride',{
-    width,height:850,deviceScaleFactor:1,mobile:true
+    width:profile.width,height:profile.height,
+    deviceScaleFactor:profile.dpr,mobile:profile.mobile
+   },sessionId);
+   await c.send('Emulation.setTouchEmulationEnabled',{
+    enabled:profile.mobile,maxTouchPoints:profile.mobile?5:1
+   },sessionId);
+   await c.send('Emulation.setEmulatedMedia',{
+    features:[
+     {name:'prefers-color-scheme',value:profile.theme||'dark'},
+     {name:'prefers-reduced-motion',value:profile.reducedMotion?'reduce':'no-preference'}
+    ]
    },sessionId);
    for(const path of PATHS){
     const html=await inlinePage(path);
@@ -91,17 +101,28 @@ async function main(){
      awaitPromise:true
     },sessionId);
     const data=await c.send('Runtime.evaluate',{
-     expression:"(() => {const viewport=document.documentElement.clientWidth;const scroll=Math.max(document.documentElement.scrollWidth,document.body.scrollWidth);const offenders=[...document.body.querySelectorAll('*')].filter(el=>{const r=el.getBoundingClientRect();return r.width>0&&r.right>viewport+1&&getComputedStyle(el).position!=='fixed';}).slice(0,5).map(el=>el.tagName.toLowerCase()+'.'+(typeof el.className==='string'?el.className:''));return {viewport,scroll,offenders};})()",
+     expression:"(() => {\n const viewport=document.documentElement.clientWidth;\n const scroll=Math.max(document.documentElement.scrollWidth,document.body.scrollWidth);\n const offenders=[...document.body.querySelectorAll('*')].filter(el=>{\n  const rect=el.getBoundingClientRect();\n  return rect.width>0&&rect.right>viewport+1&&getComputedStyle(el).position!=='fixed';\n }).slice(0,5).map(el=>el.tagName.toLowerCase()+'.'+(typeof el.className==='string'?el.className:''));\n const header=document.querySelector('header.site-header, header.interior-header');\n const navigation=[...document.querySelectorAll('header.site-header nav a, header.interior-header .interior-links a')]\n  .filter(link=>{\n   const style=getComputedStyle(link);\n   return style.display!=='none'&&style.visibility!=='hidden';\n  }).map(link=>{\n   const r=link.getBoundingClientRect();\n   return {name:link.textContent.trim().slice(0,40),height:r.height,left:r.left,right:r.right};\n  });\n return {viewport,scroll,offenders,\n  headerPosition:header?getComputedStyle(header).position:null,\n  navigation,themeIsLight:matchMedia('(prefers-color-scheme: light)').matches,\n  reducedMotion:matchMedia('(prefers-reduced-motion: reduce)').matches};\n})()",
      returnByValue:true
     },sessionId);
     const box=data.result?.value;
     if(!box||box.scroll>box.viewport+1)
-     throw new Error('Horizontal page overflow at '+width+'px '+path+': '+JSON.stringify(box));
+     throw new Error('Horizontal page overflow for '+profile.name+' '+path+': '+JSON.stringify(box));
+    if(!box.navigation.length)
+     throw new Error('Primary navigation unavailable for '+profile.name+' '+path);
+    if(profile.mobile&&profile.width<=430&&
+       box.navigation.some(link=>link.height<43.5||link.left<0||link.right>box.viewport+1))
+     throw new Error('Unusable phone navigation target for '+profile.name+' '+path+': '+JSON.stringify(box.navigation));
+    if(profile.shortLandscape&&box.headerPosition==='sticky')
+     throw new Error('Tall sticky header obscures short landscape viewport: '+profile.name+' '+path);
+    if(box.themeIsLight!==(profile.theme==='light')||
+       box.reducedMotion!==Boolean(profile.reducedMotion))
+     throw new Error('Unexpected emulated color or motion mode: '+profile.name+' '+path);
     passed++;
    }
   }
-  console.log('PASS '+passed+' Chromium mobile/tablet layouts: no document horizontal overflow');
-  console.log('Scope: source-rendered static HTML/CSS; not a physical-device or network smoke test.');
+  console.log('PASS '+passed+' Chromium mobile/tablet layouts and desktop viewports: no horizontal overflow, accessible phone navigation and safe landscape headers');
+  console.log('Coverage: '+RESPONSIVE_VIEWPORTS.length+' representative CSS viewports × '+PATHS.length+' public routes; touch, DPR, orientation, desktop mode, light/dark and reduced-motion samples.');
+  console.log('Scope: real Chromium with source-rendered public HTML/CSS; not physical iOS/Android/Safari testing, user usability evidence or live network smoke.');
  }finally{
   if(ws)ws.close();
   if(browser){
