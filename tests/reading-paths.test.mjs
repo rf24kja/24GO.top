@@ -165,7 +165,7 @@ test('shared path titles remain inert Markdown text even with external links and
  assert.ok(markdown.includes('\\<img src=x\\>'));
  assert.ok(markdown.includes('me\\@example\\.com'));
  assert.ok(!markdown.includes('https://evil.example'),'no raw external autolink token');
- assert.ok(!markdown.includes('<img'),'no raw HTML markup');
+ assert.ok(!/(?<!\\)<img/.test(markdown),'no unescaped raw HTML tag');
  const articleLinks=[...markdown.matchAll(/\]\((https:\/\/[^)]+)\)/g)].map(x=>x[1]);
  assert.deepEqual(articleLinks,[first.url],'only canonical reviewed article links are clickable');
 });
