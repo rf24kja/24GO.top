@@ -1,3 +1,9 @@
+## Unreleased — inert shared titles in downloadable reading paths
+
+- Treat imported public reading-path titles as untrusted text when producing Markdown. Escape Markdown link/image/HTML delimiters and URL/email autolink punctuation in the heading, while preserving the rendered, multilingual title. A crafted public share URL must not smuggle unrelated clickable destinations into a downloaded learning-path file.
+- Add regression coverage for malicious shared link titles, raw HTML and e-mail auto-links, plus Thai/Russian punctuation. The only intended active Markdown links remain validated canonical engineering articles.
+- This changes only the PUBLIC static read/download experience. No account, external write, private manuscript, GitHub credentials or hosted service changes.
+
 ## Unreleased — complete static-route responsive CI coverage and privacy navigation
 
 - Replace the PUBLIC Chromium layout test's hardcoded 14-route subset with a bounded, symlink-safe discovery of every HTML page physically present under `site/`. Current public source has 30 HTML routes, so all 18 representative phone, landscape, tablet and desktop profiles now test an expected **540 route/viewport combinations**. Future reviewed HTML pages enter the test matrix automatically rather than silently being omitted.
