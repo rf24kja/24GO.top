@@ -124,3 +124,11 @@ test('privacy controls are reachable through the same mobile navigation as publi
  assert.match(privacy,/rel="stylesheet" href="\/landing\.css"/);
  assert.match(landing,/\.site-header \.header-inner>nav a\{[^}]*min-height:44px/);
 });
+
+
+test('280px topic heading and article card text wrap instead of pushing the viewport',()=>{
+ const notes=read('site/engineering/notes.css');
+ assert.match(notes,/@media\(max-width:400px\)\{\s*h1\{font-size:clamp\(29px,9vw,38px\);letter-spacing:-\.04em;overflow-wrap:anywhere\}/);
+ assert.match(notes,/\.topic-guide__steps>li>div\{min-width:0\}/);
+ assert.ok(RESPONSIVE_VIEWPORTS.some(x=>x.width===280&&x.mobile));
+});
