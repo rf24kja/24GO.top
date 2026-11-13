@@ -273,7 +273,8 @@ function exerciseReadingPaths(){
   .map(link=>link.href);
  const removeFocus=document.activeElement?.href===firstOrder[0];
  const search=document.getElementById('path-search');
- search.value='security';
+ // A visible title in the reviewed corpus includes the literal 'mobile'.
+ search.value='mobile';
  search.dispatchEvent(new Event('input',{bubbles:true}));
  const filtered=Number.parseInt(document.getElementById('catalog-count').textContent,10);
  search.value='';
