@@ -65,3 +65,9 @@ test('both public header systems scroll naturally on short phone landscape witho
  assert.doesNotMatch(landing,/body\{[^}]*overflow-x:hidden/);
  assert.doesNotMatch(interior,/body\{[^}]*overflow-x:hidden/);
 });
+
+test('German and other long translated card labels cannot enlarge the 280px grid track',()=>{
+ assert.match(landing,/\.cards\{grid-template-columns:minmax\(0,1fr\)\}/);
+ assert.match(landing,/\.card\{min-height:0;min-width:0;padding:24px;overflow-wrap:anywhere\}/);
+ assert.ok(RESPONSIVE_VIEWPORTS.some(x=>x.width===280&&x.mobile));
+});
