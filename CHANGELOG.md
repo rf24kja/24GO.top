@@ -1,3 +1,9 @@
+## Unreleased — download public learning paths as Markdown
+
+- Add an explicit **Download Markdown .md** action to the PUBLIC reading-path builder. Readers can save their ordered selection of reviewed technical articles as a UTF-8 Markdown file without a GitHub account, browser clipboard permission, or network write. The button is disabled for empty paths and uses the same strict canonical-article validation as share/copy.
+- Filename is fixed to `24gotop-reading-path.md` (no private title in the filename), the temporary Blob URL is revoked after the browser starts the save, and clipboard failures do not interfere with the action. This is an opt-in browser download, not hosted document storage or publication.
+- Extend real Chromium interactive checks across compact 280px, phone 390px, landscape 844×390px and desktop 1440px to verify the actual Blob content, filename, link, no storage writes, and no horizontal overflow. Keep tests source-backed and fail closed.
+
 ## Unreleased — protect saved-article backup import consent from stale selection
 
 - In the public engineering archive's opt-in browser-only reading list, revalidate the current backup-file selection **after** the native import confirmation. A previously selected backup cannot merge after the visitor chooses another file while confirmation is open.
