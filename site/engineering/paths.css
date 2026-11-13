@@ -24,7 +24,7 @@
 .path-selected-item{counter-increment:path-item;align-items:flex-start}
 .path-selected-item::before{content:counter(path-item,decimal-leading-zero);font-variant-numeric:tabular-nums;color:var(--path-accent);font-weight:700;min-width:2rem;margin-top:.5rem}
 .path-item-actions{display:flex;gap:.35rem;flex-wrap:wrap;justify-content:flex-end}
-.path-panel button{font:inherit;cursor:pointer;border:1px solid var(--path-border);border-radius:10px;background:transparent;color:var(--path-ink);padding:.55rem .8rem;min-height:42px;white-space:nowrap}
+.path-panel button{font:inherit;cursor:pointer;border:1px solid var(--path-border);border-radius:10px;background:transparent;color:var(--path-ink);padding:.55rem .8rem;min-height:44px;white-space:nowrap}
 .path-panel button:hover:not(:disabled){border-color:var(--path-accent)}
 .path-panel button:disabled{opacity:.5;cursor:not-allowed}
 .path-panel .path-primary{background:var(--path-accent);color:#052416;border-color:var(--path-accent);font-weight:750}
