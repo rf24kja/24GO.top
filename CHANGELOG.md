@@ -1,3 +1,9 @@
+## Unreleased — reading-path clipboard and responsive interaction safety
+
+- Fix public `Reading paths` share controls so an old asynchronous clipboard success/permission denial cannot override the latest copy result, reveal an obsolete manual-link textarea or steal keyboard focus after an article is changed, title edited, selection reset or a newer copy clicked. The current denied copy retains the accessible selectable fallback.
+- Extend **real Chromium** interactive E2E to test concurrent copy success/failure, delayed denial after a title edit, current denied fallback, and delayed denial after clearing the path at 280px compact phone, 390px phone, 844×390 phone landscape and 1440px desktop. Keep the existing 18-device-profile × 14-page CSS matrix (252 viewport/route checks) and dynamic action-height/overflow assertions.
+- No account, network write, browser storage or proprietary hosted Core is introduced. Automated Chromium viewports do not substitute for real-device Safari/Firefox or VoiceOver/TalkBack sessions.
+
 ## Unreleased — real interactive Reading Paths QA across devices
 
 - Extend the PUBLIC real-Chromium keyboard/accessibility E2E to exercise an actual JavaScript-rendered reading path with the reviewed JSON Feed: add two articles, reorder, remove, filter the catalog and retain private-on-device state. Test **280px compact phone, 390px phone, 844×390 landscape and 1440px real desktop**, not just initial server-rendered HTML/CSS.

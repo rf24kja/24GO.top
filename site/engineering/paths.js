@@ -11,6 +11,8 @@ const title=el('path-title'),search=el('path-search');
 const copyStatus=el('path-copy-status'),manual=el('path-manual-copy');
 const status=el('path-status');
 let approved=[],ids=[];
+// An obsolete clipboard permission result cannot rewrite newer path feedback.
+let copyRevision=0;
 const node=(name,value,className)=>{
  const item=document.createElement(name);
  if(value!==undefined)item.textContent=String(value);
@@ -25,6 +27,7 @@ const button=(label,callback,{disabled=false,ariaLabel=null}={})=>{
  return item;
 };
 function forgetManual(){
+ ++copyRevision;
  manual.value='';manual.hidden=true;el('path-manual-label').hidden=true;
  copyStatus.textContent='';
 }
@@ -119,11 +122,19 @@ el('path-reset').addEventListener('click',()=>{
  status.textContent='Path cleared from this tab. No account data was changed.';
 });
 async function copyValue(value){
+ forgetManual();
+ const ticket=copyRevision;
+ copyStatus.textContent='Copying public reading path…';
  try{
   if(!navigator.clipboard?.writeText)throw Error('no_clipboard');
   await navigator.clipboard.writeText(value);
-  forgetManual();copyStatus.textContent='Copied. Share it with another reader.';
- }catch{showManual(value);}
+  if(ticket===copyRevision)
+   copyStatus.textContent='Copied. Share it with another reader.';
+ }catch{
+  // A newer copy, title edit, selection or reset invalidates this attempt.
+  // No stale textarea or focus theft after a delayed browser denial.
+  if(ticket===copyRevision)showManual(value);
+ }
 }
 el('path-copy-link').addEventListener('click',()=>{
  try{
@@ -131,11 +142,11 @@ el('path-copy-link').addEventListener('click',()=>{
   const url=new URL('./',window.location.href);
   url.hash=encodeReadingPath(state,approved);
   void copyValue(url.href);
- }catch{copyStatus.textContent='Check your title and select at least one article.';}
+ }catch{forgetManual();copyStatus.textContent='Check your title and select at least one article.';}
 });
 el('path-copy-markdown').addEventListener('click',()=>{
  try{void copyValue(readingPathMarkdown({title:title.value,ids},approved));}
- catch{copyStatus.textContent='Check your title and select at least one article.';}
+ catch{forgetManual();copyStatus.textContent='Check your title and select at least one article.';}
 });
 async function load(){
  try{

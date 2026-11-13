@@ -115,3 +115,21 @@ test('interactive reading paths retain keyboard focus and mobile touch targets a
  assert.match(browser,/width:1440,height:900/);
  assert.match(browser,/minimumActionHeight>=43\.5/);
 });
+
+test('real Chromium runs delayed clipboard permission and focus regression on all reading-path viewports',()=>{
+ const ui=readFileSync(new URL('../site/engineering/paths.js',import.meta.url),'utf8');
+ const browser=readFileSync(new URL('../scripts/check-draft-lab-accessibility.mjs',import.meta.url),'utf8');
+ assert.match(ui,/let copyRevision=0/);
+ assert.match(ui,/\+\+copyRevision/);
+ assert.match(ui,/if\(ticket===copyRevision\)showManual\(value\)/);
+ assert.match(ui,/if\(ticket===copyRevision\)[\s\S]*?copyStatus\.textContent='Copied\./);
+ assert.match(browser,/async function exerciseReadingPathsClipboardRace\(\)/);
+ assert.match(browser,/await c\.call\(exerciseReadingPathsClipboardRace,sessionId\)/);
+ assert.match(browser,/copyRace\.newestSuccess/);
+ assert.match(browser,/copyRace\.staleTitleSafe/);
+ assert.match(browser,/copyRace\.currentFallback/);
+ assert.match(browser,/copyRace\.staleResetSafe/);
+ assert.match(browser,/width:280,height:600/);
+ assert.match(browser,/width:844,height:390/);
+ assert.match(browser,/width:1440,height:900/);
+});

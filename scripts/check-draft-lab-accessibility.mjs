@@ -297,6 +297,59 @@ function exerciseReadingPaths(){
   statusRole:document.getElementById('path-status').getAttribute('role')};
 }
 
+// Real browser clipboard permission races on the currently rendered reading
+// path. Run after the responsive add/reorder/remove interaction per viewport.
+async function exerciseReadingPathsClipboardRace(){
+ const copyLink=document.getElementById('path-copy-link');
+ const copyMarkdown=document.getElementById('path-copy-markdown');
+ const reset=document.getElementById('path-reset');
+ const title=document.getElementById('path-title');
+ const status=document.getElementById('path-copy-status');
+ const manual=document.getElementById('path-manual-copy');
+ const label=document.getElementById('path-manual-label');
+ const pending=[];
+ const original=Object.getOwnPropertyDescriptor(navigator,'clipboard');
+ Object.defineProperty(navigator,'clipboard',{configurable:true,value:{
+  writeText(value){return new Promise((resolve,reject)=>pending.push({value,resolve,reject}));}
+ }});
+ const tick=()=>new Promise(ok=>setTimeout(ok,0));
+ try{
+  copyLink.click();copyMarkdown.click();
+  if(pending.length!==2)throw Error('Two clipboard attempts did not start');
+  pending[1].resolve();await tick();
+  pending[0].reject(Error('Obsolete clipboard rejection'));await tick();
+  const newestSuccess=status.textContent.startsWith('Copied.')&&manual.hidden&&
+   label.hidden&&manual.value==='';
+  copyLink.click();
+  if(pending.length!==3)throw Error('Third clipboard attempt did not start');
+  title.value='Updated title while permission is pending';
+  title.dispatchEvent(new Event('input',{bubbles:true}));
+  title.focus();
+  pending[2].reject(Error('Stale permission after path title edit'));await tick();
+  const staleTitleSafe=manual.hidden&&label.hidden&&manual.value===''&&
+   status.textContent===''&&document.activeElement===title;
+  copyMarkdown.click();
+  if(pending.length!==4)throw Error('Fourth clipboard attempt did not start');
+  pending[3].reject(Error('Current browser clipboard denial'));await tick();
+  const currentFallback=!manual.hidden&&!label.hidden&&manual.value.startsWith('# ')&&
+   document.activeElement===manual&&
+   status.textContent.includes('Select and copy');
+  copyLink.click();
+  if(pending.length!==5)throw Error('Fifth clipboard attempt did not start');
+  reset.click();
+  pending[4].reject(Error('Stale permission after clearing path'));await tick();
+  const staleResetSafe=manual.hidden&&label.hidden&&manual.value===''&&
+   status.textContent===''&&reset.disabled&&copyLink.disabled;
+  const viewport=document.documentElement.clientWidth;
+  const scroll=Math.max(document.documentElement.scrollWidth,document.body.scrollWidth);
+  return {newestSuccess,staleTitleSafe,currentFallback,staleResetSafe,viewport,scroll,
+   requests:pending.length};
+ }finally{
+  if(original)Object.defineProperty(navigator,'clipboard',original);
+  else delete navigator.clipboard;
+ }
+}
+
 async function main(){
  const site=localServer();
  let browser,ws;
@@ -395,10 +448,16 @@ async function main(){
     path.minimumActionHeight>=43.5&&path.scroll<=path.viewport+1&&
     (!profile.shortLandscape||path.headerPosition!=='sticky');
    if(!valid)throw Error('Reading path responsive E2E '+profile.name+': '+JSON.stringify(path));
+   const copyRace=await c.call(exerciseReadingPathsClipboardRace,sessionId);
+   if(!copyRace.newestSuccess||!copyRace.staleTitleSafe||
+      !copyRace.currentFallback||!copyRace.staleResetSafe||
+      copyRace.requests!==5||copyRace.scroll>copyRace.viewport+1)
+    throw Error('Reading path clipboard focus/permission race '+profile.name+': '+
+      JSON.stringify(copyRace));
   }
   assert(!c.exceptions.length,'Unexpected browser JS exception '+c.exceptions.join('; '));
   assert(!c.external.length,'External network request '+c.external.join('; '));
-  console.log('PASS Chromium reading-path builder: add/reorder/remove, keyboard focus, touch targets and layout on 280/390/844 landscape/1440 desktop');
+  console.log('PASS Chromium reading-path builder: touch layouts and real clipboard permission/focus races on 280/390/844 landscape/1440 desktop');
  }finally{
   if(ws)ws.close();
   if(browser){
