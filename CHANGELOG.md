@@ -1,3 +1,9 @@
+## Unreleased — protect saved-article backup import consent from stale selection
+
+- In the public engineering archive's opt-in browser-only reading list, revalidate the current backup-file selection **after** the native import confirmation. A previously selected backup cannot merge after the visitor chooses another file while confirmation is open.
+- Add deterministic regression coverage for a re-entrant newer file selection during confirmation: old consent performs zero writes or input cleanup, while only the newer valid backup imports after its own confirmation.
+- Keep existing safe merge semantics for public article filenames and cross-tab additions. No server requests, private data, developer keys or hosted publication capabilities.
+
 ## Unreleased — reading-path clipboard and responsive interaction safety
 
 - Fix public `Reading paths` share controls so an old asynchronous clipboard success/permission denial cannot override the latest copy result, reveal an obsolete manual-link textarea or steal keyboard focus after an article is changed, title edited, selection reset or a newer copy clicked. The current denied copy retains the accessible selectable fallback.

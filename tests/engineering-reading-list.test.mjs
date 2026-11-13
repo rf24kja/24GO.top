@@ -475,3 +475,40 @@ test('clear confirmation cannot erase links saved by a different tab during cons
   /changed in another tab/);
  assert.equal(app.elements['reading-list-items'].children.length,2);
 });
+
+test('older confirmed import cannot override a newer backup selection during consent',async()=>{
+ const app=setup(),input=app.elements['reading-list-file'];
+ const key='24gotop-public-reading-list-v1';
+ const backup=files=>{
+  const data=new TextEncoder().encode(JSON.stringify({
+   kind:'24gotop-public-reading-list-backup',version:1,files
+  }));
+  return {name:'saved-links.json',size:data.length,async arrayBuffer(){return data.buffer;}};
+ };
+ let confirmations=0,newerPending;
+ app.setConfirmHook(()=>{
+  confirmations++;
+  if(confirmations!==1)return;
+  // The original native confirm was open while the user selected a newer
+  // file. Its handler immediately increments the import revision, before
+  // the newer file's async buffer is ready.
+  input.files=[backup(['research-two.html'])];
+  input.value='newer-backup-selected';
+  newerPending=input.listeners.change();
+ });
+ input.files=[backup(['research-one.html'])];
+ const old=input.listeners.change();
+ await old;
+ assert.equal(app.writes.length,0,
+  'original confirmed backup must not persist after a newer selection begins');
+ assert.equal(input.value,'newer-backup-selected',
+  'old import must not clear the newer file input');
+ assert.equal(app.store.get(key),undefined,
+  'no data may be saved on obsolete consent');
+ await newerPending;
+ assert.equal(confirmations,2);
+ assert.deepEqual(JSON.parse(app.store.get(key)).files,['research-two.html']);
+ assert.equal(app.writes.filter(x=>x[0]==='set').length,1);
+ assert.equal(input.value,'');
+ assert.match(app.elements['reading-list-feedback'].textContent,/Imported public links/);
+});

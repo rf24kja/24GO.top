@@ -219,6 +219,9 @@
    const imported=validFiles(data.files);
    if(!window.confirm('Merge '+imported.length+
       ' saved public article link(s) from this JSON file into this browser?'))return;
+   // Native confirmation may run while a newer backup selection starts.
+   // That explicit newer user choice supersedes the earlier consent.
+   if(ticket!==importRevision)return;
    // Re-read the saved version AFTER the confirmation. Never overwrite another
    // tab's newer preference or make a partial over-capacity import.
    const combined=[...new Set([...current(),...imported])];
