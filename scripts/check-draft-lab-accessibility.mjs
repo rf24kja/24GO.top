@@ -376,8 +376,9 @@ async function exerciseReadingPathsDownload(){
    filename:anchor?.download,
    objectUrl:anchor?.href.startsWith('blob:'),
    cleanedUp:anchor?!anchor.isConnected:false,
-   validContents:content==='# '+title+'\\n\\n1. ['+
-    selected?.textContent.replace(/[\\\\\\[\\]]/g,'\\\\async function main(){')+']('+link+')\\n',
+   validContents:content.startsWith('# '+title+'\n\n1. [') &&
+    content.includes(']('+link+')\n') && content.endsWith('\n') &&
+    content.split('\n').length===4,
    mime:blob?.type,
    bytes:blob?.size,
    status:document.getElementById('path-copy-status').textContent,
