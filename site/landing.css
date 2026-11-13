@@ -140,3 +140,10 @@
  .site-header .header-inner>nav a{padding:6px 8px}
  .footer-grid{grid-template-columns:minmax(0,1fr)}
 }
+
+/* Short landscape viewports: a multi-row sticky navigation bar can consume
+   much of the 320–428px high screen. Keep all links visible and keyboard
+   reachable, but let the header scroll with the page instead of covering it. */
+@media(orientation:landscape) and (max-height:450px) and (max-width:950px){
+ .site-header{position:relative}
+}
