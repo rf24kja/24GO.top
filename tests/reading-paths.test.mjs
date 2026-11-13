@@ -133,3 +133,23 @@ test('real Chromium runs delayed clipboard permission and focus regression on al
  assert.match(browser,/width:844,height:390/);
  assert.match(browser,/width:1440,height:900/);
 });
+
+
+test('reading-path Markdown download is a manual local-only action with responsive browser coverage',()=>{
+ const html=readFileSync(new URL('../site/engineering/reading-paths/index.html',import.meta.url),'utf8');
+ const ui=readFileSync(new URL('../site/engineering/paths.js',import.meta.url),'utf8');
+ const browser=readFileSync(new URL('../scripts/check-draft-lab-accessibility.mjs',import.meta.url),'utf8');
+ assert.match(html,/<button id="path-download-markdown" type="button" disabled>Download Markdown \.md<\/button>/);
+ assert.match(ui,/el\('path-download-markdown'\)\.disabled=ids\.length===0/);
+ assert.match(ui,/new Blob\(\[markdown\],\{type:'text\/markdown;charset=utf-8'\}\)/);
+ assert.match(ui,/anchor\.download='24gotop-reading-path\.md'/);
+ assert.match(ui,/URL\.createObjectURL\(blob\)/);
+ assert.match(ui,/URL\.revokeObjectURL\(downloadUrl\)/);
+ assert.match(ui,/readingPathMarkdown\(\{title:title\.value,ids\},approved\)/);
+ assert.match(browser,/async function exerciseReadingPathsDownload\(\)/);
+ assert.match(browser,/await c\.call\(exerciseReadingPathsDownload,sessionId\)/);
+ for(const property of ['validContents','cleanedUp','noStorageWrite','originallyEnabled']){
+  assert.ok(browser.includes('downloaded.'+property));
+ }
+ assert.doesNotMatch(ui,/\blocalStorage\b|\bsessionStorage\b|XMLHttpRequest|sendBeacon|document\.cookie/i);
+});

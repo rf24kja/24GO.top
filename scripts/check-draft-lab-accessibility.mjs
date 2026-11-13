@@ -350,6 +350,49 @@ async function exerciseReadingPathsClipboardRace(){
  }
 }
 
+// Exercise the actual browser Blob download path on each responsive viewport.
+// Intercept only the final anchor activation so CI never downloads files.
+async function exerciseReadingPathsDownload(){
+ const button=document.getElementById('path-download-markdown');
+ const selected=document.querySelector('#path-selected .path-article-link');
+ const title=document.getElementById('path-title').value;
+ const before=localStorage.getItem('24gotop-public-reading-list-v1');
+ const create=URL.createObjectURL;
+ const click=HTMLAnchorElement.prototype.click;
+ let blob=null,anchor=null,clicks=0;
+ try{
+  URL.createObjectURL=function(file){
+   blob=file;return create.call(URL,file);
+  };
+  HTMLAnchorElement.prototype.click=function(){
+   anchor=this;clicks++;
+  };
+  const originallyEnabled=!button.disabled;
+  button.click();
+  const content=blob?await blob.text():'';
+  const link=selected?.href||'';
+  const result={
+   originallyEnabled,clicks,
+   filename:anchor?.download,
+   objectUrl:anchor?.href.startsWith('blob:'),
+   cleanedUp:anchor?!anchor.isConnected:false,
+   validContents:content.startsWith('# '+title+'\n\n1. [') &&
+    content.includes(']('+link+')\n') && content.endsWith('\n') &&
+    content.split('\n').length===4,
+   mime:blob?.type,
+   bytes:blob?.size,
+   status:document.getElementById('path-copy-status').textContent,
+   noStorageWrite:localStorage.getItem('24gotop-public-reading-list-v1')===before,
+   width:document.documentElement.clientWidth,
+   scroll:Math.max(document.documentElement.scrollWidth,document.body.scrollWidth)
+  };
+  return result;
+ }finally{
+  URL.createObjectURL=create;
+  HTMLAnchorElement.prototype.click=click;
+ }
+}
+
 async function main(){
  const site=localServer();
  let browser,ws;
@@ -448,6 +491,15 @@ async function main(){
     path.minimumActionHeight>=43.5&&path.scroll<=path.viewport+1&&
     (!profile.shortLandscape||path.headerPosition!=='sticky');
    if(!valid)throw Error('Reading path responsive E2E '+profile.name+': '+JSON.stringify(path));
+   const downloaded=await c.call(exerciseReadingPathsDownload,sessionId);
+   if(!downloaded.originallyEnabled||downloaded.clicks!==1||
+      downloaded.filename!=='24gotop-reading-path.md'||!downloaded.objectUrl||
+      !downloaded.cleanedUp||!downloaded.validContents||
+      downloaded.mime!=='text/markdown;charset=utf-8'||downloaded.bytes<50||
+      !downloaded.status.includes('download requested')||!downloaded.noStorageWrite||
+      downloaded.scroll>downloaded.width+1)
+    throw Error('Reading path local Markdown download '+profile.name+': '+
+      JSON.stringify(downloaded));
    const copyRace=await c.call(exerciseReadingPathsClipboardRace,sessionId);
    if(!copyRace.newestSuccess||!copyRace.staleTitleSafe||
       !copyRace.currentFallback||!copyRace.staleResetSafe||
