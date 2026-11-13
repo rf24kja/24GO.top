@@ -47,8 +47,19 @@ function renderCatalog(){
   const summary=node('p',article.summary,'path-small');info.append(summary);
   const active=ids.includes(article.id);
   const add=button(active?'Added':'Add to path',()=>{
-   try{ids=changeReadingPath(ids,article.id,'add',approved);render();}
-   catch{status.textContent='You can select at most ten articles.';}
+   try{
+    const keepFocus=document.activeElement===add;
+    ids=changeReadingPath(ids,article.id,'add',approved);
+    render(); // The original button was replaced by the updated catalog.
+    status.textContent='Added '+article.title+' to the reading path.';
+    if(keepFocus){
+     // Preserve keyboard position by focusing the same reviewed article
+     // link, not a detached or now-disabled button.
+     const link=[...catalog.querySelectorAll('.path-catalog-item .path-article-link')]
+      .find(item=>item.href===article.url);
+     (link||title).focus();
+    }
+   }catch{status.textContent='You can select at most ten articles.';}
   },{disabled:active||ids.length>=MAX_READING_PATH_ITEMS,
    ariaLabel:(active?'Already selected: ':'Add: ')+article.title});
   li.append(info,add);catalog.append(li);
@@ -81,8 +92,25 @@ function renderSelected(){
 }
 function render(){forgetManual();renderCatalog();renderSelected();}
 function reorder(id,action){
- try{ids=changeReadingPath(ids,id,action,approved);render();}
- catch{status.textContent='Could not change your reading path.';}
+ try{
+  const keepFocus=selected.contains(document.activeElement);
+  const previousIndex=ids.indexOf(id);
+  ids=changeReadingPath(ids,id,action,approved);
+  render();
+  status.textContent=action==='remove'
+   ?'Removed an article from the reading path.':'Updated reading order.';
+  if(keepFocus){
+   // A re-render destroys the activated control. Move focus to the
+   // remaining article at that position or a stable title input.
+   const rows=[...selected.querySelectorAll('.path-selected-item')];
+   const url=approved.find(article=>article.id===id)?.url;
+   const target=action==='remove'
+    ?rows[Math.min(previousIndex,rows.length-1)]?.querySelector('.path-article-link')
+    :rows.find(row=>row.querySelector('.path-article-link')?.href===url)
+     ?.querySelector('.path-article-link');
+   (target||title).focus();
+  }
+ }catch{status.textContent='Could not change your reading path.';}
 }
 search.addEventListener('input',()=>{forgetManual();renderCatalog();});
 title.addEventListener('input',forgetManual);
