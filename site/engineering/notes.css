@@ -235,3 +235,12 @@ header{background:rgba(249,252,249,.9)}a:hover,.navlinks a:hover{color:#07593f}.
  background:var(--panel);border-radius:0 7px 7px 0;color:var(--muted);
  font-size:13px;line-height:1.65;overflow-wrap:anywhere}
 .note-search__excerpt[hidden]{display:none}
+
+
+/* Tiny phone support for real 280px layouts. Large editorial/topic headings
+   can contain long words (e.g. "Infrastructure") whose original 40px minimum
+   exceeds the available column width. Allow natural wrapping, not clipping. */
+@media(max-width:400px){
+ h1{font-size:clamp(29px,9vw,38px);letter-spacing:-.04em;overflow-wrap:anywhere}
+ .topic-guide__steps>li>div{min-width:0}
+}
