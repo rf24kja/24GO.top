@@ -6,15 +6,10 @@ import {resolve,dirname,sep} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {launchChromium} from './chromium-startup.mjs';
 import {RESPONSIVE_VIEWPORTS} from './responsive-viewports.mjs';
+import {discoverPublicHtmlRoutes} from './discover-public-html.mjs';
 
 const ROOT=resolve(fileURLToPath(new URL('../site/',import.meta.url)));
-const PATHS=[
- 'index.html','ru/index.html','th/index.html','es/index.html',
- 'fr/index.html','de/index.html','pt/index.html','zh/index.html',
- 'draft-lab.html','contribute.html','progress.html',
- 'engineering/index.html','engineering/reading-paths/index.html',
- 'engineering/bounded-github-api-article-proposals.html'
-];
+const PATHS=await discoverPublicHtmlRoutes(ROOT);
 
 async function inlinePage(path){
  const htmlPath=resolve(ROOT,path);
@@ -121,7 +116,7 @@ async function main(){
    }
   }
   console.log('PASS '+passed+' Chromium mobile/tablet layouts and desktop viewports: no horizontal overflow, accessible phone navigation and safe landscape headers');
-  console.log('Coverage: '+RESPONSIVE_VIEWPORTS.length+' representative CSS viewports × '+PATHS.length+' public routes; touch, DPR, orientation, desktop mode, light/dark and reduced-motion samples.');
+  console.log('Coverage: '+RESPONSIVE_VIEWPORTS.length+' representative CSS viewports × ALL '+PATHS.length+' shipped public HTML routes; touch, DPR, orientation, desktop mode, light/dark and reduced-motion samples.');
   console.log('Scope: real Chromium with source-rendered public HTML/CSS; not physical iOS/Android/Safari testing, user usability evidence or live network smoke.');
  }finally{
   if(ws)ws.close();
