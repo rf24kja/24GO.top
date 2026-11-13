@@ -153,3 +153,27 @@ test('reading-path Markdown download is a manual local-only action with responsi
  }
  assert.doesNotMatch(ui,/\blocalStorage\b|\bsessionStorage\b|XMLHttpRequest|sendBeacon|document\.cookie/i);
 });
+
+
+test('shared path titles remain inert Markdown text even with external links and HTML',()=>{
+ const title='[Fake](https://evil.example) <img src=x> me@example.com';
+ const received=decodeReadingPath(encodeReadingPath({title,ids:[first.id]},articles),articles);
+ assert.equal(received.title,title,'share fragments may carry untrusted text');
+ const markdown=readingPathMarkdown(received,articles);
+ assert.ok(markdown.startsWith('# \\[Fake\\]'));
+ assert.ok(markdown.includes('https\\://evil\\.example'));
+ assert.ok(markdown.includes('\\<img src=x\\>'));
+ assert.ok(markdown.includes('me\\@example\\.com'));
+ assert.ok(!markdown.includes('https://evil.example'),'no raw external autolink token');
+ assert.ok(!markdown.includes('<img'),'no raw HTML markup');
+ const articleLinks=[...markdown.matchAll(/\]\((https:\/\/[^)]+)\)/g)].map(x=>x[1]);
+ assert.deepEqual(articleLinks,[first.url],'only canonical reviewed article links are clickable');
+});
+
+test('multilingual Markdown path titles keep ordinary punctuation readable',()=>{
+ const title='ภาษาไทย • Русский: 2026. [reading] <tips> @user';
+ const markdown=readingPathMarkdown({title,ids:[first.id]},articles);
+ assert.ok(markdown.includes('ภาษาไทย • Русский\\: 2026\\.'));
+ assert.ok(markdown.includes('\\[reading\\] \\<tips\\> \\@user'));
+ assert.equal(markdown.match(/\]\(https:\/\//g)?.length,1);
+});
