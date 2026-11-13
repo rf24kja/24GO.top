@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
+import {readFileSync,readdirSync} from 'node:fs';
+import {fileURLToPath} from 'node:url';
+import {join} from 'node:path';
+import {discoverPublicHtmlRoutes} from '../scripts/discover-public-html.mjs';
 import {RESPONSIVE_VIEWPORTS} from '../scripts/responsive-viewports.mjs';
 
 const read=file=>readFileSync(new URL('../'+file,import.meta.url),'utf8');
@@ -82,4 +85,42 @@ test('reading path builder reuses the same reset and color tokens as the public 
  assert.match(base,/body\{margin:0/);
  assert.match(base,/--text:/);
  assert.match(base,/--border:/);
+});
+
+
+test('every published HTML route is covered automatically by real Chromium device matrix',async()=>{
+ const root=fileURLToPath(new URL('../site/',import.meta.url));
+ const actual=await discoverPublicHtmlRoutes(root);
+ const expected=[];
+ const scan=(dir,prefix='')=>{
+  for(const item of readdirSync(dir,{withFileTypes:true})){
+   if(item.isDirectory())scan(join(dir,item.name),prefix+item.name+'/');
+   else if(item.isFile()&&item.name.endsWith('.html'))expected.push(prefix+item.name);
+  }
+ };
+ scan(root);
+ assert.ok(expected.length>=30,'do not silently drop article/topic/privacy pages');
+ assert.deepEqual(actual,expected.sort());
+ assert.ok(Object.isFrozen(actual));
+ for(const key of ['index.html','privacy.html','draft-lab.html',
+  'engineering/index.html','engineering/reading-paths/index.html',
+  'engineering/topics/security.html','engineering/why-draft-lab-first.html']){
+  assert.ok(actual.includes(key),'missing required route '+key);
+ }
+ assert.match(script,/const PATHS=await discoverPublicHtmlRoutes\(ROOT\)/);
+ assert.match(script,/for\(const path of PATHS\)/);
+ assert.doesNotMatch(script,/const PATHS=\[/);
+ assert.equal(RESPONSIVE_VIEWPORTS.length*actual.length,18*expected.length);
+});
+
+test('privacy controls are reachable through the same mobile navigation as public articles',()=>{
+ const privacy=read('site/privacy.html');
+ assert.match(privacy,/<a class="skip" href="#main-content">/);
+ assert.match(privacy,/<main class="wrap" id="main-content" tabindex="-1"/);
+ assert.match(privacy,/<nav aria-label="Main navigation">/);
+ for(const href of ['/engineering/','/engineering/reading-paths/','/draft-lab.html']){
+  assert.ok(privacy.includes('href="'+href+'"'),href);
+ }
+ assert.match(privacy,/rel="stylesheet" href="\/landing\.css"/);
+ assert.match(landing,/\.site-header \.header-inner>nav a\{[^}]*min-height:44px/);
 });
