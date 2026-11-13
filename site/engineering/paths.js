@@ -91,6 +91,7 @@ function renderSelected(){
  el('selected-count').textContent=ids.length+' / '+MAX_READING_PATH_ITEMS;
  el('path-copy-link').disabled=ids.length===0;
  el('path-copy-markdown').disabled=ids.length===0;
+ el('path-download-markdown').disabled=ids.length===0;
  el('path-reset').disabled=ids.length===0;
 }
 function render(){forgetManual();renderCatalog();renderSelected();}
@@ -148,6 +149,32 @@ el('path-copy-markdown').addEventListener('click',()=>{
  try{void copyValue(readingPathMarkdown({title:title.value,ids},approved));}
  catch{forgetManual();copyStatus.textContent='Check your title and select at least one article.';}
 });
+// Explicit local download is independent from browser clipboard permissions.
+// No link, title or draft content is sent to a remote service.
+el('path-download-markdown').addEventListener('click',()=>{
+ forgetManual();
+ let downloadUrl;
+ let anchor;
+ try{
+  const markdown=readingPathMarkdown({title:title.value,ids},approved);
+  const blob=new Blob([markdown],{type:'text/markdown;charset=utf-8'});
+  downloadUrl=URL.createObjectURL(blob);
+  anchor=node('a');
+  anchor.href=downloadUrl;
+  anchor.download='24gotop-reading-path.md';
+  document.body.append(anchor);
+  anchor.click();
+  copyStatus.textContent='Markdown download requested. Check your browser downloads.';
+ }catch{
+  copyStatus.textContent='Could not download the reading path. Use Copy Markdown list instead.';
+ }finally{
+  anchor?.remove();
+  // Keep the temporary download URL alive long enough for the browser to
+  // begin saving it, then free its memory; never keep it in localStorage.
+  if(downloadUrl)setTimeout(()=>URL.revokeObjectURL(downloadUrl),10000);
+ }
+});
+
 async function load(){
  try{
   approved=await loadStaticReadingPathCatalog();
