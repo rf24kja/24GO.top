@@ -98,3 +98,20 @@ test('the feature is a genuine accessible, browser-only workflow linked from arc
  const archive=readFileSync(new URL('../site/engineering/index.html',import.meta.url),'utf8');
  assert.match(archive,/href="\.\/reading-paths\/"/);
 });
+
+test('interactive reading paths retain keyboard focus and mobile touch targets after DOM replacement',()=>{
+ const js=readFileSync(new URL('../site/engineering/paths.js',import.meta.url),'utf8');
+ const css=readFileSync(new URL('../site/engineering/paths.css',import.meta.url),'utf8');
+ const browser=readFileSync(new URL('../scripts/check-draft-lab-accessibility.mjs',import.meta.url),'utf8');
+ assert.match(js,/const keepFocus=document.activeElement===add/);
+ assert.match(js,/const keepFocus=selected.contains\(document.activeElement\)/);
+ assert.match(js,/\(link\|\|title\)\.focus\(\)/);
+ assert.match(js,/\(target\|\|title\)\.focus\(\)/);
+ assert.match(css,/\.path-panel button\{[^}]*min-height:44px/);
+ assert.match(browser,/waitForReadingPaths/);
+ assert.match(browser,/exerciseReadingPaths/);
+ assert.match(browser,/width:280,height:600/);
+ assert.match(browser,/width:844,height:390/);
+ assert.match(browser,/width:1440,height:900/);
+ assert.match(browser,/minimumActionHeight>=43\.5/);
+});

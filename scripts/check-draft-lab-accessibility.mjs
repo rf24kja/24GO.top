@@ -234,6 +234,69 @@ function exerciseSavedLinks(){
   scroll:Math.max(document.documentElement.scrollWidth,document.body.scrollWidth)};
 }
 
+
+async function waitForReadingPaths(){
+ for(let attempt=0;attempt<100;attempt++){
+  const ready=document.querySelectorAll('#path-catalog .path-catalog-item');
+  const status=document.getElementById('path-status')?.textContent||'';
+  if(ready.length>=5&&status.includes('Choose from '))return ready.length;
+  if(status.includes('catalog is unavailable'))throw Error('Reading path feed unavailable');
+  await new Promise(resolve=>setTimeout(resolve,40));
+ }
+ throw Error('Reading path catalog failed to initialize');
+}
+function exerciseReadingPaths(){
+ const savedKey='24gotop-public-reading-list-v1';
+ const storedBefore=localStorage.getItem(savedKey);
+ const catalog=document.getElementById('path-catalog');
+ const chosen=document.getElementById('path-selected');
+ const initial=catalog.querySelectorAll('.path-catalog-item').length;
+ const first= catalog.querySelectorAll('.path-catalog-item button')[0];
+ first.focus();first.click();
+ const firstHref=catalog.querySelector('.path-catalog-item .path-article-link')?.href;
+ const addFocus=Boolean(document.activeElement?.classList.contains('path-article-link')&&
+  document.activeElement.href===firstHref);
+ const second=catalog.querySelectorAll('.path-catalog-item button')[1];
+ second.focus();second.click();
+ const firstOrder=[...chosen.querySelectorAll('.path-selected-item .path-article-link')]
+  .map(link=>link.href);
+ const move=chosen.querySelectorAll('.path-selected-item')[1]
+  ?.querySelectorAll('.path-item-actions button')[0];
+ move?.focus();move?.click();
+ const reordered=[...chosen.querySelectorAll('.path-selected-item .path-article-link')]
+  .map(link=>link.href);
+ const reorderFocus=document.activeElement?.href===firstOrder[1];
+ const remove=chosen.querySelectorAll('.path-selected-item')[0]
+  ?.querySelectorAll('.path-item-actions button')[2];
+ remove?.focus();remove?.click();
+ const remaining=[...chosen.querySelectorAll('.path-selected-item .path-article-link')]
+  .map(link=>link.href);
+ const removeFocus=document.activeElement?.href===firstOrder[0];
+ const search=document.getElementById('path-search');
+ // A visible title in the reviewed corpus includes the literal 'mobile'.
+ search.value='mobile';
+ search.dispatchEvent(new Event('input',{bubbles:true}));
+ const filtered=Number.parseInt(document.getElementById('catalog-count').textContent,10);
+ search.value='';
+ search.dispatchEvent(new Event('input',{bubbles:true}));
+ const title=document.getElementById('path-title');
+ title.value='安全 • ภาษาไทย • Русский';
+ title.dispatchEvent(new Event('input',{bubbles:true}));
+ const copiedBefore=document.getElementById('path-copy-link').disabled;
+ const actions=[...document.querySelectorAll('.path-panel button')];
+ const minimumActionHeight=Math.min(...actions.map(button=>button.getBoundingClientRect().height));
+ const viewport=document.documentElement.clientWidth;
+ const scroll=Math.max(document.documentElement.scrollWidth,document.body.scrollWidth);
+ const header=document.querySelector('header.interior-header');
+ return {initial,addFocus,firstOrder,reordered,reorderFocus,remaining,removeFocus,
+  filtered,minimumActionHeight,copiedBefore,
+  count:document.getElementById('selected-count').textContent,
+  viewport,scroll,headerPosition:header?getComputedStyle(header).position:null,
+  storedUnchanged:localStorage.getItem(savedKey)===storedBefore,
+  locationUnchanged:window.location.hash==='',
+  statusRole:document.getElementById('path-status').getAttribute('role')};
+}
+
 async function main(){
  const site=localServer();
  let browser,ws;
@@ -303,6 +366,39 @@ async function main(){
     'removing saved links must preserve keyboard focus');
   requireArchive(saved.scroll<=saved.width+1,'320px saved reading list must not overflow page');
   console.log('PASS Chromium saved reading list: explicit save, live filtered count, next-item/heading focus at 320px');
+  // Exercise real dynamic reading-path DOM, not only the initial static HTML.
+  // Each device is a fresh reload of the public feed and selected controls.
+  const pathProfiles=[
+   {name:'compact-280',width:280,height:600,dpr:2,mobile:true},
+   {name:'phone-390',width:390,height:844,dpr:3,mobile:true},
+   {name:'phone-landscape',width:844,height:390,dpr:3,mobile:true,shortLandscape:true},
+   {name:'desktop',width:1440,height:900,dpr:1,mobile:false}
+  ];
+  for(const profile of pathProfiles){
+   await c.send('Emulation.setDeviceMetricsOverride',{
+    width:profile.width,height:profile.height,
+    deviceScaleFactor:profile.dpr,mobile:profile.mobile
+   },sessionId);
+   await c.send('Emulation.setTouchEmulationEnabled',{
+    enabled:profile.mobile,maxTouchPoints:profile.mobile?5:1
+   },sessionId);
+   await c.send('Page.navigate',{url:origin+'/engineering/reading-paths/'},sessionId);
+   await c.call(waitForReadingPaths,sessionId);
+   const path=await c.call(exerciseReadingPaths,sessionId);
+   const valid=path.initial===12&&path.addFocus&&path.firstOrder.length===2&&
+    path.reordered.length===2&&path.reordered[0]===path.firstOrder[1]&&
+    path.reordered[1]===path.firstOrder[0]&&path.reorderFocus&&
+    path.remaining.length===1&&path.remaining[0]===path.firstOrder[0]&&
+    path.removeFocus&&path.filtered>=1&&path.filtered<=12&&
+    path.count==='1 / 10'&&!path.copiedBefore&&path.storedUnchanged&&
+    path.locationUnchanged&&path.statusRole==='status'&&
+    path.minimumActionHeight>=43.5&&path.scroll<=path.viewport+1&&
+    (!profile.shortLandscape||path.headerPosition!=='sticky');
+   if(!valid)throw Error('Reading path responsive E2E '+profile.name+': '+JSON.stringify(path));
+  }
+  assert(!c.exceptions.length,'Unexpected browser JS exception '+c.exceptions.join('; '));
+  assert(!c.external.length,'External network request '+c.external.join('; '));
+  console.log('PASS Chromium reading-path builder: add/reorder/remove, keyboard focus, touch targets and layout on 280/390/844 landscape/1440 desktop');
  }finally{
   if(ws)ws.close();
   if(browser){
