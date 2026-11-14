@@ -157,3 +157,31 @@ test('confirmed Draft Lab file opens recheck latest consent and preserve newer e
   segment.indexOf('title.value = reopened.title;'));
  assert.match(segment,/if\(!confirmed\)/);
 });
+
+
+test('browser print/PDF layout includes only local article preview, never private editor controls',()=>{
+ assert.match(html,/id="printDraft" type="button" class="secondary" data-ui="printButton"/);
+ assert.match(html,/id="printHelp" data-ui="printHelp"/);
+ assert.match(html,/class="preview-print-controls" role="group"/);
+ assert.match(js,/field\('printDraft'\)\.addEventListener\('click'/);
+ assert.match(js,/typeof window\.print!=='function'/);
+ assert.match(js,/window\.print\(\)/);
+ assert.match(js,/if\(!title\.value\.trim\(\)\|\|!body\.value\.trim\(\)\)/);
+ assert.match(css,/\.preview-print-controls button\{min-height:44px/);
+ assert.match(css,/@media print\{/);
+ for(const selector of [
+  '.workspace>.panel:not(.preview)', '.preview .draft-guidance',
+  '.preview .revision-review', '.preview .article-outline',
+  '.preview .preview-print-controls', '.preview .preview-image-privacy',
+  '.preview .preview-foot'
+ ])assert.ok(css.includes(selector),'private or helper content not excluded: '+selector);
+ assert.match(css,/\.preview-image-gate>button\{display:none!important\}/);
+ assert.match(css,/\.preview-image-gate>img\[hidden\]\{display:none!important\}/);
+ assert.match(css,/#previewSource:not\(\[hidden\]\)/);
+ const browser=readFileSync(new URL('../scripts/check-draft-lab-accessibility.mjs',import.meta.url),'utf8');
+ assert.match(browser,/function exerciseDraftPrintAction\(\)/);
+ assert.match(browser,/function exerciseDraftPrintMedia\(\)/);
+ assert.match(browser,/await c\.call\(exerciseDraftPrintMedia,sessionId\)/);
+ assert.match(browser,/Emulation\.setEmulatedMedia/);
+ assert.doesNotMatch(js,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|sessionStorage|innerHTML/);
+});
