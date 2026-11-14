@@ -1,3 +1,11 @@
+## Unreleased — downloadable reviewed search results (PUBLIC)
+
+- Add **Download matching links (.md)** to the actual published engineering-article archive. A reader can search article text, filter by topic, then save the currently visible canonical public article links as a fixed-filename UTF-8 Markdown file, without clipboard permission, an account, analytics calls or a server write. The action is hidden for an empty result set and remains opt-in.
+- Reuse one allowlisted public Markdown link builder for copying and downloading; keep titles bounded and escape link delimiters. Do not expose unpublished drafts, arbitrary destinations, credentials or search-query parameters to the download URL.
+- Isolate overlapping clipboard attempts and prevent delayed permission errors from replacing download feedback or unexpectedly focusing stale text. Make the new interactive search action at least 44px tall on touch screens.
+- Test byte-for-byte downloaded content and local object-URL cleanup, no network requests or storage mutation in Node. Real Chromium E2E verifies actual Blob output and responsive action height at 280px, 390px, 844×390px landscape, 768px tablet and 1440px desktop, in addition to the existing 540 public route/viewport layout checks.
+- This is a public static reading utility, **not** hosted user publishing or moderation.
+
 ## Unreleased — inert shared titles in downloadable reading paths
 
 - Treat imported public reading-path titles as untrusted text when producing Markdown. Escape Markdown link/image/HTML delimiters and URL/email autolink punctuation in the heading, while preserving the rendered, multilingual title. A crafted public share URL must not smuggle unrelated clickable destinations into a downloaded learning-path file.
