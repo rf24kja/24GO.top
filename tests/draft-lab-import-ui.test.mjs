@@ -1900,5 +1900,5 @@ test('bulk replace affordances are local and translated in eight languages',()=>
     assert.ok(uiText(lang,key).length>0,lang+':'+key);
   }
  }
- assert.doesNotMatch(source,/fetch\\(|sendBeacon|XMLHttpRequest|eval\\(/);
+ assert.doesNotMatch(source,/fetch\(|sendBeacon|XMLHttpRequest|eval\(/);
 });
