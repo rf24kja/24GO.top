@@ -8,13 +8,14 @@
   const reset=document.getElementById('engineering-reset');
   const share=document.getElementById('engineering-share');
   const copyResults=document.getElementById('engineering-copy-results');
+  const downloadResults=document.getElementById('engineering-download-results');
   const shareStatus=document.getElementById('engineering-share-status');
   const manualCopy=document.getElementById('engineering-manual-copy');
   const indexStatus=document.getElementById('engineering-index-status');
   const retryIndex=document.getElementById('engineering-index-retry');
   const cards=[...document.querySelectorAll('[data-note-card]')];
   const topics=[...document.querySelectorAll('[data-engineering-topic]')];
-  if(!form||!input||!status||!empty||!reset||!share||!shareStatus||!manualCopy||!copyResults||
+  if(!form||!input||!status||!empty||!reset||!share||!shareStatus||!manualCopy||!copyResults||!downloadResults||
      !indexStatus||!retryIndex||
      cards.length===0||topics.length===0)return;
 
@@ -34,7 +35,7 @@
   let selected='all';
   let fullText=null;
   let indexState='loading';
-  let resultRevision=0;
+  let resultRevision=0,clipboardRevision=0;
   const hideManualCopy=()=>{
     manualCopy.value='';
     manualCopy.hidden=true;
@@ -43,9 +44,10 @@
   // missing clipboard API exposes the same PUBLIC data for manual selection.
   const copyOrSelect=async(text,success)=>{
     const revision=resultRevision;
+    const ticket=++clipboardRevision;
     hideManualCopy();
     const offerManual=()=>{
-      if(revision!==resultRevision)return;
+      if(revision!==resultRevision||ticket!==clipboardRevision)return;
       manualCopy.value=text;
       manualCopy.hidden=false;
       manualCopy.focus();
@@ -57,7 +59,7 @@
     }
     try{
       await navigator.clipboard.writeText(text);
-      if(revision===resultRevision)shareStatus.textContent=success;
+      if(revision===resultRevision&&ticket===clipboardRevision)shareStatus.textContent=success;
     }catch{offerManual();}
   };
   const setIndexState=state=>{
@@ -198,6 +200,7 @@
   };
   const update=(writeUrl=false)=>{
     resultRevision++;
+    clipboardRevision++;
     hideManualCopy();
     const keyword=input.value.trim().toLocaleLowerCase().slice(0,80);
     // Match all bounded query words, in any order and across the visible
@@ -223,6 +226,7 @@
     reset.hidden=!active;
     share.hidden=!active;
     copyResults.hidden=count===0;
+    downloadResults.hidden=count===0;
     shareStatus.textContent='';
     if(writeUrl)syncUrl();
   };
@@ -270,18 +274,45 @@
     const url=currentUrl();
     if(url)return copyOrSelect(url.href,'Filtered article link copied.');
   });
+  // Export only links that were already rendered in the allowlisted public
+  // article cards. Neither the query nor unpublished content enters a URL.
+  const visibleMarkdownLines=()=>entries.filter(entry=>!entry.card.hidden).map(entry=>{
+    const label=entry.card.querySelector?.('h3 a')?.textContent?.trim()||
+      entry.file.slice(0,-5).replaceAll('-',' ');
+    const safeLabel=label.replace(/[\r\n\[\]\\]/g,' ').slice(0,180);
+    return '- ['+safeLabel+'](https://24go.top/engineering/'+entry.file+')';
+  });
   copyResults.addEventListener('click',async()=>{
-    // This is an explicit user gesture: copy plain Markdown links to the
-    // *visible* public results, not unpublished author drafts or search text.
-    const lines=entries.filter(entry=>!entry.card.hidden).map(entry=>{
-      const label=entry.card.querySelector?.('h3 a')?.textContent?.trim()||
-        entry.file.slice(0,-5).replaceAll('-',' ');
-      const text=label.replace(/[\r\n\[\]\\]/g,' ').slice(0,180);
-      return '- ['+text+'](https://24go.top/engineering/'+entry.file+')';
-    });
+    const lines=visibleMarkdownLines();
     if(!lines.length){shareStatus.textContent='No results to copy.';return;}
     return copyOrSelect(lines.join('\n'),lines.length+
       ' public article link(s) copied as Markdown.');
+  });
+  downloadResults.addEventListener('click',()=>{
+    // This is an explicit visitor gesture; no clipboard, persistence, uploads
+    // or third-party endpoints. A newer click supersedes pending copy status.
+    clipboardRevision++;
+    hideManualCopy();
+    const lines=visibleMarkdownLines();
+    if(!lines.length){shareStatus.textContent='No matching public articles to download.';return;}
+    let objectUrl,anchor;
+    try{
+      const blob=new Blob([lines.join('\n')+'\n'],
+        {type:'text/markdown;charset=utf-8'});
+      objectUrl=URL.createObjectURL(blob);
+      anchor=document.createElement('a');
+      anchor.href=objectUrl;
+      anchor.download='24gotop-search-results.md';
+      document.body.append(anchor);
+      anchor.click();
+      shareStatus.textContent='Markdown download requested for '+
+        lines.length+' public article link(s).';
+    }catch{
+      shareStatus.textContent='Could not download Markdown. Try copying matching links instead.';
+    }finally{
+      anchor?.remove();
+      if(objectUrl)setTimeout(()=>URL.revokeObjectURL(objectUrl),10000);
+    }
   });
   if(typeof window!=='undefined'&&window.addEventListener){
     window.addEventListener('popstate',()=>{
