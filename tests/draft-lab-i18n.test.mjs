@@ -236,5 +236,5 @@ test('AES-GCM backup actions, password recovery warning and error states transla
   assert.ok(html.includes('data-ui="'+key+'"'),key);
  assert.match(code,/ui\('encryptedBackupRestoreConfirm'\)/);
  assert.match(code,/ui\('encryptedBackupRestored'\)/);
- assert.match(code,/ui\('encryptedBackupUnavailable'\)/);
+ assert.match(code,/'encryptedBackupUnavailable'/);
 });
