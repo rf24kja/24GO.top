@@ -39,7 +39,7 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
     'previewHeading','previewBody','previewLocale','previewCategory','bodyCount','bodyWordCount','draftReadingTime','guidanceScore',
     'guideTitleState','guideBodyState','guideHeadingsState','guideStepsState','guideSourceState','guideCompleteState','draftTemplate','insertTemplate',
     'revisionCapture','revisionCompare','revisionCopy','revisionClear','revisionStatus','revisionFields','revisionLines',
-    'downloadReviewPack','verifyReviewPack','reviewPackFile','insertExternalMarkdown','externalMarkdownFile',
+    'downloadReviewPack','verifyReviewPack','reviewPackFile','insertExternalMarkdown','externalMarkdownFile','printDraft',
     'previewSource','draftSafety','articleOutline','articleOutlineSection','downloadDraft','copyDraft','clearDraft','importDraft','importDraftFile','draftForm',
     'draftFindQuery','draftFindNext','draftFindPrevious','draftFindStatus','draftReplaceText','draftFindReplace',
     'formatBold','formatItalic','formatInlineCode','formatHeading','formatList','formatOrderedList','formatQuote','formatCode','formatTable','formatLink','insertImage','imageUrl','imageAlt','uiLocale','draftDropZone','homeBrandLink','homeNavLink','proposeDraft',
@@ -75,8 +75,8 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
    static createObjectURL(blob){const url='blob:24gotop/'+blobUrls.size;blobUrls.set(url,blob);return url;}
    static revokeObjectURL(url){blobUrls.delete(url);}
   }
-  let confirm = true, confirmHook = null;
-  const window = {listeners:{}, location:{href:uiHref}, confirm(){if(confirmHook)confirmHook();return confirm;}, addEventListener(type, callback){this.listeners[type]=callback;}};
+  let confirm = true, confirmHook = null,printCalls=0;
+  const window = {listeners:{}, location:{href:uiHref}, confirm(){if(confirmHook)confirmHook();return confirm;}, print(){printCalls++;}, addEventListener(type, callback){this.listeners[type]=callback;}};
   const browserItems=new Map();
   const localStorage={
     getItem(k){return browserItems.has(k)?browserItems.get(k):null;},
@@ -113,6 +113,8 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
     storageEvent(key=VAULT_KEY,storageArea=localStorage){
       window.listeners.storage({key,storageArea});
     },
+    get printCalls(){return printCalls;},
+    setPrintAvailable(value){window.print=value?()=>{printCalls++;}:undefined;},
     setConfirm(value){confirm=value;},
     setConfirmHook(fn){confirmHook=fn;},
     beforeUnload() {
