@@ -1403,3 +1403,49 @@ test('open consent preserves unsaved editor text if selected draft changed meanw
  assert.equal(JSON.parse(app.localStorage.getItem(VAULT_KEY)).entries[0].draft.body,
   'A different author-controlled saved version from a second tab.');
 });
+
+
+test('temporary image link inputs are erased only when an actual draft change is accepted',async()=>{
+ const app=build(),el=app.elements;
+ const url='https://images.example.org/previous-manuscript.png';
+ el.imageUrl.value=url;
+ el.imageAlt.value='Private working description';
+ el.postTitle.value='Unsaved author manuscript';
+ el.postBody.value='Unpublished writing which must be preserved on cancellation.';
+ app.setConfirm(false);
+ await app.import(formatDraft(sample));
+ assert.equal(el.imageUrl.value,url,'declined import retains temporary input state');
+ assert.equal(el.imageAlt.value,'Private working description');
+ assert.equal(el.postTitle.value,'Unsaved author manuscript');
+ app.setConfirm(true);
+ await app.import(formatDraft(sample));
+ assert.equal(el.postTitle.value,sample.title);
+ assert.equal(el.imageUrl.value,'','accepted new document erases old link');
+ assert.equal(el.imageAlt.value,'','accepted new document erases stale alt');
+ el.imageUrl.value=url;
+ el.imageAlt.value='Clear these temporary fields';
+ el.clearDraft.listeners.click();
+ assert.equal(el.imageUrl.value,'','Clear removes temporary image link');
+ assert.equal(el.imageAlt.value,'','Clear removes temporary alt text');
+ assert.equal(el.postBody.value,'');
+ assert.equal(app.localStorage.getItem(VAULT_KEY),null,'no browser storage write');
+});
+
+test('opening a saved local draft clears previous document image insertion helpers',()=>{
+ const app=build(),el=app.elements;
+ for(const [id,key] of [['postTitle','title'],['postBody','body'],
+  ['postLocale','locale'],['postCategory','category'],['postSource','source']])
+  el[id].value=sample[key];
+ el.saveBrowserDraft.listeners.click();
+ const saved=JSON.parse(app.localStorage.getItem(VAULT_KEY));
+ const id=saved.entries[0].id;
+ el.imageUrl.value='https://images.example.org/old-article.png';
+ el.imageAlt.value='From previous article';
+ el.postTitle.value='Unsaved work for a different document';
+ el.savedBrowserDraft.value=id;
+ el.openBrowserDraft.listeners.click();
+ assert.equal(el.postTitle.value,sample.title);
+ assert.equal(el.imageUrl.value,'');
+ assert.equal(el.imageAlt.value,'');
+ assert.equal(el.postBody.value,sample.body);
+});
