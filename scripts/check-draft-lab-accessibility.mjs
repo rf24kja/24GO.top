@@ -732,6 +732,79 @@ function exerciseDraftCheckpointRestore(){
  }finally{window.confirm=oldConfirm;}
 }
 
+// Real browser WebCrypto vault encryption/decryption with a simulated
+// download click (never actually writes the author's disk or contacts a host).
+async function exerciseEncryptedBackup(){
+ const $=id=>document.getElementById(id);
+ const password=$('vaultBackupPassword'),exportButton=$('exportEncryptedDraftLibrary');
+ const restoreButton=$('restoreEncryptedDraftLibrary'),input=$('encryptedBackupFile');
+ const oldCreate=URL.createObjectURL,oldClick=HTMLAnchorElement.prototype.click;
+ const oldConfirm=window.confirm;
+ const title=$('postTitle'),body=$('postBody'),locale=$('postLocale');
+ const source=$('postSource'),category=$('postCategory');
+ const originalStorage=localStorage.getItem('24gotop.manual-drafts.v1');
+ if(originalStorage!==null)throw Error('Encrypted backup test requires an empty local vault');
+ title.value='Private research kept only in the browser';
+ body.value='## Evidence\n\nReproducible source with 中文, ภาษาไทย and Русский.';
+ locale.value='en';category.value='guides';
+ source.value='https://example.org/cited-study';
+ title.dispatchEvent(new Event('input',{bubbles:true}));
+ body.dispatchEvent(new Event('input',{bubbles:true}));
+ let encryptedBlob=null,filename=null;
+ try{
+  window.confirm=()=>true;
+  $('saveBrowserDraft').click();
+  const stored=localStorage.getItem('24gotop.manual-drafts.v1');
+  if(!stored)throw Error('Explicit local vault save missing');
+  URL.createObjectURL=blob=>{encryptedBlob=blob;return 'blob:offline-backup-test';};
+  HTMLAnchorElement.prototype.click=function(){
+   filename=this.download; // Avoid actual navigator download in test only.
+  };
+  const available=!exportButton.disabled&&restoreButton.disabled;
+  const height=Math.min(exportButton.getBoundingClientRect().height,
+   restoreButton.getBoundingClientRect().height);
+  const pass='Long local passphrase 🔐 2026';
+  password.value=pass;
+  exportButton.click();
+  let until=Date.now()+12000;
+  while(Date.now()<until&&!encryptedBlob){
+   await new Promise(ok=>setTimeout(ok,35));
+  }
+  if(!encryptedBlob)throw Error('Encrypted file was not created');
+  const encrypted=await encryptedBlob.text();
+  const safeFile=filename==='24gotop-encrypted-drafts.json'&&
+   encrypted.includes('"cipher": "AES-256-GCM"')&&
+   !encrypted.includes('Private research')&&
+   !encrypted.includes('example.org')&&
+   password.value==='';
+  URL.createObjectURL=oldCreate;
+  HTMLAnchorElement.prototype.click=oldClick;
+  $('deleteBrowserDraft').click();
+  const empty=localStorage.getItem('24gotop.manual-drafts.v1');
+  // Removing the last draft produces an empty v1 library record, not null.
+  const emptyConfirmed=empty===null||JSON.parse(empty).entries.length===0;
+  password.value=pass;
+  const transfer=new DataTransfer();
+  transfer.items.add(new File([encrypted],'24gotop-encrypted-drafts.json',
+   {type:'application/json'}));
+  input.files=transfer.files;
+  input.dispatchEvent(new Event('change',{bubbles:true}));
+  until=Date.now()+12000;
+  while(Date.now()<until&&localStorage.getItem('24gotop.manual-drafts.v1')!==stored)
+   await new Promise(ok=>setTimeout(ok,35));
+  const restored=localStorage.getItem('24gotop.manual-drafts.v1')===stored;
+  return {available,height,safeFile,emptyConfirmed,restored,
+   passwordCleared:password.value==='',fileCleared:input.value==='',
+   successful:$('formStatus').dataset.error==='false',
+   width:document.documentElement.clientWidth,
+   scroll:Math.max(document.documentElement.scrollWidth,document.body.scrollWidth)};
+ }finally{
+  URL.createObjectURL=oldCreate;
+  HTMLAnchorElement.prototype.click=oldClick;
+  window.confirm=oldConfirm;
+ }
+}
+
 async function main(){
  const site=localServer();
  let browser,ws;
@@ -825,6 +898,15 @@ async function main(){
       !Object.values(printed.empty).every(Boolean)||
       printed.scroll>printed.viewport+1)
     throw Error('Draft Lab native print action '+profile.name+': '+JSON.stringify(printed));
+   if(profile.name==='phone-390'){
+    const encrypted=await c.call(exerciseEncryptedBackup,sessionId);
+    if(!encrypted.available||encrypted.height<43.5||
+       !encrypted.safeFile||!encrypted.emptyConfirmed||
+       !encrypted.restored||!encrypted.passwordCleared||
+       !encrypted.fileCleared||!encrypted.successful||
+       encrypted.scroll>encrypted.width+1)
+     throw Error('WebCrypto encrypted local backup E2E: '+JSON.stringify(encrypted));
+   }
    await c.send('Emulation.setEmulatedMedia',{media:'print'},sessionId);
    const printable=await c.call(exerciseDraftPrintMedia,sessionId);
    await c.send('Emulation.setEmulatedMedia',{media:'screen'},sessionId);
