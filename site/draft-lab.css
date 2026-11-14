@@ -247,3 +247,63 @@ input[aria-invalid="true"],textarea[aria-invalid="true"],select[aria-invalid="tr
 @media(prefers-contrast:more){
  .draft-image-insert,.draft-image-insert__footer button{border-width:2px}
 }
+
+/* Explicit on-device print/PDF action. Native browser print also uses this
+   stylesheet: never include textarea, vault, private helper fields or prompts. */
+.preview-print-controls{display:flex;flex-wrap:wrap;align-items:center;gap:9px 15px;margin:0 0 20px;
+ min-width:0}
+.preview-print-controls button{min-height:44px;padding:9px 14px;color:var(--accent);
+ background:var(--panel);border:1px solid var(--accent);font-size:13px}
+.preview-print-controls button:hover{background:var(--secondary-hover)}
+.preview-print-controls .hint{flex:1 1 210px;margin:0;min-width:0;overflow-wrap:anywhere}
+@media(max-width:550px){.preview-print-controls{flex-direction:column;align-items:stretch}
+ .preview-print-controls button{width:100%}}
+@media print{
+ @page{margin:15mm 14mm}
+ :root{color-scheme:light!important}
+ html,body{margin:0!important;padding:0!important;background:#fff!important;color:#111!important;
+  font:11pt/1.5 Georgia,"Times New Roman",serif!important}
+ body::before,body::after{display:none!important}
+ .bar,.intro,.notice,.bottom,footer,.interior-footer,
+ .workspace>.panel:not(.preview),
+ .preview .panel-head,.preview .draft-jump-row,.preview .preview-print-controls,
+ .preview .draft-guidance,.preview .revision-review,.preview .article-outline,
+ .preview .preview-image-privacy,.preview .preview-foot{display:none!important}
+ main.shell,.shell{max-width:none!important;width:auto!important;min-width:0!important;
+  padding:0!important;margin:0!important}
+ .workspace{display:block!important;width:auto!important;max-width:none!important;
+  padding:0!important;margin:0!important}
+ .panel.preview{display:block!important;min-height:0!important;max-width:none!important;
+  border:0!important;border-radius:0!important;box-shadow:none!important;
+  background:#fff!important;color:#111!important;padding:0!important;margin:0!important}
+ .preview-meta{display:flex!important;flex-wrap:wrap!important;gap:4mm 7mm!important;
+  font:8pt/1.4 system-ui,sans-serif!important;letter-spacing:0!important;
+  color:#333!important;border-bottom:1px solid #bbb;padding:0 0 4mm;margin:0 0 6mm}
+ #previewHeading{display:block!important;margin:0 0 6mm!important;
+  color:#111!important;font:bold 21pt/1.2 Georgia,"Times New Roman",serif!important;
+  overflow-wrap:anywhere}
+ .preview-content{display:block!important;color:#111!important;max-width:100%!important;
+  min-width:0!important;overflow:visible!important;overflow-wrap:anywhere}
+ .preview-content>*{color:#111!important}
+ .preview-content h4,.preview-content h5,.preview-content h6{break-after:avoid!important;
+  color:#111!important}
+ .preview-content p,.preview-content li,.preview-content blockquote{orphans:2;widows:2}
+ .preview-content a{color:#06463d!important;text-decoration:underline!important}
+ .preview-content pre{max-width:100%!important;overflow:visible!important;
+  background:#f3f3f3!important;border:1px solid #ccc!important;color:#111!important;
+  white-space:pre-wrap!important;overflow-wrap:anywhere!important;break-inside:auto!important}
+ .preview-content pre code{white-space:pre-wrap!important;overflow-wrap:anywhere!important;
+  color:#111!important;background:transparent!important;font:8pt/1.3 ui-monospace,monospace!important}
+ .preview-table-scroll{max-width:100%!important;overflow:visible!important}
+ .preview-table-scroll table{width:100%!important;max-width:100%!important;
+  border-collapse:collapse!important;table-layout:fixed!important}
+ .preview-table-scroll td,.preview-table-scroll th{overflow-wrap:anywhere!important;
+  color:#111!important;border:1px solid #aaa!important}
+ .preview-image-gate>button{display:none!important}
+ .preview-image-gate>img:not([hidden]){display:block!important;max-width:100%!important;
+  max-height:180mm!important;object-fit:contain!important;break-inside:avoid!important}
+ .preview-image-gate>img[hidden]{display:none!important}
+ #previewSource:not([hidden]){display:block!important;color:#333!important;
+  font:9pt/1.5 system-ui,sans-serif!important;overflow-wrap:anywhere;
+  border-top:1px solid #bbb;padding-top:4mm;margin-top:6mm}
+}
