@@ -200,6 +200,50 @@ function exerciseArchive(){
 }
 
 
+async function exerciseArchiveDownload(){
+ const button=document.getElementById('engineering-download-results');
+ const cards=[...document.querySelectorAll('[data-note-card]')].filter(card=>!card.hidden);
+ const originalCreate=URL.createObjectURL;
+ const originalClick=HTMLAnchorElement.prototype.click;
+ const savedBefore=localStorage.getItem('24gotop-public-reading-list-v1');
+ let blob=null,download=null,clicks=0;
+ try{
+  URL.createObjectURL=function(data){blob=data;return originalCreate.call(URL,data);};
+  HTMLAnchorElement.prototype.click=function(){
+   downloadsPreventedFromNavigating=true;
+   download=this;clicks++;
+  };
+  // Store no network state and prevent a real CI download prompt.
+  var downloadsPreventedFromNavigating=false;
+  const visible=!button.hidden;
+  const height=button.getBoundingClientRect().height;
+  button.click();
+  const text=blob?await blob.text():'';
+  const expected=cards.map(card=>{
+   const anchor=card.querySelector('h3 a');
+   const file=card.dataset.noteFile;
+   const label=(anchor?.textContent?.trim()||file.slice(0,-5).replaceAll('-',' '))
+    .replace(/[\r\n\[\]\\]/g,' ').slice(0,180);
+   return '- ['+label+'](https://24go.top/engineering/'+file+')';
+  }).join('\n')+'\n';
+  return {visible,height,count:cards.length,clicks,
+   prevented:downloadsPreventedFromNavigating,
+   filename:download?.download,hasBlob:download?.href.startsWith('blob:'),
+   detached:download?!download.isConnected:false,
+   validContents:text===expected,onlyPublicLinks:
+    text.split('\n').filter(Boolean).every(line=>
+     /^\- \[[^\]\r\n]+\]\(https:\/\/24go\.top\/engineering\/[a-z0-9-]+\.html\)$/.test(line)),
+   bytes:blob?.size,
+   feedback:document.getElementById('engineering-share-status').textContent,
+   sameStorage:localStorage.getItem('24gotop-public-reading-list-v1')===savedBefore,
+   viewport:document.documentElement.clientWidth,
+   scroll:Math.max(document.documentElement.scrollWidth,document.body.scrollWidth)};
+ }finally{
+  URL.createObjectURL=originalCreate;
+  HTMLAnchorElement.prototype.click=originalClick;
+ }
+}
+
 function exerciseSavedLinks(){
  const key='24gotop-public-reading-list-v1';
  const list=document.getElementById('reading-list-items');
@@ -462,6 +506,33 @@ async function main(){
     'removing saved links must preserve keyboard focus');
   requireArchive(saved.scroll<=saved.width+1,'320px saved reading list must not overflow page');
   console.log('PASS Chromium saved reading list: explicit save, live filtered count, next-item/heading focus at 320px');
+  // Verify real opt-in Blob export and mobile action height in each display mode.
+  for(const profile of [
+   {name:'compact',width:280,height:600,mobile:true,dpr:2},
+   {name:'phone',width:390,height:844,mobile:true,dpr:3},
+   {name:'landscape',width:844,height:390,mobile:true,dpr:3},
+   {name:'tablet',width:768,height:1024,mobile:true,dpr:2},
+   {name:'desktop',width:1440,height:900,mobile:false,dpr:1}
+  ]){
+   await c.send('Emulation.setDeviceMetricsOverride',{
+    width:profile.width,height:profile.height,
+    deviceScaleFactor:profile.dpr,mobile:profile.mobile
+   },sessionId);
+   await c.send('Emulation.setTouchEmulationEnabled',{
+    enabled:profile.mobile,maxTouchPoints:profile.mobile?5:1
+   },sessionId);
+   const result=await c.call(exerciseArchiveDownload,sessionId);
+   if(!result.visible||result.height<43.5||result.count!==12||
+      result.clicks!==1||!result.prevented||
+      result.filename!=='24gotop-search-results.md'||
+      !result.hasBlob||!result.detached||!result.validContents||
+      !result.onlyPublicLinks||!result.sameStorage||
+      result.bytes<100||!result.feedback.includes('download requested')||
+      result.scroll>result.viewport+1)
+    throw Error('Responsive article-result Markdown export '+profile.name+': '+
+      JSON.stringify(result));
+  }
+  console.log('PASS Chromium article search Markdown downloads: 280/390/844 landscape/768 tablet/1440 desktop, canonical links and no browser storage');
   // Exercise real dynamic reading-path DOM, not only the initial static HTML.
   // Each device is a fresh reload of the public feed and selected controls.
   const pathProfiles=[
