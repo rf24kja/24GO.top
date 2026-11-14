@@ -612,3 +612,49 @@ test('reference export denies clipboard gracefully and does not unhide invalid c
  assert.equal(invalid.copyResults.hidden,true);
  assert.doesNotMatch(code,/localStorage|sessionStorage|XMLHttpRequest|sendBeacon|innerHTML/);
 });
+
+
+test('download visible published search results as an opt-in, bounded local Markdown file',async()=>{
+ const app=setUp({query:'?q=PostgreSQL'});
+ assert.equal(app.downloadResults.hidden,false);
+ assert.equal(app.downloads.length,0,'loading search never requests a file download');
+ app.downloadResults.listeners.click();
+ assert.equal(app.downloads.length,1);
+ const file=app.downloads[0];
+ assert.equal(file.filename,'24gotop-search-results.md');
+ assert.match(file.href,/^blob:mock-/);
+ assert.equal(file.blob.type,'text/markdown;charset=utf-8');
+ assert.equal(await file.blob.text(),
+  '- [database](https://24go.top/engineering/database.html)\n');
+ assert.match(app.shareStatus.textContent,/download requested for 1 public article/);
+ assert.equal(app.copied.length,0,'downloading never invokes the clipboard');
+ assert.equal(app.fetchCalls.length,0,'downloading makes no network requests');
+ assert.deepEqual(app.revoked,[file.href],'the temporary Blob URL is released');
+ assert.equal(app.blobUrls.size,0);
+
+ const all=setUp();
+ all.downloadResults.listeners.click();
+ assert.equal((await all.downloads[0].blob.text()).trim().split('\n').length,3);
+ all.input.value='nothing-matches';
+ all.listeners.input();
+ assert.equal(all.downloadResults.hidden,true,'no results cannot be downloaded');
+ assert.equal(all.downloads.length,1,'filter changes must not download automatically');
+});
+
+test('a newer download prevents stale clipboard permission errors from stealing focus',async()=>{
+ const app=setUp({clipboard:'pending'});
+ const pending=app.copyResults.listeners.click();
+ assert.equal(typeof pending?.then,'function');
+ app.downloadResults.listeners.click();
+ assert.equal(app.downloads.length,1);
+ app.rejectPending();
+ await pending;
+ assert.equal(app.manualCopy.hidden,true);
+ assert.equal(app.manualCopy.focused,false);
+ assert.match(app.shareStatus.textContent,/Markdown download requested/);
+ const invalid=setUp({badTopic:true});
+ assert.equal(invalid.form.hidden,true);
+ assert.equal(invalid.downloadResults.hidden,true);
+ assert.equal(invalid.downloads.length,0);
+ assert.doesNotMatch(code,/localStorage|sessionStorage|XMLHttpRequest|sendBeacon|innerHTML/);
+});
