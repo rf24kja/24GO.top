@@ -132,9 +132,9 @@ async function copyValue(value){
   if(!navigator.clipboard?.writeText)throw Error('no_clipboard');
   await navigator.clipboard.writeText(value);
   if(ticket===copyRevision)
-   copyStatus.textContent=value.startsWith('{"url":')
-    ?'Copied. Paste JSON into your local MCP tool.'
-    :'Copied. Share it with another reader.';
+   copyStatus.textContent='Copied. '+(value.startsWith('{"url":')
+    ?'Paste JSON into your local MCP tool.'
+    :'Share it with another reader.');
  }catch{
   // A newer copy, title edit, selection or reset invalidates this attempt.
   // No stale textarea or focus theft after a delayed browser denial.
