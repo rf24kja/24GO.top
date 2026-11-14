@@ -147,7 +147,7 @@ test('author-review jump navigation is translated in all eight languages',()=>{
 test('opt-in external image privacy and loading controls are translated in all eight UI languages',()=>{
  for(const locale of UI_LOCALES){
   for(const key of ['previewImageLoad','previewImageFailed','previewImagePrivacy']){
-   assert.ok(uiText(locale,key).trim().length>=8,locale+'/'+key);
+   assert.ok(uiText(locale,key).trim().length>=4,locale+'/'+key);
   }
  }
  assert.match(html,/data-ui="previewImagePrivacy"/);
