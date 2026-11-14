@@ -128,9 +128,11 @@ test('real Chromium runs delayed clipboard permission and focus regression on al
  assert.match(browser,/async function exerciseReadingPathsClipboardRace\(\)/);
  assert.match(browser,/await c\.call\(exerciseReadingPathsClipboardRace,sessionId\)/);
  assert.match(browser,/copyRace\.newestSuccess/);
+ assert.match(browser,/copyRace\.agentCopied/);
  assert.match(browser,/copyRace\.staleTitleSafe/);
  assert.match(browser,/copyRace\.currentFallback/);
  assert.match(browser,/copyRace\.staleResetSafe/);
+ assert.match(browser,/copyRace\.requests!==6/);
  assert.match(browser,/width:280,height:600/);
  assert.match(browser,/width:844,height:390/);
  assert.match(browser,/width:1440,height:900/);
@@ -143,6 +145,7 @@ test('reading-path Markdown download is a manual local-only action with responsi
  const browser=readFileSync(new URL('../scripts/check-draft-lab-accessibility.mjs',import.meta.url),'utf8');
  assert.match(html,/<button id="path-download-markdown" type="button" disabled>Download Markdown \.md<\/button>/);
  assert.match(ui,/el\('path-download-markdown'\)\.disabled=ids\.length===0/);
+ assert.match(ui,/el\('path-copy-mcp'\)\.disabled=ids\.length===0/);
  assert.match(ui,/new Blob\(\[markdown\],\{type:'text\/markdown;charset=utf-8'\}\)/);
  assert.match(ui,/anchor\.download='24gotop-reading-path\.md'/);
  assert.match(ui,/URL\.createObjectURL\(blob\)/);
