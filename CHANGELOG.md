@@ -1,3 +1,10 @@
+## Unreleased — human/AI shared public reading paths via read-only MCP
+
+- Add `resolve_reading_path` and `create_reading_path` to the PUBLIC, local-only MCP stdio server, allowing readers and AI agents to share an ordered, browser-compatible selection of 1–10 reviewed 24GOTOP engineering articles. Reuse the exact source-controlled reading-path grammar and the committed, validated public article corpus.
+- Require the canonical `https://24go.top/engineering/reading-paths/#path=` URL prefix, strict allowlisted article IDs and exact canonical article URLs. Refuse unreviewed/off-origin links, duplicates, altered versions, malformed encoding, oversized fragments or unpublished drafts. Markdown output escapes untrusted path titles.
+- No user account, server write, remote fetching, authentication, logging of article drafts, or private hosted-core change. MCP sources remain a local Git checkout; existing tools retain their responses and semantics.
+- Add bidirectional compatibility, ordering, UTF-8 and hostile-input tests, update MCP quickstart and onboarding checks. Keep CI and live-release verification as promotion gates.
+
 ## Unreleased — confirmed local replace-all with one-step recovery
 
 - Extend the browser-only Draft Lab's exact, case-sensitive find/replace with an explicit **Replace all…** action. Show the number of non-overlapping matches in the native confirmation before changing anything. Empty, whitespace-only, absent or malformed searches never modify an article.
