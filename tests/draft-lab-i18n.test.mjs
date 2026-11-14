@@ -142,3 +142,20 @@ test('author-review jump navigation is translated in all eight languages',()=>{
  assert.match(html,/href="#preview-title" data-ui="jumpPreview"/);
  assert.match(html,/href="#postBody" data-ui="jumpEditor"/);
 });
+
+
+test('opt-in external image privacy and loading controls are translated in all eight UI languages',()=>{
+ for(const locale of UI_LOCALES){
+  for(const key of ['previewImageLoad','previewImageFailed','previewImagePrivacy']){
+   assert.ok(uiText(locale,key).trim().length>=8,locale+'/'+key);
+  }
+ }
+ assert.match(html,/data-ui="previewImagePrivacy"/);
+ assert.match(code,/imageLoad:ui\('previewImageLoad'\)/);
+ assert.match(code,/imageFailed:ui\('previewImageFailed'\)/);
+ const preview=readFileSync(new URL('../site/draft-lab-preview.js',import.meta.url),'utf8');
+ assert.match(preview,/image\.setAttribute\('crossorigin','anonymous'\)/);
+ assert.match(preview,/image\.setAttribute\('referrerpolicy','no-referrer'\)/);
+ assert.match(preview,/image\.hidden=true/);
+ assert.doesNotMatch(preview,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|innerHTML/);
+});
