@@ -39,7 +39,7 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
     'previewHeading','previewBody','previewLocale','previewCategory','bodyCount','bodyWordCount','draftReadingTime','guidanceScore',
     'guideTitleState','guideBodyState','guideHeadingsState','guideStepsState','guideSourceState','guideCompleteState','draftTemplate','insertTemplate',
     'revisionCapture','revisionCompare','revisionCopy','revisionClear','revisionStatus','revisionFields','revisionLines',
-    'downloadReviewPack','verifyReviewPack','reviewPackFile','insertExternalMarkdown','externalMarkdownFile',
+    'downloadReviewPack','verifyReviewPack','reviewPackFile','insertExternalMarkdown','externalMarkdownFile','printDraft',
     'previewSource','draftSafety','articleOutline','articleOutlineSection','downloadDraft','copyDraft','clearDraft','importDraft','importDraftFile','draftForm',
     'draftFindQuery','draftFindNext','draftFindPrevious','draftFindStatus','draftReplaceText','draftFindReplace',
     'formatBold','formatItalic','formatInlineCode','formatHeading','formatList','formatOrderedList','formatQuote','formatCode','formatTable','formatLink','insertImage','imageUrl','imageAlt','uiLocale','draftDropZone','homeBrandLink','homeNavLink','proposeDraft',
@@ -75,8 +75,8 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
    static createObjectURL(blob){const url='blob:24gotop/'+blobUrls.size;blobUrls.set(url,blob);return url;}
    static revokeObjectURL(url){blobUrls.delete(url);}
   }
-  let confirm = true, confirmHook = null;
-  const window = {listeners:{}, location:{href:uiHref}, confirm(){if(confirmHook)confirmHook();return confirm;}, addEventListener(type, callback){this.listeners[type]=callback;}};
+  let confirm = true, confirmHook = null,printCalls=0;
+  const window = {listeners:{}, location:{href:uiHref}, confirm(){if(confirmHook)confirmHook();return confirm;}, print(){printCalls++;}, addEventListener(type, callback){this.listeners[type]=callback;}};
   const browserItems=new Map();
   const localStorage={
     getItem(k){return browserItems.has(k)?browserItems.get(k):null;},
@@ -113,6 +113,8 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
     storageEvent(key=VAULT_KEY,storageArea=localStorage){
       window.listeners.storage({key,storageArea});
     },
+    get printCalls(){return printCalls;},
+    setPrintAvailable(value){window.print=value?()=>{printCalls++;}:undefined;},
     setConfirm(value){confirm=value;},
     setConfirmHook(fn){confirmHook=fn;},
     beforeUnload() {
@@ -1581,4 +1583,50 @@ test('an edit during open-file consent supersedes the old import without overwri
  assert.equal(el.postBody.value,
   'Existing unpublished author text. Updated while confirming.');
  assert.equal(app.beforeUnload().prevented,true);
+});
+
+
+test('print/PDF action requires a real title and body and never submits or saves a draft',()=>{
+ const app=build(),el=app.elements;
+ el.printDraft.listeners.click();
+ assert.equal(app.printCalls,0);
+ assert.equal(el.postTitle.focused,true);
+ assert.equal(el.formStatus.textContent,uiText('en','printEmpty'));
+ assert.equal(el.formStatus.dataset.error,'true');
+ el.postTitle.value=sample.title;
+ el.printDraft.listeners.click();
+ assert.equal(app.printCalls,0,'title alone must not print empty article');
+ el.postBody.value=sample.body;
+ el.postLocale.value=sample.locale;
+ el.postCategory.value=sample.category;
+ el.postSource.value=sample.source;
+ const copy={title:el.postTitle.value,body:el.postBody.value,
+  locale:el.postLocale.value,category:el.postCategory.value,
+  source:el.postSource.value};
+ el.printDraft.listeners.click();
+ assert.equal(app.printCalls,1,'one author click opens exactly one native print dialog');
+ assert.equal(el.formStatus.textContent,uiText('en','printRequested'));
+ assert.equal(el.formStatus.dataset.error,'false');
+ assert.deepEqual({
+  title:el.postTitle.value,body:el.postBody.value,
+  locale:el.postLocale.value,category:el.postCategory.value,
+  source:el.postSource.value
+ },copy,"printing must never edit the author's draft");
+ assert.equal(app.downloads.length,0,'browser—not Draft Lab—owns PDF destination');
+ assert.equal(app.localStorage.getItem(VAULT_KEY),null);
+ assert.equal(app.beforeUnload().prevented,true,'print is not a verified saved-draft baseline');
+});
+
+test('unsupported print API falls back to original local Markdown export without change',()=>{
+ const app=build(),el=app.elements;
+ el.postTitle.value=sample.title;
+ el.postBody.value=sample.body;
+ app.setPrintAvailable(false);
+ el.printDraft.listeners.click();
+ assert.equal(app.printCalls,0);
+ assert.equal(el.formStatus.textContent,uiText('en','printUnavailable'));
+ assert.equal(el.formStatus.dataset.error,'true');
+ assert.equal(el.postBody.value,sample.body);
+ assert.equal(app.downloads.length,0);
+ assert.equal(app.localStorage.getItem(VAULT_KEY),null);
 });

@@ -1,3 +1,11 @@
+## Unreleased — local print and Save as PDF preview in Draft Lab
+
+- Add an explicit **Print / Save PDF** button beside the reader preview of the PUBLIC, browser-only Draft Lab. The browser handles the native print/PDF dialog and destination; Draft Lab neither generates a server-side PDF nor publishes, uploads, autosaves or marks a manuscript exported. Title and body must contain content before the dialog can be requested.
+- Create print-specific white-paper typography that includes only the draft's title, language, category, **Draft · Not published** label, Markdown article body and validated source reference. Exclude author inputs, image helper URLs, vault/review contents, diff/checklist widgets, website navigation, feedback controls and print buttons. Wrap code and bound tables/images inside printable pages.
+- Preserve the existing individually consent-gated image policy: print hides remote image buttons and does not fetch images that have never been explicitly loaded. Warn authors that the **browser**, not 24GOTOP, chooses print/PDF destinations; private drafts should not be sent to shared/cloud printers.
+- Translate action, privacy guidance and error feedback across all eight interface locales. Add tests for explicit print requests, unavailable print APIs, empty drafts, unchanged editor/vault data and unsaved-change warnings, plus real Chromium emulated print-media and keyboard/touch interactions at 280px/390px phones, 844px phone landscape, 768px tablet and 1440px desktop. Retain the 30-page × 18-viewport responsive matrix.
+- **This remains a static pre-launch authoring utility**, not hosted article publication.
+
 ## Unreleased — prevent stale native-consent import from overwriting newer manuscript actions
 
 - Revalidate the Draft Lab import gate immediately **after** native overwrite confirmation. An older file import cannot reapply obsolete title/body/language/source after a newer file selection, author editing, or Clear triggered while consent was open.

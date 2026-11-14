@@ -594,6 +594,88 @@ async function exerciseExternalMarkdownImport(){
   width:document.documentElement.clientWidth};
 }
 
+// The real print dialog is intercepted in CI; print CSS is exercised separately.
+function exerciseDraftPrintAction(){
+ const $=id=>document.getElementById(id);
+ const title=$('postTitle'),body=$('postBody'),source=$('postSource');
+ const control=$('printDraft'),preview=$('previewBody');
+ const oldPrint=window.print, beforeStorage=localStorage.length;
+ const fence=String.fromCharCode(96).repeat(3);
+ const prose='## Findings\n\nA reproducible print-ready article with code:\n\n'+
+  fence+'js\nconst answer = 42;\n'+fence+'\n\n'+
+  '![Opt-in architecture](https://images.example.org/architecture.png)';
+ title.value='Private technical article — not published';
+ body.value=prose;
+ source.value='https://example.org/original-research';
+ title.dispatchEvent(new Event('input',{bubbles:true}));
+ body.dispatchEvent(new Event('input',{bubbles:true}));
+ source.dispatchEvent(new Event('input',{bubbles:true}));
+ const snapshot={title:title.value,body:body.value,source:source.value};
+ const buttonHeight=control.getBoundingClientRect().height;
+ let printCalls=0;
+ try{
+  window.print=()=>{printCalls++;};
+  control.click();
+  const valid={
+   printCalls,
+   title:title.value===snapshot.title,
+   body:body.value===snapshot.body,
+   source:source.value===snapshot.source,
+   visibleContent:preview.textContent.includes('reproducible print-ready article'),
+   imageNotFetched:!preview.querySelector('.preview-image-gate img')?.hasAttribute('src'),
+   feedback:$('formStatus').dataset.error==='false'&&
+    $('formStatus').textContent.length>10,
+   storage:localStorage.length===beforeStorage
+  };
+  title.value='';title.dispatchEvent(new Event('input',{bubbles:true}));
+  control.click();
+  const empty={
+   prevented:printCalls===1,
+   focused:document.activeElement===title,
+   message:$('formStatus').dataset.error==='true'
+  };
+  title.value=snapshot.title;title.dispatchEvent(new Event('input',{bubbles:true}));
+  return {valid,empty,buttonHeight,scroll:
+    Math.max(document.body.scrollWidth,document.documentElement.scrollWidth),
+   viewport:document.documentElement.clientWidth};
+ }finally{window.print=oldPrint;}
+}
+function exerciseDraftPrintMedia(){
+ const $=id=>document.getElementById(id);
+ const hidden=selector=>{
+  const el=document.querySelector(selector);
+  return Boolean(el&&getComputedStyle(el).display==='none');
+ };
+ const displayed=selector=>{
+  const el=document.querySelector(selector);
+  return Boolean(el&&getComputedStyle(el).display!=='none');
+ };
+ const code=document.querySelector('#previewBody pre code');
+ const box=document.querySelector('.panel.preview');
+ const preview=$('previewBody'),image=preview.querySelector('.preview-image-gate img');
+ return {
+  hiddenEditor:hidden('.workspace>.panel:not(.preview)'),
+  hiddenHeader:hidden('.bar'),
+  hiddenFooter:hidden('.interior-footer'),
+  hiddenGuidance:hidden('.draft-guidance'),
+  hiddenRevisions:hidden('.revision-review'),
+  hiddenOutline:hidden('.article-outline'),
+  hiddenPrintButton:hidden('.preview-print-controls'),
+  hiddenExternalImageButton:hidden('.preview-image-gate>button'),
+  imageNotFetched:!image?.hasAttribute('src'),
+  hiddenImage:Boolean(image&&getComputedStyle(image).display==='none'),
+  visibleArticle:displayed('#previewHeading')&&displayed('#previewBody'),
+  visibleMetadata:displayed('.preview-meta'),
+  visibleSource:displayed('#previewSource'),
+  title:$('previewHeading').textContent,
+  body:preview.textContent.includes('reproducible print-ready article'),
+  codeWrapped:Boolean(code&&getComputedStyle(code).whiteSpace==='pre-wrap'),
+  paperBackground:getComputedStyle(box).backgroundColor,
+  viewport:document.documentElement.clientWidth,
+  scroll:Math.max(document.body.scrollWidth,document.documentElement.scrollWidth)
+ };
+}
+
 async function main(){
  const site=localServer();
  let browser,ws;
@@ -674,6 +756,26 @@ async function main(){
       !external.rejected||external.scroll>external.width+1)
     throw Error('External Markdown local insertion '+profile.name+': '+
       JSON.stringify(external));
+   const printed=await c.call(exerciseDraftPrintAction,sessionId);
+   if(printed.buttonHeight<43.5||
+      !Object.values(printed.valid).every(Boolean)||
+      !Object.values(printed.empty).every(Boolean)||
+      printed.scroll>printed.viewport+1)
+    throw Error('Draft Lab native print action '+profile.name+': '+JSON.stringify(printed));
+   await c.send('Emulation.setEmulatedMedia',{media:'print'},sessionId);
+   const printable=await c.call(exerciseDraftPrintMedia,sessionId);
+   await c.send('Emulation.setEmulatedMedia',{media:'screen'},sessionId);
+   if(!printable.hiddenEditor||!printable.hiddenHeader||
+      !printable.hiddenFooter||!printable.hiddenGuidance||
+      !printable.hiddenRevisions||!printable.hiddenOutline||
+      !printable.hiddenPrintButton||!printable.hiddenExternalImageButton||
+      !printable.hiddenImage||!printable.imageNotFetched||
+      !printable.visibleArticle||!printable.visibleMetadata||
+      !printable.visibleSource||!printable.codeWrapped||!printable.body||
+      !printable.title.includes('not published')||
+      printable.paperBackground!=='rgb(255, 255, 255)'||
+      printable.scroll>printable.viewport+1)
+    throw Error('Draft Lab print-only CSS '+profile.name+': '+JSON.stringify(printable));
 
   }
   await c.send('Emulation.setDeviceMetricsOverride',{
@@ -682,7 +784,7 @@ async function main(){
   await c.send('Emulation.setTouchEmulationEnabled',{
    enabled:true,maxTouchPoints:5
   },sessionId);
-  console.log('PASS Chromium Draft Lab images: opt-in previews, inserted Markdown, negative cases and focus on 280/390/844/768/1440 responsive layouts');
+  console.log('PASS Chromium Draft Lab image, imported Markdown and print/PDF preview: consent, local-only print CSS, keyboard and five responsive layouts');
   assert(!c.exceptions.length,'Unexpected browser JS exception '+c.exceptions.join('; '));
   assert(!c.external.length,'External network request '+c.external.join('; '));
   console.log('PASS Chromium Draft Lab: 3 invalid fields, 8 locales, accessible focus and no page overflow');

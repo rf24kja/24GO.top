@@ -2,6 +2,12 @@
 // or translations of the user's article. English is the explicit fallback.
 export const UI_LOCALES=Object.freeze(['en','ru','th','es','fr','de','pt','zh']);
 const EN={
+ printGroup:"Print local article preview",
+ printButton:"Print / Save PDF",
+ printHelp:"Prints only the local article preview; no draft upload or publication. Your browser chooses the printer or PDF destination. Avoid shared or cloud printers for private writing. External images remain hidden unless loaded individually.",
+ printEmpty:"Add a title and some article text before printing. No changes made.",
+ printRequested:"Browser print dialog requested. No article published or uploaded by Draft Lab.",
+ printUnavailable:"Printing is unavailable in this browser. Download the Markdown file instead.",
  externalMdButton:"Insert another .md",
  externalMdHint:"Insert UTF-8 Markdown from another editor after the current selection (up to 16 KB and 12,000 characters total). Your existing text, article metadata and saved files stay intact. No upload. Use Open saved .md for your Draft Lab exports.",
  externalMdInserted:"External Markdown inserted locally. Your existing article and metadata were preserved. Download .md to keep these changes.",
@@ -173,6 +179,12 @@ const EN={
  clearCanceled:'Draft kept. Nothing was erased.',cleared:'Draft cleared from this browser tab.'
 };
 const RU={
+ printGroup:"Печать локального предпросмотра",
+ printButton:"Печать / Сохранить PDF",
+ printHelp:"Печатается только предпросмотр статьи. Draft Lab не отправляет черновик и не публикует его. Принтер или PDF выбирается в браузере. Для личных текстов избегайте общих и облачных принтеров. Внешние изображения остаются скрытыми до отдельной загрузки.",
+ printEmpty:"Перед печатью добавьте заголовок и текст статьи. Ничего не изменено.",
+ printRequested:"Открыто окно печати браузера. Draft Lab не опубликовал и не загрузил статью.",
+ printUnavailable:"Печать недоступна в этом браузере. Скачайте файл Markdown.",
  externalMdButton:"Вставить другой .md",
  externalMdHint:"Вставляет UTF-8 Markdown из другого редактора после выделения (до 16 КБ и 12 000 символов во всей статье). Исходный текст, поля статьи и сохранённые файлы остаются без изменений. Ничего не загружается на сервер. Для собственных экспортов используйте «Открыть сохранённый .md».",
  externalMdInserted:"Markdown вставлен локально. Исходный текст и сведения о статье сохранены. Скачайте .md для сохранения изменений.",
@@ -343,6 +355,12 @@ const RU={
  clearCanceled:'Черновик оставлен без изменений.',cleared:'Черновик очищен в этой вкладке.'
 };
 const TH={
+ printGroup:"พิมพ์ตัวอย่างบทความบนอุปกรณ์",
+ printButton:"พิมพ์ / บันทึก PDF",
+ printHelp:"พิมพ์เฉพาะตัวอย่างบทความบนอุปกรณ์ ไม่อัปโหลดหรือเผยแพร่ฉบับร่าง เบราว์เซอร์เป็นผู้เลือกเครื่องพิมพ์หรือปลายทาง PDF หลีกเลี่ยงเครื่องพิมพ์สาธารณะหรือคลาวด์สำหรับงานส่วนตัว รูปภาพภายนอกจะถูกซ่อนจนกว่าจะเลือกโหลดเอง",
+ printEmpty:"เพิ่มชื่อเรื่องและเนื้อหาบางส่วนก่อนพิมพ์ ไม่มีการแก้ไข",
+ printRequested:"เรียกหน้าต่างพิมพ์ของเบราว์เซอร์แล้ว Draft Lab ไม่เผยแพร่หรืออัปโหลดบทความ",
+ printUnavailable:"เบราว์เซอร์ไม่รองรับการพิมพ์ โปรดดาวน์โหลด Markdown",
  externalMdButton:"แทรกไฟล์ .md อื่น",
  externalMdHint:"แทรกไฟล์ UTF-8 Markdown จากโปรแกรมอื่นหลังข้อความที่เลือก (สูงสุด 16 KB และบทความรวม 12,000 อักขระ) ข้อความเดิม ข้อมูลบทความและไฟล์ที่บันทึกไว้ไม่เปลี่ยน ไม่มีการอัปโหลด หากเป็นไฟล์ที่ส่งออกจาก Draft Lab ให้ใช้ เปิดไฟล์ .md ที่บันทึกไว้",
  externalMdInserted:"แทรก Markdown บนอุปกรณ์แล้ว ข้อความเดิมและข้อมูลบทความยังอยู่ โปรดดาวน์โหลด .md เพื่อบันทึก",
@@ -512,6 +530,12 @@ const TH={
  clearCanceled:'เก็บร่างเดิมไว้',cleared:'ล้างร่างในแท็บนี้แล้ว'
 };
 const ES={
+ printGroup:"Imprimir vista previa local",
+ printButton:"Imprimir / Guardar PDF",
+ printHelp:"Imprime solo la vista previa local del artículo; no publica ni sube el borrador. El navegador elige la impresora o el PDF. Evita impresoras compartidas o en la nube para textos privados. Las imágenes externas permanecen ocultas hasta que las cargues.",
+ printEmpty:"Añade un título y texto antes de imprimir. No se ha cambiado nada.",
+ printRequested:"Se solicitó el diálogo de impresión. Draft Lab no publicó ni subió el artículo.",
+ printUnavailable:"No se puede imprimir en este navegador. Descarga el archivo Markdown.",
  externalMdButton:"Insertar otro .md",
  externalMdHint:"Inserta Markdown UTF-8 de otro editor después de la selección (máx. 16 KB y 12.000 caracteres en total). Conserva texto, metadatos y archivos guardados. No se sube nada. Usa Abrir .md guardado para exportaciones de Draft Lab.",
  externalMdInserted:"Markdown insertado localmente. Se conservaron el texto y los datos del artículo. Descarga el .md para guardar los cambios.",
@@ -681,6 +705,12 @@ const ES={
  clearCanceled:'Borrador conservado.',cleared:'Borrador borrado de esta pestaña.'
 };
 const FR={
+ printGroup:"Imprimer l’aperçu local",
+ printButton:"Imprimer / Enregistrer PDF",
+ printHelp:"Seul l’aperçu local est imprimé ; aucun brouillon n’est envoyé ou publié. Le navigateur choisit l’imprimante ou le PDF. Évitez les imprimantes partagées ou cloud pour les textes privés. Les images externes restent masquées jusqu’à leur chargement volontaire.",
+ printEmpty:"Ajoutez un titre et du texte avant d’imprimer. Aucun changement.",
+ printRequested:"Dialogue d’impression demandé. Draft Lab n’a ni publié ni envoyé l’article.",
+ printUnavailable:"L’impression est indisponible. Téléchargez plutôt le fichier Markdown.",
  externalMdButton:"Insérer un autre .md",
  externalMdHint:"Insérez un Markdown UTF-8 d’un autre éditeur après la sélection (16 Ko et 12 000 caractères au total maximum). Le texte, les métadonnées et les fichiers enregistrés sont conservés. Aucun envoi. Utilisez Ouvrir .md enregistré pour les exports Draft Lab.",
  externalMdInserted:"Markdown inséré localement. Le texte et les données de l’article sont conservés. Téléchargez le .md pour enregistrer.",
@@ -850,6 +880,12 @@ const FR={
  clearCanceled:'Brouillon conservé.',cleared:'Brouillon effacé de cet onglet.'
 };
 const DE={
+ printGroup:"Lokale Artikelvorschau drucken",
+ printButton:"Drucken / Als PDF speichern",
+ printHelp:"Nur die lokale Artikelvorschau wird gedruckt; kein Entwurf wird hochgeladen oder veröffentlicht. Der Browser wählt Drucker oder PDF. Vermeiden Sie gemeinsam genutzte oder Cloud-Drucker für private Texte. Externe Bilder bleiben bis zum bewussten Laden verborgen.",
+ printEmpty:"Geben Sie vor dem Drucken Titel und Artikeltext ein. Keine Änderung.",
+ printRequested:"Browser-Druckdialog angefordert. Draft Lab hat nichts veröffentlicht oder hochgeladen.",
+ printUnavailable:"Drucken ist hier nicht verfügbar. Laden Sie stattdessen Markdown herunter.",
  externalMdButton:"Weitere .md einfügen",
  externalMdHint:"Fügen Sie UTF-8-Markdown aus einem anderen Editor nach der Markierung ein (max. 16 KB und insgesamt 12.000 Zeichen). Vorhandener Text, Metadaten und gespeicherte Dateien bleiben erhalten. Kein Upload. Draft-Lab-Exporte bitte über Gespeicherte .md öffnen.",
  externalMdInserted:"Markdown lokal eingefügt. Text und Metadaten bleiben erhalten. Zum Speichern .md herunterladen.",
@@ -1019,6 +1055,12 @@ const DE={
  clearCanceled:'Entwurf beibehalten.',cleared:'Entwurf aus diesem Tab gelöscht.'
 };
 const PT={
+ printGroup:"Imprimir pré-visualização local",
+ printButton:"Imprimir / Guardar PDF",
+ printHelp:"Imprime apenas a pré-visualização local; o rascunho não é enviado nem publicado. O navegador escolhe a impressora ou o PDF. Evite impressoras partilhadas ou na nuvem para textos privados. As imagens externas ficam ocultas até serem carregadas explicitamente.",
+ printEmpty:"Adicione um título e texto antes de imprimir. Nenhuma alteração.",
+ printRequested:"A caixa de impressão do navegador foi solicitada. O Draft Lab não publicou nem enviou o artigo.",
+ printUnavailable:"A impressão está indisponível neste navegador. Transfira o Markdown.",
  externalMdButton:"Inserir outro .md",
  externalMdHint:"Insira Markdown UTF-8 de outro editor depois da seleção (até 16 KB e 12.000 caracteres no total). O texto existente, metadados e ficheiros guardados são preservados. Sem envio. Use Abrir .md guardado para exportações do Draft Lab.",
  externalMdInserted:"Markdown inserido localmente. Texto e dados do artigo preservados. Transfira o .md para guardar.",
@@ -1188,6 +1230,12 @@ const PT={
  clearCanceled:'Rascunho mantido.',cleared:'Rascunho apagado desta aba.'
 };
 const ZH={
+ printGroup:"打印本地文章预览",
+ printButton:"打印 / 保存 PDF",
+ printHelp:"只打印本地文章预览，不会上传或发表草稿。打印机或 PDF 目标由浏览器选择。私人草稿请避免使用共享或云端打印机。外部图片在手动加载前仍然隐藏。",
+ printEmpty:"请先输入标题和一些正文再打印。草稿未修改。",
+ printRequested:"已请求浏览器打印对话框。Draft Lab 未上传或发表文章。",
+ printUnavailable:"当前浏览器无法打印，请改为下载 Markdown 文件。",
  externalMdButton:"插入其他 .md",
  externalMdHint:"可在选区之后插入其他编辑器创建的 UTF-8 Markdown（不超过 16 KB，文章总长不超过 12,000 字符）。原有文字、文章信息和保存的文件不会被覆盖，也不会上传。Draft Lab 导出文件请使用“打开已保存 .md”。",
  externalMdInserted:"Markdown 已在本地插入，原文与文章信息保留。请下载 .md 保存修改。",
