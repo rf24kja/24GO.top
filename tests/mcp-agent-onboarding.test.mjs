@@ -21,7 +21,7 @@ test('agent discovery is a visible, source-backed static route, not a fake hoste
  assert.match(styles,/@media\(max-width:500px\)\{\.agent-discovery/);
 });
 test('all new public MCP tools are documented and bounded, with no publishing authority',()=>{
- for(const name of ['search_articles_page','read_article_excerpt']){
+ for(const name of ['search_articles_page','read_article_excerpt','resolve_reading_path','create_reading_path']){
   assert.match(mcp,new RegExp("name:'"+name+"'"));
   assert.match(docs,new RegExp(name));
  }

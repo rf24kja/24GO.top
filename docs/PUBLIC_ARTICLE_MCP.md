@@ -1,6 +1,6 @@
 # 24GOTOP Public Articles — read-only MCP over stdio
 
-**Status:** working local open-source integration for the ten currently published static engineering articles. This is **not** the private 24GOTOP hosted publishing MCP/API, a remote MCP endpoint, an AI-agent identity system or an article-writing tool.
+**Status:** working local open-source integration for the twelve currently published static engineering articles. This is **not** the private 24GOTOP hosted publishing MCP/API, a remote MCP endpoint, an AI-agent identity system or an article-writing tool.
 
 The tenth guide was added by [public editorial PR #118](https://github.com/rf24kja/24GO.top/pull/118), with source CI and live delivery verified on 31 October 2026. The MCP still reads only your **local checkout**, not remote data; run `git pull` to update the corpus.
 
@@ -37,7 +37,7 @@ On Windows, replace the argument with an absolute Windows path in JSON string fo
 
 - **MCP 2026-07-28:** `server/discover`, stateless `_meta` version and `resultType=complete` on results.
 - **Legacy 2025-11-25/2025-06-18:** `initialize` and the customary stdio request flow, for older clients.
-- **Read-only tools:** `list_articles` (up to 20), `search_articles` (multiword relevance, limit 1–20, original array format), `search_articles_page` (offset paging with total), `read_article` (exact canonical full lossy plain text), and `read_article_excerpt` (bounded Unicode-safe excerpt).
+- **Read-only tools:** `list_articles` (up to 20), `search_articles` (multiword relevance, limit 1–20, original array format), `search_articles_page` (offset paging with total), `read_article` (exact canonical full lossy plain text), `read_article_excerpt` (bounded Unicode-safe excerpt), `resolve_reading_path` and `create_reading_path` (shared browser reading paths from approved article URLs).
 - **Read-only resources:** `resources/list`, `resources/read` with approved article URIs.
 - All tools return public article titles, canonical links and plain text. There is no raw arbitrary file path, `write_article`, `publish`, OAuth, Supabase connection, GitHub automation or remote request.
 
@@ -45,7 +45,7 @@ The MCP server treats the **article body as untrusted data**, never model instru
 
 ## Source-backed agent discovery and bounded excerpts (MCP v0.2.0)
 
-The local stdio MCP server now supports **five read-only tools**.
+The local stdio MCP server now supports **seven read-only tools**.
 The existing three tools keep their original output shapes:
 `list_articles` returns a list, `read_article` returns the full
 lossy extracted plain text, and `search_articles` still returns a list
@@ -92,6 +92,28 @@ bounded text, valid dates and trusted article metadata before exposure.
 The server itself still performs **no network calls**. A local MCP host
 must update its Git checkout for newer reviewed articles. MCP does not
 grant verified agent identity, comments, publishing or moderation.
+
+
+## Human ↔ agent shared reading paths (MCP v0.3.0)
+
+Readers can create a **public reading path** in the browser at
+[24go.top/engineering/reading-paths/](https://24go.top/engineering/reading-paths/).
+The URL fragment contains a versioned JSON payload with a title and ordered
+identifiers of at most **10 previously published articles**. It does not contain
+an account, secret, unpublished draft or server-side publication instruction.
+
+The read-only local stdio MCP now supports both directions:
+
+- `resolve_reading_path`: pass `{"url":"https://24go.top/engineering/reading-paths/#path=..."}` copied from the browser. The server validates the **exact canonical base URL**, version, UTF-8 fragment, unique approved article IDs and bounds before returning an ordered list of reviewed article metadata. The raw HTML is not executed or fetched.
+- `create_reading_path`: pass a printable `title` up to 80 characters and an ordered `urls` list of **1–10 exact canonical URLs** already in the checked-out public feed. The server returns a browser-openable URL and a local Markdown reading list, without writing files or contacting a service.
+
+Example request to create a short path:
+
+```json
+{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"create_reading_path","arguments":{"title":"Secure publishing foundations","urls":["https://24go.top/engineering/postgres-insert-returning-least-privilege.html","https://24go.top/engineering/read-only-mcp-server-for-technical-articles.html"]}}}
+```
+
+To resolve the resulting link, supply its **entire** browser URL (including the `#path=` fragment) as `url` to `resolve_reading_path`. Both tools use the same strict public-browser path grammar and checked-out article allowlist. Paths with duplicate, unknown, off-origin, or malformed entries are refused. User-entered titles are treated as untrusted text and escaped when generating Markdown. Only articles already present in the local checkout are accepted; use `git pull` to refresh the corpus. This is public-agent discovery, **not** verified AI identity, hosted user posting or shared private reading history.
 
 ## Safety and maintenance
 
