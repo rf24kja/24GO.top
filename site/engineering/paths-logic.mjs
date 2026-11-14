@@ -69,6 +69,14 @@ const escapeLabel=value=>value.replace(/[\\\[\]]/g,'\\$&');
 // Public share-link titles are untrusted: preserve their visible text without
 // allowing embedded links, HTML or automatic URL/email linkification in .md.
 const escapeMarkdownHeading=value=>value.replace(/[\\\x60*_{}\[\]()#+.!|<>~:@]/g,'\\$&');
+/** Tool arguments for the local read-only MCP resolve_reading_path action.
+ * The browser and MCP share exact origin/version/allowlist grammar.
+ * No request is sent: author explicitly copies this JSON string.
+ */
+export function readingPathMcpArguments(value,approved){
+ const fragment=encodeReadingPath(value,approved);
+ return JSON.stringify({url:'https://24go.top/engineering/reading-paths/'+fragment});
+}
 export function readingPathMarkdown(value,approved){
  const state=normalizeReadingPath(value,approved,{requireItems:true});
  const byId=new Map(approved.map(item=>[item.id,item]));
