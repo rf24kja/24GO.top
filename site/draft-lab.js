@@ -452,10 +452,8 @@ async function openLocalDraft(file,input=null) {
       // file selection or a Clear/edit action can supersede the original read.
       // Never commit an older manuscript after newer author intent.
       if(!importGate.isLatest(ticket))return;
-      if(!importGate.canApply(ticket)){
-        message(ui('importInterrupted'),true);
-        return;
-      }
+      // Preserve feedback from the newer editor action, e.g. Clear.
+      if(!importGate.canApply(ticket))return;
       if(!confirmed){
         message(ui('replaceCanceled'));
         return;
