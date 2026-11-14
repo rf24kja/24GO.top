@@ -132,3 +132,23 @@ test('280px topic heading and article card text wrap instead of pushing the view
  assert.match(notes,/\.topic-guide__steps>li>div\{min-width:0\}/);
  assert.ok(RESPONSIVE_VIEWPORTS.some(x=>x.width===280&&x.mobile));
 });
+
+
+test('printable public engineering articles hide interactive UI but preserve readable attribution and code',()=>{
+ const css=read('site/engineering/notes.css');
+ assert.match(css,/@media print\{/);
+ assert.match(css,/body:has\(main \.article\)>header/);
+ assert.match(css,/body:has\(main \.article\)>footer/);
+ assert.match(css,/body:has\(main \.article\) \.article-report/);
+ assert.match(css,/body:has\(main \.article\) \.related-reading/);
+ assert.match(css,/body:has\(main \.article\) main \.article \.details/);
+ assert.match(css,/body:has\(main \.article\) main \.article pre code\{[^}]*white-space:pre-wrap/);
+ assert.match(script,/const printWidths=\[280,768,1440\]/);
+ assert.match(script,/media:'print'/);
+ assert.match(script,/printedRoutes\.size<10/);
+ assert.match(script,/!q\.attributionVisible/);
+ assert.match(script,/!q\.hiddenReport/);
+ assert.match(script,/!q\.hiddenRelated/);
+ assert.match(script,/!q\.hiddenReader/);
+ assert.doesNotMatch(css,/body:has\(main \.article\)\s*{\s*overflow-x:hidden/);
+});

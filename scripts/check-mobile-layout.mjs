@@ -115,6 +115,48 @@ async function main(){
     passed++;
    }
   }
+  // Print media is a separate rendering mode: check every actual published
+  // article at compact phone, tablet and desktop widths, not only source CSS.
+  let printPassed=0;
+  const printedRoutes=new Set();
+  const printWidths=[280,768,1440];
+  for(const width of printWidths){
+   await c.send('Emulation.setDeviceMetricsOverride',{
+    width,height:900,deviceScaleFactor:1,mobile:width<900
+   },sessionId);
+   await c.send('Emulation.setEmulatedMedia',{
+    media:'print',features:[{name:'prefers-color-scheme',value:'dark'}]
+   },sessionId);
+   for(const path of PATHS){
+    if(!path.startsWith('engineering/')||!path.endsWith('.html')||
+       path.includes('/topics/')||path==='engineering/index.html')continue;
+    const html=await inlinePage(path);
+    if(!/<article class="article">/.test(html))continue;
+    await c.send('Page.setDocumentContent',{frameId:frame,html},sessionId);
+    await c.send('Runtime.evaluate',{
+     expression:'new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))',
+     awaitPromise:true
+    },sessionId);
+    const result=await c.send('Runtime.evaluate',{
+     expression:"(() => {\n const article=document.querySelector('main article.article');\n const hide=selector=>{const el=document.querySelector(selector);return !el||getComputedStyle(el).display==='none';};\n const viewport=document.documentElement.clientWidth;\n const scroll=Math.max(document.body.scrollWidth,document.documentElement.scrollWidth);\n const code=document.querySelector('article pre code');\n return {viewport,scroll,articleVisible:Boolean(article&&getComputedStyle(article).display!=='none'),\n  headingVisible:Boolean(article?.querySelector('h1')?.textContent.trim()),\n  attributionVisible:Boolean(article?.querySelector('.details')&&getComputedStyle(article.querySelector('.details')).display!=='none'),\n  codeWrapped:!code||getComputedStyle(code).whiteSpace==='pre-wrap',\n  hiddenHeader:hide('header'),hiddenFooter:hide('footer'),\n  hiddenReport:hide('.article-report'),hiddenRelated:hide('.related-reading'),\n  hiddenReader:hide('.article-reader'),bodyBackground:getComputedStyle(document.body).backgroundColor,\n  articleText:article?.textContent.length||0};\n})()",
+     returnByValue:true
+    },sessionId);
+    const q=result.result?.value;
+    if(!q||!q.articleVisible||!q.headingVisible||!q.attributionVisible||
+       !q.codeWrapped||!q.hiddenHeader||!q.hiddenFooter||
+       !q.hiddenReport||!q.hiddenRelated||!q.hiddenReader||
+       q.articleText<400||q.bodyBackground!=='rgb(255, 255, 255)'||
+       q.scroll>q.viewport+1)
+     throw new Error('Unsafe article print layout for '+width+'px '+path+': '+JSON.stringify(q));
+    printPassed++;printedRoutes.add(path);
+   }
+  }
+  if(printedRoutes.size<10||printPassed!==printedRoutes.size*printWidths.length)
+   throw new Error('Published article print coverage unexpectedly incomplete: '+
+    printedRoutes.size+' articles / '+printPassed+' checks');
+  console.log('PASS '+printPassed+' Chromium print-media layouts across '+
+   printedRoutes.size+' published articles × 280/768/1440px: attribution retained, reader controls hidden, code wrapped, white paper');
+
   console.log('PASS '+passed+' Chromium mobile/tablet layouts and desktop viewports: no horizontal overflow, accessible phone navigation and safe landscape headers');
   console.log('Coverage: '+RESPONSIVE_VIEWPORTS.length+' representative CSS viewports × ALL '+PATHS.length+' shipped public HTML routes; touch, DPR, orientation, desktop mode, light/dark and reduced-motion samples.');
   console.log('Scope: real Chromium with source-rendered public HTML/CSS; not physical iOS/Android/Safari testing, user usability evidence or live network smoke.');
