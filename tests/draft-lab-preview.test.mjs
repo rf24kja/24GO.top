@@ -303,7 +303,8 @@ test('safe HTTPS Markdown image is inert until an explicit accessible click',()=
  const doc={
   createElement(tag){
    const el={tag,textContent:'',children:[],attributes:{},listeners:{},
-    hidden:false,append(...items){this.children.push(...items);},
+    hidden:false,focused:false,focus(){this.focused=true;},
+    append(...items){this.children.push(...items);},
     setAttribute(k,v){this.attributes[k]=v;},
     addEventListener(k,fn){this.listeners[k]=fn;}};
    created.push(el);return el;
@@ -333,14 +334,17 @@ test('safe HTTPS Markdown image is inert until an explicit accessible click',()=
  assert.equal(img.attributes.decoding,'async');
  assert.equal(img.attributes.referrerpolicy,'no-referrer');
  assert.equal(img.attributes.crossorigin,'anonymous');
+ assert.equal(img.attributes.tabindex,'-1');
  button.listeners.click();
  assert.equal(button.hidden,true);
  assert.equal(img.hidden,false);
  assert.equal(img.attributes.src,'https://images.example.org/diagram.png');
+ assert.equal(img.focused,true);
  img.listeners.error();
  assert.equal(img.hidden,true);
  assert.equal(button.hidden,false);
  assert.match(button.textContent,/Недоступно: images\.example\.org/);
+ assert.equal(button.focused,true);
  assert.ok(created.every(node=>!('innerHTML' in node)));
 });
 
