@@ -185,3 +185,23 @@ test('browser print/PDF layout includes only local article preview, never privat
  assert.match(browser,/Emulation\.setEmulatedMedia/);
  assert.doesNotMatch(js,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|sessionStorage|innerHTML/);
 });
+
+
+test('reversible checkpoint restore has guarded consent, full snapshot swap and 44px touch target',()=>{
+ assert.match(html,/id="revisionRestore" type="button" data-ui="revisionRestore" disabled/);
+ assert.match(js,/const revisionRestoreGate=createDraftImportGate\(\)/);
+ assert.match(js,/field\('revisionRestore'\)\.addEventListener\('click'/);
+ assert.match(js,/const confirmed=window\.confirm\(ui\('revisionRestoreConfirm'\)\)/);
+ assert.match(js,/revisionRestoreGate\.canApply\(ticket\)/);
+ assert.match(js,/revisionCheckpoint!==target/);
+ assert.match(js,/matchesDraftExportSnapshot\(before,currentDraft\(\)\)/);
+ assert.match(js,/body\.setRangeText\(target\.body,0,body\.value\.length,'end'\)/);
+ assert.match(js,/reopenedFileBaseline=null;\s*resetSavedSlot\(\)/);
+ assert.match(js,/revisionCheckpoint=before;\s*revisionResetView\(\)/);
+ assert.match(css,/\.revision-review__actions button\{min-height:44px/);
+ const browser=readFileSync(new URL('../scripts/check-draft-lab-accessibility.mjs',import.meta.url),'utf8');
+ assert.match(browser,/function exerciseDraftCheckpointRestore\(\)/);
+ assert.match(browser,/await c\.call\(exerciseDraftCheckpointRestore,sessionId\)/);
+ assert.match(browser,/revision\.vaultUnchanged/);
+ assert.doesNotMatch(js,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|sessionStorage|innerHTML/);
+});
