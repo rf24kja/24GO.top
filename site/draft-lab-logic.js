@@ -385,3 +385,58 @@ export async function readDraftFileStrict(file){
  catch{throw new TypeError('Draft file is not valid UTF-8');}
  return parseDraftFile(content);
 }
+
+
+/**
+ * Explicit import of a regular Markdown file from another editor. This does
+ * NOT parse or overwrite an exported 24GOTOP draft: the insertion changes
+ * only the in-tab article textarea, never title/metadata, vault or a server.
+ */
+export const MAX_EXTERNAL_MARKDOWN_BYTES=16384;
+export async function readExternalMarkdownStrict(file){
+ if(!file||typeof file!=='object'||typeof file.name!=='string'||
+    !/\.md$/i.test(file.name)||file.name.length>255||
+    /[\\/\u0000-\u001f\u007f]/.test(file.name)||
+    !Number.isSafeInteger(file.size)||file.size<1||
+    file.size>MAX_EXTERNAL_MARKDOWN_BYTES||
+    typeof file.arrayBuffer!=='function')
+  throw new TypeError('Invalid external Markdown file');
+ let bytes;
+ try{bytes=await file.arrayBuffer();}
+ catch{throw new TypeError('Could not read selected Markdown file');}
+ if(Object.prototype.toString.call(bytes)!=='[object ArrayBuffer]'||
+    bytes.byteLength!==file.size||bytes.byteLength>MAX_EXTERNAL_MARKDOWN_BYTES)
+  throw new TypeError('Invalid Markdown bytes');
+ let content;
+ try{content=new TextDecoder('utf-8',{fatal:true}).decode(bytes);}
+ catch{throw new TypeError('Invalid Markdown UTF-8');}
+ content=content.replace(/^\uFEFF/,'');
+ if(!content.trim()||content.length>12000||
+    /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(content)||
+    content.endsWith('\n\n---\nUnpublished draft · Generated in the 24GOTOP static Draft Lab.'))
+  throw new TypeError('Unsupported Markdown document');
+ return content;
+}
+
+/**
+ * Insert an external Markdown document *after* the current selection. Never
+ * delete selected manuscript text; native setRangeText makes insertion undoable.
+ * Add paragraph breaks at non-line-boundary insertion points. All limits apply
+ * to the resulting body, not only to the inserted file.
+ */
+export function formatExternalMarkdownInsertion(body,start,end,external){
+ if(typeof body!=='string'||body.length>12000||
+    !Number.isSafeInteger(start)||!Number.isSafeInteger(end)||
+    start<0||end<start||end>body.length||
+    typeof external!=='string'||!external.trim()||external.length>12000||
+    /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(external))
+  throw new TypeError('Invalid Markdown insertion');
+ const at=end;
+ const prefix=at>0?(body[at-1]==='\n'?'\n':'\n\n'):'';
+ const suffix=at<body.length?(body[at]==='\n'?'\n':'\n\n'):'';
+ const replacement=prefix+external+suffix;
+ if(body.length+replacement.length>12000)
+  throw new RangeError('Article exceeds 12,000 characters');
+ return Object.freeze({replacement,start:at,end:at,
+  selectionStart:at+replacement.length,selectionEnd:at+replacement.length});
+}

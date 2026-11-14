@@ -177,3 +177,16 @@ test('every image insertion label, placeholder and error is present in all 8 loc
  assert.match(code,/ui\('imageInvalid'\)/);
  assert.match(html,/id="imageInsertHint" data-ui="imageInsertHint"/);
 });
+
+
+test('plain Markdown insertion, safety messages and keyboard controls are translated in all eight locales',()=>{
+ const keys=['externalMdButton','externalMdHint','externalMdInserted',
+  'externalMdError','externalMdInterrupted'];
+ for(const locale of UI_LOCALES)for(const key of keys)
+  assert.ok(uiText(locale,key).trim().length>=4,locale+' '+key);
+ assert.match(html,/id="insertExternalMarkdown"[^>]*data-ui="externalMdButton"/);
+ assert.match(html,/id="externalMarkdownHint" data-ui="externalMdHint"/);
+ assert.match(code,/ui\('externalMdError'\)/);
+ assert.match(code,/ui\('externalMdInterrupted'\)/);
+ assert.match(code,/ui\('externalMdInserted'\)/);
+});

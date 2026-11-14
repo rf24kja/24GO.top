@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { runInNewContext } from 'node:vm';
 import {
   safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent,
-  parseDraftFile, readDraftFileStrict, MAX_DRAFT_FILE_BYTES, hasUnexportedChanges, formatDraftSelection, formatDraftImageSelection, countDraftWords, createDraftImportGate,matchesDraftExportSnapshot, invalidDraftField,findDraftText,replaceDraftFindMatch
+  parseDraftFile, readDraftFileStrict, MAX_DRAFT_FILE_BYTES, hasUnexportedChanges, formatDraftSelection, formatDraftImageSelection, readExternalMarkdownStrict, formatExternalMarkdownInsertion, countDraftWords, createDraftImportGate,matchesDraftExportSnapshot, invalidDraftField,findDraftText,replaceDraftFindMatch
 } from '../site/draft-lab-logic.js';
 import {uiText,applyUiLanguage} from '../site/draft-lab-i18n.js';
 import {appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS} from '../site/draft-lab-guidance.js';
@@ -39,7 +39,7 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
     'previewHeading','previewBody','previewLocale','previewCategory','bodyCount','bodyWordCount','draftReadingTime','guidanceScore',
     'guideTitleState','guideBodyState','guideHeadingsState','guideStepsState','guideSourceState','guideCompleteState','draftTemplate','insertTemplate',
     'revisionCapture','revisionCompare','revisionCopy','revisionClear','revisionStatus','revisionFields','revisionLines',
-    'downloadReviewPack','verifyReviewPack','reviewPackFile',
+    'downloadReviewPack','verifyReviewPack','reviewPackFile','insertExternalMarkdown','externalMarkdownFile',
     'previewSource','draftSafety','articleOutline','articleOutlineSection','downloadDraft','copyDraft','clearDraft','importDraft','importDraftFile','draftForm',
     'draftFindQuery','draftFindNext','draftFindPrevious','draftFindStatus','draftReplaceText','draftFindReplace',
     'formatBold','formatItalic','formatInlineCode','formatHeading','formatList','formatOrderedList','formatQuote','formatCode','formatTable','formatLink','insertImage','imageUrl','imageAlt','uiLocale','draftDropZone','homeBrandLink','homeNavLink','proposeDraft',
@@ -100,7 +100,7 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
   runInNewContext(source, {
     document, window, navigator, URL:BrowserURL, Blob, setTimeout,
     safeSourceUrl,validateDraft,formatDraft,draftFilename,hasDraftContent,
-    parseDraftFile,readDraftFileStrict,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,formatDraftImageSelection,countDraftWords,createDraftImportGate,matchesDraftExportSnapshot,invalidDraftField,findDraftText,replaceDraftFindMatch,
+    parseDraftFile,readDraftFileStrict,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,formatDraftImageSelection,readExternalMarkdownStrict,formatExternalMarkdownInsertion,countDraftWords,createDraftImportGate,matchesDraftExportSnapshot,invalidDraftField,findDraftText,replaceDraftFindMatch,
     uiText,applyUiLanguage,appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS,captureDraftRevision,compareDraftRevisions,revisionSummary,createEditorialReviewPack:reviewPackGenerator,readEditorialReviewPackFile:reviewPackReader,buildArticleProposalUrl,
     createDraftVault,MAX_SAVED_DRAFTS,MAX_VAULT_BACKUP_BYTES,VAULT_KEY,TextDecoder,
     renderMarkdownPreview(container, text) { container.textContent = text; },
@@ -132,6 +132,13 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
        dataTransfer:{types:['Files'],files},
        preventDefault(){this.prevented=true;}
       });
+    },
+    async insertExternal(content,filename='external.md'){
+      const input=elements.externalMarkdownFile;
+      const bytes=new TextEncoder().encode(content);
+      input.files=[{name:filename,size:bytes.byteLength,
+       async arrayBuffer(){return bytes.buffer;}}];
+      await input.listeners.change({currentTarget:input});
     },
     async import(content, filename='24gotop-saved.md', size=Buffer.byteLength(content,'utf8')) {
       const input=elements.importDraftFile;
@@ -1448,4 +1455,78 @@ test('opening a saved local draft clears previous document image insertion helpe
  assert.equal(el.imageUrl.value,'');
  assert.equal(el.imageAlt.value,'');
  assert.equal(el.postBody.value,sample.body);
+});
+
+
+test('ordinary Markdown imports at the cursor without replacing the current article or saving a vault entry',async()=>{
+ const app=build(),el=app.elements;
+ Object.assign(el.postTitle,{value:sample.title});
+ Object.assign(el.postBody,{value:'Part one. Part two.',selectionStart:10,selectionEnd:10});
+ el.postLocale.value='ru';el.postCategory.value='tools';
+ el.postSource.value='https://example.org/guide';
+ el.insertExternalMarkdown.listeners.click();
+ assert.equal(el.externalMarkdownFile.clicked,true);
+ await app.insertExternal('## Доказательство\n\n    SELECT now();\n\nภาษาไทย');
+ assert.match(el.postBody.value,/^Part one\.\s*\n\n## Доказательство/);
+ assert.ok(el.postBody.value.endsWith('Part two.'));
+ assert.equal(el.postTitle.value,sample.title);
+ assert.equal(el.postLocale.value,'ru');
+ assert.equal(el.postCategory.value,'tools');
+ assert.equal(el.postSource.value,sample.source);
+ assert.equal(el.externalMarkdownFile.value,'');
+ assert.equal(el.postBody.focused,true);
+ assert.equal(el.postBody.selectionEnd,el.postBody.selectionStart);
+ assert.match(el.formStatus.textContent,/Markdown inserted locally/);
+ assert.equal(app.localStorage.getItem(VAULT_KEY),null);
+ assert.equal(app.downloads.length,0);
+ assert.equal(app.beforeUnload().prevented,true,'the new content must count as unsaved');
+});
+
+test('invalid external Markdown, UTF-8 errors and oversized insertion preserve current draft',async()=>{
+ const app=build(),el=app.elements;
+ el.postBody.value='Existing technical manuscript which belongs to the author.';
+ const before=el.postBody.value;
+ await app.insertExternal('<script>alert(1)</script>','bad.html');
+ assert.equal(el.postBody.value,before);
+ assert.equal(el.formStatus.dataset.error,'true');
+ await app.insertExternal('a'.repeat(16385));
+ assert.equal(el.postBody.value,before);
+ el.postBody.value='x'.repeat(11990);
+ await app.insertExternal('# This would exceed the article limit');
+ assert.equal(el.postBody.value,'x'.repeat(11990));
+ assert.equal(el.postTitle.value,'');
+ assert.equal(app.localStorage.getItem(VAULT_KEY),null);
+});
+
+test('stale async Markdown imports cannot overwrite typing, newer selected files, or feedback',async()=>{
+ const app=build(),el=app.elements;
+ el.postBody.value='Original manuscript text.';
+ const prior=new TextEncoder().encode('## Obsolete content');
+ let finish;
+ const old={name:'old.md',size:prior.length,
+  arrayBuffer(){return new Promise(resolve=>{finish=()=>resolve(prior.buffer);});}};
+ const input=el.externalMarkdownFile;
+ input.files=[old];input.value='old.md';
+ const pending=input.listeners.change({currentTarget:input});
+ assert.equal(typeof finish,'function');
+ el.postBody.value+=' New author paragraph.';
+ el.postBody.listeners.input();
+ finish();
+ await pending;
+ assert.equal(el.postBody.value,'Original manuscript text. New author paragraph.');
+ assert.equal(el.formStatus.textContent,uiText('en','externalMdInterrupted'));
+ assert.equal(app.localStorage.getItem(VAULT_KEY),null);
+
+ let completeOld;
+ input.files=[{name:'other.md',size:prior.length,
+  arrayBuffer(){return new Promise(resolve=>{completeOld=()=>resolve(prior.buffer);});}}];
+ const obsolete=input.listeners.change({currentTarget:input});
+ await app.insertExternal('## Current inserted Markdown');
+ assert.ok(el.postBody.value.includes('## Current inserted Markdown'));
+ const accepted=el.postBody.value;
+ const status=el.formStatus.textContent;
+ completeOld();
+ await obsolete;
+ assert.equal(el.postBody.value,accepted);
+ assert.equal(el.formStatus.textContent,status,'older file must not overwrite newer success');
 });

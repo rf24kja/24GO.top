@@ -549,6 +549,51 @@ function exerciseDraftImageInsertion(){
   emptyAltSafe,selectedAltUsed,noUploads,reset,buttonHeight,fieldWidths,viewport,scroll};
 }
 
+// A genuine browser File and native change event, without any upload or
+// external network. The author retains existing body text and draft metadata.
+async function exerciseExternalMarkdownImport(){
+ const $=id=>document.getElementById(id);
+ const body=$('postBody'),picker=$('externalMarkdownFile');
+ const action=$('insertExternalMarkdown'),title=$('postTitle');
+ body.value='Before. After.';
+ body.dispatchEvent(new Event('input',{bubbles:true}));
+ body.focus();body.setSelectionRange(7,7);
+ title.value='Existing technical manuscript';
+ const initialTitle=title.value,initialLocale=$('postLocale').value;
+ const beforeStorage=localStorage.length;
+ const height=action.getBoundingClientRect().height;
+ const sample='## Existing guide\n\n    const x = 1;\n\nภาษาไทย 中文';
+ const transfer=new DataTransfer();
+ transfer.items.add(new File([sample],'existing.md',{type:'text/markdown'}));
+ picker.files=transfer.files;
+ picker.dispatchEvent(new Event('change',{bubbles:true}));
+ const deadline=Date.now()+2500;
+ while(Date.now()<deadline&&!body.value.includes('## Existing guide'))
+  await new Promise(resolve=>setTimeout(resolve,15));
+ const accepted={
+  inserted:body.value.startsWith('Before.\n\n'+sample+'\n\n After.'),
+  sameTitle:title.value===initialTitle,
+  sameLocale:$('postLocale').value===initialLocale,
+  focused:document.activeElement===body,
+  noStorage:localStorage.length===beforeStorage,
+  message:$('formStatus').textContent,
+  cleared:picker.value==='',
+  cursor:body.selectionStart===body.selectionEnd
+ };
+ const previous=body.value;
+ const invalid=new DataTransfer();
+ invalid.items.add(new File(['private content'],'untrusted.html',{type:'text/html'}));
+ picker.files=invalid.files;
+ picker.dispatchEvent(new Event('change',{bubbles:true}));
+ const invalidDeadline=Date.now()+2500;
+ while(Date.now()<invalidDeadline&&$('formStatus').dataset.error!=='true')
+  await new Promise(resolve=>setTimeout(resolve,15));
+ const rejected=body.value===previous&&$('formStatus').dataset.error==='true';
+ return {height,accepted,rejected,
+  scroll:Math.max(document.body.scrollWidth,document.documentElement.scrollWidth),
+  width:document.documentElement.clientWidth};
+}
+
 async function main(){
  const site=localServer();
  let browser,ws;
@@ -620,6 +665,16 @@ async function main(){
       insertion.fieldWidths.some(width=>width<70)||
       insertion.scroll>insertion.viewport+1)
     throw Error('Markdown image insertion '+profile.name+': '+JSON.stringify(insertion));
+   const external=await c.call(exerciseExternalMarkdownImport,sessionId);
+   if(external.height<43.5||!external.accepted.inserted||
+      !external.accepted.sameTitle||!external.accepted.sameLocale||
+      !external.accepted.focused||!external.accepted.noStorage||
+      !external.accepted.message.includes('Markdown')||
+      !external.accepted.cleared||!external.accepted.cursor||
+      !external.rejected||external.scroll>external.width+1)
+    throw Error('External Markdown local insertion '+profile.name+': '+
+      JSON.stringify(external));
+
   }
   await c.send('Emulation.setDeviceMetricsOverride',{
    width:320,height:850,deviceScaleFactor:1,mobile:true
