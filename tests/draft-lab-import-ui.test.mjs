@@ -1630,3 +1630,122 @@ test('unsupported print API falls back to original local Markdown export without
  assert.equal(app.downloads.length,0);
  assert.equal(app.localStorage.getItem(VAULT_KEY),null);
 });
+
+
+test('checkpoint restore swaps all manuscript fields and allows a second restore to undo the swap',()=>{
+ const app=build(),el=app.elements;
+ const first={title:'The original checkpoint article',
+  body:'## Verification\n\nFirst result with Unicode 中文 ภาษาไทย.',
+  locale:'en',category:'guides',source:'https://example.org/one'};
+ const second={title:'Revised author manuscript',
+  body:'## Revised findings\n\nSecond result with more complete evidence.',
+  locale:'ru',category:'tools',source:'https://example.org/two'};
+ const values=()=>({title:el.postTitle.value,body:el.postBody.value,
+  locale:el.postLocale.value,category:el.postCategory.value,
+  source:el.postSource.value});
+ const fill=draft=>{
+  el.postTitle.value=draft.title;el.postBody.value=draft.body;
+  el.postLocale.value=draft.locale;el.postCategory.value=draft.category;
+  el.postSource.value=draft.source;
+ };
+ assert.equal(el.revisionRestore.disabled,true);
+ fill(first);el.revisionCapture.listeners.click();
+ assert.equal(el.revisionRestore.disabled,false);
+ fill(second);el.postBody.listeners.input();
+ el.imageUrl.value='https://images.example.org/previous.png';
+ el.imageAlt.value='Stale insertion helper';
+ app.setConfirm(false);
+ el.revisionRestore.listeners.click();
+ assert.deepEqual(values(),second,'cancelled restore keeps all fields');
+ assert.equal(el.formStatus.textContent,uiText('en','revisionRestoreCanceled'));
+ assert.equal(el.imageUrl.value,'https://images.example.org/previous.png');
+ app.setConfirm(true);
+ el.revisionRestore.listeners.click();
+ assert.deepEqual(values(),first,'restores original checkpoint exactly');
+ assert.equal(el.imageUrl.value,'','old document image URL must not leak');
+ assert.equal(el.imageAlt.value,'');
+ assert.equal(el.revisionRestore.disabled,false,'previous version is now checkpoint');
+ assert.equal(el.revisionCopy.disabled,true);
+ assert.equal(el.revisionFields.children.length,0);
+ assert.equal(el.revisionLines.children.length,0);
+ assert.equal(el.postBody.focused,true);
+ assert.equal(app.localStorage.getItem(VAULT_KEY),null);
+ assert.equal(app.downloads.length,0);
+ assert.equal(app.beforeUnload().prevented,true,'restored text remains unsaved');
+ el.revisionRestore.listeners.click();
+ assert.deepEqual(values(),second,'second confirmed restore reverses the complete swap');
+ assert.equal(app.localStorage.getItem(VAULT_KEY),null);
+ assert.equal(el.formStatus.textContent,uiText('en','revisionRestored'));
+});
+
+test('restoring a checkpoint matching the current article is a no-op',()=>{
+ const app=build(),el=app.elements;
+ el.postTitle.value='Safe, descriptive checkpoint title';
+ el.postBody.value='## Verification\n\nEverything is already up-to-date.';
+ el.revisionCapture.listeners.click();
+ app.setConfirmHook(()=>{throw Error('unchanged restore must not request consent');});
+ el.revisionRestore.listeners.click();
+ assert.equal(el.formStatus.textContent,uiText('en','revisionRestoreSame'));
+ assert.equal(el.formStatus.dataset.error,'false');
+ assert.equal(app.localStorage.getItem(VAULT_KEY),null);
+});
+
+test('restore never overwrites a manually saved browser draft or its selected slot',()=>{
+ const app=build(),el=app.elements;
+ el.postTitle.value=sample.title;
+ el.postBody.value=sample.body;
+ el.postLocale.value=sample.locale;
+ el.postCategory.value=sample.category;
+ el.postSource.value=sample.source;
+ el.saveBrowserDraft.listeners.click();
+ const saved=app.localStorage.getItem(VAULT_KEY);
+ assert.ok(saved,'the author explicitly opted into a saved browser draft');
+ el.revisionCapture.listeners.click();
+ el.postBody.value+=' Unpublished changes that have not been saved.';
+ el.postBody.listeners.input();
+ el.revisionRestore.listeners.click();
+ assert.equal(el.postBody.value,sample.body);
+ assert.equal(app.localStorage.getItem(VAULT_KEY),saved,
+  'restoring affects only the editor, not the saved browser-vault blob');
+ assert.equal(app.beforeUnload().prevented,true,
+  'restored manuscript is not silently treated as an exported baseline');
+ el.postBody.value+=' Another independent change.';
+ el.postBody.listeners.input();
+ el.saveBrowserDraft.listeners.click();
+ const newSaved=JSON.parse(app.localStorage.getItem(VAULT_KEY));
+ assert.equal(newSaved.entries.length,2,
+  'future Save must make an independent entry rather than silently replacing old saved slot');
+});
+
+test('restore consent loses to newer typing, clearing and checkpoint replacement',()=>{
+ for(const change of ['type','clear','new-checkpoint']){
+  const app=build(),el=app.elements;
+  el.postTitle.value='Version A before checkpoint';
+  el.postBody.value='## First\n\nThis is the old manuscript.';
+  el.revisionCapture.listeners.click();
+  el.postTitle.value='Version B still being edited';
+  el.postBody.value='## Second\n\nThese notes should not be overwritten.';
+  el.postBody.listeners.input();
+  app.setConfirmHook(()=>{
+   app.setConfirmHook(null);
+   if(change==='type'){
+    el.postBody.value+=' Latest author change.';
+    el.postBody.listeners.input();
+   }else if(change==='clear')el.clearDraft.listeners.click();
+   else el.revisionCapture.listeners.click();
+  });
+  el.revisionRestore.listeners.click();
+  if(change==='clear'){
+   assert.equal(el.postTitle.value,'');
+   assert.equal(el.postBody.value,'');
+   assert.equal(el.revisionRestore.disabled,true);
+   assert.equal(el.formStatus.textContent,uiText('en','cleared'));
+  }else{
+   assert.equal(el.postTitle.value,'Version B still being edited');
+   assert.ok(el.postBody.value.includes('should not be overwritten'));
+   if(change==='type')assert.ok(el.postBody.value.endsWith('Latest author change.'));
+   else assert.equal(el.formStatus.textContent,uiText('en','revisionCaptured'));
+  }
+  assert.equal(app.localStorage.getItem(VAULT_KEY),null);
+ }
+});
