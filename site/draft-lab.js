@@ -1,6 +1,6 @@
 'use strict';
 
-import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, readDraftFileStrict, formatDraftSelection, formatDraftImageSelection, countDraftWords, createDraftImportGate, matchesDraftExportSnapshot, invalidDraftField, findDraftText, replaceDraftFindMatch } from './draft-lab-logic.js';
+import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, readDraftFileStrict, formatDraftSelection, formatDraftImageSelection, readExternalMarkdownStrict, formatExternalMarkdownInsertion, countDraftWords, createDraftImportGate, matchesDraftExportSnapshot, invalidDraftField, findDraftText, replaceDraftFindMatch } from './draft-lab-logic.js';
 import { renderMarkdownPreview,renderPreviewOutline } from './draft-lab-preview.js';
 import {appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS} from './draft-lab-guidance.js';
 import {captureDraftRevision,compareDraftRevisions,revisionSummary} from './draft-lab-revisions.js';
@@ -476,6 +476,50 @@ field('importDraftFile').addEventListener('change', event => {
   const input=event.currentTarget;
   return openLocalDraft(input.files?.[0],input);
 });
+
+// Ordinary Markdown from other editors is inserted after the author's current
+// selection. Unlike Open saved .md, it does NOT overwrite title, source,
+// category, article language, or the previous manuscript text.
+field('insertExternalMarkdown').addEventListener('click',()=>{
+ field('externalMarkdownFile').click();
+});
+async function insertExternalMarkdown(file,input=null){
+ if(!file)return;
+ const ticket=importGate.begin();
+ // Preserve the intended insert point even when the file picker moves focus.
+ const start=body.selectionStart,end=body.selectionEnd;
+ try{
+  const markdown=await readExternalMarkdownStrict(file);
+  if(!importGate.isLatest(ticket))return;
+  if(!importGate.canApply(ticket)){
+   message(ui('externalMdInterrupted'),true);
+   return;
+  }
+  const edit=formatExternalMarkdownInsertion(body.value,start,end,markdown);
+  body.setRangeText(edit.replacement,edit.start,edit.end,'end');
+  editorChanged();
+  clearFieldError(body);
+  preview();
+  updateValidationNotice();
+  body.focus();
+  body.setSelectionRange(edit.selectionStart,edit.selectionEnd);
+  message(ui('externalMdInserted'));
+ }catch{
+  if(importGate.isLatest(ticket))message(ui('externalMdError'),true);
+ }finally{
+  if(input&&importGate.isLatest(ticket))input.value='';
+ }
+}
+field('externalMarkdownFile').addEventListener('change',event=>{
+ const input=event.currentTarget;
+ if(input.files?.length!==1){
+  if(input.files?.length)message(ui('externalMdError'),true);
+  input.value='';
+  return;
+ }
+ return insertExternalMarkdown(input.files[0],input);
+});
+
 const dropZone=field('draftDropZone');
 const hasDraggedFile=event=>Array.from(event.dataTransfer?.types||[]).includes('Files');
 for(const type of ['dragenter','dragover']){
