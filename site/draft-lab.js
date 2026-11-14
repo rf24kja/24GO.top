@@ -1,6 +1,6 @@
 'use strict';
 
-import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, readDraftFileStrict, formatDraftSelection, countDraftWords, createDraftImportGate, matchesDraftExportSnapshot, invalidDraftField, findDraftText, replaceDraftFindMatch } from './draft-lab-logic.js';
+import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, readDraftFileStrict, formatDraftSelection, formatDraftImageSelection, countDraftWords, createDraftImportGate, matchesDraftExportSnapshot, invalidDraftField, findDraftText, replaceDraftFindMatch } from './draft-lab-logic.js';
 import { renderMarkdownPreview,renderPreviewOutline } from './draft-lab-preview.js';
 import {appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS} from './draft-lab-guidance.js';
 import {captureDraftRevision,compareDraftRevisions,revisionSummary} from './draft-lab-revisions.js';
@@ -232,6 +232,29 @@ for(const [id,action] of [['formatBold','bold'],['formatItalic','italic'],
  ['formatTable','table'],['formatLink','link']]){
  field(id).addEventListener('click',()=>applyDraftFormatting(action));
 }
+// Insert a bounded image reference, never an uploaded binary or automatic
+// external fetch. This follows the same native textarea undo and export gates
+// as all other formatting actions.
+field('insertImage').addEventListener('click',()=>{
+ const imageUrl=field('imageUrl');
+ const imageAlt=field('imageAlt');
+ try{
+  const edit=formatDraftImageSelection(body.value,
+   body.selectionStart,body.selectionEnd,imageUrl.value,imageAlt.value);
+  body.setRangeText(edit.replacement,body.selectionStart,body.selectionEnd,'end');
+  editorChanged();
+  body.focus();
+  body.setSelectionRange(edit.selectionStart,edit.selectionEnd);
+  preview();
+  message(ui('imageInserted'));
+ }catch(error){
+  message(error instanceof RangeError?ui('formatLimit'):ui('imageInvalid'),true);
+  if(!imageUrl.value.trim())imageUrl.focus();
+  else if(!body.value.slice(body.selectionStart,body.selectionEnd).trim()&&
+    !imageAlt.value.trim())imageAlt.focus();
+ }
+});
+
 // Only the article textarea receives these shortcuts. Other page controls,
 // browser shortcuts (including Ctrl/Cmd+S) and composing IME input are untouched.
 const inlineShortcuts=Object.freeze({b:'bold',i:'italic',k:'link'});
