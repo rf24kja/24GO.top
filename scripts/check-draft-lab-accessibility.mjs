@@ -538,10 +538,15 @@ function exerciseDraftImageInsertion(){
  const selectedAltUsed=body.value.includes(
   '![system architecture](https://images.example.org/another.png)');
  const noUploads=localStorage.length===beforeStorage;
+ const originalConfirm=window.confirm;
+ window.confirm=()=>true;
+ try{$('clearDraft').click();}finally{window.confirm=originalConfirm;}
+ const reset=body.value===''&&url.value===''&&alt.value===''&&
+  document.activeElement===$('postTitle');
  const viewport=document.documentElement.clientWidth;
  const scroll=Math.max(document.documentElement.scrollWidth,document.body.scrollWidth);
  return {generated,noSrc,focused,undoPos,fileStatus:!!fileStatus,invalidSafe,
-  emptyAltSafe,selectedAltUsed,noUploads,buttonHeight,fieldWidths,viewport,scroll};
+  emptyAltSafe,selectedAltUsed,noUploads,reset,buttonHeight,fieldWidths,viewport,scroll};
 }
 
 async function main(){
@@ -611,7 +616,7 @@ async function main(){
    if(!insertion.generated||!insertion.noSrc||!insertion.focused||
       !insertion.undoPos||!insertion.fileStatus||!insertion.invalidSafe||
       !insertion.emptyAltSafe||!insertion.selectedAltUsed||
-      !insertion.noUploads||insertion.buttonHeight<43.5||
+      !insertion.noUploads||!insertion.reset||insertion.buttonHeight<43.5||
       insertion.fieldWidths.some(width=>width<70)||
       insertion.scroll>insertion.viewport+1)
     throw Error('Markdown image insertion '+profile.name+': '+JSON.stringify(insertion));
