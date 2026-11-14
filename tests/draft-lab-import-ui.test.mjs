@@ -1530,3 +1530,55 @@ test('stale async Markdown imports cannot overwrite typing, newer selected files
  assert.equal(el.postBody.value,accepted);
  assert.equal(el.formStatus.textContent,status,'older file must not overwrite newer success');
 });
+
+
+test('confirmed old Markdown import cannot restore manuscript after Clear inside native consent',async()=>{
+ const app=build(),el=app.elements;
+ el.postTitle.value='Earlier unsaved manuscript';
+ el.postBody.value='Technical unpublished content that must not reappear.';
+ app.setConfirmHook(()=>{
+  app.setConfirmHook(null);
+  el.clearDraft.listeners.click();
+ });
+ await app.import(formatDraft(sample));
+ assert.equal(el.postTitle.value,'');
+ assert.equal(el.postBody.value,'');
+ assert.equal(el.formStatus.textContent,uiText('en','cleared'),
+  'a superseded prompt must not steal the newer Clear status');
+ assert.equal(app.localStorage.getItem(VAULT_KEY),null);
+ assert.equal(app.downloads.length,0);
+});
+
+test('positive consent cannot replace a newer local Markdown file selection',async()=>{
+ const app=build(),el=app.elements;
+ el.postTitle.value='Keep while confirming older import';
+ el.postBody.value='Unsaved body text must not be replaced by the older file.';
+ const fresh={...sample,title:'More recent selected manuscript'};
+ let newer;
+ app.setConfirmHook(()=>{
+  app.setConfirmHook(null);
+  newer=app.import(formatDraft(fresh));
+ });
+ await app.import(formatDraft(sample));
+ await newer;
+ assert.equal(el.postTitle.value,fresh.title);
+ assert.equal(el.postBody.value,fresh.body);
+ assert.equal(el.formStatus.textContent,uiText('en','opened'));
+ assert.equal(app.downloads.length,0);
+});
+
+test('an edit during open-file consent supersedes the old import without overwriting typing',async()=>{
+ const app=build(),el=app.elements;
+ el.postTitle.value='Working on this manuscript';
+ el.postBody.value='Existing unpublished author text.';
+ app.setConfirmHook(()=>{
+  app.setConfirmHook(null);
+  el.postBody.value+=' Updated while confirming.';
+  el.postBody.listeners.input();
+ });
+ await app.import(formatDraft(sample));
+ assert.equal(el.postTitle.value,'Working on this manuscript');
+ assert.equal(el.postBody.value,
+  'Existing unpublished author text. Updated while confirming.');
+ assert.equal(app.beforeUnload().prevented,true);
+});
