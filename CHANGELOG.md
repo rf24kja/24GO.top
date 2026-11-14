@@ -1,3 +1,10 @@
+## Unreleased — confirmed local replace-all with one-step recovery
+
+- Extend the browser-only Draft Lab's exact, case-sensitive find/replace with an explicit **Replace all…** action. Show the number of non-overlapping matches in the native confirmation before changing anything. Empty, whitespace-only, absent or malformed searches never modify an article.
+- Validate the complete resulting manuscript against the existing 12,000-character cap **before** applying any edit. All changes remain in the current browser tab; no network request, automatic browser storage write, review approval or hosted publication occurs.
+- Provide a dedicated **Undo bulk replacement** action that restores the pre-replacement manuscript until the next author edit. On subsequent edits or a stale confirmation, fail closed instead of overwriting newer writing. Keep existing file/vault baselines and unsaved-exit warnings intact.
+- Localize actions, consent and feedback to EN/RU/TH/ES/FR/DE/PT/ZH and add pure-function/DOM tests for Unicode, overlapping occurrences, empty replacements, cancellation, reentrant confirmation, overflow and expired undo. Production delivery remains subject to CI and live Pages verification.
+
 ## Unreleased — optional password-encrypted local draft library backup
 
 - Add **Download encrypted backup** and **Restore encrypted backup** to the browser-only Draft Lab. This provides a portable, author-initiated encrypted JSON file for up to eight manually saved local drafts, without replacing the existing plaintext .json backup or any Markdown download. Import remains explicitly confirmed and fails closed unless the destination's saved-draft library is empty.

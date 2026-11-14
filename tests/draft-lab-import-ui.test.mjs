@@ -7,7 +7,7 @@ import {webcrypto} from 'node:crypto';
 import {encryptDraftLibraryBackup,decryptDraftLibraryBackup,ENCRYPTED_BACKUP_MAX_BYTES} from '../site/draft-lab-encrypted-backup.js';
 import {
   safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent,
-  parseDraftFile, readDraftFileStrict, MAX_DRAFT_FILE_BYTES, hasUnexportedChanges, formatDraftSelection, formatDraftImageSelection, readExternalMarkdownStrict, formatExternalMarkdownInsertion, countDraftWords, createDraftImportGate,matchesDraftExportSnapshot, invalidDraftField,findDraftText,replaceDraftFindMatch
+  parseDraftFile, readDraftFileStrict, MAX_DRAFT_FILE_BYTES, hasUnexportedChanges, formatDraftSelection, formatDraftImageSelection, readExternalMarkdownStrict, formatExternalMarkdownInsertion, countDraftWords, createDraftImportGate,matchesDraftExportSnapshot, invalidDraftField,findDraftText,replaceDraftFindMatch,replaceAllDraftMatches
 } from '../site/draft-lab-logic.js';
 import {uiText,applyUiLanguage} from '../site/draft-lab-i18n.js';
 import {appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS} from '../site/draft-lab-guidance.js';
@@ -44,7 +44,7 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
     'revisionCapture','revisionCompare','revisionRestore','revisionCopy','revisionClear','revisionStatus','revisionFields','revisionLines',
     'downloadReviewPack','verifyReviewPack','reviewPackFile','insertExternalMarkdown','externalMarkdownFile','printDraft',
     'previewSource','draftSafety','articleOutline','articleOutlineSection','downloadDraft','copyDraft','clearDraft','importDraft','importDraftFile','draftForm',
-    'draftFindQuery','draftFindNext','draftFindPrevious','draftFindStatus','draftReplaceText','draftFindReplace',
+    'draftFindQuery','draftFindNext','draftFindPrevious','draftFindStatus','draftReplaceText','draftFindReplace','draftFindReplaceAll','draftFindUndoAll',
     'formatBold','formatItalic','formatInlineCode','formatHeading','formatList','formatOrderedList','formatQuote','formatCode','formatTable','formatLink','insertImage','imageUrl','imageAlt','uiLocale','draftDropZone','homeBrandLink','homeNavLink','proposeDraft',
     'saveBrowserDraft','savedBrowserDraft','openBrowserDraft','deleteBrowserDraft','vaultCount','exportDraftLibrary','restoreDraftLibrary','draftLibraryFile','vaultBackupPassword','exportEncryptedDraftLibrary','restoreEncryptedDraftLibrary','encryptedBackupFile'
   ];
@@ -72,6 +72,7 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
   elements.postLocale.value='en';
   elements.postCategory.value='guides';
   elements.draftFindReplace.disabled=true;
+  elements.draftFindUndoAll.disabled=true;
   elements.draftTemplate.value='guide';
   const downloads=[],blobUrls=new Map();
   class BrowserURL extends URL{
@@ -103,7 +104,7 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
   runInNewContext(source, {
     document, window, navigator, URL:BrowserURL, Blob, setTimeout,
     safeSourceUrl,validateDraft,formatDraft,draftFilename,hasDraftContent,
-    parseDraftFile,readDraftFileStrict,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,formatDraftImageSelection,readExternalMarkdownStrict,formatExternalMarkdownInsertion,countDraftWords,createDraftImportGate,matchesDraftExportSnapshot,invalidDraftField,findDraftText,replaceDraftFindMatch,
+    parseDraftFile,readDraftFileStrict,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,formatDraftImageSelection,readExternalMarkdownStrict,formatExternalMarkdownInsertion,countDraftWords,createDraftImportGate,matchesDraftExportSnapshot,invalidDraftField,findDraftText,replaceDraftFindMatch,replaceAllDraftMatches,
     uiText,applyUiLanguage,appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS,captureDraftRevision,compareDraftRevisions,revisionSummary,createEditorialReviewPack:reviewPackGenerator,readEditorialReviewPackFile:reviewPackReader,buildArticleProposalUrl,
     createDraftVault,MAX_SAVED_DRAFTS,MAX_VAULT_BACKUP_BYTES,VAULT_KEY,TextDecoder,
     encryptDraftLibraryBackup:(text,password)=>encryptDraftLibraryBackup(text,password,{cryptoImpl:webcrypto}),
@@ -1832,4 +1833,72 @@ test('encrypted backup restore refuses wrong passwords and existing saved drafts
  assert.equal(busy.localStorage.getItem(VAULT_KEY),before);
  assert.equal(busy.elements.formStatus.dataset.error,'true');
  assert.equal(busy.elements.formStatus.textContent,uiText('en','backupConflict'));
+});
+
+test('confirmed Replace all changes exact matches and one-step Undo restores the article',()=>{
+ const app=build(),body=app.elements.postBody,q=app.elements.draftFindQuery;
+ app.elements.postTitle.value='Original article';
+ body.value='cat CAT cat cat';q.value='cat';app.elements.draftReplaceText.value='wolf';
+ const button=app.elements.draftFindReplaceAll,undo=app.elements.draftFindUndoAll;
+ const vaultBefore=app.localStorage.getItem(VAULT_KEY);
+ assert.equal(undo.disabled,true);
+ button.listeners.click();
+ assert.equal(body.value,'wolf CAT wolf wolf');
+ assert.equal(app.elements.previewBody.textContent,body.value);
+ assert.equal(undo.disabled,false);
+ assert.equal(app.elements.draftFindStatus.textContent,uiText('en','replaceAllDone')+'3');
+ assert.equal(app.localStorage.getItem(VAULT_KEY),vaultBefore);
+ assert.equal(app.beforeUnload().prevented,true);
+ undo.listeners.click();
+ assert.equal(body.value,'cat CAT cat cat');
+ assert.equal(app.elements.previewBody.textContent,body.value);
+ assert.equal(undo.disabled,true);
+ assert.equal(app.elements.draftFindStatus.textContent,uiText('en','replaceAllUndone'));
+ assert.equal(app.localStorage.getItem(VAULT_KEY),vaultBefore);
+});
+
+test('bulk replacement is canceled or blocked before changing an article',()=>{
+ const app=build(),body=app.elements.postBody,q=app.elements.draftFindQuery;
+ body.value='cat cat';q.value='cat';app.elements.draftReplaceText.value='dog';
+ app.setConfirm(false);app.elements.draftFindReplaceAll.listeners.click();
+ assert.equal(body.value,'cat cat');
+ assert.equal(app.elements.draftFindStatus.textContent,uiText('en','replaceAllCanceled'));
+ assert.equal(app.elements.draftFindUndoAll.disabled,true);
+ app.setConfirm(true);
+ app.setConfirmHook(()=>{body.value='cat cat cat';});
+ app.elements.draftFindReplaceAll.listeners.click();
+ assert.equal(body.value,'cat cat cat','stale snapshot must not be replaced');
+ assert.equal(app.elements.draftFindStatus.textContent,uiText('en','replaceStale'));
+ app.setConfirmHook(null);
+ body.value='a'.repeat(12000);q.value='a';app.elements.draftReplaceText.value='aa';
+ app.elements.draftFindReplaceAll.listeners.click();
+ assert.equal(body.value,'a'.repeat(12000));
+ assert.equal(app.elements.draftFindStatus.textContent,uiText('en','replaceLimit'));
+ assert.equal(app.elements.draftFindUndoAll.disabled,true);
+});
+
+test('bulk undo expires on the next author edit without discarding further writing',()=>{
+ const app=build(),body=app.elements.postBody,q=app.elements.draftFindQuery;
+ body.value='one one';q.value='one';app.elements.draftReplaceText.value='two';
+ app.elements.draftFindReplaceAll.listeners.click();
+ assert.equal(app.elements.draftFindUndoAll.disabled,false);
+ body.value+=' later';body.listeners.input();
+ assert.equal(app.elements.draftFindUndoAll.disabled,true);
+ app.elements.draftFindUndoAll.listeners.click();
+ assert.equal(body.value,'two two later');
+ assert.equal(app.elements.draftFindStatus.textContent,uiText('en','replaceAllUndoExpired'));
+});
+
+test('bulk replace affordances are local and translated in eight languages',()=>{
+ const html=readFileSync(new URL('../site/draft-lab.html',import.meta.url),'utf8');
+ assert.match(html,/id="draftFindReplaceAll"[^>]*type="button"/);
+ assert.match(html,/id="draftFindUndoAll"[^>]*disabled/);
+ for(const lang of ['en','ru','th','es','fr','de','pt','zh']){
+  for(const key of ['replaceAllButton','replaceAllUndoButton',
+   'replaceAllConfirmPrefix','replaceAllConfirmSuffix','replaceAllDone',
+   'replaceAllCanceled','replaceAllUndone','replaceAllUndoExpired']){
+    assert.ok(uiText(lang,key).length>0,lang+':'+key);
+  }
+ }
+ assert.doesNotMatch(source,/fetch\(|sendBeacon|XMLHttpRequest|eval\(/);
 });

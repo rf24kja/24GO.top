@@ -276,6 +276,26 @@ export function replaceDraftFindMatch(body,query,replacement,start,end){
   selectionEnd:start+replacement.length});
 }
 
+/** Plan an explicit local replace-all, without writing or persisting anything.
+ * Counts non-overlapping, exact case-sensitive UTF-16 matches. Validate the
+ * final length BEFORE constructing a potentially expanded manuscript.
+ */
+export function replaceAllDraftMatches(body,query,replacement){
+ if(typeof body!=='string'||body.length>12000||
+    typeof query!=='string'||!query.trim()||query.length>80||
+    typeof replacement!=='string'||replacement.length>160)
+  throw new TypeError('Invalid bulk manuscript replacement');
+ let count=0,position=0,index;
+ while((index=body.indexOf(query,position))!==-1){
+  count++;
+  position=index+query.length;
+ }
+ if(count===0||query===replacement)return null;
+ if(body.length+count*(replacement.length-query.length)>12000)
+  throw new RangeError('Manuscript length limit');
+ return Object.freeze({body:body.split(query).join(replacement),count});
+}
+
 /** Compare the current tab to the last explicitly reopened local file.
  * A download click/clipboard copy is never proof the browser saved a file.
  */

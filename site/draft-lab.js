@@ -1,6 +1,6 @@
 'use strict';
 
-import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, readDraftFileStrict, formatDraftSelection, formatDraftImageSelection, readExternalMarkdownStrict, formatExternalMarkdownInsertion, countDraftWords, createDraftImportGate, matchesDraftExportSnapshot, invalidDraftField, findDraftText, replaceDraftFindMatch } from './draft-lab-logic.js';
+import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, readDraftFileStrict, formatDraftSelection, formatDraftImageSelection, readExternalMarkdownStrict, formatExternalMarkdownInsertion, countDraftWords, createDraftImportGate, matchesDraftExportSnapshot, invalidDraftField, findDraftText, replaceDraftFindMatch, replaceAllDraftMatches } from './draft-lab-logic.js';
 import { renderMarkdownPreview,renderPreviewOutline } from './draft-lab-preview.js';
 import {appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS} from './draft-lab-guidance.js';
 import {captureDraftRevision,compareDraftRevisions,revisionSummary} from './draft-lab-revisions.js';
@@ -91,6 +91,11 @@ const reviewExportGate=createDraftImportGate();
 const reviewVerifyGate=createDraftImportGate();
 // A match is valid only until the next editor action or search term change.
 let activeFindMatch=null;
+let lastBulkReplace=null; // Recoverable only in this tab, until the next edit.
+function clearBulkUndo(){
+ lastBulkReplace=null;
+ field('draftFindUndoAll').disabled=true;
+}
 function clearFindSelection(){
  activeFindMatch=null;
  field('draftFindReplace').disabled=true;
@@ -99,6 +104,7 @@ function editorChanged(){
  revisionRestoreGate.changed();
  importGate.changed();
  reviewExportGate.changed();
+ clearBulkUndo();
  clearFindSelection();
  field('draftFindStatus').textContent='';
 }
@@ -351,6 +357,55 @@ replaceButton.addEventListener('click',()=>{
  preview();
  updateValidationNotice();
  findStatus.textContent=ui('replaceDone');
+});
+// Bulk replacement is deliberately separate from single-match replace.
+// It requires a human confirmation and can be undone in-tab until edited.
+field('draftFindReplaceAll').addEventListener('click',()=>{
+ const original=body.value,query=findQuery.value,replacement=replaceInput.value;
+ if(!query.trim()){
+  findStatus.textContent=ui('findEmpty');return;
+ }
+ let planned;
+ try{planned=replaceAllDraftMatches(original,query,replacement);}
+ catch(error){
+  findStatus.textContent=ui(error?.name==='RangeError'?'replaceLimit':'replaceStale');
+  return;
+ }
+ if(!planned){findStatus.textContent=ui('findMissing');return;}
+ if(!window.confirm(ui('replaceAllConfirmPrefix')+planned.count+
+    ui('replaceAllConfirmSuffix'))){
+  findStatus.textContent=ui('replaceAllCanceled');return;
+ }
+ // A confirmation dialog can be re-entrant in embedded environments.
+ if(body.value!==original||findQuery.value!==query||
+    replaceInput.value!==replacement){
+  findStatus.textContent=ui('replaceStale');return;
+ }
+ body.setRangeText(planned.body,0,body.value.length,'end');
+ editorChanged(); // Invalidates pending imports/review exports and old search.
+ lastBulkReplace={before:original,after:planned.body};
+ field('draftFindUndoAll').disabled=false;
+ clearFieldError(body);
+ body.focus();
+ body.setSelectionRange(0,0);
+ preview();
+ updateValidationNotice();
+ findStatus.textContent=ui('replaceAllDone')+planned.count;
+});
+field('draftFindUndoAll').addEventListener('click',()=>{
+ const previous=lastBulkReplace;
+ if(!previous||body.value!==previous.after){
+  clearBulkUndo();
+  findStatus.textContent=ui('replaceAllUndoExpired');return;
+ }
+ body.setRangeText(previous.before,0,body.value.length,'end');
+ editorChanged();
+ clearFieldError(body);
+ body.focus();
+ body.setSelectionRange(0,0);
+ preview();
+ updateValidationNotice();
+ findStatus.textContent=ui('replaceAllUndone');
 });
 findQuery.addEventListener('keydown',event=>{
  if(event.key==='Enter'&&!event.isComposing){

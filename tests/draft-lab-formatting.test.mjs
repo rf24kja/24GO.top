@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {formatDraftSelection,formatDraftImageSelection,countDraftWords,findDraftText,replaceDraftFindMatch} from '../site/draft-lab-logic.js';
+import {formatDraftSelection,formatDraftImageSelection,countDraftWords,findDraftText,replaceDraftFindMatch,replaceAllDraftMatches} from '../site/draft-lab-logic.js';
 import {parsePreviewBlocks} from '../site/draft-lab-preview.js';
 function apply(value,start,end,action){
  const edit=formatDraftSelection(value,start,end,action);
@@ -258,4 +258,31 @@ test('image insertion preserves Unicode alt text and adjacent article text',()=>
  assert.equal(result,
   'Система работает.![Диаграмма архитектуры 🌍](https://images.example.org/graph.png) Следующий шаг.');
  assert.equal(result.slice(0,pos),draft.slice(0,pos));
+});
+
+test('bulk replace counts non-overlapping exact matches and returns a local-only immutable plan',()=>{
+ const source='cat CAT catcat 🚀 cat';
+ const planned=replaceAllDraftMatches(source,'cat','dog');
+ assert.deepEqual({...planned},{body:'dog CAT dogdog 🚀 dog',count:4});
+ assert.ok(Object.isFrozen(planned));
+ assert.equal(source,'cat CAT catcat 🚀 cat','planning never modifies input');
+ assert.deepEqual({...replaceAllDraftMatches('🚀 and 🚀','🚀','🌍')},
+  {body:'🌍 and 🌍',count:2});
+ assert.deepEqual({...replaceAllDraftMatches('aaaaa','aa','b')},
+  {body:'bba',count:2},'overlapping matches are not double counted');
+ assert.deepEqual({...replaceAllDraftMatches('cat cat','cat','')},
+  {body:' ',count:2},'empty replacement is an intentional deletion');
+ assert.equal(replaceAllDraftMatches('cat','dog','x'),null);
+ assert.equal(replaceAllDraftMatches('cat','cat','cat'),null);
+});
+
+test('bulk replace rejects invalid types, whitespace-only queries and expansions above 12k',()=>{
+ for(const args of [
+  [null,'a','b'],['a',null,'b'],['a','','b'],['a','   ','b'],
+  ['abc','a'.repeat(81),'b'],['abc','a',null],
+  ['abc','a','z'.repeat(161)],['a'.repeat(12001),'a','z']
+ ])assert.throws(()=>replaceAllDraftMatches(...args),TypeError);
+ assert.throws(()=>replaceAllDraftMatches('a'.repeat(12000),'a','aa'),RangeError);
+ assert.equal(replaceAllDraftMatches('a'.repeat(12000),'a','').body.length,0);
+ assert.equal(replaceAllDraftMatches('a'.repeat(11999),'a','a'),null);
 });
