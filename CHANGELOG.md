@@ -1,3 +1,9 @@
+## Unreleased — prevent stale native-consent import from overwriting newer manuscript actions
+
+- Revalidate the Draft Lab import gate immediately **after** native overwrite confirmation. An older file import cannot reapply obsolete title/body/language/source after a newer file selection, author editing, or Clear triggered while consent was open.
+- Preserve the most recent editor status instead of showing an outdated import error after a newer action. Cancelled imports and malformed files keep the existing original-data safeguards.
+- Add deterministic DOM-level reentrant confirmation tests (Clear, typing, and another selected local .md) and keep the existing full Chromium mobile/desktop layout and interaction gates. This corrects PUBLIC browser-only editing, not hosted publishing.
+
 ## Unreleased — import regular Markdown into the PUBLIC Draft Lab
 
 - Add an explicit **Insert another .md** file-picker path for Markdown authored in external editors. Unlike **Open saved .md** (which restores a 24GOTOP export), this operation inserts the original Markdown after the current textarea selection without replacing existing text, article title, language, category or original-source metadata. Exported Draft Lab documents continue to use the stricter existing restore flow.
