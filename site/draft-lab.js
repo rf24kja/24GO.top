@@ -446,10 +446,20 @@ async function openLocalDraft(file,input=null) {
       message(ui('importInterrupted'),true);
       return;
     }
-    if (hasDraftContent(currentDraft())
-      && !window.confirm(ui('replaceConfirm'))) {
-      message(ui('replaceCanceled'));
-      return;
+    if (hasDraftContent(currentDraft())) {
+      const confirmed=window.confirm(ui('replaceConfirm'));
+      // Native confirmation dialogs are not guaranteed to be inert: a newer
+      // file selection or a Clear/edit action can supersede the original read.
+      // Never commit an older manuscript after newer author intent.
+      if(!importGate.isLatest(ticket))return;
+      if(!importGate.canApply(ticket)){
+        message(ui('importInterrupted'),true);
+        return;
+      }
+      if(!confirmed){
+        message(ui('replaceCanceled'));
+        return;
+      }
     }
     title.value = reopened.title;
     body.value = reopened.body;
