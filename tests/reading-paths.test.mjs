@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {approvedReadingArticles,normalizeReadingPath,encodeReadingPath,
- decodeReadingPath,changeReadingPath,readingPathMarkdown,MAX_READING_PATH_ITEMS}
+ decodeReadingPath,changeReadingPath,readingPathMarkdown,readingPathMcpArguments,MAX_READING_PATH_ITEMS}
  from '../site/engineering/paths-logic.mjs';
 
 const feed=JSON.parse(readFileSync(new URL('../site/engineering/feed.json',import.meta.url),'utf8'));
@@ -86,6 +86,8 @@ test('the feature is a genuine accessible, browser-only workflow linked from arc
  assert.match(html,/id="path-catalog"/);
  assert.match(html,/id="path-selected"/);
  assert.match(html,/id="path-copy-link"/);
+ assert.match(html,/id="path-copy-mcp"/);
+ assert.match(html,/resolve_reading_path/);
  assert.match(html,/id="path-copy-markdown"/);
  assert.match(html,/id="path-manual-copy"/);
  assert.match(html,/role="status"/);
@@ -176,4 +178,28 @@ test('multilingual Markdown path titles keep ordinary punctuation readable',()=>
  assert.ok(markdown.includes('ภาษาไทย • Русский\\: 2026\\.'));
  assert.ok(markdown.includes('\\[reading\\] \\<tips\\> \\@user'));
  assert.equal(markdown.match(/\]\(https:\/\//g)?.length,1);
+});
+
+test('local MCP tool input reproduces the same canonical ordered public reading path',()=>{
+ const input=readingPathMcpArguments({title:'安全 • ภาษาไทย • Русский',ids:[second.id,first.id]},articles);
+ const payload=JSON.parse(input);
+ assert.deepEqual(Object.keys(payload),['url']);
+ assert.ok(payload.url.startsWith('https://24go.top/engineering/reading-paths/#path='));
+ assert.deepEqual(decodeReadingPath(payload.url.slice('https://24go.top/engineering/reading-paths/'.length),articles),
+  normalizeReadingPath({title:'安全 • ภาษาไทย • Русский',ids:[second.id,first.id]},articles));
+ assert.doesNotMatch(input,/bearer|apiKey|Authorization|localhost/i);
+});
+test('MCP argument copy rejects unreviewed paths and escapes untrusted titles',()=>{
+ for(const input of [
+  {title:'X',ids:['../../private']},
+  {title:'Invalid\nTitle',ids:[first.id]},
+  {title:'Duplicate',ids:[first.id,first.id]},
+  {title:'Empty',ids:[]}
+ ])assert.throws(()=>readingPathMcpArguments(input,articles),/invalid_reading_path/);
+ const suspicious='[Markdown](https://evil.example) <script>';
+ const output=readingPathMcpArguments({title:suspicious,ids:[first.id]},articles);
+ const payload=JSON.parse(output);
+ assert.ok(payload.url.includes('#path='));
+ assert.equal(decodeReadingPath(payload.url.slice('https://24go.top/engineering/reading-paths/'.length),articles).title,suspicious);
+ assert.ok(!output.includes('<script>'), 'JSON must contain a URL-encoded fragment only');
 });
