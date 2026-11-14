@@ -531,12 +531,12 @@ function exerciseDraftImageInsertion(){
   document.activeElement===alt;
  // A selected phrase is usable alt text even when the separate alt field
  // is empty; selected text is replaced via native setRangeText.
- const phrase='reviewed system';
+ const phrase='system architecture';
  const at=body.value.indexOf(phrase);
  body.focus();body.setSelectionRange(at,at+phrase.length);
  button.click();
  const selectedAltUsed=body.value.includes(
-  '![reviewed system](https://images.example.org/another.png)');
+  '![system architecture](https://images.example.org/another.png)');
  const noUploads=localStorage.length===beforeStorage;
  const viewport=document.documentElement.clientWidth;
  const scroll=Math.max(document.documentElement.scrollWidth,document.body.scrollWidth);
