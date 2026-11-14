@@ -1,3 +1,11 @@
+## Unreleased — optional password-encrypted local draft library backup
+
+- Add **Download encrypted backup** and **Restore encrypted backup** to the browser-only Draft Lab. This provides a portable, author-initiated encrypted JSON file for up to eight manually saved local drafts, without replacing the existing plaintext .json backup or any Markdown download. Import remains explicitly confirmed and fails closed unless the destination's saved-draft library is empty.
+- Encrypt with the browser's native Web Crypto API: AES-256-GCM with an independent 12-byte IV and 16-byte random salt for each export, 250,000 PBKDF2-HMAC-SHA256 iterations, fixed authenticated format/algorithm metadata and strict canonical base64url encoding. Reject modified headers, incorrect passwords, corrupt/oversized files, malformed Unicode and missing crypto support before touching the browser vault. A password is never sent to GitHub, 24GOTOP or an API.
+- Explicitly warn in eight locales that the **existing localStorage vault itself remains unencrypted**, passwords cannot be recovered, weak passwords can be guessed offline, and shared/cloud storage is unsafe for private drafts. Clear the password input after the operation; do not log secrets. Avoid stale backup exports when saved drafts or the password change mid-encryption.
+- Unit tests perform real native crypto round-trips and negative cases (tampering, wrong passwords, random salts, wrong file, local vault conflicts); real Chromium E2E tests exercise the form and actual encryption/decryption from a 390px touch screen while the established 30×18 mobile/tablet/desktop matrix remains in place.
+- This protects only a **downloaded optional backup file**, not accounts, server-side data or the pre-launch private hosted core.
+
 ## Unreleased — reversible, consent-gated Draft Lab checkpoints
 
 - Add **Restore checkpoint (swap)** in the PUBLIC browser-only Markdown editor, completing the previously one-way checkpoint/compare workflow. After explicit confirmation, restore the entire in-tab checkpoint — title, article text, language, category and source — while placing the previous current manuscript into the checkpoint. A second confirmed restore reverses the swap without requiring a server, account or browser storage.
