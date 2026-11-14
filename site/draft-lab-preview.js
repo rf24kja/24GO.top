@@ -42,7 +42,7 @@ function tableAt(lines,index){
 
 // Minimal inline Markdown, not arbitrary HTML: links, bold, italic and code.
 // Fixed DOM element names and textContent keep author text inert.
-const INLINE = /(?<citation>\[(?<label>[^\[\]\n]{1,200})\]\((?<url>https?:\/\/[^<>\s()\\]{1,1500})\))|(?<code>\`(?<inlineCode>[^\`\n]{1,1000})\`)|(?<bold>\*\*(?<strong>[^*\n]{1,1000})\*\*)|(?<italic>\*(?<em>[^*\n]{1,1000})\*)/g;
+const INLINE = /(?<image>!\[(?<imageAlt>[^\[\]\n]{1,160})\]\((?<imageUrl>https?:\/\/[^<>\s()\\]{1,1500})\))|(?<citation>\[(?<label>[^\[\]\n]{1,200})\]\((?<url>https?:\/\/[^<>\s()\\]{1,1500})\))|(?<code>\`(?<inlineCode>[^\`\n]{1,1000})\`)|(?<bold>\*\*(?<strong>[^*\n]{1,1000})\*\*)|(?<italic>\*(?<em>[^*\n]{1,1000})\*)/g;
 export function safeCitationUrl(raw){
  if(typeof raw!=='string'||raw.length>1500||
     /[\u0000-\u001f\u007f]/u.test(raw))return null;
@@ -52,16 +52,66 @@ export function safeCitationUrl(raw){
     !url.username&&!url.password&&url.href.length<=2048?url.href:null;
  }catch{return null;}
 }
-function setInline(node,text,doc){
+// A preview image is not an ordinary citation: HTTPS only, no embedded
+// credentials, non-default ports, local/LAN names or IP-literal destinations.
+// Rendering does not contact this host; a separate explicit click is required.
+const PUBLIC_IMAGE_HOST=/^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/i;
+export function safePreviewImageUrl(raw){
+ if(typeof raw!=='string'||raw.length>1500||
+    /[\u0000-\u001f\u007f]/u.test(raw))return null;
+ try{
+  const url=new URL(raw);
+  const host=url.hostname.toLowerCase();
+  if(url.protocol!=='https:'||url.username||url.password||url.port||
+     url.href.length>2048||host.length>253||
+     !PUBLIC_IMAGE_HOST.test(host)||
+     /\.(?:local|localhost|internal|lan|home|corp|test|invalid|example)$/i.test(host))
+    return null;
+  return url.href;
+ }catch{return null;}
+}
+function imageGate(doc,alt,safe,labels){
+ const host=new URL(safe).hostname;
+ const wrapper=doc.createElement('span');
+ wrapper.className='preview-image-gate';
+ const button=doc.createElement('button');
+ button.type='button';
+ button.textContent=(labels.imageLoad||'Load external image')+': '+host;
+ button.setAttribute('aria-label',button.textContent+' — '+alt);
+ const image=doc.createElement('img');
+ image.hidden=true; // IMPORTANT: src is not set before explicit consent.
+ image.setAttribute('alt',alt);
+ image.setAttribute('loading','lazy');
+ image.setAttribute('decoding','async');
+ image.setAttribute('referrerpolicy','no-referrer');
+ image.setAttribute('crossorigin','anonymous');
+ button.addEventListener('click',()=>{
+  button.hidden=true;
+  image.hidden=false;
+  image.setAttribute('src',safe);
+ });
+ image.addEventListener('error',()=>{
+  image.hidden=true;
+  button.hidden=false;
+  button.textContent=(labels.imageFailed||'Image unavailable; retry')+': '+host;
+ });
+ wrapper.append(button,image);
+ return wrapper;
+}
+
+function setInline(node,text,doc,labels={}){
  const parts=[];
  let offset=0;
  for(const match of text.matchAll(INLINE)){
   if(match.index<offset || (match.index>0&&text[match.index-1]==='\\'))continue;
   const part=match.groups;
-  const safe=part.citation?safeCitationUrl(part.url):null;
-  if(part.citation&&!safe)continue;
+  const safe=part.image?safePreviewImageUrl(part.imageUrl):
+   part.citation?safeCitationUrl(part.url):null;
+  if((part.citation||part.image)&&!safe)continue;
   if(match.index>offset)parts.push(doc.createTextNode(text.slice(offset,match.index)));
-  if(part.citation){
+  if(part.image){
+   parts.push(imageGate(doc,part.imageAlt,safe,labels));
+  }else if(part.citation){
    const link=doc.createElement('a');
    link.textContent=part.label;
    link.setAttribute('href',safe);
@@ -206,7 +256,7 @@ export function parsePreviewBlocks(input) {
   return blocks;
 }
 
-export function renderMarkdownPreview(container, markdown, doc = document) {
+export function renderMarkdownPreview(container, markdown, doc = document, labels = {}) {
   if (!container || typeof container.replaceChildren !== 'function'
     || !doc || typeof doc.createElement !== 'function') {
     throw new TypeError('A DOM container and document are required');
@@ -221,20 +271,20 @@ export function renderMarkdownPreview(container, markdown, doc = document) {
         node = doc.createElement('h' + (block.level + 3));
         // Static generated IDs, never derived from untrusted heading text.
         node.id='draft-section-'+(++headingIndex);
-        setInline(node,block.text,doc);
+        setInline(node,block.text,doc,labels);
         break;
       case 'rule':
         node = doc.createElement('hr');
         break;
       case 'quote':
         node = doc.createElement('blockquote');
-        setInline(node,block.text,doc);
+        setInline(node,block.text,doc,labels);
         break;
       case 'list':
         node = doc.createElement(block.ordered ? 'ol' : 'ul');
         for (const item of block.items) {
           const li = doc.createElement('li');
-          setInline(li,item,doc);
+          setInline(li,item,doc,labels);
           node.append(li);
         }
         break;
@@ -251,7 +301,7 @@ export function renderMarkdownPreview(container, markdown, doc = document) {
           const th=doc.createElement('th');
           th.setAttribute('scope','col');
           th.className='table-align-'+block.align[index];
-          setInline(th,text,doc);
+          setInline(th,text,doc,labels);
           headerRow.append(th);
         });
         head.append(headerRow);
@@ -262,7 +312,7 @@ export function renderMarkdownPreview(container, markdown, doc = document) {
           row.forEach((text,index)=>{
             const td=doc.createElement('td');
             td.className='table-align-'+block.align[index];
-            setInline(td,text,doc);
+            setInline(td,text,doc,labels);
             tr.append(td);
           });
           tbody.append(tr);
@@ -280,7 +330,7 @@ export function renderMarkdownPreview(container, markdown, doc = document) {
       }
       default:
         node = doc.createElement('p');
-        setInline(node,block.text,doc);
+        setInline(node,block.text,doc,labels);
     }
     nodes.push(node);
   }
