@@ -207,3 +207,18 @@ test('local print and PDF safeguards are translated for eight editor interface l
  assert.match(code,/ui\('printEmpty'\)/);
  assert.doesNotMatch(i18n,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|document\.cookie/);
 });
+
+
+test('reversible checkpoint controls, consent and cancellation are translated in all eight locales',()=>{
+ for(const locale of UI_LOCALES){
+  for(const key of ['revisionRestore','revisionRestoreConfirm','revisionRestored',
+   'revisionRestoreCanceled','revisionRestoreSame','revisionHint']){
+   assert.ok(uiText(locale,key).trim().length>=4,locale+' '+key);
+  }
+ }
+ assert.match(html,/data-ui="revisionRestore"/);
+ assert.match(code,/ui\('revisionRestoreConfirm'\)/);
+ assert.match(code,/ui\('revisionRestored'\)/);
+ assert.match(code,/ui\('revisionRestoreCanceled'\)/);
+ assert.match(code,/ui\('revisionRestoreSame'\)/);
+});
