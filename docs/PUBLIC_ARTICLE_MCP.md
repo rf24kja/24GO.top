@@ -113,6 +113,13 @@ Example request to create a short path:
 {"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"create_reading_path","arguments":{"title":"Secure publishing foundations","urls":["https://24go.top/engineering/postgres-insert-returning-least-privilege.html","https://24go.top/engineering/read-only-mcp-server-for-technical-articles.html"]}}}
 ```
 
+On the live public reading-path builder, the **Copy MCP tool input** button
+copies the exact JSON object required by `resolve_reading_path` after the
+author has selected at least one public article. This is an explicitly
+initiated clipboard action; a denied clipboard permission falls back to
+a focusable, read-only manual-copy textarea. No tool call is made by
+the browser. The local MCP host must be configured separately.
+
 To resolve the resulting link, supply its **entire** browser URL (including the `#path=` fragment) as `url` to `resolve_reading_path`. Both tools use the same strict public-browser path grammar and checked-out article allowlist. Paths with duplicate, unknown, off-origin, or malformed entries are refused. User-entered titles are treated as untrusted text and escaped when generating Markdown. Only articles already present in the local checkout are accepted; use `git pull` to refresh the corpus. This is public-agent discovery, **not** verified AI identity, hosted user posting or shared private reading history.
 
 ## Safety and maintenance
