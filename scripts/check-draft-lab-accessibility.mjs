@@ -438,6 +438,54 @@ async function exerciseReadingPathsDownload(){
 }
 
 
+// Real Chromium interaction: no mocks for the editor or its local undo.
+// Confirmation is intercepted to avoid browser modal deadlocks in headless CI.
+function exerciseDraftReplaceAll(){
+ const $=id=>document.getElementById(id);
+ const body=$('postBody'),find=$('draftFindQuery'),repl=$('draftReplaceText');
+ const all=$('draftFindReplaceAll'),undo=$('draftFindUndoAll');
+ const oldConfirm=window.confirm;
+ const storageBefore=localStorage.getItem('24gotop-draft-vault-v1');
+ let confirms=0;
+ try{
+  body.value='cat CAT cat 🚀 cat';
+  body.dispatchEvent(new Event('input',{bubbles:true}));
+  find.value='cat';find.dispatchEvent(new Event('input',{bubbles:true}));
+  repl.value='wolf';
+  const beforeDisabled=undo.disabled;
+  window.confirm=message=>{confirms++;return message.includes('3');};
+  all.focus();all.click();
+  const replaced=body.value==='wolf CAT wolf 🚀 wolf'&&
+   $('previewBody').textContent.includes('wolf CAT wolf')&&
+   document.activeElement===body&&!undo.disabled;
+  undo.click();
+  const reversed=body.value==='cat CAT cat 🚀 cat'&&undo.disabled;
+  window.confirm=()=>{confirms++;return false;};
+  all.click();
+  const canceled=body.value==='cat CAT cat 🚀 cat'&&undo.disabled;
+  body.value='a'.repeat(12000);
+  body.dispatchEvent(new Event('input',{bubbles:true}));
+  find.value='a';repl.value='aa';
+  const beforeLimit=confirms;
+  all.click();
+  const limited=body.value.length===12000&&confirms===beforeLimit&&undo.disabled;
+  body.value='cat cat';
+  body.dispatchEvent(new Event('input',{bubbles:true}));
+  find.value='cat';repl.value='bird';
+  window.confirm=()=>{confirms++;body.value='cat cat edited';
+   body.dispatchEvent(new Event('input',{bubbles:true}));return true;};
+  all.click();
+  const stale=body.value==='cat cat edited'&&undo.disabled;
+  const storageSame=localStorage.getItem('24gotop-draft-vault-v1')===storageBefore;
+  return {beforeDisabled,replaced,reversed,canceled,limited,stale,
+   storageSame,confirms,
+   allHeight:all.getBoundingClientRect().height,
+   undoHeight:undo.getBoundingClientRect().height,
+   viewport:document.documentElement.clientWidth,
+   scroll:Math.max(document.body.scrollWidth,document.documentElement.scrollWidth)};
+ }finally{window.confirm=oldConfirm;}
+}
+
 function exerciseDraftImageGate(){
  const body=document.getElementById('postBody');
  const preview=document.getElementById('previewBody');
@@ -876,6 +924,13 @@ async function main(){
       insertion.fieldWidths.some(width=>width<70)||
       insertion.scroll>insertion.viewport+1)
     throw Error('Markdown image insertion '+profile.name+': '+JSON.stringify(insertion));
+   const bulk=await c.call(exerciseDraftReplaceAll,sessionId);
+   if(!bulk.beforeDisabled||!bulk.replaced||!bulk.reversed||
+      !bulk.canceled||!bulk.limited||!bulk.stale||!bulk.storageSame||
+      bulk.confirms!==3||bulk.allHeight<43.5||bulk.undoHeight<43.5||
+      bulk.scroll>bulk.viewport+1)
+    throw Error('Draft Lab confirmed bulk replacement '+profile.name+': '+
+      JSON.stringify(bulk));
    const external=await c.call(exerciseExternalMarkdownImport,sessionId);
    if(external.height<43.5||!external.accepted.inserted||
       !external.accepted.sameTitle||!external.accepted.sameLocale||
