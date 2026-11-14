@@ -832,7 +832,7 @@ field('encryptedBackupFile').addEventListener('change',async event=>{
      file.size>ENCRYPTED_BACKUP_MAX_BYTES)
    throw new TypeError('Invalid encrypted backup');
   const buffer=await file.arrayBuffer();
-  if(!(buffer instanceof ArrayBuffer)||buffer.byteLength!==file.size||
+  if(Object.prototype.toString.call(buffer)!=='[object ArrayBuffer]'||buffer.byteLength!==file.size||
      buffer.byteLength>ENCRYPTED_BACKUP_MAX_BYTES)
    throw new TypeError('Invalid encrypted backup length');
   const encrypted=new TextDecoder('utf-8',{fatal:true}).decode(buffer);
