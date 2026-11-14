@@ -121,9 +121,9 @@ test('pending review digest cannot export after any change, even if undone',()=>
 test('public editor invalidates pending review exports at every existing mutation path',()=>{
  const editor=readFileSync(new URL('../site/draft-lab.js',import.meta.url),'utf8');
  assert.match(editor,/const reviewExportGate=createDraftImportGate\(\)/);
- assert.match(editor,/function editorChanged\(\)\{\s*importGate\.changed\(\);\s*reviewExportGate\.changed\(\)/);
- assert.equal((editor.match(/editorChanged\(\);/g)||[]).length,10,
-  'typing, Markdown/image formatting, external Markdown insertion, single-match replacement, templates, opening, saved drafts and clear invalidate digest');
+ assert.match(editor,/function editorChanged\(\)\{\s*revisionRestoreGate\.changed\(\);\s*importGate\.changed\(\);\s*reviewExportGate\.changed\(\)/);
+ assert.equal((editor.match(/editorChanged\(\);/g)||[]).length,11,
+  'typing, Markdown/image formatting, external Markdown insertion, checkpoint restoration, single-match replacement, templates, opening, saved drafts and clear invalidate digest');
  assert.match(editor,/reviewExportGate\.canApply\(ticket\)/);
  assert.match(editor,/matchesDraftExportSnapshot\(draft,currentDraft\(\)\)/);
  assert.doesNotMatch(editor,/hasUnexportedChanges\(currentDraft\(\),draft\)/);
