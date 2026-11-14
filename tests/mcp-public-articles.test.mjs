@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {loadPublishedCorpus,handleMcpRequest} from '../packages/mcp/stdio.mjs';
+import {approvedReadingArticles,encodeReadingPath} from '../site/engineering/paths-logic.mjs';
 
 const articles=loadPublishedCorpus();
 const query=(method,params={},id=1)=>({jsonrpc:'2.0',id,method,params});
@@ -29,7 +30,7 @@ test('MCP discovery and legacy initialize advertise read-only tools and resource
  assert.equal(initialized.result.protocolVersion,'2025-11-25');
  const tools=handleMcpRequest(query('tools/list',{_meta:modernMeta}),articles).result;
  assert.equal(tools.resultType,'complete');
- assert.deepEqual(tools.tools.map(x=>x.name),['search_articles','search_articles_page','read_article_excerpt','read_article','list_articles']);
+ assert.deepEqual(tools.tools.map(x=>x.name),['search_articles','search_articles_page','read_article_excerpt','resolve_reading_path','create_reading_path','read_article','list_articles']);
  assert.ok(tools.tools.every(x=>x.inputSchema.additionalProperties===false));
 });
 
@@ -110,6 +111,70 @@ test('read_article_excerpt returns bounded Unicode-safe plain text and canonical
  assert.ok(!JSON.stringify(first).includes('PUBLISH_API_KEY'));
 });
 
+
+test('human browser reading paths resolve in the local MCP with exact reviewed order',()=>{
+ const approved=approvedReadingArticles({items:articles.map(({title,url,summary})=>({title,url,summary}))});
+ const ids=[approved[2].id,approved[0].id,approved[1].id];
+ const fragment=encodeReadingPath({title:'Learning security · 中文 🚀',ids},approved);
+ const link='https://24go.top/engineering/reading-paths/'+fragment;
+ const result=handleMcpRequest(query('tools/call',{
+  name:'resolve_reading_path',arguments:{url:link},_meta:modernMeta
+ }),articles).result;
+ assert.equal(result.resultType,'complete');
+ assert.equal(result.isError,undefined);
+ const data=JSON.parse(result.content[0].text);
+ assert.equal(data.url,link);
+ assert.equal(data.title,'Learning security · 中文 🚀');
+ assert.equal(data.total,3);
+ assert.deepEqual(data.articles.map(x=>x.id),ids);
+ assert.deepEqual(data.articles.map(x=>x.url),[articles[2].url,articles[0].url,articles[1].url]);
+ assert.ok(data.articles.every(x=>x.summary&&!Object.hasOwn(x,'text')));
+ assert.match(data.note,/public article metadata/i);
+});
+
+test('an MCP agent can create a browser-shareable path without files, accounts or writes',()=>{
+ const chosen=[articles[1].url,articles[0].url];
+ const result=handleMcpRequest(query('tools/call',{
+  name:'create_reading_path',
+  arguments:{title:'My AI reading route',urls:chosen},_meta:modernMeta
+ }),articles).result;
+ assert.equal(result.resultType,'complete');
+ const data=JSON.parse(result.content[0].text);
+ assert.match(data.url,/^https:\/\/24go\.top\/engineering\/reading-paths\/#path=%7B/);
+ assert.deepEqual(data.articles.map(x=>x.url),chosen);
+ assert.equal(data.total,2);
+ assert.match(data.markdown,/^# My AI reading route\n\n1\. /);
+ assert.equal(data.markdown.indexOf(chosen[0])<data.markdown.indexOf(chosen[1]),true);
+ const roundTrip=handleMcpRequest(query('tools/call',{
+  name:'resolve_reading_path',arguments:{url:data.url}
+ }),articles).result;
+ assert.deepEqual(JSON.parse(roundTrip.content[0].text).articles.map(x=>x.url),chosen);
+});
+
+test('shared-path tools reject forged origins, malformed fragments, duplicates and unreviewed articles',()=>{
+ const good='https://24go.top/engineering/reading-paths/';
+ const invalid=[
+  {name:'resolve_reading_path',arguments:{url:'https://evil.example/#path=%7B%7D'}},
+  {name:'resolve_reading_path',arguments:{url:good+'?token=secret#path=%7B%7D'}},
+  {name:'resolve_reading_path',arguments:{url:good+'#path=%7B%7D'}},
+  {name:'resolve_reading_path',arguments:{url:good+'#path=%ED%A0%80'}},
+  {name:'resolve_reading_path',arguments:{url:good+'#path='+('a'.repeat(2201))}},
+  {name:'resolve_reading_path',arguments:{url:good,token:'not allowed'}},
+  {name:'create_reading_path',arguments:{title:'X',urls:[]}},
+  {name:'create_reading_path',arguments:{title:'Invalid\nTitle',urls:[articles[0].url]}},
+  {name:'create_reading_path',arguments:{title:'Long',urls:[articles[0].url,articles[0].url]}},
+  {name:'create_reading_path',arguments:{title:'Unreviewed',urls:['https://24go.top/engineering/unknown.html']}},
+  {name:'create_reading_path',arguments:{title:'Private',urls:['file:///etc/passwd']}},
+  {name:'create_reading_path',arguments:{title:'No',urls:[articles[0].url],token:'secret'}},
+  {name:'create_reading_path',arguments:{title:'Ten plus',urls:new Array(11).fill(articles[0].url)}}
+ ];
+ for(const call of invalid){
+  const result=handleMcpRequest(query('tools/call',call),articles);
+  assert.equal(result.result.isError,true,JSON.stringify(call));
+  assert.equal(JSON.parse(result.result.content[0].text),'Invalid public reading path');
+ }
+});
+
 test('untrusted input cannot read arbitrary files, write data or send external requests',()=>{
  for(const args of [
   {name:'read_article',arguments:{url:'file:///etc/passwd'}},
@@ -159,7 +224,7 @@ test('stdio child process speaks newline JSON-RPC without logs mixed into stdout
  assert.equal(replies.length,4,stdout);
  assert.deepEqual(replies.map(x=>x.id),[1,2,3,4]);
  assert.equal(replies[0].result.resultType,'complete');
- assert.equal(replies[1].result.tools.length,5);
+ assert.equal(replies[1].result.tools.length,7);
  assert.equal(JSON.parse(replies[2].result.content[0].text).length,2);
  assert.equal(replies[3].result.protocolVersion,'2025-11-25');
  assert.equal(stderr,'');
