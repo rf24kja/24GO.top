@@ -205,3 +205,23 @@ test('reversible checkpoint restore has guarded consent, full snapshot swap and 
  assert.match(browser,/revision\.vaultUnchanged/);
  assert.doesNotMatch(js,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|sessionStorage|innerHTML/);
 });
+
+
+test('encrypted backup is an explicit, accessible, local-only operation that does not encrypt browser storage',()=>{
+ for(const id of ['vaultBackupPassword','exportEncryptedDraftLibrary',
+  'restoreEncryptedDraftLibrary','encryptedBackupFile'])assert.ok(html.includes('id="'+id+'"'),id);
+ assert.match(html,/id="vaultBackupPassword" type="password" minlength="12" maxlength="128"/);
+ assert.match(html,/id="vaultEncryptedHint" data-ui="encryptedBackupHint"/);
+ assert.match(html,/data-ui="encryptedBackupHeading"/);
+ assert.match(css,/\.vault-encrypted__actions button\{min-height:44px/);
+ assert.match(js,/encryptDraftLibraryBackup\(snapshot,passphrase\)/);
+ assert.match(js,/decryptDraftLibraryBackup\(encrypted,passphrase\)/);
+ assert.match(js,/getDraftVault\(\)\.restoreBackup\(plain\)/);
+ assert.match(js,/getDraftVault\(\)\.exportBackup\(\)!==snapshot/);
+ assert.match(js,/passwordInput\.value===passphrase\)passwordInput\.value=''/);
+ assert.match(js,/restoreGate\.canApply\(ticket\)/);
+ assert.doesNotMatch(js,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|sessionStorage|innerHTML/);
+ const script=readFileSync(new URL('../scripts/check-draft-lab-accessibility.mjs',import.meta.url),'utf8');
+ assert.match(script,/async function exerciseEncryptedBackup\(\)/);
+ assert.match(script,/await c\.call\(exerciseEncryptedBackup,sessionId\)/);
+});
