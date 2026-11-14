@@ -178,10 +178,11 @@
         </section>
         <section class="revision-review" aria-labelledby="revisionHeading">
           <h4 id="revisionHeading" data-ui="revisionHeading">Compare draft revisions</h4>
-          <p class="hint" data-ui="revisionHint">Create a private checkpoint or open a saved draft, then compare edits. Checkpoints are lost when you close this tab; nothing is uploaded or saved automatically.</p>
+          <p class="hint" data-ui="revisionHint">Create a private checkpoint, compare changes and restore an earlier version if needed. Restore swaps the current manuscript into the checkpoint so it can be reversed. Checkpoints are lost when you close this tab; nothing is uploaded or saved automatically.</p>
           <div class="revision-review__actions">
             <button id="revisionCapture" type="button" data-ui="revisionCapture">Set checkpoint</button>
             <button id="revisionCompare" type="button" data-ui="revisionCompare" disabled>Review changes</button>
+            <button id="revisionRestore" type="button" data-ui="revisionRestore" disabled>Restore checkpoint (swap)</button>
             <button id="revisionCopy" type="button" data-ui="revisionCopy" disabled>Copy change summary</button>
             <button id="revisionClear" type="button" data-ui="revisionClear" disabled>Clear checkpoint</button>
           </div>
