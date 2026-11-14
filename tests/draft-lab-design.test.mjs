@@ -129,3 +129,19 @@ test('image link helper fields cannot outlive a confirmed draft switch',()=>{
  const browser=readFileSync(new URL('../scripts/check-draft-lab-accessibility.mjs',import.meta.url),'utf8');
  assert.match(browser,/!insertion\.reset/);
 });
+
+
+test('external Markdown insert is an opt-in local-only action separate from restoring 24GOTOP export',()=>{
+ assert.match(html,/id="insertExternalMarkdown" class="secondary" type="button" data-ui="externalMdButton"/);
+ assert.match(html,/id="externalMarkdownFile" type="file" accept="\.md,text\/markdown" hidden/);
+ assert.match(html,/id="externalMarkdownHint" data-ui="externalMdHint"/);
+ assert.match(js,/async function insertExternalMarkdown\(file,input=null\)/);
+ assert.match(js,/readExternalMarkdownStrict\(file\)/);
+ assert.match(js,/formatExternalMarkdownInsertion\(body\.value,start,end,markdown\)/);
+ assert.match(js,/body\.setRangeText\(edit\.replacement,edit\.start,edit\.end,'end'\)/);
+ assert.match(js,/importGate\.canApply\(ticket\)/);
+ assert.doesNotMatch(js,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|sessionStorage|innerHTML/);
+ const browser=readFileSync(new URL('../scripts/check-draft-lab-accessibility.mjs',import.meta.url),'utf8');
+ assert.match(browser,/async function exerciseExternalMarkdownImport\(\)/);
+ assert.match(browser,/await c\.call\(exerciseExternalMarkdownImport,sessionId\)/);
+});
