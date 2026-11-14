@@ -222,3 +222,19 @@ test('reversible checkpoint controls, consent and cancellation are translated in
  assert.match(code,/ui\('revisionRestoreCanceled'\)/);
  assert.match(code,/ui\('revisionRestoreSame'\)/);
 });
+
+
+test('AES-GCM backup actions, password recovery warning and error states translated in all eight locales',()=>{
+ const keys=['encryptedBackupHeading','encryptedBackupHint','encryptedBackupPasswordLabel',
+  'encryptedBackupExport','encryptedBackupRestore','encryptedBackupPasswordInvalid',
+  'encryptedBackupExported','encryptedBackupInvalid','encryptedBackupUnavailable',
+  'encryptedBackupChanged','encryptedBackupRestoreConfirm','encryptedBackupRestored'];
+ for(const locale of UI_LOCALES)for(const key of keys)
+  assert.ok(uiText(locale,key).trim().length>=4,locale+' '+key);
+ for(const key of ['encryptedBackupHeading','encryptedBackupHint',
+  'encryptedBackupPasswordLabel','encryptedBackupExport','encryptedBackupRestore'])
+  assert.ok(html.includes('data-ui="'+key+'"'),key);
+ assert.match(code,/ui\('encryptedBackupRestoreConfirm'\)/);
+ assert.match(code,/ui\('encryptedBackupRestored'\)/);
+ assert.match(code,/ui\('encryptedBackupUnavailable'\)/);
+});
