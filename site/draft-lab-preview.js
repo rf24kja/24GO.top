@@ -85,15 +85,18 @@ function imageGate(doc,alt,safe,labels){
  image.setAttribute('decoding','async');
  image.setAttribute('referrerpolicy','no-referrer');
  image.setAttribute('crossorigin','anonymous');
+ image.setAttribute('tabindex','-1');
  button.addEventListener('click',()=>{
   button.hidden=true;
   image.hidden=false;
   image.setAttribute('src',safe);
+  image.focus?.(); // The clicked button was removed from the tab order.
  });
  image.addEventListener('error',()=>{
   image.hidden=true;
   button.hidden=false;
   button.textContent=(labels.imageFailed||'Image unavailable; retry')+': '+host;
+  button.focus?.();
  });
  wrapper.append(button,image);
  return wrapper;
