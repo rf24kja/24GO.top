@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parsePreviewBlocks, renderMarkdownPreview, safeCitationUrl } from '../site/draft-lab-preview.js';
+import { parsePreviewBlocks, renderMarkdownPreview, safeCitationUrl, safePreviewImageUrl } from '../site/draft-lab-preview.js';
 
 test('parses headings, paragraphs, lists, quotes and fenced code', () => {
   const article = [
@@ -279,4 +279,95 @@ test('inline Markdown preview renders semantic text safely, including code and c
  assert.equal(code.textContent,'<img src=x onerror=alert(1)>');
  assert.ok(created.every(x=>!['script','iframe','img'].includes(x.tag)));
  assert.ok(created.every(x=>!('innerHTML' in x)));
+});
+
+
+test('external image preview refuses HTTP, credentials, local hosts, IPs and unsafe addresses',()=>{
+ assert.equal(safePreviewImageUrl('https://images.example.org/diagram.png'),
+  'https://images.example.org/diagram.png');
+ for(const url of [
+  'http://images.example.org/p.png','javascript:alert(1)',
+  'data:image/png;base64,AAA','https://localhost/image.png',
+  'https://dev.local/image.png','https://router.internal/x.png',
+  'https://127.0.0.1/a.png','https://192.168.0.3/a.png',
+  'https://[::1]/a.png','https://user:pass@images.example.org/p.png',
+  'https://images.example.org:8443/p.png','https://example.org.evil.local/p.png',
+  'https://images.example.org/'+ 'x'.repeat(1600),
+  'https://images.example.org/p.png\nh: x',
+  '',null
+ ])assert.equal(safePreviewImageUrl(url),null,String(url).slice(0,80));
+});
+
+test('safe HTTPS Markdown image is inert until an explicit accessible click',()=>{
+ const created=[];
+ const doc={
+  createElement(tag){
+   const el={tag,textContent:'',children:[],attributes:{},listeners:{},
+    hidden:false,focused:false,focus(){this.focused=true;},
+    append(...items){this.children.push(...items);},
+    setAttribute(k,v){this.attributes[k]=v;},
+    addEventListener(k,fn){this.listeners[k]=fn;}};
+   created.push(el);return el;
+  },
+  createTextNode(text){return {tag:'#text',textContent:text};}
+ };
+ const container={nodes:[],replaceChildren(...nodes){this.nodes=nodes;}};
+ renderMarkdownPreview(container,
+  'Before ![Architecture diagram](https://images.example.org/diagram.png) after.',
+  doc,{imageLoad:'Загрузить внешнее изображение',imageFailed:'Недоступно'});
+ assert.equal(container.nodes.length,1);
+ assert.equal(container.nodes[0].tag,'p');
+ assert.equal(container.nodes[0].children[0].textContent,'Before ');
+ assert.equal(container.nodes[0].children.at(-1).textContent,' after.');
+ const gate=created.find(node=>node.className==='preview-image-gate');
+ assert.ok(gate);
+ const [button,img]=gate.children;
+ assert.equal(button.tag,'button');
+ assert.equal(button.type,'button');
+ assert.match(button.textContent,/Загрузить внешнее изображение: images\.example\.org/);
+ assert.match(button.attributes['aria-label'],/Architecture diagram/);
+ assert.equal(img.tag,'img');
+ assert.equal(img.hidden,true);
+ assert.equal(img.attributes.src,undefined,'no image network request before consent');
+ assert.equal(img.attributes.alt,'Architecture diagram');
+ assert.equal(img.attributes.loading,'lazy');
+ assert.equal(img.attributes.decoding,'async');
+ assert.equal(img.attributes.referrerpolicy,'no-referrer');
+ assert.equal(img.attributes.crossorigin,'anonymous');
+ assert.equal(img.attributes.tabindex,'-1');
+ button.listeners.click();
+ assert.equal(button.hidden,true);
+ assert.equal(img.hidden,false);
+ assert.equal(img.attributes.src,'https://images.example.org/diagram.png');
+ assert.equal(img.focused,true);
+ img.listeners.error();
+ assert.equal(img.hidden,true);
+ assert.equal(button.hidden,false);
+ assert.match(button.textContent,/Недоступно: images\.example\.org/);
+ assert.equal(button.focused,true);
+ assert.ok(created.every(node=>!('innerHTML' in node)));
+});
+
+test('untrusted image syntax remains literal text and code fences cannot load images',()=>{
+ const created=[];
+ const doc={
+  createElement(tag){
+   const el={tag,textContent:'',children:[],
+    append(...children){this.children.push(...children);}};
+   created.push(el);return el;
+  }
+ };
+ const container={nodes:[],replaceChildren(...nodes){this.nodes=nodes;}};
+ const unsafe='![private network](https://127.0.0.1/secrets.png)';
+ renderMarkdownPreview(container,unsafe,doc);
+ assert.equal(container.nodes.length,1);
+ assert.equal(container.nodes[0].textContent,unsafe);
+ assert.equal(created.some(node=>node.tag==='img'||node.tag==='button'),false);
+ const mark=String.fromCharCode(96).repeat(3);
+ const fenced=mark+'md\n![safe](https://images.example.org/img.png)\n'+mark;
+ renderMarkdownPreview(container,fenced,doc);
+ assert.deepEqual(container.nodes.map(node=>node.tag),['pre']);
+ assert.equal(container.nodes[0].children[0].textContent,
+  '![safe](https://images.example.org/img.png)');
+ assert.equal(created.some(node=>node.tag==='img'||node.tag==='button'),false);
 });

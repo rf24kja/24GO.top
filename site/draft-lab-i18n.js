@@ -2,6 +2,9 @@
 // or translations of the user's article. English is the explicit fallback.
 export const UI_LOCALES=Object.freeze(['en','ru','th','es','fr','de','pt','zh']);
 const EN={
+ previewImageLoad:"Load external image",
+ previewImageFailed:"Image unavailable — retry",
+ previewImagePrivacy:"Image links in your Markdown are never loaded automatically. Clicking Load external image contacts that host without credentials or a referrer. The draft itself is not uploaded.",
  jumpPreview:"Jump to reader preview ↓",
  jumpEditor:"Back to article editor ↑",
  replaceLabel:"Replace selected match with",
@@ -157,6 +160,9 @@ const EN={
  clearCanceled:'Draft kept. Nothing was erased.',cleared:'Draft cleared from this browser tab.'
 };
 const RU={
+ previewImageLoad:"Загрузить внешнее изображение",
+ previewImageFailed:"Изображение недоступно — повторить",
+ previewImagePrivacy:"Изображения из Markdown не загружаются автоматически. Кнопка загрузки отправляет запрос на указанный сайт без учётных данных и адреса страницы. Черновик не загружается на сервер.",
  jumpPreview:"К предпросмотру статьи ↓",
  jumpEditor:"Вернуться к редактированию ↑",
  replaceLabel:"Заменить найденное совпадение на",
@@ -311,6 +317,9 @@ const RU={
  clearCanceled:'Черновик оставлен без изменений.',cleared:'Черновик очищен в этой вкладке.'
 };
 const TH={
+ previewImageLoad:"โหลดรูปภาพภายนอก",
+ previewImageFailed:"โหลดรูปภาพไม่ได้ — ลองอีกครั้ง",
+ previewImagePrivacy:"รูปภาพใน Markdown จะไม่โหลดอัตโนมัติ เมื่อกดโหลดรูปภาพ เบราว์เซอร์จะติดต่อเว็บไซต์ต้นทางโดยไม่ส่งข้อมูลเข้าสู่ระบบหรือที่มาของหน้า ระบบจะไม่อัปโหลดฉบับร่าง",
  jumpPreview:"ไปยังตัวอย่างบทความ ↓",
  jumpEditor:"กลับไปแก้ไขบทความ ↑",
  replaceLabel:"แทนที่ข้อความที่เลือกด้วย",
@@ -464,6 +473,9 @@ const TH={
  clearCanceled:'เก็บร่างเดิมไว้',cleared:'ล้างร่างในแท็บนี้แล้ว'
 };
 const ES={
+ previewImageLoad:"Cargar imagen externa",
+ previewImageFailed:"Imagen no disponible; reintentar",
+ previewImagePrivacy:"Las imágenes Markdown no se cargan automáticamente. Al pulsar Cargar imagen externa se contacta con su sitio sin credenciales ni referencia. No se sube el borrador.",
  jumpPreview:"Ir a la vista previa ↓",
  jumpEditor:"Volver al editor ↑",
  replaceLabel:"Sustituir la coincidencia por",
@@ -617,6 +629,9 @@ const ES={
  clearCanceled:'Borrador conservado.',cleared:'Borrador borrado de esta pestaña.'
 };
 const FR={
+ previewImageLoad:"Charger l’image externe",
+ previewImageFailed:"Image indisponible — réessayer",
+ previewImagePrivacy:"Les images Markdown ne sont jamais chargées automatiquement. Le bouton contacte le site de l’image sans identifiants ni référent. Le brouillon n’est pas envoyé.",
  jumpPreview:"Aller à l’aperçu ↓",
  jumpEditor:"Retour à l’éditeur ↑",
  replaceLabel:"Remplacer la correspondance par",
@@ -770,6 +785,9 @@ const FR={
  clearCanceled:'Brouillon conservé.',cleared:'Brouillon effacé de cet onglet.'
 };
 const DE={
+ previewImageLoad:"Externes Bild laden",
+ previewImageFailed:"Bild nicht verfügbar – erneut versuchen",
+ previewImagePrivacy:"Markdown-Bilder werden nicht automatisch geladen. Erst ein Klick fragt die externe Bildquelle ohne Anmeldedaten oder Referrer an. Der Entwurf wird nicht hochgeladen.",
  jumpPreview:"Zur Lesevorschau ↓",
  jumpEditor:"Zurück zum Editor ↑",
  replaceLabel:"Gefundene Stelle ersetzen durch",
@@ -923,6 +941,9 @@ const DE={
  clearCanceled:'Entwurf beibehalten.',cleared:'Entwurf aus diesem Tab gelöscht.'
 };
 const PT={
+ previewImageLoad:"Carregar imagem externa",
+ previewImageFailed:"Imagem indisponível — tentar novamente",
+ previewImagePrivacy:"As imagens Markdown não são carregadas automaticamente. O botão solicita a imagem ao site externo sem credenciais nem referência da página. O rascunho não é enviado.",
  jumpPreview:"Ir para a prévia ↓",
  jumpEditor:"Voltar ao editor ↑",
  replaceLabel:"Substituir correspondência por",
@@ -1076,6 +1097,9 @@ const PT={
  clearCanceled:'Rascunho mantido.',cleared:'Rascunho apagado desta aba.'
 };
 const ZH={
+ previewImageLoad:"加载外部图片",
+ previewImageFailed:"图片不可用 — 重试",
+ previewImagePrivacy:"Markdown 图片不会自动加载。点击“加载外部图片”才会向图片网站发出不带凭据和来源页面地址的请求。草稿不会上传。",
  jumpPreview:"跳转到阅读预览 ↓",
  jumpEditor:"返回文章编辑器 ↑",
  replaceLabel:"将选中的匹配内容替换为",

@@ -74,3 +74,25 @@ test('vault backup restoration invalidates stale async reads without data loss',
  assert.match(js,/field\('saveBrowserDraft'\)\.addEventListener\('click',\(\)=>\{\n restoreGate\.changed\(\)/);
  assert.match(js,/field\('deleteBrowserDraft'\)\.addEventListener\('click',\(\)=>\{\n restoreGate\.changed\(\)/);
 });
+
+
+test('responsive Markdown image previews are consent-gated and fit narrow mobile panels',()=>{
+ const preview=read('draft-lab-preview.js');
+ assert.match(preview,/export function safePreviewImageUrl\(raw\)/);
+ assert.match(preview,/image\.hidden=true/);
+ assert.match(preview,/button\.addEventListener\('click'/);
+ assert.match(preview,/image\.setAttribute\('src',safe\)/);
+ assert.match(preview,/image\.setAttribute\('crossorigin','anonymous'\)/);
+ assert.match(preview,/image\.setAttribute\('referrerpolicy','no-referrer'\)/);
+ assert.match(css,/\.preview-image-gate>button\{[^}]*min-height:44px/);
+ assert.match(css,/\.preview-image-gate>img\{[^}]*max-width:100%/);
+ assert.match(css,/\.preview-image-gate>img\[hidden\],\.preview-image-gate>button\[hidden\]\{display:none\}/);
+ assert.match(html,/class="hint preview-image-privacy" data-ui="previewImagePrivacy"/);
+ const browser=readFileSync(new URL('../scripts/check-draft-lab-accessibility.mjs',import.meta.url),'utf8');
+ assert.match(browser,/function exerciseDraftImageGate\(\)/);
+ assert.match(browser,/await c\.call\(exerciseDraftImageGate,sessionId\)/);
+ for(const marker of ['compact-280','phone-390','landscape-844','tablet-768','desktop-1440']){
+  assert.ok(browser.includes(marker),marker);
+ }
+ assert.doesNotMatch(preview,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|innerHTML/);
+});

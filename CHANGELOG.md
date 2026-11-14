@@ -1,3 +1,10 @@
+## Unreleased — privacy-first image previews for the public Markdown authoring lab
+
+- The actual PUBLIC Draft Lab now recognises bounded Markdown image syntax `![alt](https://public-image-host/path)` while keeping article text, file exports and saved drafts unchanged. Before explicit author action the image element has **no `src`**: the editor does not fetch third-party media, upload manuscripts or transmit private draft content automatically.
+- A clear, translated opt-in control in each of the eight interface languages identifies the remote image host. On click only, an HTTPS image may load using an anonymous cross-origin request and `no-referrer` policy; failures show a keyboard-focusable retry button. Reject IP literals, local/internal hosts, HTTP, embedded credentials and non-default ports, and leave unsupported syntax literal.
+- The visible note warns that clicking an external preview contacts that host. Responsive images are width-bounded inside the editor; control tap height is at least 44px. Add safety/translation/unit tests and actual interactive Chromium E2E at 280px compact phone, 390px phone, 844×390 landscape, 768px tablet and 1440px desktop alongside the complete 540-source-layout sweep.
+- A static preview is not image hosting or binary attachment publishing. Cross-origin servers may refuse anonymous image loads; authors can still save their original Markdown without loss. No private hosted backend, accounts, analytics, agent interactions or database writes.
+
 ## Unreleased — downloadable reviewed search results (PUBLIC)
 
 - Add **Download matching links (.md)** to the actual published engineering-article archive. A reader can search article text, filter by topic, then save the currently visible canonical public article links as a fixed-filename UTF-8 Markdown file, without clipboard permission, an account, analytics calls or a server write. The action is hidden for an empty result set and remains opt-in.

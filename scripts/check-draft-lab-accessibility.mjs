@@ -437,6 +437,59 @@ async function exerciseReadingPathsDownload(){
  }
 }
 
+
+function exerciseDraftImageGate(){
+ const body=document.getElementById('postBody');
+ const preview=document.getElementById('previewBody');
+ const src='https://images.example.org/diagram.png';
+ body.value='## Diagram\n\n![Technical architecture](https://images.example.org/diagram.png)';
+ body.dispatchEvent(new Event('input',{bubbles:true}));
+ const gate=preview.querySelector('.preview-image-gate');
+ const button=gate?.querySelector('button');
+ const image=gate?.querySelector('img');
+ if(!gate||!button||!image)throw Error('Image gate was not rendered');
+ const before={
+  noSrc:!image.hasAttribute('src'),hidden:image.hidden,
+  domain:button.textContent.includes('images.example.org'),
+  alt:image.getAttribute('alt'),
+  anonymous:image.getAttribute('crossorigin')==='anonymous',
+  noReferrer:image.getAttribute('referrerpolicy')==='no-referrer',
+  privateNote:document.querySelector('.preview-image-privacy')?.textContent?.length>30,
+  height:button.getBoundingClientRect().height,
+  overflow:Math.max(document.body.scrollWidth,document.documentElement.scrollWidth)-
+    document.documentElement.clientWidth
+ };
+ let requested=null;
+ const originalSet=image.setAttribute.bind(image);
+ image.setAttribute=(name,value)=>{
+  // Inspect opt-in request without fetching an external host in CI.
+  if(name==='src'){requested=value;return;}
+  originalSet(name,value);
+ };
+ button.focus();
+ button.click();
+ const after={
+  requested,shown:!image.hidden,consentHidden:button.hidden,
+  imageFocused:document.activeElement===image,noAutomaticSrc:!image.hasAttribute('src')
+ };
+ image.dispatchEvent(new Event('error'));
+ const fallback={
+  restored:!button.hidden&&image.hidden,
+  buttonFocused:document.activeElement===button,
+  retryLabel:button.textContent.includes('images.example.org')
+ };
+ // Unsafe local target remains literal source; it must never create an image.
+ body.value='Private URL: ![Forbidden](https://127.0.0.1/private.png)';
+ body.dispatchEvent(new Event('input',{bubbles:true}));
+ const invalid={
+  noGate:!preview.querySelector('.preview-image-gate'),
+  literal:preview.textContent.includes('![Forbidden](https://127.0.0.1/private.png)'),
+  overflow:Math.max(document.body.scrollWidth,document.documentElement.scrollWidth)-
+   document.documentElement.clientWidth
+ };
+ return {before,after,fallback,invalid};
+}
+
 async function main(){
  const site=localServer();
  let browser,ws;
@@ -474,6 +527,40 @@ async function main(){
   }
   const cleared=await c.call(correctSource,sessionId);
   assert(cleared.hidden&&cleared.invalid===null&&cleared.aria===null,'Corrected source still invalid');
+  for(const profile of [
+   {name:'compact-280',width:280,height:600,mobile:true,dpr:2},
+   {name:'phone-390',width:390,height:844,mobile:true,dpr:3},
+   {name:'landscape-844',width:844,height:390,mobile:true,dpr:3},
+   {name:'tablet-768',width:768,height:1024,mobile:true,dpr:2},
+   {name:'desktop-1440',width:1440,height:900,mobile:false,dpr:1}
+  ]){
+   await c.send('Emulation.setDeviceMetricsOverride',{
+    width:profile.width,height:profile.height,
+    deviceScaleFactor:profile.dpr,mobile:profile.mobile
+   },sessionId);
+   await c.send('Emulation.setTouchEmulationEnabled',{
+    enabled:profile.mobile,maxTouchPoints:profile.mobile?5:1
+   },sessionId);
+   const photo=await c.call(exerciseDraftImageGate,sessionId);
+   if(!photo.before.noSrc||!photo.before.hidden||!photo.before.domain||
+      photo.before.alt!=='Technical architecture'||!photo.before.anonymous||
+      !photo.before.noReferrer||!photo.before.privateNote||
+      photo.before.height<43.5||photo.before.overflow>1||
+      photo.after.requested!=='https://images.example.org/diagram.png'||
+      !photo.after.shown||!photo.after.consentHidden||
+      !photo.after.imageFocused||!photo.after.noAutomaticSrc||
+      !photo.fallback.restored||!photo.fallback.buttonFocused||
+      !photo.fallback.retryLabel||!photo.invalid.noGate||
+      !photo.invalid.literal||photo.invalid.overflow>1)
+    throw Error('Markdown opt-in image preview '+profile.name+': '+JSON.stringify(photo));
+  }
+  await c.send('Emulation.setDeviceMetricsOverride',{
+   width:320,height:850,deviceScaleFactor:1,mobile:true
+  },sessionId);
+  await c.send('Emulation.setTouchEmulationEnabled',{
+   enabled:true,maxTouchPoints:5
+  },sessionId);
+  console.log('PASS Chromium Draft Lab image preview: no automatic images, consent, keyboard focus and 280/390/844/768/1440 responsive layouts');
   assert(!c.exceptions.length,'Unexpected browser JS exception '+c.exceptions.join('; '));
   assert(!c.external.length,'External network request '+c.external.join('; '));
   console.log('PASS Chromium Draft Lab: 3 invalid fields, 8 locales, accessible focus and no page overflow');
