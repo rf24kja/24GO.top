@@ -1,3 +1,10 @@
+## Unreleased — clean paper copies of published engineering articles
+
+- Extend the PUBLIC engineering article reader with printable **published-article-only** paper styles. Browser Print / Save as PDF now keeps the canonical article title, date/author/review links, technical body, verified source citations and editorial scope notices while excluding sticky header/navigation, site footer, interactive reader toolbars, issue-report controls and related-reading panels.
+- Enforce a white paper theme regardless of light/dark preferences; wrap long code lines and links, preserve article attribution, and keep inline media bounded without adding a script, cookie, analytics or fetch.
+- Extend the existing real Chromium static-route matrix with `@media print` tests for every published engineering article at 280px, 768px and 1440px, verifying print visibility, source attribution, code wrapping, absent interaction panels and no horizontal clipping. The original 30 HTML × 18 viewport checks remain unchanged.
+- Scope: public, reviewed static articles only. It does not enable hosted publishing, private reviewer access or automatic PDF delivery.
+
 ## Unreleased — local print and Save as PDF preview in Draft Lab
 
 - Add an explicit **Print / Save PDF** button beside the reader preview of the PUBLIC, browser-only Draft Lab. The browser handles the native print/PDF dialog and destination; Draft Lab neither generates a server-side PDF nor publishes, uploads, autosaves or marks a manuscript exported. Title and body must contain content before the dialog can be requested.
