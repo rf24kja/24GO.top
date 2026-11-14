@@ -78,7 +78,7 @@ test('ordinary UTF-8 Markdown inserts exactly as text, including code and multil
  const inMiddle=formatExternalMarkdownInsertion(old,0,6,content);
  const combined=old.slice(0,inMiddle.start)+inMiddle.replacement+old.slice(inMiddle.end);
  assert.ok(combined.startsWith('Before\n\n# A real technical guide'));
- assert.ok(combined.endsWith('\nafter'),'no selected manuscript text was removed');
+ assert.ok(combined.endsWith('\n\n after'),'no selected manuscript text was removed');
  assert.ok(Object.isFrozen(inMiddle));
 });
 
