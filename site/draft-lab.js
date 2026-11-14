@@ -176,7 +176,8 @@ function preview() {
   field('previewHeading').textContent = title.value.trim() || ui('emptyTitle');
   // Pass author-owned Markdown exactly as typed: trimming here previously
   // removed leading code indentation even though .md export keeps it.
-  renderMarkdownPreview(field('previewBody'), body.value.trim() ? body.value : ui('emptyBody'));
+  renderMarkdownPreview(field('previewBody'), body.value.trim() ? body.value : ui('emptyBody'),
+    document,{imageLoad:ui('previewImageLoad'),imageFailed:ui('previewImageFailed')});
   field('articleOutlineSection').hidden=renderPreviewOutline(field('articleOutline'),body.value)===0;
   field('previewLocale').textContent = locale.value.toUpperCase();
   field('previewCategory').textContent = ui(['guides','tools','news','models'].includes(category.value)?category.value:'guides');
