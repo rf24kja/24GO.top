@@ -719,6 +719,26 @@ field('draftLibraryFile').addEventListener('change',async event=>{
  }
 });
 
+// Print the LOCAL reader preview only. The dedicated print stylesheet
+// deliberately excludes editable form values, saved vault controls and UI.
+// Browser print/PDF destination is under the author's control.
+field('printDraft').addEventListener('click',()=>{
+ if(!title.value.trim()||!body.value.trim()){
+  message(ui('printEmpty'),true);
+  if(!title.value.trim())title.focus();
+  else body.focus();
+  return;
+ }
+ try{
+  if(typeof window.print!=='function')throw new TypeError('No print API');
+  preview();
+  window.print();
+  message(ui('printRequested'));
+ }catch{
+  message(ui('printUnavailable'),true);
+ }
+});
+
 field('downloadDraft').addEventListener('click', () => {
   if (!readyToExport()) return;
   // Only the direct click initiates a local browser download. No upload or API.
