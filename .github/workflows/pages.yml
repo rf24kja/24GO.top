@@ -12,6 +12,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
   pages: write
   id-token: write
 
@@ -48,18 +49,22 @@ jobs:
           printf '{"commit":"%s","pages_run_id":"%s"}\n' "$PAGES_COMMIT" "$PAGES_RUN_ID" > site/release.json
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
-      - name: Upload ONLY the static site
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: site/
-      - name: Deploy
-        id: deployment
-        uses: actions/deploy-pages@v4
-      - name: Prepare Node.js for independent CDN verification
+      - name: Prepare Node.js for Pages artifact and CDN verification
         uses: actions/setup-node@v7
         with:
           node-version: '22'
           package-manager-cache: false
+      - name: Upload ONLY the static site
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: site/
+      - name: Require one indexed Pages artifact before deploying
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/wait-pages-artifact.mjs
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
       - name: Verify CDN actually serves this exact Pages workflow release
         env:
           EXPECTED_PAGES_SHA: ${{ github.sha }}

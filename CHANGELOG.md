@@ -1,3 +1,11 @@
+## Unreleased — make PUBLIC Pages releases resilient to GitHub artifact indexing lag
+
+- Fix a real deployment failure after the printed-article release: `actions/upload-pages-artifact@v4` successfully uploaded `github-pages`, but the immediately following `actions/deploy-pages@v4` API lookup briefly returned zero artifacts. Retrying only the failed job in the same workflow run then created **two same-name artifacts**; `deploy-pages` correctly failed on duplicate metadata. This was GitHub Actions artifact readiness, not a public-code, auth or database failure.
+- Before deployment, verify through the GitHub Actions read-only REST API that **exactly one** unexpired, valid `github-pages` artifact is visible for the current workflow run. Retry absent/transient results with strict bounded attempts, timeouts and response-byte budgets. Refuse duplicates, invalid metadata, malformed URLs and authorization errors instead of deploying an ambiguous artifact.
+- Grant only `actions: read` in addition to existing Pages deployment permissions. Use the masked workflow token solely inside the GitHub runner; no token contents, artifact bytes or private data enter output. Run one early Node 22 setup for both readiness and existing exact-commit CDN verification.
+- Add deterministic tests for indexing lag, duplicate artifacts, 403/429/503 status, malformed/unbounded metadata and workflow order. A fresh merged workflow commit triggers a **new** Pages run without old duplicate artifacts. Preserve the existing byte-exact CDN receipt and all external SEO/HTTPS audits.
+- This is a PUBLIC GitHub Pages release-pipeline correction only; no private hosted core or user-data migration.
+
 ## Unreleased — clean paper copies of published engineering articles
 
 - Extend the PUBLIC engineering article reader with printable **published-article-only** paper styles. Browser Print / Save as PDF now keeps the canonical article title, date/author/review links, technical body, verified source citations and editorial scope notices while excluding sticky header/navigation, site footer, interactive reader toolbars, issue-report controls and related-reading panels.
