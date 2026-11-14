@@ -19,6 +19,12 @@ const locale = field('postLocale');
 const category = field('postCategory');
 const source = field('postSource');
 const status = field('formStatus');
+/* These are temporary helpers, not part of the document or saved-vault schema.
+   Never carry a previous document's external image source into a new one. */
+function clearImageInsertInputs(){
+ field('imageUrl').value='';
+ field('imageAlt').value='';
+}
 const ui=key=>uiText(field('uiLocale').value,key);
 const uiLocale=field('uiLocale');
 // A static homepage may link into a translated EDITOR interface. Only an
@@ -450,6 +456,7 @@ async function openLocalDraft(file,input=null) {
     locale.value = reopened.locale;
     category.value = reopened.category;
     source.value = reopened.source;
+    clearImageInsertInputs();
     reopenedFileBaseline = { ...reopened };
     revisionCapture(reopened);
     resetSavedSlot();
@@ -551,6 +558,7 @@ field('openBrowserDraft').addEventListener('click',()=>{
   locale.value=saved.draft.locale;
   category.value=saved.draft.category;
   source.value=saved.draft.source;
+  clearImageInsertInputs();
   activeSavedId=saved.id;activeSavedVersion=saved.version;
   reopenedFileBaseline={...saved.draft};
   revisionCapture(saved.draft);
@@ -774,6 +782,7 @@ field('clearDraft').addEventListener('click', () => {
   title.value = '';
   body.value = '';
   source.value = '';
+  clearImageInsertInputs();
   locale.value = 'en';
   category.value = 'guides';
   reopenedFileBaseline = null;
