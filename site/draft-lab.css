@@ -223,3 +223,27 @@ input[aria-invalid="true"],textarea[aria-invalid="true"],select[aria-invalid="tr
  max-height:55vh;border:1px solid var(--border);border-radius:10px;object-fit:contain}
 .preview-image-gate>img[hidden],.preview-image-gate>button[hidden]{display:none}
 .preview-image-privacy{font-size:12px;line-height:1.6;color:var(--muted);margin:18px 0 0}
+
+/* Explicit local-only image reference insertion, independently accessible on
+   tiny phones, touch tablets and desktop keyboards. */
+.draft-image-insert{margin:16px 0 19px;padding:14px 16px;border:1px solid var(--border);
+ border-radius:12px;background:var(--field);min-width:0}
+.draft-image-insert h3{font-size:18px;margin:0 0 10px}
+.draft-image-insert__fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px}
+.draft-image-insert__fields>div{min-width:0}
+.draft-image-insert__fields label{font-size:13px;margin:3px 0 6px}
+.draft-image-insert__fields input{display:block;width:100%;min-width:0;min-height:44px}
+.draft-image-insert__footer{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin-top:12px}
+.draft-image-insert__footer button{min-height:44px;max-width:100%;padding:8px 14px;
+ border:1px solid var(--accent);border-radius:9px;background:var(--panel);color:var(--accent);
+ font-size:13px;text-align:start;white-space:normal;overflow-wrap:anywhere}
+.draft-image-insert__footer button:hover{background:var(--secondary-hover)}
+.draft-image-insert__footer .hint{flex:1 1 220px;margin:0;min-width:0;overflow-wrap:anywhere}
+@media(max-width:620px){
+ .draft-image-insert{padding:12px}
+ .draft-image-insert__fields{grid-template-columns:minmax(0,1fr)}
+ .draft-image-insert__footer button{width:100%}
+}
+@media(prefers-contrast:more){
+ .draft-image-insert,.draft-image-insert__footer button{border-width:2px}
+}
