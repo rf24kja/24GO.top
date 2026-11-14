@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { runInNewContext } from 'node:vm';
 import {
   safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent,
-  parseDraftFile, readDraftFileStrict, MAX_DRAFT_FILE_BYTES, hasUnexportedChanges, formatDraftSelection, formatDraftImageSelection, countDraftWords, createDraftImportGate,matchesDraftExportSnapshot, invalidDraftField,findDraftText,replaceDraftFindMatch
+  parseDraftFile, readDraftFileStrict, MAX_DRAFT_FILE_BYTES, hasUnexportedChanges, formatDraftSelection, formatDraftImageSelection, readExternalMarkdownStrict, formatExternalMarkdownInsertion, countDraftWords, createDraftImportGate,matchesDraftExportSnapshot, invalidDraftField,findDraftText,replaceDraftFindMatch
 } from '../site/draft-lab-logic.js';
 import {uiText,applyUiLanguage} from '../site/draft-lab-i18n.js';
 import {appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS} from '../site/draft-lab-guidance.js';
@@ -39,7 +39,7 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
     'previewHeading','previewBody','previewLocale','previewCategory','bodyCount','bodyWordCount','draftReadingTime','guidanceScore',
     'guideTitleState','guideBodyState','guideHeadingsState','guideStepsState','guideSourceState','guideCompleteState','draftTemplate','insertTemplate',
     'revisionCapture','revisionCompare','revisionCopy','revisionClear','revisionStatus','revisionFields','revisionLines',
-    'downloadReviewPack','verifyReviewPack','reviewPackFile',
+    'downloadReviewPack','verifyReviewPack','reviewPackFile','insertExternalMarkdown','externalMarkdownFile',
     'previewSource','draftSafety','articleOutline','articleOutlineSection','downloadDraft','copyDraft','clearDraft','importDraft','importDraftFile','draftForm',
     'draftFindQuery','draftFindNext','draftFindPrevious','draftFindStatus','draftReplaceText','draftFindReplace',
     'formatBold','formatItalic','formatInlineCode','formatHeading','formatList','formatOrderedList','formatQuote','formatCode','formatTable','formatLink','insertImage','imageUrl','imageAlt','uiLocale','draftDropZone','homeBrandLink','homeNavLink','proposeDraft',
@@ -100,7 +100,7 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
   runInNewContext(source, {
     document, window, navigator, URL:BrowserURL, Blob, setTimeout,
     safeSourceUrl,validateDraft,formatDraft,draftFilename,hasDraftContent,
-    parseDraftFile,readDraftFileStrict,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,formatDraftImageSelection,countDraftWords,createDraftImportGate,matchesDraftExportSnapshot,invalidDraftField,findDraftText,replaceDraftFindMatch,
+    parseDraftFile,readDraftFileStrict,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,formatDraftImageSelection,readExternalMarkdownStrict,formatExternalMarkdownInsertion,countDraftWords,createDraftImportGate,matchesDraftExportSnapshot,invalidDraftField,findDraftText,replaceDraftFindMatch,
     uiText,applyUiLanguage,appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS,captureDraftRevision,compareDraftRevisions,revisionSummary,createEditorialReviewPack:reviewPackGenerator,readEditorialReviewPackFile:reviewPackReader,buildArticleProposalUrl,
     createDraftVault,MAX_SAVED_DRAFTS,MAX_VAULT_BACKUP_BYTES,VAULT_KEY,TextDecoder,
     renderMarkdownPreview(container, text) { container.textContent = text; },
@@ -132,6 +132,13 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
        dataTransfer:{types:['Files'],files},
        preventDefault(){this.prevented=true;}
       });
+    },
+    async insertExternal(content,filename='external.md'){
+      const input=elements.externalMarkdownFile;
+      const bytes=new TextEncoder().encode(content);
+      input.files=[{name:filename,size:bytes.byteLength,
+       async arrayBuffer(){return bytes.buffer;}}];
+      await input.listeners.change({currentTarget:input});
     },
     async import(content, filename='24gotop-saved.md', size=Buffer.byteLength(content,'utf8')) {
       const input=elements.importDraftFile;
