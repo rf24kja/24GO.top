@@ -190,3 +190,20 @@ test('plain Markdown insertion, safety messages and keyboard controls are transl
  assert.match(code,/ui\('externalMdInterrupted'\)/);
  assert.match(code,/ui\('externalMdInserted'\)/);
 });
+
+
+test('local print and PDF safeguards are translated for eight editor interface locales',()=>{
+ for(const locale of UI_LOCALES){
+  for(const key of ['printGroup','printButton','printHelp','printEmpty',
+   'printRequested','printUnavailable']){
+   assert.ok(uiText(locale,key).trim().length>=4,locale+': '+key);
+  }
+ }
+ assert.match(html,/data-ui="printButton"/);
+ assert.match(html,/data-ui="printHelp"/);
+ assert.match(html,/data-ui-label="printGroup"/);
+ assert.match(code,/ui\('printRequested'\)/);
+ assert.match(code,/ui\('printUnavailable'\)/);
+ assert.match(code,/ui\('printEmpty'\)/);
+ assert.doesNotMatch(i18n,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|document\.cookie/);
+});
