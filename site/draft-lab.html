@@ -111,12 +111,15 @@
             <button id="downloadDraft" class="primary" type="button" aria-keyshortcuts="Control+S Meta+S" data-ui="download">Download .md</button>
             <button id="importDraft" class="secondary" type="button" data-ui="open">Open saved .md</button>
             <input id="importDraftFile" type="file" accept=".md,text/markdown" hidden>
+            <button id="insertExternalMarkdown" class="secondary" type="button" data-ui="externalMdButton">Insert another .md</button>
+            <input id="externalMarkdownFile" type="file" accept=".md,text/markdown" hidden>
             <button id="copyDraft" class="secondary" type="button" data-ui="copy">Copy draft</button>
             <button id="downloadReviewPack" class="secondary" type="button" data-ui="reviewPackDownload">Export review package</button>
             <button id="verifyReviewPack" class="secondary" type="button" data-ui="reviewPackVerify">Check review package</button>
             <input id="reviewPackFile" type="file" accept=".json,application/json" hidden>
             <button id="clearDraft" class="secondary danger" type="button" data-ui="clear">Clear</button>
           </div>
+          <p class="tiny" id="externalMarkdownHint" data-ui="externalMdHint">Insert ordinary UTF-8 Markdown from a different editor after the current text selection (up to 16 KB, 12,000 article characters). Existing text and article metadata stay intact. No file is uploaded. To restore your own Draft Lab export, use Open saved .md.</p>
           <div id="draftDropZone" class="draft-drop-zone" role="group" aria-labelledby="draftDropHint">
             <span class="draft-drop-zone__icon" aria-hidden="true">↓</span>
             <span id="draftDropHint" data-ui="dropHint">Drop one saved Draft Lab .md file here, or use Open saved .md. Nothing is uploaded.</span>
