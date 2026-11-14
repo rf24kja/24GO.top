@@ -29,6 +29,7 @@ test('archive publishes 12 crawlable articles, discoverable topic controls and a
  assert.match(html,/id="engineering-share" hidden/);
  assert.match(html,/id="engineering-share-status" role="status" aria-live="polite"/);
  assert.match(html,/id="engineering-copy-results" hidden/);
+ assert.match(html,/id="engineering-download-results" hidden/);
  assert.match(html,/id="engineering-manual-copy"[^>]+readonly[^>]+hidden/);
  assert.match(style,/\.note-search__manual-copy\[hidden\]\{display:none\}/);
  assert.match(style,/\.note-search__share\[hidden\]\{display:none\}/);
@@ -65,6 +66,7 @@ function setUp({missing=false,badTopic=false,query='',clipboard='ok',index='none
  const retryIndex={hidden:true,disabled:false,listeners:{},
   addEventListener(name,fn){this.listeners[name]=fn;}};
  const copyResults={hidden:true,listeners:{},addEventListener(name,fn){this.listeners[name]=fn;}};
+ const downloadResults={hidden:true,listeners:{},addEventListener(name,fn){this.listeners[name]=fn;}};
  const form={hidden:true,addEventListener(name,fn){listeners['form-'+name]=fn;}};
  const input={value:'',focused:false,addEventListener(name,fn){listeners[name]=fn;},
    focus(){this.focused=true;}};
@@ -80,8 +82,19 @@ function setUp({missing=false,badTopic=false,query='',clipboard='ok',index='none
   card.link={focused:false,focus(){this.focused=true;}};
   card.querySelector=selector=>selector==='h3 a'?card.link:null;
  }
+ const downloads=[],blobUrls=new Map(),revoked=[];
+ const FakeUrl=class extends URL {};
+ FakeUrl.createObjectURL=blob=>{
+  const address='blob:mock-'+blobUrls.size;
+  blobUrls.set(address,blob);return address;
+ };
+ FakeUrl.revokeObjectURL=address=>{revoked.push(address);blobUrls.delete(address);};
  const document={
+  body:{append(){}},
   createElement(tag){
+   if(tag==='a')return {href:'',download:'',removed:false,
+    click(){downloads.push({filename:this.download,href:this.href,blob:blobUrls.get(this.href)});},
+    remove(){this.removed=true;}};
    assert.equal(tag,'p','excerpts are inert paragraph text, never parsed HTML');
    return {tagName:'P',className:'',textContent:'',hidden:true,
     attributes:{},setAttribute(key,value){this.attributes[key]=value;}};
@@ -97,6 +110,7 @@ function setUp({missing=false,badTopic=false,query='',clipboard='ok',index='none
    'engineering-no-results':empty,'engineering-reset':reset,
    'engineering-share':share,'engineering-share-status':shareStatus,
    'engineering-copy-results':copyResults,
+   'engineering-download-results':downloadResults,
    'engineering-manual-copy':manualCopy,
    'engineering-index-status':indexStatus,
    'engineering-index-retry':retryIndex})[id];}
@@ -148,9 +162,10 @@ function setUp({missing=false,badTopic=false,query='',clipboard='ok',index='none
   return new Response(JSON.stringify(value),{
     status:200,headers:{'content-type':'application/json'}});
  };
- runInNewContext(code,{document,window,navigator,URL,TextDecoder,AbortSignal,
+ runInNewContext(code,{document,window,navigator,URL:FakeUrl,TextDecoder,AbortSignal,
+  Blob,setTimeout:callback=>callback(),
   ...(index==='none'?{}:{fetch:indexFetch})},{timeout:1000});
- return {form,input,status,empty,reset,share,copyResults,shareStatus,manualCopy,indexStatus,retryIndex,cards,topics,listeners,window,location,copied,fetchCalls,
+ return {form,input,status,empty,reset,share,copyResults,downloadResults,shareStatus,manualCopy,indexStatus,retryIndex,cards,topics,listeners,window,location,copied,fetchCalls,downloads,blobUrls,revoked,
   rejectPending:()=>rejectPending(new Error('Clipboard blocked')),
   clickTopic:t=>topics.find(x=>x.dataset.engineeringTopic===t).listeners.click()};
 }
