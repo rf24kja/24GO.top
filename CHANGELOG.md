@@ -1,3 +1,9 @@
+## Unreleased — clear temporary image references when switching manuscripts
+
+- When an author confirms opening a downloaded .md file, opening a different saved browser draft, or clearing the current manuscript, reset the separate **image URL and alt-text helper inputs**. They are transient insertion controls, not part of the draft or the browser vault; stale addresses should never carry into a different article.
+- Preserve those helper inputs if a replacement is cancelled or validation fails. Keep the article body's unsaved-change safeguards and original Markdown export unchanged.
+- Extend existing simulated DOM tests for accepted/cancelled imports, browser-vault openings and clearing, plus real Chromium image-insertion tests on 280px/390px phone, 844px landscape, 768px tablet, 1440px desktop. Continue running the complete 18×30 responsive matrix.
+
 ## Unreleased — accessible Markdown image insertion in the PUBLIC Draft Lab
 
 - Extend the **actual** browser-only author editor with public HTTPS image URL and single-line accessible alt-text inputs, plus an explicit Insert image reference action. The author may use selected article text as alt, and the insertion is applied with native textarea `setRangeText` (undo-friendly). There is no binary upload or external image request until the separately consent-gated preview button is clicked.
