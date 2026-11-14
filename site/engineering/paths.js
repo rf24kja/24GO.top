@@ -1,5 +1,6 @@
 import {normalizeReadingPath,encodeReadingPath,
- decodeReadingPath,changeReadingPath,readingPathMarkdown,MAX_READING_PATH_ITEMS}
+ decodeReadingPath,changeReadingPath,readingPathMarkdown,
+ readingPathMcpArguments,MAX_READING_PATH_ITEMS}
  from './paths-logic.mjs';
 import {loadStaticReadingPathCatalog} from './paths-feed.mjs';
 
@@ -90,6 +91,7 @@ function renderSelected(){
  if(!ids.length)selected.append(node('li','No articles yet. Add one from the catalog to start.','path-empty'));
  el('selected-count').textContent=ids.length+' / '+MAX_READING_PATH_ITEMS;
  el('path-copy-link').disabled=ids.length===0;
+ el('path-copy-mcp').disabled=ids.length===0;
  el('path-copy-markdown').disabled=ids.length===0;
  el('path-download-markdown').disabled=ids.length===0;
  el('path-reset').disabled=ids.length===0;
@@ -130,7 +132,9 @@ async function copyValue(value){
   if(!navigator.clipboard?.writeText)throw Error('no_clipboard');
   await navigator.clipboard.writeText(value);
   if(ticket===copyRevision)
-   copyStatus.textContent='Copied. Share it with another reader.';
+   copyStatus.textContent='Copied. '+(value.startsWith('{"url":')
+    ?'Paste JSON into your local MCP tool.'
+    :'Share it with another reader.');
  }catch{
   // A newer copy, title edit, selection or reset invalidates this attempt.
   // No stale textarea or focus theft after a delayed browser denial.
@@ -144,6 +148,10 @@ el('path-copy-link').addEventListener('click',()=>{
   url.hash=encodeReadingPath(state,approved);
   void copyValue(url.href);
  }catch{forgetManual();copyStatus.textContent='Check your title and select at least one article.';}
+});
+el('path-copy-mcp').addEventListener('click',()=>{
+ try{void copyValue(readingPathMcpArguments({title:title.value,ids},approved));}
+ catch{forgetManual();copyStatus.textContent='Check your title and select at least one article.';}
 });
 el('path-copy-markdown').addEventListener('click',()=>{
  try{void copyValue(readingPathMarkdown({title:title.value,ids},approved));}

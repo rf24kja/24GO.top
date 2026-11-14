@@ -346,6 +346,7 @@ function exerciseReadingPaths(){
 async function exerciseReadingPathsClipboardRace(){
  const copyLink=document.getElementById('path-copy-link');
  const copyMarkdown=document.getElementById('path-copy-markdown');
+ const copyMcp=document.getElementById('path-copy-mcp');
  const reset=document.getElementById('path-reset');
  const title=document.getElementById('path-title');
  const status=document.getElementById('path-copy-status');
@@ -378,16 +379,25 @@ async function exerciseReadingPathsClipboardRace(){
   const currentFallback=!manual.hidden&&!label.hidden&&manual.value.startsWith('# ')&&
    document.activeElement===manual&&
    status.textContent.includes('Select and copy');
+  copyMcp.click();
+  if(pending.length!==5)throw Error('MCP clipboard attempt did not start');
+  const mcpArgs=JSON.parse(pending[4].value);
+  const agentToolSafe=Object.keys(mcpArgs).join(',')==='url'&&
+   mcpArgs.url.startsWith('https://24go.top/engineering/reading-paths/#path=')&&
+   mcpArgs.url.includes('%7B')&&copyMcp.getBoundingClientRect().height>=43.5;
+  pending[4].resolve();await tick();
+  const agentCopied=status.textContent.includes('MCP tool')&&
+   manual.hidden&&agentToolSafe;
   copyLink.click();
-  if(pending.length!==5)throw Error('Fifth clipboard attempt did not start');
+  if(pending.length!==6)throw Error('Sixth clipboard attempt did not start');
   reset.click();
-  pending[4].reject(Error('Stale permission after clearing path'));await tick();
+  pending[5].reject(Error('Stale permission after clearing path'));await tick();
   const staleResetSafe=manual.hidden&&label.hidden&&manual.value===''&&
    status.textContent===''&&reset.disabled&&copyLink.disabled;
   const viewport=document.documentElement.clientWidth;
   const scroll=Math.max(document.documentElement.scrollWidth,document.body.scrollWidth);
-  return {newestSuccess,staleTitleSafe,currentFallback,staleResetSafe,viewport,scroll,
-   requests:pending.length};
+  return {newestSuccess,staleTitleSafe,currentFallback,staleResetSafe,
+   agentCopied,viewport,scroll,requests:pending.length};
  }finally{
   if(original)Object.defineProperty(navigator,'clipboard',original);
   else delete navigator.clipboard;
@@ -1085,7 +1095,7 @@ async function main(){
    const copyRace=await c.call(exerciseReadingPathsClipboardRace,sessionId);
    if(!copyRace.newestSuccess||!copyRace.staleTitleSafe||
       !copyRace.currentFallback||!copyRace.staleResetSafe||
-      copyRace.requests!==5||copyRace.scroll>copyRace.viewport+1)
+      !copyRace.agentCopied||copyRace.requests!==6||copyRace.scroll>copyRace.viewport+1)
     throw Error('Reading path clipboard focus/permission race '+profile.name+': '+
       JSON.stringify(copyRace));
   }

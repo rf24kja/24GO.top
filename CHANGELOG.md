@@ -1,3 +1,9 @@
+## Unreleased — one-click human-to-MCP reading path handoff
+
+- Add an author-initiated **Copy MCP tool input** control to the published reading-path builder. It constructs the canonical `resolve_reading_path` argument JSON from the same validated article order and versioned fragment used by the browser share link. An agent can use the JSON with the local, read-only public MCP server shipped in PR #226.
+- Keep the control disabled until a reviewed article is selected. Reuse the existing permission-aware clipboard/manual-copy fallback, with stale-async-result protection and keyboard/mobile touch target sizes; do not call any MCP API or upload selections.
+- Add pure-function security tests for the exact canonical URL/JSON, duplicate/unknown link refusal, UTF-8 titles and escaped fragments, plus real Chromium copy/clipboard/viewport regressions. Production static delivery still needs a green Pages workflow and external verification.
+
 ## Unreleased — human/AI shared public reading paths via read-only MCP
 
 - Add `resolve_reading_path` and `create_reading_path` to the PUBLIC, local-only MCP stdio server, allowing readers and AI agents to share an ordered, browser-compatible selection of 1–10 reviewed 24GOTOP engineering articles. Reuse the exact source-controlled reading-path grammar and the committed, validated public article corpus.

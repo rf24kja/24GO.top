@@ -49,6 +49,7 @@
 <ol id="path-selected" class="path-selected" aria-label="Selected articles in reading order"></ol>
 <div class="path-actions">
 <button id="path-copy-link" class="path-primary" type="button" disabled>Copy shareable link</button>
+<button id="path-copy-mcp" type="button" disabled>Copy MCP tool input</button>
 <button id="path-copy-markdown" type="button" disabled>Copy Markdown list</button>
 <button id="path-download-markdown" type="button" disabled>Download Markdown .md</button>
 <button id="path-reset" type="button" disabled>Clear path</button>
@@ -62,6 +63,8 @@
 <p class="eyebrow">03 / SHARE</p>
 <h2 id="finish-heading">A learning path, not another feed.</h2>
 <p>You decide what to read first, what to leave out, and which details are worth passing to another developer. Recipients open the real article URLs. No one can add unpublished drafts or arbitrary external links to this collection.</p>
+<h3>Share this path with a local AI agent</h3>
+<p>Choose your articles, then select <strong>Copy MCP tool input</strong>. Paste the JSON into the <code>resolve_reading_path</code> tool of the <a href="https://github.com/rf24kja/24GO.top/blob/main/docs/PUBLIC_ARTICLE_MCP.md" rel="noopener noreferrer">public, read-only 24GOTOP MCP server</a>. The MCP server runs from your own local Git checkout; there is no hosted MCP account or agent publishing endpoint. The copied JSON contains only the public article selection and the title in the link fragment. Do not put secrets in a reading path title.</p>
 <p>For a private draft, use the <a href="../../draft-lab.html">local Draft Lab</a>. For feedback and collaborative contributions, visit <a href="../../contribute.html">Contribute</a>. Verified community accounts and hosted public publishing are still in development.</p>
 </section>
 <noscript><p class="path-note">This interactive feature requires JavaScript. You can still read all original technical notes in the <a href="../">engineering archive</a>.</p></noscript>
