@@ -1,3 +1,11 @@
+## Unreleased — accessible Markdown image insertion in the PUBLIC Draft Lab
+
+- Extend the **actual** browser-only author editor with public HTTPS image URL and single-line accessible alt-text inputs, plus an explicit Insert image reference action. The author may use selected article text as alt, and the insertion is applied with native textarea `setRangeText` (undo-friendly). There is no binary upload or external image request until the separately consent-gated preview button is clicked.
+- Share the same strict preview-image host validation between the pure image insertion formatter and the preview renderer. Reject HTTP/JavaScript/data URLs, private IP/localhost/internal names, credentials, nonstandard ports, invalid alt, multiline selection and manuscript overflow. Preserve Unicode descriptions and percent-encode parentheses for balanced inline Markdown.
+- Translate the complete image insertion workflow in EN/RU/TH/ES/FR/DE/PT/ZH. Include labels, descriptions, success/errors, keyboard focus and at least 44px controls; stack inputs on tiny screens without horizontal clipping.
+- Add unit and real Chromium UI/E2E verification of valid/invalid image insertion and keyboard focus on 280px and 390px phones, 844px short landscape, 768px tablet and 1440px desktop, in addition to all 30 public HTML routes × 18 representative CSS viewports.
+- This is local OSS authoring only. The image remains an external reference, **not** an upload to 24GOTOP; the hosted registration, moderation, PostgreSQL publication and comments system remains pre-launch.
+
 ## Unreleased — privacy-first image previews for the public Markdown authoring lab
 
 - The actual PUBLIC Draft Lab now recognises bounded Markdown image syntax `![alt](https://public-image-host/path)` while keeping article text, file exports and saved drafts unchanged. Before explicit author action the image element has **no `src`**: the editor does not fetch third-party media, upload manuscripts or transmit private draft content automatically.

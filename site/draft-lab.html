@@ -56,6 +56,23 @@
             <button id="formatTable" type="button" aria-label="Insert Markdown table" data-ui-label="table" data-ui="table">Table</button>
             <button id="formatLink" type="button" aria-label="Insert HTTP or HTTPS citation link" data-ui-label="link" data-ui="link">Link</button>
           </div>
+          <section class="draft-image-insert" aria-labelledby="imageInsertHeading">
+            <h3 id="imageInsertHeading" data-ui="imageInsertHeading">Insert an image</h3>
+            <div class="draft-image-insert__fields">
+              <div>
+                <label for="imageUrl" data-ui="imageUrlLabel">Public HTTPS image URL</label>
+                <input id="imageUrl" type="url" maxlength="1500" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://images.example.org/diagram.png" aria-describedby="imageInsertHint">
+              </div>
+              <div>
+                <label for="imageAlt" data-ui="imageAltLabel">Image description (alt text)</label>
+                <input id="imageAlt" type="text" maxlength="160" autocomplete="off" placeholder="Describe what the picture communicates" data-ui-placeholder="imageAltPlaceholder" aria-describedby="imageInsertHint">
+              </div>
+            </div>
+            <div class="draft-image-insert__footer">
+              <button id="insertImage" type="button" data-ui="imageInsertButton">Insert image reference</button>
+              <p class="hint" id="imageInsertHint" data-ui="imageInsertHint">Inserts a Markdown link only. No image is fetched until you press Load in preview. Select body text to use it as the description, or enter alt text above.</p>
+            </div>
+          </section>
           <div class="draft-find" role="group" aria-label="Find exact text in article" data-ui-label="findGroup">
             <label for="draftFindQuery" data-ui="findLabel">Find in article (exact text)</label>
             <div class="draft-find__controls">

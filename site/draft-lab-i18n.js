@@ -2,6 +2,14 @@
 // or translations of the user's article. English is the explicit fallback.
 export const UI_LOCALES=Object.freeze(['en','ru','th','es','fr','de','pt','zh']);
 const EN={
+ imageInsertHeading:"Insert an image",
+ imageUrlLabel:"Public HTTPS image URL",
+ imageAltLabel:"Image description (alt text)",
+ imageAltPlaceholder:"Describe what the picture communicates",
+ imageInsertButton:"Insert image reference",
+ imageInsertHint:"Inserts Markdown only. Images are not loaded until you choose Load in preview. Select article text as the description or type alt text above.",
+ imageInserted:"Image reference inserted into this draft. Preview loads only with your consent.",
+ imageInvalid:"Enter a safe public HTTPS image URL and a single-line image description. No changes made.",
  previewImageLoad:"Load external image",
  previewImageFailed:"Image unavailable — retry",
  previewImagePrivacy:"Image links in your Markdown are never loaded automatically. Clicking Load external image contacts that host without credentials or a referrer. The draft itself is not uploaded.",
@@ -160,6 +168,14 @@ const EN={
  clearCanceled:'Draft kept. Nothing was erased.',cleared:'Draft cleared from this browser tab.'
 };
 const RU={
+ imageInsertHeading:"Вставить изображение",
+ imageUrlLabel:"Публичный HTTPS-адрес изображения",
+ imageAltLabel:"Описание изображения (альтернативный текст)",
+ imageAltPlaceholder:"Что изображено и почему это важно",
+ imageInsertButton:"Вставить ссылку на изображение",
+ imageInsertHint:"Вставляется только Markdown. Изображение загрузится лишь после нажатия кнопки в предпросмотре. Выделите текст статьи как описание либо введите его выше.",
+ imageInserted:"Ссылка на изображение вставлена в черновик. Загрузка только с вашего согласия.",
+ imageInvalid:"Укажите безопасный публичный HTTPS-адрес и описание в одну строку. Ничего не изменено.",
  previewImageLoad:"Загрузить внешнее изображение",
  previewImageFailed:"Изображение недоступно — повторить",
  previewImagePrivacy:"Изображения из Markdown не загружаются автоматически. Кнопка загрузки отправляет запрос на указанный сайт без учётных данных и адреса страницы. Черновик не загружается на сервер.",
@@ -317,6 +333,14 @@ const RU={
  clearCanceled:'Черновик оставлен без изменений.',cleared:'Черновик очищен в этой вкладке.'
 };
 const TH={
+ imageInsertHeading:"แทรกรูปภาพ",
+ imageUrlLabel:"URL รูปภาพ HTTPS สาธารณะ",
+ imageAltLabel:"คำอธิบายรูปภาพ (ข้อความทดแทน)",
+ imageAltPlaceholder:"อธิบายสิ่งที่อยู่ในภาพ",
+ imageInsertButton:"แทรกการอ้างอิงรูปภาพ",
+ imageInsertHint:"แทรกเพียง Markdown เท่านั้น รูปภาพจะไม่โหลดจนกว่าจะกดโหลดในหน้าตัวอย่าง เลือกข้อความในบทความเป็นคำอธิบาย หรือกรอกข้อความด้านบน",
+ imageInserted:"แทรกการอ้างอิงรูปภาพในฉบับร่างแล้ว การโหลดต้องได้รับความยินยอม",
+ imageInvalid:"กรอก URL รูปภาพ HTTPS สาธารณะที่ปลอดภัยและคำอธิบายหนึ่งบรรทัด ไม่มีการเปลี่ยนแปลง",
  previewImageLoad:"โหลดรูปภาพภายนอก",
  previewImageFailed:"โหลดรูปภาพไม่ได้ — ลองอีกครั้ง",
  previewImagePrivacy:"รูปภาพใน Markdown จะไม่โหลดอัตโนมัติ เมื่อกดโหลดรูปภาพ เบราว์เซอร์จะติดต่อเว็บไซต์ต้นทางโดยไม่ส่งข้อมูลเข้าสู่ระบบหรือที่มาของหน้า ระบบจะไม่อัปโหลดฉบับร่าง",
@@ -473,6 +497,14 @@ const TH={
  clearCanceled:'เก็บร่างเดิมไว้',cleared:'ล้างร่างในแท็บนี้แล้ว'
 };
 const ES={
+ imageInsertHeading:"Insertar imagen",
+ imageUrlLabel:"URL HTTPS pública de la imagen",
+ imageAltLabel:"Descripción de la imagen (texto alternativo)",
+ imageAltPlaceholder:"Describe qué muestra la imagen",
+ imageInsertButton:"Insertar referencia de imagen",
+ imageInsertHint:"Solo inserta Markdown. La imagen se carga únicamente al pulsar Cargar en la vista previa. Selecciona texto o escribe una descripción arriba.",
+ imageInserted:"Referencia de imagen insertada en el borrador. La carga requiere tu consentimiento.",
+ imageInvalid:"Introduce una URL HTTPS pública segura y una descripción en una línea. No se ha modificado nada.",
  previewImageLoad:"Cargar imagen externa",
  previewImageFailed:"Imagen no disponible; reintentar",
  previewImagePrivacy:"Las imágenes Markdown no se cargan automáticamente. Al pulsar Cargar imagen externa se contacta con su sitio sin credenciales ni referencia. No se sube el borrador.",
@@ -629,6 +661,14 @@ const ES={
  clearCanceled:'Borrador conservado.',cleared:'Borrador borrado de esta pestaña.'
 };
 const FR={
+ imageInsertHeading:"Insérer une image",
+ imageUrlLabel:"URL HTTPS publique de l’image",
+ imageAltLabel:"Description de l’image (texte alternatif)",
+ imageAltPlaceholder:"Décrire le contenu de l’image",
+ imageInsertButton:"Insérer la référence d’image",
+ imageInsertHint:"Seul le Markdown est inséré. L’image n’est chargée que si vous cliquez sur Charger dans l’aperçu. Sélectionnez du texte ou saisissez une description ci-dessus.",
+ imageInserted:"Référence d’image insérée dans le brouillon. Le chargement nécessite votre accord.",
+ imageInvalid:"Saisissez une URL HTTPS publique sûre et une description sur une ligne. Aucune modification.",
  previewImageLoad:"Charger l’image externe",
  previewImageFailed:"Image indisponible — réessayer",
  previewImagePrivacy:"Les images Markdown ne sont jamais chargées automatiquement. Le bouton contacte le site de l’image sans identifiants ni référent. Le brouillon n’est pas envoyé.",
@@ -785,6 +825,14 @@ const FR={
  clearCanceled:'Brouillon conservé.',cleared:'Brouillon effacé de cet onglet.'
 };
 const DE={
+ imageInsertHeading:"Bild einfügen",
+ imageUrlLabel:"Öffentliche HTTPS-Bildadresse",
+ imageAltLabel:"Bildbeschreibung (Alternativtext)",
+ imageAltPlaceholder:"Beschreiben Sie den Inhalt des Bildes",
+ imageInsertButton:"Bildreferenz einfügen",
+ imageInsertHint:"Nur Markdown wird eingefügt. Das Bild lädt erst nach einem Klick auf Laden in der Vorschau. Wählen Sie Beschreibungstext oder geben Sie ihn oben ein.",
+ imageInserted:"Bildreferenz in den Entwurf eingefügt. Laden nur nach Ihrer Zustimmung.",
+ imageInvalid:"Bitte sichere öffentliche HTTPS-Bildadresse und einzeilige Beschreibung eingeben. Keine Änderungen.",
  previewImageLoad:"Externes Bild laden",
  previewImageFailed:"Bild nicht verfügbar – erneut versuchen",
  previewImagePrivacy:"Markdown-Bilder werden nicht automatisch geladen. Erst ein Klick fragt die externe Bildquelle ohne Anmeldedaten oder Referrer an. Der Entwurf wird nicht hochgeladen.",
@@ -941,6 +989,14 @@ const DE={
  clearCanceled:'Entwurf beibehalten.',cleared:'Entwurf aus diesem Tab gelöscht.'
 };
 const PT={
+ imageInsertHeading:"Inserir imagem",
+ imageUrlLabel:"URL HTTPS pública da imagem",
+ imageAltLabel:"Descrição da imagem (texto alternativo)",
+ imageAltPlaceholder:"Descreva o que a imagem mostra",
+ imageInsertButton:"Inserir referência de imagem",
+ imageInsertHint:"Apenas insere Markdown. A imagem só carrega quando você escolhe Carregar na pré-visualização. Selecione texto ou escreva uma descrição acima.",
+ imageInserted:"Referência da imagem inserida no rascunho. O carregamento requer consentimento.",
+ imageInvalid:"Insira uma URL HTTPS pública segura e uma descrição em uma linha. Nenhuma alteração feita.",
  previewImageLoad:"Carregar imagem externa",
  previewImageFailed:"Imagem indisponível — tentar novamente",
  previewImagePrivacy:"As imagens Markdown não são carregadas automaticamente. O botão solicita a imagem ao site externo sem credenciais nem referência da página. O rascunho não é enviado.",
@@ -1097,6 +1153,14 @@ const PT={
  clearCanceled:'Rascunho mantido.',cleared:'Rascunho apagado desta aba.'
 };
 const ZH={
+ imageInsertHeading:"插入图片",
+ imageUrlLabel:"公开的 HTTPS 图片地址",
+ imageAltLabel:"图片描述（替代文字）",
+ imageAltPlaceholder:"描述图片呈现的内容",
+ imageInsertButton:"插入图片引用",
+ imageInsertHint:"只插入 Markdown，不会自动加载图片。只有在预览区点击加载才会请求外部图片。可选择正文作为描述，或在上方输入替代文字。",
+ imageInserted:"图片引用已插入草稿，加载前仍需您同意。",
+ imageInvalid:"请输入安全的公开 HTTPS 图片地址和单行描述。草稿未修改。",
  previewImageLoad:"加载外部图片",
  previewImageFailed:"图片不可用 — 重试",
  previewImagePrivacy:"Markdown 图片不会自动加载。点击“加载外部图片”才会向图片网站发出不带凭据和来源页面地址的请求。草稿不会上传。",

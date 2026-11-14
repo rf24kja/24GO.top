@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {formatDraftSelection,countDraftWords,findDraftText,replaceDraftFindMatch} from '../site/draft-lab-logic.js';
+import {formatDraftSelection,formatDraftImageSelection,countDraftWords,findDraftText,replaceDraftFindMatch} from '../site/draft-lab-logic.js';
 import {parsePreviewBlocks} from '../site/draft-lab-preview.js';
 function apply(value,start,end,action){
  const edit=formatDraftSelection(value,start,end,action);
@@ -201,4 +201,61 @@ test('replace rejects stale selection and bounded overflow without writing',()=>
  ])assert.throws(()=>replaceDraftFindMatch(...args),TypeError);
  assert.throws(()=>replaceDraftFindMatch('a'.repeat(12000),'a','too long',0,1),
   RangeError);
+});
+
+
+test('image insertion produces preview-compatible HTTPS Markdown and native undo offsets',()=>{
+ const url='https://images.example.org/architecture(v3).png?version=3';
+ const edit=formatDraftImageSelection('Chapter text',7,7,url,'Architecture overview');
+ assert.equal(edit.replacement,
+  '![Architecture overview](https://images.example.org/architecture%28v3%29.png?version=3)');
+ assert.equal(edit.selectionStart,7+edit.replacement.length);
+ assert.equal(edit.selectionEnd,edit.selectionStart);
+ const rendered='Chapter'+edit.replacement+' text';
+ assert.equal(rendered.slice(7,7+edit.replacement.length),edit.replacement);
+ assert.ok(Object.isFrozen(edit));
+ const selected=formatDraftImageSelection('Architecture overview',0,21,url,'Other description');
+ assert.equal(selected.replacement,edit.replacement,
+  'selected article text is preferred to the alternate description field');
+ assert.equal(selected.selectionStart,selected.replacement.length);
+ assert.equal(parsePreviewBlocks(selected.replacement)[0].text,selected.replacement);
+});
+
+test('image insertion rejects unsafe sources, invalid descriptions and oversized drafts',()=>{
+ for(const source of [
+  '','http://images.example.org/a.png','javascript:alert(1)',
+  'https://127.0.0.1/private.png','https://printer.local/photo.jpg',
+  'https://user:pass@images.example.org/a.jpg',
+  'https://images.example.org:8443/a.png',
+  'https://images.example.org/'+'a'.repeat(1550),
+  'https://images.example.org/a.png\nOther: value'
+ ]){
+  assert.throws(()=>formatDraftImageSelection('',0,0,source,'Diagram'),
+   TypeError,String(source).slice(0,45));
+ }
+ for(const alt of ['', '  ', 'one\n two','x'.repeat(161),'[img]','bad\\alt']){
+  assert.throws(()=>formatDraftImageSelection('',0,0,
+   'https://images.example.org/a.png',alt),TypeError,String(alt).slice(0,30));
+ }
+ const url='https://images.example.org/p.png';
+ for(const args of [
+  [null,0,0,url,'alt'],['abc',-1,0,url,'alt'],
+  ['abc',0,4,url,'alt'],['abc',2,1,url,'alt'],
+  ['abc',0.5,1,url,'alt'],['one\ntwo',0,7,url,'valid alt']
+ ]){
+  assert.throws(()=>formatDraftImageSelection(...args),TypeError);
+ }
+ assert.throws(()=>formatDraftImageSelection('a'.repeat(12000),12000,12000,
+  url,'A diagram description'),RangeError);
+});
+
+test('image insertion preserves Unicode alt text and adjacent article text',()=>{
+ const draft='Система работает. Следующий шаг.';
+ const pos=draft.indexOf(' Следующий');
+ const edit=formatDraftImageSelection(draft,pos,pos,
+  'https://images.example.org/graph.png','Диаграмма архитектуры 🌍');
+ const result=draft.slice(0,pos)+edit.replacement+draft.slice(pos);
+ assert.equal(result,
+  'Система работает.![Диаграмма архитектуры 🌍](https://images.example.org/graph.png) Следующий шаг.');
+ assert.equal(result.slice(0,pos),draft.slice(0,pos));
 });

@@ -1,3 +1,4 @@
+import {safePreviewImageUrl} from './draft-lab-preview.js';
 // Pure, testable helpers for a static browser-only article draft experiment.
 // No network calls, browser storage, account credentials or user analytics.
 export const LOCALES = Object.freeze(['en','ru','th','es','fr','de','pt','zh']);
@@ -120,6 +121,36 @@ export function formatDraftSelection(value,start,end,action,sourceUrl=''){
  }
  const selectionStart=start+(selected?replacement.length:innerOffset);
  return {replacement,selectionStart,selectionEnd:selectionStart+(selected?0:content.length)};
+}
+
+/**
+ * Insert a real author-selected Markdown image reference at the current
+ * textarea range, without loading external media or changing draft storage.
+ * Uses the exact preview host allowlist; invalid URLs and invalid/empty alt
+ * text never change the manuscript. Native setRangeText preserves undo.
+ */
+export function formatDraftImageSelection(value,start,end,imageUrl,alternative=''){
+ if(typeof value!=='string'||value.length>12000||
+    !Number.isSafeInteger(start)||!Number.isSafeInteger(end)||
+    start<0||end<start||end>value.length)
+  throw new TypeError('Invalid article selection');
+ const selected=value.slice(start,end);
+ const alt=(selected||alternative);
+ if(typeof alt!=='string'||!alt.trim()||alt.length>160||
+    /[\[\]\\\r\n\u0000-\u001f\u007f]/u.test(alt))
+  throw new TypeError('Use a single-line descriptive image alt text');
+ const safe=safePreviewImageUrl(imageUrl);
+ if(!safe)throw new TypeError('Only public HTTPS image URLs are accepted');
+ // Parentheses must be percent-encoded because the restricted preview parser
+ // intentionally permits only bounded, balanced Markdown links.
+ const target=safe.replace(/\(/g,'%28').replace(/\)/g,'%29');
+ if(target.length>1500||/[<>\s()\\]/.test(target))
+  throw new TypeError('Image URL cannot be previewed safely');
+ const replacement='!['+alt.trim()+']('+target+')';
+ if(value.length-(end-start)+replacement.length>12000)
+  throw new RangeError('Article exceeds 12,000 characters');
+ return Object.freeze({replacement,selectionStart:start+replacement.length,
+  selectionEnd:start+replacement.length});
 }
 
 const DRAFT_ERRORS=Object.freeze({
