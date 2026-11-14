@@ -8,6 +8,7 @@ import {createEditorialReviewPack,readEditorialReviewPackFile} from './draft-lab
 import { applyUiLanguage,uiText } from './draft-lab-i18n.js';
 import { buildArticleProposalUrl } from './draft-lab-proposal.js';
 import {createDraftVault,MAX_SAVED_DRAFTS,MAX_VAULT_BACKUP_BYTES,VAULT_KEY} from './draft-lab-vault.js';
+import {encryptDraftLibraryBackup,decryptDraftLibraryBackup,ENCRYPTED_BACKUP_MAX_BYTES} from './draft-lab-encrypted-backup.js';
 
 // Browser-only draft editor: no automatic network or analytics.
  // Browser persistence is optional, manual and never activated by typing.
@@ -124,11 +125,15 @@ function refreshBrowserDrafts(selectId=null){
   field('deleteBrowserDraft').disabled=!picker.value;
   field('vaultCount').textContent=ui('vaultCount')+rows.length+'/'+MAX_SAVED_DRAFTS;
   field('exportDraftLibrary').disabled=!rows.length;
+  field('exportEncryptedDraftLibrary').disabled=!rows.length;
+  field('restoreEncryptedDraftLibrary').disabled=rows.length>0;
  }catch{
   field('openBrowserDraft').disabled=true;
   field('deleteBrowserDraft').disabled=true;
   field('vaultCount').textContent=ui('vaultUnavailable');
   field('exportDraftLibrary').disabled=true;
+  field('exportEncryptedDraftLibrary').disabled=true;
+  field('restoreEncryptedDraftLibrary').disabled=true;
  }
 }
 function vaultError(error){
@@ -766,6 +771,89 @@ field('draftLibraryFile').addEventListener('change',async event=>{
  }finally{
   // An obsolete file read must never clear a newer selection in this picker.
   if(restoreGate.isLatest(ticket))input.value='';
+ }
+});
+
+// Password-based encrypted backups protect only the downloaded FILE. Existing
+// manually saved browser snapshots remain unencrypted. No password persists.
+const encryptedBackupExportGate=createDraftImportGate();
+field('exportEncryptedDraftLibrary').addEventListener('click',async()=>{
+ const passwordInput=field('vaultBackupPassword');
+ const passphrase=passwordInput.value;
+ if(passphrase.length<12||passphrase.length>128){
+  message(ui('encryptedBackupPasswordInvalid'),true);
+  passwordInput.focus();return;
+ }
+ const ticket=encryptedBackupExportGate.begin();
+ let url,anchor;
+ try{
+  const snapshot=getDraftVault().exportBackup();
+  const encrypted=await encryptDraftLibraryBackup(snapshot,passphrase);
+  if(!encryptedBackupExportGate.canApply(ticket))return;
+  if(passwordInput.value!==passphrase||
+     getDraftVault().exportBackup()!==snapshot){
+   message(ui('encryptedBackupChanged'),true);return;
+  }
+  const blob=new Blob([encrypted],{type:'application/json;charset=utf-8'});
+  url=URL.createObjectURL(blob);
+  anchor=document.createElement('a');
+  anchor.href=url;
+  anchor.download='24gotop-encrypted-drafts.json';
+  document.body.append(anchor);
+  anchor.click();
+  message(ui('encryptedBackupExported'));
+ }catch(error){
+  if(encryptedBackupExportGate.canApply(ticket))
+   message(ui(error?.message==='encrypted_unavailable'
+    ?'encryptedBackupUnavailable':'encryptedBackupInvalid'),true);
+ }finally{
+  anchor?.remove();
+  if(url)setTimeout(()=>URL.revokeObjectURL(url),10000);
+  if(passwordInput.value===passphrase)passwordInput.value='';
+ }
+});
+field('restoreEncryptedDraftLibrary').addEventListener('click',()=>{
+ field('encryptedBackupFile').click();
+});
+field('encryptedBackupFile').addEventListener('change',async event=>{
+ const input=event.currentTarget,file=input.files?.[0];
+ if(!file)return;
+ const passwordInput=field('vaultBackupPassword');
+ const passphrase=passwordInput.value;
+ if(passphrase.length<12||passphrase.length>128){
+  message(ui('encryptedBackupPasswordInvalid'),true);
+  passwordInput.focus();
+  input.value='';return;
+ }
+ const ticket=restoreGate.begin();
+ try{
+  if(!/\.json$/i.test(file.name)||file.name.length>255||
+     !Number.isSafeInteger(file.size)||file.size<100||
+     file.size>ENCRYPTED_BACKUP_MAX_BYTES)
+   throw new TypeError('Invalid encrypted backup');
+  const buffer=await file.arrayBuffer();
+  if(!(buffer instanceof ArrayBuffer)||buffer.byteLength!==file.size||
+     buffer.byteLength>ENCRYPTED_BACKUP_MAX_BYTES)
+   throw new TypeError('Invalid encrypted backup length');
+  const encrypted=new TextDecoder('utf-8',{fatal:true}).decode(buffer);
+  if(!restoreGate.canApply(ticket))return;
+  const confirmed=window.confirm(ui('encryptedBackupRestoreConfirm'));
+  if(!restoreGate.canApply(ticket))return;
+  if(!confirmed)return;
+  const plain=await decryptDraftLibraryBackup(encrypted,passphrase);
+  if(!restoreGate.canApply(ticket)||passwordInput.value!==passphrase)return;
+  const restored=getDraftVault().restoreBackup(plain);
+  restoreGate.changed();
+  refreshBrowserDrafts();
+  message(ui('encryptedBackupRestored')+' ('+restored+')');
+ }catch(error){
+  if(restoreGate.canApply(ticket))
+   message(ui(error?.message==='vault_conflict'?'backupConflict':
+    error?.message==='encrypted_unavailable'?'encryptedBackupUnavailable':
+    'encryptedBackupInvalid'),true);
+ }finally{
+  if(restoreGate.isLatest(ticket))input.value='';
+  if(passwordInput.value===passphrase)passwordInput.value='';
  }
 });
 
