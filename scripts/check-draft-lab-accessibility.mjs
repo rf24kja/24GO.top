@@ -898,15 +898,6 @@ async function main(){
       !Object.values(printed.empty).every(Boolean)||
       printed.scroll>printed.viewport+1)
     throw Error('Draft Lab native print action '+profile.name+': '+JSON.stringify(printed));
-   if(profile.name==='phone-390'){
-    const encrypted=await c.call(exerciseEncryptedBackup,sessionId);
-    if(!encrypted.available||encrypted.height<43.5||
-       !encrypted.safeFile||!encrypted.emptyConfirmed||
-       !encrypted.restored||!encrypted.passwordCleared||
-       !encrypted.fileCleared||!encrypted.successful||
-       encrypted.scroll>encrypted.width+1)
-     throw Error('WebCrypto encrypted local backup E2E: '+JSON.stringify(encrypted));
-   }
    await c.send('Emulation.setEmulatedMedia',{media:'print'},sessionId);
    const printable=await c.call(exerciseDraftPrintMedia,sessionId);
    await c.send('Emulation.setEmulatedMedia',{media:'screen'},sessionId);
@@ -921,6 +912,15 @@ async function main(){
       printable.paperBackground!=='rgb(255, 255, 255)'||
       printable.scroll>printable.viewport+1)
     throw Error('Draft Lab print-only CSS '+profile.name+': '+JSON.stringify(printable));
+   if(profile.name==='phone-390'){
+    const encrypted=await c.call(exerciseEncryptedBackup,sessionId);
+    if(!encrypted.available||encrypted.height<43.5||
+       !encrypted.safeFile||!encrypted.emptyConfirmed||
+       !encrypted.restored||!encrypted.passwordCleared||
+       !encrypted.fileCleared||!encrypted.successful||
+       encrypted.scroll>encrypted.width+1)
+     throw Error('WebCrypto encrypted local backup E2E: '+JSON.stringify(encrypted));
+   }
 
   }
   await c.send('Emulation.setDeviceMetricsOverride',{
