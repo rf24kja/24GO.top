@@ -96,3 +96,24 @@ test('responsive Markdown image previews are consent-gated and fit narrow mobile
  }
  assert.doesNotMatch(preview,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|innerHTML/);
 });
+
+
+test('image insertion controls are keyboard accessible, offline and fit every viewport',()=>{
+ assert.match(html,/<section class="draft-image-insert" aria-labelledby="imageInsertHeading">/);
+ assert.match(html,/<input id="imageUrl" type="url" maxlength="1500"/);
+ assert.match(html,/<input id="imageAlt" type="text" maxlength="160"/);
+ assert.match(html,/<button id="insertImage" type="button" data-ui="imageInsertButton">/);
+ assert.match(js,/field\('insertImage'\)\.addEventListener\('click'/);
+ assert.match(js,/formatDraftImageSelection\(body\.value,/);
+ assert.match(js,/body\.setRangeText\(edit\.replacement/);
+ assert.match(js,/editorChanged\(\)/);
+ assert.match(css,/\.draft-image-insert__footer button\{[^}]*min-height:44px/);
+ assert.match(css,/@media\(max-width:620px\)\{\s*\.draft-image-insert/);
+ const browser=readFileSync(new URL('../scripts/check-draft-lab-accessibility.mjs',import.meta.url),'utf8');
+ assert.match(browser,/function exerciseDraftImageInsertion\(\)/);
+ assert.match(browser,/await c\.call\(exerciseDraftImageInsertion,sessionId\)/);
+ assert.match(browser,/insertion\.invalidSafe/);
+ assert.match(browser,/insertion\.noSrc/);
+ assert.match(browser,/insertion\.selectedAltUsed/);
+ assert.doesNotMatch(js,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|sessionStorage|innerHTML/);
+});
