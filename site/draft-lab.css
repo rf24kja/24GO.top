@@ -208,3 +208,18 @@ input[aria-invalid="true"],textarea[aria-invalid="true"],select[aria-invalid="tr
 
 /* A long translated hero word must break instead of pushing the document sideways. */
 @media(max-width:550px){.intro h1{min-width:0;overflow-wrap:anywhere}}
+
+/* Markdown images are privacy-gated: no image src until the writer clicks.
+   Keep the preview inside the editor column on narrow touch devices. */
+.preview-image-gate{display:block;max-width:100%;min-width:0;margin:13px 0;
+ white-space:normal;overflow-wrap:anywhere}
+.preview-image-gate>button{display:inline-block;max-width:100%;min-height:44px;
+ padding:10px 13px;border:1px solid var(--accent);border-radius:9px;
+ background:var(--panel);color:var(--accent);font:inherit;font-size:13px;
+ font-weight:750;cursor:pointer;text-align:start;white-space:normal;overflow-wrap:anywhere}
+.preview-image-gate>button:hover{background:var(--secondary-hover)}
+.preview-image-gate>button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.preview-image-gate>img{display:block;max-width:100%;width:auto;height:auto;
+ max-height:55vh;border:1px solid var(--border);border-radius:10px;object-fit:contain}
+.preview-image-gate>img[hidden],.preview-image-gate>button[hidden]{display:none}
+.preview-image-privacy{font-size:12px;line-height:1.6;color:var(--muted);margin:18px 0 0}
