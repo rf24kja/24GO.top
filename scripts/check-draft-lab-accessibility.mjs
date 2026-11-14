@@ -490,6 +490,60 @@ function exerciseDraftImageGate(){
  return {before,after,fallback,invalid};
 }
 
+// Exercise the real insertion control (no mocks for validation or preview).
+// Every source image remains unloaded until its separate consent button click.
+function exerciseDraftImageInsertion(){
+ const $=id=>document.getElementById(id);
+ const body=$('postBody'),url=$('imageUrl'),alt=$('imageAlt');
+ const button=$('insertImage'),preview=$('previewBody');
+ const beforeStorage=localStorage.length;
+ body.value='A reproducible system architecture review.';
+ body.dispatchEvent(new Event('input',{bubbles:true}));
+ body.setSelectionRange(body.value.length,body.value.length);
+ url.value='https://images.example.org/architecture(v3).png';
+ alt.value='Architecture diagram of the reviewed system';
+ const buttonHeight=button.getBoundingClientRect().height;
+ const fieldWidths=[url,alt].map(el=>el.getBoundingClientRect().width);
+ button.focus();
+ button.click();
+ const expected='![Architecture diagram of the reviewed system]'+
+  '(https://images.example.org/architecture%28v3%29.png)';
+ const generated=body.value.endsWith(expected);
+ const gate=preview.querySelector('.preview-image-gate');
+ const image=gate?.querySelector('img');
+ const fileStatus=$('formStatus').textContent;
+ const focused=document.activeElement===body;
+ const undoPos=body.selectionStart===body.value.length&&
+  body.selectionEnd===body.selectionStart;
+ const noSrc=Boolean(image&&!image.hasAttribute('src'));
+ const first=body.value;
+ // Invalid remote URL may not alter a manuscript or trigger an image load.
+ url.value='http://127.0.0.1/private.png';
+ alt.value='Forbidden local endpoint';
+ button.click();
+ const invalidSafe=body.value===first&&$('formStatus').dataset.error==='true';
+ // A valid URL with no alt/selection must also be rejected.
+ url.value='https://images.example.org/another.png';
+ alt.value='';
+ body.setSelectionRange(first.length,first.length);
+ button.click();
+ const emptyAltSafe=body.value===first&&
+  document.activeElement===alt;
+ // A selected phrase is usable alt text even when the separate alt field
+ // is empty; selected text is replaced via native setRangeText.
+ const phrase='reviewed system';
+ const at=body.value.indexOf(phrase);
+ body.focus();body.setSelectionRange(at,at+phrase.length);
+ button.click();
+ const selectedAltUsed=body.value.includes(
+  '![reviewed system](https://images.example.org/another.png)');
+ const noUploads=localStorage.length===beforeStorage;
+ const viewport=document.documentElement.clientWidth;
+ const scroll=Math.max(document.documentElement.scrollWidth,document.body.scrollWidth);
+ return {generated,noSrc,focused,undoPos,fileStatus:!!fileStatus,invalidSafe,
+  emptyAltSafe,selectedAltUsed,noUploads,buttonHeight,fieldWidths,viewport,scroll};
+}
+
 async function main(){
  const site=localServer();
  let browser,ws;
@@ -553,6 +607,14 @@ async function main(){
       !photo.fallback.retryLabel||!photo.invalid.noGate||
       !photo.invalid.literal||photo.invalid.overflow>1)
     throw Error('Markdown opt-in image preview '+profile.name+': '+JSON.stringify(photo));
+   const insertion=await c.call(exerciseDraftImageInsertion,sessionId);
+   if(!insertion.generated||!insertion.noSrc||!insertion.focused||
+      !insertion.undoPos||!insertion.fileStatus||!insertion.invalidSafe||
+      !insertion.emptyAltSafe||!insertion.selectedAltUsed||
+      !insertion.noUploads||insertion.buttonHeight<43.5||
+      insertion.fieldWidths.some(width=>width<70)||
+      insertion.scroll>insertion.viewport+1)
+    throw Error('Markdown image insertion '+profile.name+': '+JSON.stringify(insertion));
   }
   await c.send('Emulation.setDeviceMetricsOverride',{
    width:320,height:850,deviceScaleFactor:1,mobile:true
@@ -560,7 +622,7 @@ async function main(){
   await c.send('Emulation.setTouchEmulationEnabled',{
    enabled:true,maxTouchPoints:5
   },sessionId);
-  console.log('PASS Chromium Draft Lab image preview: no automatic images, consent, keyboard focus and 280/390/844/768/1440 responsive layouts');
+  console.log('PASS Chromium Draft Lab images: opt-in previews, inserted Markdown, negative cases and focus on 280/390/844/768/1440 responsive layouts');
   assert(!c.exceptions.length,'Unexpected browser JS exception '+c.exceptions.join('; '));
   assert(!c.external.length,'External network request '+c.external.join('; '));
   console.log('PASS Chromium Draft Lab: 3 invalid fields, 8 locales, accessible focus and no page overflow');
