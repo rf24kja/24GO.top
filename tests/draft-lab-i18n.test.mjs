@@ -159,3 +159,21 @@ test('opt-in external image privacy and loading controls are translated in all e
  assert.match(preview,/image\.hidden=true/);
  assert.doesNotMatch(preview,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|innerHTML/);
 });
+
+
+test('every image insertion label, placeholder and error is present in all 8 locales',()=>{
+ const keys=['imageInsertHeading','imageUrlLabel','imageAltLabel',
+  'imageAltPlaceholder','imageInsertButton','imageInsertHint',
+  'imageInserted','imageInvalid'];
+ for(const locale of UI_LOCALES){
+  for(const key of keys){
+   assert.ok(uiText(locale,key).trim().length>=4,locale+' '+key);
+  }
+ }
+ assert.match(html,/data-ui="imageInsertHeading"/);
+ assert.match(html,/data-ui="imageInsertButton"/);
+ assert.match(html,/data-ui-placeholder="imageAltPlaceholder"/);
+ assert.match(code,/message\(ui\('imageInserted'\)\)/);
+ assert.match(code,/ui\('imageInvalid'\)/);
+ assert.match(html,/id="imageInsertHint" data-ui="imageInsertHint"/);
+});
