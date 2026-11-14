@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { runInNewContext } from 'node:vm';
+import {webcrypto} from 'node:crypto';
+import {encryptDraftLibraryBackup,decryptDraftLibraryBackup,ENCRYPTED_BACKUP_MAX_BYTES} from '../site/draft-lab-encrypted-backup.js';
 import {
   safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent,
   parseDraftFile, readDraftFileStrict, MAX_DRAFT_FILE_BYTES, hasUnexportedChanges, formatDraftSelection, formatDraftImageSelection, readExternalMarkdownStrict, formatExternalMarkdownInsertion, countDraftWords, createDraftImportGate,matchesDraftExportSnapshot, invalidDraftField,findDraftText,replaceDraftFindMatch
@@ -22,7 +24,8 @@ const source = readFileSync(fileURLToPath(new URL('../site/draft-lab.js', import
   .replace(/^import .* from '.\/draft-lab-review-pack\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-i18n\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-proposal\.js';\n/m, '')
-  .replace(/^import .* from '.\/draft-lab-vault\.js';\n/m, '');
+  .replace(/^import .* from '.\/draft-lab-vault\.js';\n/m, '')
+  .replace(/^import .* from '.\/draft-lab-encrypted-backup\.js';\n/m, '');
 
 const sample = {
   title:'Return and improve the documentation', locale:'ru', category:'tools',
@@ -43,7 +46,7 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
     'previewSource','draftSafety','articleOutline','articleOutlineSection','downloadDraft','copyDraft','clearDraft','importDraft','importDraftFile','draftForm',
     'draftFindQuery','draftFindNext','draftFindPrevious','draftFindStatus','draftReplaceText','draftFindReplace',
     'formatBold','formatItalic','formatInlineCode','formatHeading','formatList','formatOrderedList','formatQuote','formatCode','formatTable','formatLink','insertImage','imageUrl','imageAlt','uiLocale','draftDropZone','homeBrandLink','homeNavLink','proposeDraft',
-    'saveBrowserDraft','savedBrowserDraft','openBrowserDraft','deleteBrowserDraft','vaultCount','exportDraftLibrary','restoreDraftLibrary','draftLibraryFile'
+    'saveBrowserDraft','savedBrowserDraft','openBrowserDraft','deleteBrowserDraft','vaultCount','exportDraftLibrary','restoreDraftLibrary','draftLibraryFile','vaultBackupPassword','exportEncryptedDraftLibrary','restoreEncryptedDraftLibrary','encryptedBackupFile'
   ];
   const elements = Object.fromEntries(ids.map(id => {
     const el = {
@@ -103,6 +106,9 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
     parseDraftFile,readDraftFileStrict,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,formatDraftImageSelection,readExternalMarkdownStrict,formatExternalMarkdownInsertion,countDraftWords,createDraftImportGate,matchesDraftExportSnapshot,invalidDraftField,findDraftText,replaceDraftFindMatch,
     uiText,applyUiLanguage,appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS,captureDraftRevision,compareDraftRevisions,revisionSummary,createEditorialReviewPack:reviewPackGenerator,readEditorialReviewPackFile:reviewPackReader,buildArticleProposalUrl,
     createDraftVault,MAX_SAVED_DRAFTS,MAX_VAULT_BACKUP_BYTES,VAULT_KEY,TextDecoder,
+    encryptDraftLibraryBackup:(text,password)=>encryptDraftLibraryBackup(text,password,{cryptoImpl:webcrypto}),
+    decryptDraftLibraryBackup:(text,password)=>decryptDraftLibraryBackup(text,password,{cryptoImpl:webcrypto}),
+    ENCRYPTED_BACKUP_MAX_BYTES,
     renderMarkdownPreview(container, text) { container.textContent = text; },
     renderPreviewOutline(container,text) { container.textContent=text;return /^#{1,3} /m.test(text)?1:0; }
   // Keep a bounded sandbox timeout, with enough CI runner headroom when
