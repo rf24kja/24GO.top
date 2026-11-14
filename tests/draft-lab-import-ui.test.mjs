@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { runInNewContext } from 'node:vm';
+import {webcrypto} from 'node:crypto';
+import {encryptDraftLibraryBackup,decryptDraftLibraryBackup,ENCRYPTED_BACKUP_MAX_BYTES} from '../site/draft-lab-encrypted-backup.js';
 import {
   safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent,
   parseDraftFile, readDraftFileStrict, MAX_DRAFT_FILE_BYTES, hasUnexportedChanges, formatDraftSelection, formatDraftImageSelection, readExternalMarkdownStrict, formatExternalMarkdownInsertion, countDraftWords, createDraftImportGate,matchesDraftExportSnapshot, invalidDraftField,findDraftText,replaceDraftFindMatch
@@ -22,7 +24,8 @@ const source = readFileSync(fileURLToPath(new URL('../site/draft-lab.js', import
   .replace(/^import .* from '.\/draft-lab-review-pack\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-i18n\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-proposal\.js';\n/m, '')
-  .replace(/^import .* from '.\/draft-lab-vault\.js';\n/m, '');
+  .replace(/^import .* from '.\/draft-lab-vault\.js';\n/m, '')
+  .replace(/^import .* from '.\/draft-lab-encrypted-backup\.js';\n/m, '');
 
 const sample = {
   title:'Return and improve the documentation', locale:'ru', category:'tools',
@@ -43,7 +46,7 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
     'previewSource','draftSafety','articleOutline','articleOutlineSection','downloadDraft','copyDraft','clearDraft','importDraft','importDraftFile','draftForm',
     'draftFindQuery','draftFindNext','draftFindPrevious','draftFindStatus','draftReplaceText','draftFindReplace',
     'formatBold','formatItalic','formatInlineCode','formatHeading','formatList','formatOrderedList','formatQuote','formatCode','formatTable','formatLink','insertImage','imageUrl','imageAlt','uiLocale','draftDropZone','homeBrandLink','homeNavLink','proposeDraft',
-    'saveBrowserDraft','savedBrowserDraft','openBrowserDraft','deleteBrowserDraft','vaultCount','exportDraftLibrary','restoreDraftLibrary','draftLibraryFile'
+    'saveBrowserDraft','savedBrowserDraft','openBrowserDraft','deleteBrowserDraft','vaultCount','exportDraftLibrary','restoreDraftLibrary','draftLibraryFile','vaultBackupPassword','exportEncryptedDraftLibrary','restoreEncryptedDraftLibrary','encryptedBackupFile'
   ];
   const elements = Object.fromEntries(ids.map(id => {
     const el = {
@@ -103,6 +106,9 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
     parseDraftFile,readDraftFileStrict,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,formatDraftImageSelection,readExternalMarkdownStrict,formatExternalMarkdownInsertion,countDraftWords,createDraftImportGate,matchesDraftExportSnapshot,invalidDraftField,findDraftText,replaceDraftFindMatch,
     uiText,applyUiLanguage,appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS,captureDraftRevision,compareDraftRevisions,revisionSummary,createEditorialReviewPack:reviewPackGenerator,readEditorialReviewPackFile:reviewPackReader,buildArticleProposalUrl,
     createDraftVault,MAX_SAVED_DRAFTS,MAX_VAULT_BACKUP_BYTES,VAULT_KEY,TextDecoder,
+    encryptDraftLibraryBackup:(text,password)=>encryptDraftLibraryBackup(text,password,{cryptoImpl:webcrypto}),
+    decryptDraftLibraryBackup:(text,password)=>decryptDraftLibraryBackup(text,password,{cryptoImpl:webcrypto}),
+    ENCRYPTED_BACKUP_MAX_BYTES,
     renderMarkdownPreview(container, text) { container.textContent = text; },
     renderPreviewOutline(container,text) { container.textContent=text;return /^#{1,3} /m.test(text)?1:0; }
   // Keep a bounded sandbox timeout, with enough CI runner headroom when
@@ -1748,4 +1754,82 @@ test('restore consent loses to newer typing, clearing and checkpoint replacement
   }
   assert.equal(app.localStorage.getItem(VAULT_KEY),null);
  }
+});
+
+
+test('encrypted vault export/import round-trips through explicit UI without uploading text',async()=>{
+ const author=build(),el=author.elements;
+ for(const [id,key] of [['postTitle','title'],['postBody','body'],['postLocale','locale'],
+  ['postCategory','category'],['postSource','source']])el[id].value=sample[key];
+ el.saveBrowserDraft.listeners.click();
+ const saved=author.localStorage.getItem(VAULT_KEY);
+ assert.ok(saved);
+ assert.equal(el.exportEncryptedDraftLibrary.disabled,false);
+ const password='Offline secure password 🔐 2026';
+ el.vaultBackupPassword.value=password;
+ await el.exportEncryptedDraftLibrary.listeners.click();
+ assert.equal(author.downloads.length,1);
+ const file=author.downloads[0];
+ assert.equal(file.name,'24gotop-encrypted-drafts.json');
+ const contents=await file.blob.text();
+ assert.match(contents,/"cipher": "AES-256-GCM"/);
+ assert.doesNotMatch(contents,/Return and improve|example\.org|Offline secure password/);
+ assert.equal(el.vaultBackupPassword.value,'','password input cleared after export');
+ assert.equal(author.localStorage.getItem(VAULT_KEY),saved,'source vault untouched');
+ assert.equal(el.formStatus.textContent,uiText('en','encryptedBackupExported'));
+
+ const recipient=build(),newEl=recipient.elements;
+ assert.equal(newEl.restoreEncryptedDraftLibrary.disabled,false);
+ newEl.vaultBackupPassword.value=password;
+ newEl.restoreEncryptedDraftLibrary.listeners.click();
+ assert.equal(newEl.encryptedBackupFile.clicked,true);
+ const bytes=new TextEncoder().encode(contents);
+ const input=newEl.encryptedBackupFile;
+ input.files=[{name:'24gotop-encrypted-drafts.json',size:bytes.length,
+  async arrayBuffer(){return bytes.buffer;}}];
+ input.value='24gotop-encrypted-drafts.json';
+ await input.listeners.change({currentTarget:input});
+ assert.equal(newEl.vaultBackupPassword.value,'');
+ assert.equal(input.value,'');
+ assert.equal(recipient.localStorage.getItem(VAULT_KEY),saved);
+ assert.equal(recipient.downloads.length,0);
+ assert.equal(newEl.exportEncryptedDraftLibrary.disabled,false);
+ assert.equal(newEl.restoreEncryptedDraftLibrary.disabled,true);
+ assert.match(newEl.formStatus.textContent,/restored locally/);
+});
+
+test('encrypted backup restore refuses wrong passwords and existing saved drafts',async()=>{
+ const src=build(),el=src.elements;
+ Object.assign(el.postTitle,{value:sample.title});
+ Object.assign(el.postBody,{value:sample.body});
+ el.postLocale.value=sample.locale;el.postCategory.value=sample.category;
+ el.postSource.value=sample.source;
+ el.saveBrowserDraft.listeners.click();
+ el.vaultBackupPassword.value='Unique working passphrase 2026';
+ await el.exportEncryptedDraftLibrary.listeners.click();
+ const contents=await src.downloads[0].blob.text(),bytes=new TextEncoder().encode(contents);
+ const attempt=async(app,password)=>{
+  const input=app.elements.encryptedBackupFile;
+  input.files=[{name:'encrypted.json',size:bytes.length,
+   async arrayBuffer(){return bytes.buffer;}}];
+  app.elements.vaultBackupPassword.value=password;
+  await input.listeners.change({currentTarget:input});
+ };
+ const empty=build();
+ await attempt(empty,'Wrong passphrase 2026');
+ assert.equal(empty.localStorage.getItem(VAULT_KEY),null);
+ assert.equal(empty.elements.formStatus.dataset.error,'true');
+ assert.equal(empty.elements.vaultBackupPassword.value,'');
+ const busy=build();
+ busy.elements.postTitle.value=sample.title;
+ busy.elements.postBody.value=sample.body;
+ busy.elements.postLocale.value=sample.locale;
+ busy.elements.postCategory.value=sample.category;
+ busy.elements.postSource.value=sample.source;
+ busy.elements.saveBrowserDraft.listeners.click();
+ const before=busy.localStorage.getItem(VAULT_KEY);
+ await attempt(busy,'Unique working passphrase 2026');
+ assert.equal(busy.localStorage.getItem(VAULT_KEY),before);
+ assert.equal(busy.elements.formStatus.dataset.error,'true');
+ assert.equal(busy.elements.formStatus.textContent,uiText('en','backupConflict'));
 });

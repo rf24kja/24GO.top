@@ -307,3 +307,20 @@ input[aria-invalid="true"],textarea[aria-invalid="true"],select[aria-invalid="tr
   font:9pt/1.5 system-ui,sans-serif!important;overflow-wrap:anywhere;
   border-top:1px solid #bbb;padding-top:4mm;margin-top:6mm}
 }
+
+/* Manual encrypted library transfer (downloaded file only). Browser vault
+   itself is explicitly unencrypted; never imply full-disk/browser encryption. */
+.vault-encrypted{min-width:0;margin:18px 0 8px;padding:16px;
+ border:1px solid var(--border);border-radius:13px;background:var(--field)}
+.vault-encrypted h4{font-size:17px;line-height:1.35;margin:0 0 9px;overflow-wrap:anywhere}
+.vault-encrypted .hint{line-height:1.6;overflow-wrap:anywhere}
+.vault-encrypted label{margin:10px 0 6px}
+.vault-encrypted input[type="password"]{min-height:44px;width:100%;min-width:0}
+.vault-encrypted__actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}
+.vault-encrypted__actions button{min-height:44px;flex:1 1 180px;font-size:13px;
+ padding:10px 13px;white-space:normal;overflow-wrap:anywhere}
+.vault-encrypted__actions button:disabled{opacity:.55;cursor:not-allowed}
+@media(max-width:540px){.vault-encrypted{padding:13px}
+ .vault-encrypted__actions{flex-direction:column}
+ .vault-encrypted__actions button{width:100%;flex:auto}}
+@media(prefers-contrast:more){.vault-encrypted{border-width:2px}}

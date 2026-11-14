@@ -144,6 +144,17 @@
             <button id="restoreDraftLibrary" type="button" class="secondary" data-ui="backupImport">Restore library .json</button>
             <input id="draftLibraryFile" type="file" accept=".json,application/json" hidden>
           </div>
+          <section class="vault-encrypted" aria-labelledby="vaultEncryptedHeading">
+            <h4 id="vaultEncryptedHeading" data-ui="encryptedBackupHeading">Encrypted backup (optional)</h4>
+            <p class="hint" id="vaultEncryptedHint" data-ui="encryptedBackupHint">Protect a downloadable copy with a strong passphrase. AES-256-GCM encryption runs only on this device. The browser's saved drafts remain unencrypted. The password cannot be recovered; do not use shared/cloud file storage for confidential drafts.</p>
+            <label for="vaultBackupPassword" data-ui="encryptedBackupPasswordLabel">Backup password (12+ characters)</label>
+            <input id="vaultBackupPassword" type="password" minlength="12" maxlength="128" autocomplete="new-password" aria-describedby="vaultEncryptedHint" spellcheck="false">
+            <div class="vault-encrypted__actions">
+              <button id="exportEncryptedDraftLibrary" class="secondary" type="button" data-ui="encryptedBackupExport" disabled>Download encrypted backup</button>
+              <button id="restoreEncryptedDraftLibrary" class="secondary" type="button" data-ui="encryptedBackupRestore">Restore encrypted backup</button>
+              <input id="encryptedBackupFile" type="file" accept=".json,application/json" hidden>
+            </div>
+          </section>
           <p id="vaultCount" class="tiny" role="status" aria-live="polite"></p>
         </section>
         <aside class="proposal-bridge" aria-labelledby="proposal-heading">

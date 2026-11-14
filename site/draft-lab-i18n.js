@@ -2,6 +2,18 @@
 // or translations of the user's article. English is the explicit fallback.
 export const UI_LOCALES=Object.freeze(['en','ru','th','es','fr','de','pt','zh']);
 const EN={
+ encryptedBackupHeading:"Encrypted backup (optional)",
+ encryptedBackupHint:"Encrypt a downloaded copy on this device using AES-256-GCM. The saved browser vault stays unencrypted. Your password cannot be recovered. Avoid shared or cloud storage for private work.",
+ encryptedBackupPasswordLabel:"Backup password (12+ characters)",
+ encryptedBackupExport:"Download encrypted backup",
+ encryptedBackupRestore:"Restore encrypted backup",
+ encryptedBackupPasswordInvalid:"Enter a password of 12–128 printable characters. No changes made.",
+ encryptedBackupExported:"Encrypted backup download requested. Keep your password safe; 24GOTOP cannot recover it.",
+ encryptedBackupInvalid:"Could not process the encrypted backup. Check the file and password. No saved draft was replaced.",
+ encryptedBackupUnavailable:"Secure local encryption is unavailable in this browser. Try a current HTTPS browser.",
+ encryptedBackupChanged:"The saved library or password changed while encrypting. No stale backup was downloaded.",
+ encryptedBackupRestoreConfirm:"Restore encrypted drafts into this browser? This requires an empty saved library. The password and file are processed only on this device.",
+ encryptedBackupRestored:"Encrypted backup restored locally. The browser vault itself remains unencrypted.",
  revisionRestore:"Restore checkpoint (swap)",
  revisionRestoreConfirm:"Restore the checkpoint into the editor? This replaces the current unsaved title, article, language, category and source. The current version becomes the new in-tab checkpoint so you can reverse this action. Saved local files and browser vault entries will not change.",
  revisionRestored:"Checkpoint restored locally. The previous version is now the checkpoint; choose Restore again to reverse. Download a .md file to save the current article.",
@@ -184,6 +196,18 @@ const EN={
  clearCanceled:'Draft kept. Nothing was erased.',cleared:'Draft cleared from this browser tab.'
 };
 const RU={
+ encryptedBackupHeading:"Зашифрованная копия (необязательно)",
+ encryptedBackupHint:"Шифрование скачиваемой копии AES-256-GCM выполняется на устройстве. Черновики, сохранённые в браузере, остаются незашифрованными. Пароль восстановить нельзя. Не храните личные материалы в общих или облачных папках.",
+ encryptedBackupPasswordLabel:"Пароль копии (от 12 символов)",
+ encryptedBackupExport:"Скачать зашифрованную копию",
+ encryptedBackupRestore:"Восстановить зашифрованную копию",
+ encryptedBackupPasswordInvalid:"Введите пароль длиной 12–128 печатных символов. Ничего не изменено.",
+ encryptedBackupExported:"Запрошено скачивание зашифрованной копии. Сохраните пароль: 24GOTOP его не восстановит.",
+ encryptedBackupInvalid:"Не удалось обработать зашифрованную копию. Проверьте файл и пароль. Сохранённые черновики не заменены.",
+ encryptedBackupUnavailable:"Локальное шифрование недоступно. Используйте современный браузер по HTTPS.",
+ encryptedBackupChanged:"Во время шифрования изменились пароль или сохранённые черновики. Устаревшая копия не скачана.",
+ encryptedBackupRestoreConfirm:"Восстановить зашифрованную копию в браузере? Библиотека сохранённых черновиков должна быть пустой. Файл и пароль обрабатываются только на устройстве.",
+ encryptedBackupRestored:"Зашифрованная копия восстановлена локально. Хранилище браузера по-прежнему не зашифровано.",
  revisionRestore:"Восстановить точку (обменять)",
  revisionRestoreConfirm:"Восстановить контрольную точку? Текущие заголовок, текст, язык, категория и источник будут заменены. Предыдущая версия останется контрольной точкой, чтобы можно было вернуть её обратно. Файлы и сохранённые черновики в браузере не изменятся.",
  revisionRestored:"Контрольная точка восстановлена локально. Предыдущая версия стала новой точкой: нажмите «Восстановить» ещё раз, чтобы вернуть её. Скачайте .md для сохранения.",
@@ -365,6 +389,18 @@ const RU={
  clearCanceled:'Черновик оставлен без изменений.',cleared:'Черновик очищен в этой вкладке.'
 };
 const TH={
+ encryptedBackupHeading:"สำรองข้อมูลแบบเข้ารหัส (ไม่บังคับ)",
+ encryptedBackupHint:"เข้ารหัสไฟล์สำรองที่ดาวน์โหลดบนอุปกรณ์ด้วย AES-256-GCM ร่างที่บันทึกในเบราว์เซอร์ยังไม่เข้ารหัส กู้คืนรหัสผ่านไม่ได้ หลีกเลี่ยงพื้นที่จัดเก็บร่วมกันหรือคลาวด์สำหรับงานส่วนตัว",
+ encryptedBackupPasswordLabel:"รหัสผ่านสำรอง (อย่างน้อย 12 อักขระ)",
+ encryptedBackupExport:"ดาวน์โหลดไฟล์สำรองเข้ารหัส",
+ encryptedBackupRestore:"กู้คืนไฟล์สำรองเข้ารหัส",
+ encryptedBackupPasswordInvalid:"กรอกรหัสผ่าน 12–128 อักขระที่พิมพ์ได้ ไม่มีการเปลี่ยนแปลง",
+ encryptedBackupExported:"ร้องขอดาวน์โหลดไฟล์สำรองเข้ารหัสแล้ว เก็บรหัสผ่านให้ปลอดภัย 24GOTOP กู้คืนให้ไม่ได้",
+ encryptedBackupInvalid:"ไม่สามารถประมวลผลไฟล์สำรองเข้ารหัส ตรวจสอบไฟล์และรหัสผ่าน ไม่มีร่างใดถูกแทนที่",
+ encryptedBackupUnavailable:"เบราว์เซอร์นี้ไม่รองรับการเข้ารหัสในเครื่อง โปรดใช้เบราว์เซอร์ HTTPS รุ่นใหม่",
+ encryptedBackupChanged:"ร่างที่บันทึกหรือรหัสผ่านเปลี่ยนระหว่างเข้ารหัส ไม่มีการดาวน์โหลดไฟล์เก่า",
+ encryptedBackupRestoreConfirm:"กู้คืนร่างที่เข้ารหัสลงในเบราว์เซอร์หรือไม่? คลังร่างที่บันทึกต้องว่าง ไฟล์และรหัสผ่านประมวลผลในอุปกรณ์เท่านั้น",
+ encryptedBackupRestored:"กู้คืนข้อมูลสำรองเข้ารหัสในเครื่องแล้ว คลังเบราว์เซอร์ยังไม่เข้ารหัส",
  revisionRestore:"คืนค่าจุดตรวจ (สลับ)",
  revisionRestoreConfirm:"ต้องการคืนค่าจุดตรวจหรือไม่? ชื่อเรื่อง เนื้อหา ภาษา หมวดหมู่ และแหล่งอ้างอิงที่ยังไม่บันทึกจะถูกแทนที่ เวอร์ชันปัจจุบันจะกลายเป็นจุดตรวจใหม่เพื่อให้ย้อนกลับได้ ไฟล์และร่างที่บันทึกไว้ในเบราว์เซอร์จะไม่เปลี่ยน",
  revisionRestored:"คืนค่าจุดตรวจในเครื่องแล้ว เวอร์ชันก่อนหน้ากลายเป็นจุดตรวจใหม่ กดคืนค่าอีกครั้งเพื่อย้อนกลับ ดาวน์โหลด .md เพื่อบันทึก",
@@ -545,6 +581,18 @@ const TH={
  clearCanceled:'เก็บร่างเดิมไว้',cleared:'ล้างร่างในแท็บนี้แล้ว'
 };
 const ES={
+ encryptedBackupHeading:"Copia cifrada (opcional)",
+ encryptedBackupHint:"Cifra una copia descargada en tu dispositivo con AES-256-GCM. Los borradores guardados en el navegador siguen sin cifrar. La contraseña no se puede recuperar. Evita almacenamiento compartido o en la nube para trabajos privados.",
+ encryptedBackupPasswordLabel:"Contraseña de copia (12+ caracteres)",
+ encryptedBackupExport:"Descargar copia cifrada",
+ encryptedBackupRestore:"Restaurar copia cifrada",
+ encryptedBackupPasswordInvalid:"Introduce una contraseña de 12–128 caracteres imprimibles. Sin cambios.",
+ encryptedBackupExported:"Descarga cifrada solicitada. Guarda la contraseña; 24GOTOP no puede recuperarla.",
+ encryptedBackupInvalid:"No se pudo procesar la copia cifrada. Comprueba archivo y contraseña. Ningún borrador sustituido.",
+ encryptedBackupUnavailable:"El cifrado local no está disponible. Usa un navegador HTTPS moderno.",
+ encryptedBackupChanged:"La biblioteca o contraseña cambió durante el cifrado. No se descargó la copia anterior.",
+ encryptedBackupRestoreConfirm:"¿Restaurar borradores cifrados en este navegador? La biblioteca guardada debe estar vacía. Archivo y contraseña se procesan localmente.",
+ encryptedBackupRestored:"Copia cifrada restaurada localmente. El almacén del navegador sigue sin cifrar.",
  revisionRestore:"Restaurar punto de control (intercambiar)",
  revisionRestoreConfirm:"¿Restaurar el punto de control? Se reemplazarán el título, el texto, el idioma, la categoría y la fuente actuales no guardados. La versión anterior pasará a ser el nuevo punto de control para deshacer el intercambio. Los archivos y borradores guardados no cambiarán.",
  revisionRestored:"Punto de control restaurado localmente. La versión anterior es ahora el punto de control; restaura de nuevo para recuperarla. Descarga el .md para guardar.",
@@ -725,6 +773,18 @@ const ES={
  clearCanceled:'Borrador conservado.',cleared:'Borrador borrado de esta pestaña.'
 };
 const FR={
+ encryptedBackupHeading:"Sauvegarde chiffrée (facultative)",
+ encryptedBackupHint:"Chiffre une copie téléchargée sur cet appareil avec AES-256-GCM. Les brouillons du navigateur restent non chiffrés. Le mot de passe est irrécupérable. Évitez les espaces partagés ou cloud pour les textes privés.",
+ encryptedBackupPasswordLabel:"Mot de passe (12 caractères minimum)",
+ encryptedBackupExport:"Télécharger la sauvegarde chiffrée",
+ encryptedBackupRestore:"Restaurer la sauvegarde chiffrée",
+ encryptedBackupPasswordInvalid:"Saisissez un mot de passe de 12 à 128 caractères imprimables. Aucun changement.",
+ encryptedBackupExported:"Téléchargement chiffré demandé. Conservez le mot de passe : 24GOTOP ne peut pas le récupérer.",
+ encryptedBackupInvalid:"Impossible de traiter la sauvegarde chiffrée. Vérifiez le fichier et le mot de passe. Aucun brouillon remplacé.",
+ encryptedBackupUnavailable:"Chiffrement local indisponible. Utilisez un navigateur HTTPS récent.",
+ encryptedBackupChanged:"La bibliothèque ou le mot de passe a changé pendant le chiffrement. Aucun téléchargement obsolète.",
+ encryptedBackupRestoreConfirm:"Restaurer les brouillons chiffrés dans ce navigateur ? La bibliothèque doit être vide. Le fichier et le mot de passe restent sur l’appareil.",
+ encryptedBackupRestored:"Sauvegarde chiffrée restaurée localement. Le stockage du navigateur reste non chiffré.",
  revisionRestore:"Restaurer le point de contrôle (échanger)",
  revisionRestoreConfirm:"Restaurer le point de contrôle ? Le titre, le texte, la langue, la catégorie et la source actuels seront remplacés. L’ancienne version deviendra le nouveau point de contrôle pour pouvoir revenir en arrière. Les fichiers et brouillons enregistrés resteront inchangés.",
  revisionRestored:"Point de contrôle restauré localement. La version précédente est maintenant le point de contrôle : restaurez à nouveau pour revenir en arrière. Téléchargez le .md pour sauvegarder.",
@@ -905,6 +965,18 @@ const FR={
  clearCanceled:'Brouillon conservé.',cleared:'Brouillon effacé de cet onglet.'
 };
 const DE={
+ encryptedBackupHeading:"Verschlüsseltes Backup (optional)",
+ encryptedBackupHint:"Verschlüsselt eine heruntergeladene Kopie lokal mit AES-256-GCM. Im Browser gespeicherte Entwürfe bleiben unverschlüsselt. Das Passwort ist nicht wiederherstellbar. Für private Arbeit keine geteilten oder Cloud-Speicher verwenden.",
+ encryptedBackupPasswordLabel:"Backup-Passwort (mindestens 12 Zeichen)",
+ encryptedBackupExport:"Verschlüsseltes Backup herunterladen",
+ encryptedBackupRestore:"Verschlüsseltes Backup wiederherstellen",
+ encryptedBackupPasswordInvalid:"Passwort mit 12–128 druckbaren Zeichen eingeben. Keine Änderung.",
+ encryptedBackupExported:"Verschlüsselten Download angefordert. Passwort sicher aufbewahren: 24GOTOP kann es nicht wiederherstellen.",
+ encryptedBackupInvalid:"Verschlüsseltes Backup nicht lesbar. Datei und Passwort prüfen. Kein Entwurf wurde ersetzt.",
+ encryptedBackupUnavailable:"Lokale Verschlüsselung ist nicht verfügbar. Aktuellen HTTPS-Browser verwenden.",
+ encryptedBackupChanged:"Gespeicherte Entwürfe oder Passwort wurden während der Verschlüsselung geändert. Kein veralteter Download.",
+ encryptedBackupRestoreConfirm:"Verschlüsselte Entwürfe hier wiederherstellen? Der gespeicherte Browserbestand muss leer sein. Datei und Passwort bleiben auf diesem Gerät.",
+ encryptedBackupRestored:"Verschlüsseltes Backup lokal wiederhergestellt. Der Browserspeicher bleibt unverschlüsselt.",
  revisionRestore:"Prüfpunkt wiederherstellen (tauschen)",
  revisionRestoreConfirm:"Prüfpunkt wiederherstellen? Titel, Text, Sprache, Kategorie und Quelle des aktuellen ungespeicherten Entwurfs werden ersetzt. Der bisherige Stand wird zum neuen Prüfpunkt, damit Sie den Tausch rückgängig machen können. Gespeicherte Dateien und Browserentwürfe bleiben unverändert.",
  revisionRestored:"Prüfpunkt lokal wiederhergestellt. Der vorherige Stand ist jetzt der Prüfpunkt; zum Rückgängigmachen erneut wiederherstellen. Zum Sichern .md herunterladen.",
@@ -1085,6 +1157,18 @@ const DE={
  clearCanceled:'Entwurf beibehalten.',cleared:'Entwurf aus diesem Tab gelöscht.'
 };
 const PT={
+ encryptedBackupHeading:"Cópia encriptada (opcional)",
+ encryptedBackupHint:"Encripta uma cópia descarregada no dispositivo com AES-256-GCM. Os rascunhos guardados no navegador continuam sem encriptação. A palavra-passe não pode ser recuperada. Evite armazenamento partilhado ou na nuvem para trabalhos privados.",
+ encryptedBackupPasswordLabel:"Palavra-passe (12+ caracteres)",
+ encryptedBackupExport:"Transferir cópia encriptada",
+ encryptedBackupRestore:"Restaurar cópia encriptada",
+ encryptedBackupPasswordInvalid:"Introduza 12–128 caracteres imprimíveis. Nenhuma alteração.",
+ encryptedBackupExported:"Transferência encriptada solicitada. Guarde a palavra-passe; 24GOTOP não a pode recuperar.",
+ encryptedBackupInvalid:"Não foi possível processar a cópia encriptada. Verifique ficheiro e palavra-passe. Nenhum rascunho substituído.",
+ encryptedBackupUnavailable:"Encriptação local indisponível. Use um navegador HTTPS moderno.",
+ encryptedBackupChanged:"A biblioteca ou palavra-passe mudou durante a encriptação. Cópia antiga não transferida.",
+ encryptedBackupRestoreConfirm:"Restaurar rascunhos encriptados neste navegador? A biblioteca guardada tem de estar vazia. Ficheiro e palavra-passe ficam no dispositivo.",
+ encryptedBackupRestored:"Cópia encriptada restaurada localmente. O armazenamento do navegador permanece sem encriptação.",
  revisionRestore:"Restaurar ponto de controlo (trocar)",
  revisionRestoreConfirm:"Restaurar o ponto de controlo? O título, texto, idioma, categoria e fonte atuais não guardados serão substituídos. A versão anterior passará a ser o novo ponto de controlo, permitindo desfazer a troca. Ficheiros e rascunhos guardados não serão alterados.",
  revisionRestored:"Ponto de controlo restaurado localmente. A versão anterior é agora o novo ponto; restaure novamente para voltar. Transfira o .md para guardar.",
@@ -1265,6 +1349,18 @@ const PT={
  clearCanceled:'Rascunho mantido.',cleared:'Rascunho apagado desta aba.'
 };
 const ZH={
+ encryptedBackupHeading:"加密备份（可选）",
+ encryptedBackupHint:"使用 AES-256-GCM 在本设备加密下载的备份文件。浏览器中保存的草稿仍未加密。密码丢失后无法找回。私人材料请避免使用共享或云端存储。",
+ encryptedBackupPasswordLabel:"备份密码（至少 12 个字符）",
+ encryptedBackupExport:"下载加密备份",
+ encryptedBackupRestore:"恢复加密备份",
+ encryptedBackupPasswordInvalid:"请输入 12–128 个可打印字符的密码，未做任何修改。",
+ encryptedBackupExported:"已请求下载加密备份。请妥善保存密码，24GOTOP 无法找回。",
+ encryptedBackupInvalid:"无法处理加密备份。请检查文件和密码，已保存的草稿未被替换。",
+ encryptedBackupUnavailable:"当前浏览器不支持本地加密，请使用现代 HTTPS 浏览器。",
+ encryptedBackupChanged:"加密期间草稿库或密码发生变化，旧备份未下载。",
+ encryptedBackupRestoreConfirm:"确认在此浏览器恢复加密草稿吗？保存的草稿库必须为空。文件和密码仅在本地处理。",
+ encryptedBackupRestored:"加密备份已在本地恢复。浏览器草稿库本身仍未加密。",
  revisionRestore:"恢复检查点（交换版本）",
  revisionRestoreConfirm:"确定恢复检查点吗？当前未保存的标题、正文、语言、分类和来源将被替换。原版本将成为新的检查点，您可以再次恢复以撤销本次交换。已保存的文件和浏览器草稿不会改变。",
  revisionRestored:"检查点已在本地恢复。之前的版本现在是检查点，可再次点击恢复以撤销本次交换。请下载 .md 保存当前文章。",
