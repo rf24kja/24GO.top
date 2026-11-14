@@ -1,3 +1,10 @@
+## Unreleased — import regular Markdown into the PUBLIC Draft Lab
+
+- Add an explicit **Insert another .md** file-picker path for Markdown authored in external editors. Unlike **Open saved .md** (which restores a 24GOTOP export), this operation inserts the original Markdown after the current textarea selection without replacing existing text, article title, language, category or original-source metadata. Exported Draft Lab documents continue to use the stricter existing restore flow.
+- Strict UTF-8 fatal decoding with a 16 KiB file cap and a 12,000-character final article limit; reject invalid bytes, non-.md filenames, malformed file results, control characters and empty files. No auto-import, network upload, storage write or background publication. Existing manuscript formatting and native undo remain available.
+- Use the common revision-aware import gate to discard stale reads after typing, a newer file selection, switching manuscripts or another import. Progress and error messages translate to all eight interface languages.
+- Expand Node and actual Chromium E2E checks for Unicode/code-text fidelity, wrong file types, document preservation, races, responsive 280px phone/390px phone/844px landscape/768px tablet/1440px desktop, and the pre-existing 540-route/device CSS matrix. This is offline authoring, not PostgreSQL publishing or hosted moderation.
+
 ## Unreleased — clear temporary image references when switching manuscripts
 
 - When an author confirms opening a downloaded .md file, opening a different saved browser draft, or clearing the current manuscript, reset the separate **image URL and alt-text helper inputs**. They are transient insertion controls, not part of the draft or the browser vault; stale addresses should never carry into a different article.
