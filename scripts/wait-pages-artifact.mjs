@@ -12,6 +12,9 @@ const MAX_BODY_BYTES=65536;
 
 async function readBoundedArtifactList(response){
  if(!response?.body?.getReader)throw new TypeError('GitHub artifact response unavailable');
+ if(!/^application\/(?:json|vnd\.github\+json)(?:\s*;|$)/i.test(
+     response.headers?.get?.('content-type')||''))
+  throw new TypeError('Unsupported GitHub artifact metadata content type');
  const length=response.headers?.get?.('content-length');
  if(length&&/^\d+$/.test(length)&&Number(length)>MAX_BODY_BYTES)
   throw new RangeError('GitHub artifact metadata exceeds budget');
