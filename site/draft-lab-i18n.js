@@ -2,6 +2,11 @@
 // or translations of the user's article. English is the explicit fallback.
 export const UI_LOCALES=Object.freeze(['en','ru','th','es','fr','de','pt','zh']);
 const EN={
+ externalMdButton:"Insert another .md",
+ externalMdHint:"Insert UTF-8 Markdown from another editor after the current selection (up to 16 KB and 12,000 characters total). Your existing text, article metadata and saved files stay intact. No upload. Use Open saved .md for your Draft Lab exports.",
+ externalMdInserted:"External Markdown inserted locally. Your existing article and metadata were preserved. Download .md to keep these changes.",
+ externalMdError:"Could not insert file. Choose a valid UTF-8 .md under 16 KB with enough space in the 12,000-character article. Draft unchanged.",
+ externalMdInterrupted:"The manuscript changed while the file was being read. The external Markdown was not inserted.",
  imageInsertHeading:"Insert an image",
  imageUrlLabel:"Public HTTPS image URL",
  imageAltLabel:"Image description (alt text)",
@@ -168,6 +173,11 @@ const EN={
  clearCanceled:'Draft kept. Nothing was erased.',cleared:'Draft cleared from this browser tab.'
 };
 const RU={
+ externalMdButton:"Вставить другой .md",
+ externalMdHint:"Вставляет UTF-8 Markdown из другого редактора после выделения (до 16 КБ и 12 000 символов во всей статье). Исходный текст, поля статьи и сохранённые файлы остаются без изменений. Ничего не загружается на сервер. Для собственных экспортов используйте «Открыть сохранённый .md».",
+ externalMdInserted:"Markdown вставлен локально. Исходный текст и сведения о статье сохранены. Скачайте .md для сохранения изменений.",
+ externalMdError:"Не удалось вставить файл. Выберите корректный UTF-8 .md до 16 КБ; общий объём статьи не должен превышать 12 000 символов. Черновик не изменён.",
+ externalMdInterrupted:"Во время чтения файла черновик был изменён. Markdown не вставлен.",
  imageInsertHeading:"Вставить изображение",
  imageUrlLabel:"Публичный HTTPS-адрес изображения",
  imageAltLabel:"Описание изображения (альтернативный текст)",
@@ -333,6 +343,11 @@ const RU={
  clearCanceled:'Черновик оставлен без изменений.',cleared:'Черновик очищен в этой вкладке.'
 };
 const TH={
+ externalMdButton:"แทรกไฟล์ .md อื่น",
+ externalMdHint:"แทรกไฟล์ UTF-8 Markdown จากโปรแกรมอื่นหลังข้อความที่เลือก (สูงสุด 16 KB และบทความรวม 12,000 อักขระ) ข้อความเดิม ข้อมูลบทความและไฟล์ที่บันทึกไว้ไม่เปลี่ยน ไม่มีการอัปโหลด หากเป็นไฟล์ที่ส่งออกจาก Draft Lab ให้ใช้ เปิดไฟล์ .md ที่บันทึกไว้",
+ externalMdInserted:"แทรก Markdown บนอุปกรณ์แล้ว ข้อความเดิมและข้อมูลบทความยังอยู่ โปรดดาวน์โหลด .md เพื่อบันทึก",
+ externalMdError:"แทรกไฟล์ไม่ได้ โปรดเลือกไฟล์ UTF-8 .md ที่ถูกต้องไม่เกิน 16 KB และบทความรวมไม่เกิน 12,000 อักขระ ฉบับร่างไม่เปลี่ยน",
+ externalMdInterrupted:"ฉบับร่างเปลี่ยนระหว่างอ่านไฟล์ จึงไม่ได้แทรก Markdown",
  imageInsertHeading:"แทรกรูปภาพ",
  imageUrlLabel:"URL รูปภาพ HTTPS สาธารณะ",
  imageAltLabel:"คำอธิบายรูปภาพ (ข้อความทดแทน)",
@@ -497,6 +512,11 @@ const TH={
  clearCanceled:'เก็บร่างเดิมไว้',cleared:'ล้างร่างในแท็บนี้แล้ว'
 };
 const ES={
+ externalMdButton:"Insertar otro .md",
+ externalMdHint:"Inserta Markdown UTF-8 de otro editor después de la selección (máx. 16 KB y 12.000 caracteres en total). Conserva texto, metadatos y archivos guardados. No se sube nada. Usa Abrir .md guardado para exportaciones de Draft Lab.",
+ externalMdInserted:"Markdown insertado localmente. Se conservaron el texto y los datos del artículo. Descarga el .md para guardar los cambios.",
+ externalMdError:"No se pudo insertar. Usa un archivo UTF-8 .md válido de menos de 16 KB y deja espacio dentro del límite de 12.000 caracteres. Borrador sin cambios.",
+ externalMdInterrupted:"El borrador cambió durante la lectura del archivo. No se insertó Markdown.",
  imageInsertHeading:"Insertar imagen",
  imageUrlLabel:"URL HTTPS pública de la imagen",
  imageAltLabel:"Descripción de la imagen (texto alternativo)",
@@ -661,6 +681,11 @@ const ES={
  clearCanceled:'Borrador conservado.',cleared:'Borrador borrado de esta pestaña.'
 };
 const FR={
+ externalMdButton:"Insérer un autre .md",
+ externalMdHint:"Insérez un Markdown UTF-8 d’un autre éditeur après la sélection (16 Ko et 12 000 caractères au total maximum). Le texte, les métadonnées et les fichiers enregistrés sont conservés. Aucun envoi. Utilisez Ouvrir .md enregistré pour les exports Draft Lab.",
+ externalMdInserted:"Markdown inséré localement. Le texte et les données de l’article sont conservés. Téléchargez le .md pour enregistrer.",
+ externalMdError:"Insertion impossible. Choisissez un .md UTF-8 valide de moins de 16 Ko et respectez la limite de 12 000 caractères. Brouillon inchangé.",
+ externalMdInterrupted:"Le brouillon a changé pendant la lecture du fichier. Markdown non inséré.",
  imageInsertHeading:"Insérer une image",
  imageUrlLabel:"URL HTTPS publique de l’image",
  imageAltLabel:"Description de l’image (texte alternatif)",
@@ -825,6 +850,11 @@ const FR={
  clearCanceled:'Brouillon conservé.',cleared:'Brouillon effacé de cet onglet.'
 };
 const DE={
+ externalMdButton:"Weitere .md einfügen",
+ externalMdHint:"Fügen Sie UTF-8-Markdown aus einem anderen Editor nach der Markierung ein (max. 16 KB und insgesamt 12.000 Zeichen). Vorhandener Text, Metadaten und gespeicherte Dateien bleiben erhalten. Kein Upload. Draft-Lab-Exporte bitte über Gespeicherte .md öffnen.",
+ externalMdInserted:"Markdown lokal eingefügt. Text und Metadaten bleiben erhalten. Zum Speichern .md herunterladen.",
+ externalMdError:"Datei konnte nicht eingefügt werden. Gültige UTF-8-.md unter 16 KB wählen und die Grenze von 12.000 Zeichen beachten. Entwurf unverändert.",
+ externalMdInterrupted:"Der Entwurf wurde während des Lesens geändert. Markdown nicht eingefügt.",
  imageInsertHeading:"Bild einfügen",
  imageUrlLabel:"Öffentliche HTTPS-Bildadresse",
  imageAltLabel:"Bildbeschreibung (Alternativtext)",
@@ -989,6 +1019,11 @@ const DE={
  clearCanceled:'Entwurf beibehalten.',cleared:'Entwurf aus diesem Tab gelöscht.'
 };
 const PT={
+ externalMdButton:"Inserir outro .md",
+ externalMdHint:"Insira Markdown UTF-8 de outro editor depois da seleção (até 16 KB e 12.000 caracteres no total). O texto existente, metadados e ficheiros guardados são preservados. Sem envio. Use Abrir .md guardado para exportações do Draft Lab.",
+ externalMdInserted:"Markdown inserido localmente. Texto e dados do artigo preservados. Transfira o .md para guardar.",
+ externalMdError:"Não foi possível inserir. Escolha um .md UTF-8 válido com menos de 16 KB e respeite o limite de 12.000 caracteres. Rascunho inalterado.",
+ externalMdInterrupted:"O rascunho mudou enquanto o ficheiro era lido. Markdown não foi inserido.",
  imageInsertHeading:"Inserir imagem",
  imageUrlLabel:"URL HTTPS pública da imagem",
  imageAltLabel:"Descrição da imagem (texto alternativo)",
@@ -1153,6 +1188,11 @@ const PT={
  clearCanceled:'Rascunho mantido.',cleared:'Rascunho apagado desta aba.'
 };
 const ZH={
+ externalMdButton:"插入其他 .md",
+ externalMdHint:"可在选区之后插入其他编辑器创建的 UTF-8 Markdown（不超过 16 KB，文章总长不超过 12,000 字符）。原有文字、文章信息和保存的文件不会被覆盖，也不会上传。Draft Lab 导出文件请使用“打开已保存 .md”。",
+ externalMdInserted:"Markdown 已在本地插入，原文与文章信息保留。请下载 .md 保存修改。",
+ externalMdError:"无法插入文件。请选择小于 16 KB 的有效 UTF-8 .md，且文章总长不超过 12,000 字符。草稿未改变。",
+ externalMdInterrupted:"读取文件时草稿已发生变化，因此未插入 Markdown。",
  imageInsertHeading:"插入图片",
  imageUrlLabel:"公开的 HTTPS 图片地址",
  imageAltLabel:"图片描述（替代文字）",
