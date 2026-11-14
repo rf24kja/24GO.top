@@ -59,11 +59,13 @@ function revisionResetView(){
   field('revisionFields').replaceChildren();
   field('revisionLines').replaceChildren();
   field('revisionCompare').disabled=!revisionCheckpoint;
+  field('revisionRestore').disabled=!revisionCheckpoint;
   field('revisionClear').disabled=!revisionCheckpoint;
   field('revisionStatus').textContent=revisionCheckpoint?ui('revisionReady'):ui('revisionEmpty');
 }
 function revisionCapture(draft){
   revisionCheckpoint=captureDraftRevision(draft);
+  revisionRestoreGate.changed();
   revisionResetView();
 }
 function revisionChanged(){
@@ -75,6 +77,8 @@ function revisionChanged(){
 }
 
 const importGate=createDraftImportGate();
+// A separate gate protects synchronous but re-entrant restore confirmation.
+const revisionRestoreGate=createDraftImportGate();
 // Restoration is asynchronous too: an older selected backup must never win
 // over a newer selection or a changed manual browser library.
 const restoreGate=createDraftImportGate();
@@ -91,6 +95,7 @@ function clearFindSelection(){
  field('draftFindReplace').disabled=true;
 }
 function editorChanged(){
+ revisionRestoreGate.changed();
  importGate.changed();
  reviewExportGate.changed();
  clearFindSelection();
@@ -397,7 +402,52 @@ field('revisionCompare').addEventListener('click',()=>{
     field('revisionCopy').disabled=false;
   }catch{message(ui('revisionUnavailable'),true);}
 });
+field('revisionRestore').addEventListener('click',()=>{
+ if(!revisionCheckpoint)return;
+ try{
+  const target=revisionCheckpoint;
+  const before=captureDraftRevision(currentDraft());
+  const diff=compareDraftRevisions(target,before);
+  if(!diff.changed){
+   field('revisionStatus').textContent=ui('revisionSame');
+   message(ui('revisionRestoreSame'));
+   return;
+  }
+  const ticket=revisionRestoreGate.begin();
+  const confirmed=window.confirm(ui('revisionRestoreConfirm'));
+  // A native confirmation can re-enter editor code. Never overwrite newer
+  // typing, file imports, a cleared checkpoint or a different selected draft.
+  if(!revisionRestoreGate.canApply(ticket)||revisionCheckpoint!==target||
+     !matchesDraftExportSnapshot(before,currentDraft()))return;
+  if(!confirmed){
+   message(ui('revisionRestoreCanceled'));
+   return;
+  }
+  title.value=target.title;
+  body.setRangeText(target.body,0,body.value.length,'end');
+  locale.value=target.locale;
+  category.value=target.category;
+  source.value=target.source;
+  clearImageInsertInputs();
+  reopenedFileBaseline=null;
+  resetSavedSlot(); // restored text must NOT modify a saved vault slot.
+  clearFieldErrors();
+  editorChanged();
+  // Swap the exact pre-restore snapshot into this tab's checkpoint, so
+  // a second confirmed Restore reverses all metadata AND body changes.
+  revisionCheckpoint=before;
+  revisionResetView();
+  preview();
+  updateValidationNotice();
+  refreshBrowserDrafts();
+  body.focus();
+  body.setSelectionRange(0,0);
+  message(ui('revisionRestored'));
+ }catch{message(ui('revisionUnavailable'),true);}
+});
+
 field('revisionClear').addEventListener('click',()=>{
+  revisionRestoreGate.changed();
   revisionCheckpoint=null;
   revisionResetView();
   message(ui('revisionCleared'));
@@ -859,6 +909,7 @@ field('clearDraft').addEventListener('click', () => {
   category.value = 'guides';
   reopenedFileBaseline = null;
   revisionCheckpoint=null;
+  revisionRestoreGate.changed();
   revisionResetView();
   resetSavedSlot();
   clearFieldErrors();

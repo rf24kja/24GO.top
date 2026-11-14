@@ -676,6 +676,62 @@ function exerciseDraftPrintMedia(){
  };
 }
 
+// Restoring a checkpoint is a real, consent-gated, reversible editor action.
+// Both swaps happen in the browser tab, without writing the optional vault.
+function exerciseDraftCheckpointRestore(){
+ const $=id=>document.getElementById(id);
+ const title=$('postTitle'),body=$('postBody'),source=$('postSource');
+ const locale=$('postLocale'),category=$('postCategory');
+ const capture=$('revisionCapture'),restore=$('revisionRestore');
+ const beforeVault=localStorage.getItem('24gotop-draft-vault-v1');
+ const oldConfirm=window.confirm;
+ const old={title:'Checkpoint article with original evidence',
+  body:'## Original steps\n\n    const value = "ก่อน";',
+  locale:'en',category:'guides',source:'https://example.org/old'};
+ const recent={title:'Updated technical evidence for review',
+  body:'## Revised steps\n\n    const value = "最新";',
+  locale:'ru',category:'tools',source:'https://example.org/new'};
+ function apply(d){
+  title.value=d.title;body.value=d.body;locale.value=d.locale;
+  category.value=d.category;source.value=d.source;
+  title.dispatchEvent(new Event('input',{bubbles:true}));
+  body.dispatchEvent(new Event('input',{bubbles:true}));
+ }
+ function equal(d){
+  return title.value===d.title&&body.value===d.body&&
+   locale.value===d.locale&&category.value===d.category&&
+   source.value===d.source;
+ }
+ apply(old);
+ const disabledBefore=restore.disabled;
+ capture.click();
+ const enabledAfter=!restore.disabled;
+ apply(recent);
+ let confirms=0;
+ try{
+  window.confirm=()=>{confirms++;return false;};
+  restore.click();
+  const canceled=equal(recent)&&
+   $('formStatus').dataset.error==='false'&&confirms===1;
+  window.confirm=()=>{confirms++;return true;};
+  const height=restore.getBoundingClientRect().height;
+  restore.click();
+  const restored=equal(old)&&restore.disabled===false&&
+   document.activeElement===body&&
+   $('revisionCopy').disabled===true&&
+   $('revisionLines').children.length===0;
+  restore.click();
+  const reversed=equal(recent)&&confirms===3;
+  restore.click();
+  const restoredAgain=equal(old);
+  const vaultUnchanged=localStorage.getItem('24gotop-draft-vault-v1')===beforeVault;
+  const w=document.documentElement.clientWidth;
+  const scroll=Math.max(document.documentElement.scrollWidth,document.body.scrollWidth);
+  return {disabledBefore,enabledAfter,canceled,restored,reversed,
+   restoredAgain,vaultUnchanged,height,w,scroll};
+ }finally{window.confirm=oldConfirm;}
+}
+
 async function main(){
  const site=localServer();
  let browser,ws;
@@ -756,6 +812,13 @@ async function main(){
       !external.rejected||external.scroll>external.width+1)
     throw Error('External Markdown local insertion '+profile.name+': '+
       JSON.stringify(external));
+   const revision=await c.call(exerciseDraftCheckpointRestore,sessionId);
+   if(!revision.disabledBefore||!revision.enabledAfter||!revision.canceled||
+      !revision.restored||!revision.reversed||!revision.restoredAgain||
+      !revision.vaultUnchanged||revision.height<43.5||
+      revision.scroll>revision.w+1)
+    throw Error('Draft Lab reversible checkpoint restore '+profile.name+': '+
+      JSON.stringify(revision));
    const printed=await c.call(exerciseDraftPrintAction,sessionId);
    if(printed.buttonHeight<43.5||
       !Object.values(printed.valid).every(Boolean)||

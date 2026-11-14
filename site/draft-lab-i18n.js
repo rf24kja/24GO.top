@@ -2,6 +2,11 @@
 // or translations of the user's article. English is the explicit fallback.
 export const UI_LOCALES=Object.freeze(['en','ru','th','es','fr','de','pt','zh']);
 const EN={
+ revisionRestore:"Restore checkpoint (swap)",
+ revisionRestoreConfirm:"Restore the checkpoint into the editor? This replaces the current unsaved title, article, language, category and source. The current version becomes the new in-tab checkpoint so you can reverse this action. Saved local files and browser vault entries will not change.",
+ revisionRestored:"Checkpoint restored locally. The previous version is now the checkpoint; choose Restore again to reverse. Download a .md file to save the current article.",
+ revisionRestoreCanceled:"Restore cancelled. Both versions are unchanged.",
+ revisionRestoreSame:"The current article already matches the checkpoint.",
  printGroup:"Print local article preview",
  printButton:"Print / Save PDF",
  printHelp:"Prints only the local article preview; no draft upload or publication. Your browser chooses the printer or PDF destination. Avoid shared or cloud printers for private writing. External images remain hidden unless loaded individually.",
@@ -51,7 +56,7 @@ const EN={
  reviewPackValidSuffix:" bytes. No text imported or uploaded.",
  reviewPackInvalid:"Invalid, damaged or unsupported review package. Current draft unchanged.",
  revisionHeading:"Compare draft revisions",
- revisionHint:"Set a temporary checkpoint, or reopen a saved draft, then review changes locally. Checkpoints are lost when this tab closes. Nothing is uploaded.",
+ revisionHint:"Set a temporary checkpoint, compare edits and restore the saved version if needed. Restoring swaps versions, so you can restore again to reverse the action. Checkpoints disappear when the tab closes; nothing is uploaded.",
  revisionCapture:"Set checkpoint",
  revisionCompare:"Review changes",
  revisionCopy:"Copy change summary",
@@ -179,6 +184,11 @@ const EN={
  clearCanceled:'Draft kept. Nothing was erased.',cleared:'Draft cleared from this browser tab.'
 };
 const RU={
+ revisionRestore:"Восстановить точку (обменять)",
+ revisionRestoreConfirm:"Восстановить контрольную точку? Текущие заголовок, текст, язык, категория и источник будут заменены. Предыдущая версия останется контрольной точкой, чтобы можно было вернуть её обратно. Файлы и сохранённые черновики в браузере не изменятся.",
+ revisionRestored:"Контрольная точка восстановлена локально. Предыдущая версия стала новой точкой: нажмите «Восстановить» ещё раз, чтобы вернуть её. Скачайте .md для сохранения.",
+ revisionRestoreCanceled:"Восстановление отменено. Обе версии сохранены без изменений.",
+ revisionRestoreSame:"Текущая статья уже совпадает с контрольной точкой.",
  printGroup:"Печать локального предпросмотра",
  printButton:"Печать / Сохранить PDF",
  printHelp:"Печатается только предпросмотр статьи. Draft Lab не отправляет черновик и не публикует его. Принтер или PDF выбирается в браузере. Для личных текстов избегайте общих и облачных принтеров. Внешние изображения остаются скрытыми до отдельной загрузки.",
@@ -228,7 +238,7 @@ const RU={
  reviewPackValidSuffix:" байт. Текст не импортирован и не отправлен.",
  reviewPackInvalid:"Пакет повреждён или не поддерживается. Черновик не изменён.",
  revisionHeading:"Сравнение версий черновика",
- revisionHint:"Создайте временную контрольную точку или откройте сохранённый черновик. Изменения сравниваются локально. После закрытия вкладки точка исчезнет; ничего не загружается.",
+ revisionHint:"Создайте контрольную точку, сравнивайте правки и при необходимости восстанавливайте предыдущую версию. Восстановление меняет версии местами, поэтому его можно отменить повторным восстановлением. Точка исчезнет после закрытия вкладки. Ничего не загружается.",
  revisionCapture:"Запомнить версию",
  revisionCompare:"Показать изменения",
  revisionCopy:"Копировать сводку",
@@ -355,6 +365,11 @@ const RU={
  clearCanceled:'Черновик оставлен без изменений.',cleared:'Черновик очищен в этой вкладке.'
 };
 const TH={
+ revisionRestore:"คืนค่าจุดตรวจ (สลับ)",
+ revisionRestoreConfirm:"ต้องการคืนค่าจุดตรวจหรือไม่? ชื่อเรื่อง เนื้อหา ภาษา หมวดหมู่ และแหล่งอ้างอิงที่ยังไม่บันทึกจะถูกแทนที่ เวอร์ชันปัจจุบันจะกลายเป็นจุดตรวจใหม่เพื่อให้ย้อนกลับได้ ไฟล์และร่างที่บันทึกไว้ในเบราว์เซอร์จะไม่เปลี่ยน",
+ revisionRestored:"คืนค่าจุดตรวจในเครื่องแล้ว เวอร์ชันก่อนหน้ากลายเป็นจุดตรวจใหม่ กดคืนค่าอีกครั้งเพื่อย้อนกลับ ดาวน์โหลด .md เพื่อบันทึก",
+ revisionRestoreCanceled:"ยกเลิกการคืนค่า ทั้งสองเวอร์ชันไม่เปลี่ยน",
+ revisionRestoreSame:"บทความปัจจุบันตรงกับจุดตรวจอยู่แล้ว",
  printGroup:"พิมพ์ตัวอย่างบทความบนอุปกรณ์",
  printButton:"พิมพ์ / บันทึก PDF",
  printHelp:"พิมพ์เฉพาะตัวอย่างบทความบนอุปกรณ์ ไม่อัปโหลดหรือเผยแพร่ฉบับร่าง เบราว์เซอร์เป็นผู้เลือกเครื่องพิมพ์หรือปลายทาง PDF หลีกเลี่ยงเครื่องพิมพ์สาธารณะหรือคลาวด์สำหรับงานส่วนตัว รูปภาพภายนอกจะถูกซ่อนจนกว่าจะเลือกโหลดเอง",
@@ -404,7 +419,7 @@ const TH={
  reviewPackValidSuffix:" ไบต์ ไม่มีการนำเข้าเนื้อหาหรืออัปโหลด",
  reviewPackInvalid:"ชุดเอกสารไม่ถูกต้องหรือเสียหาย ร่างเดิมไม่เปลี่ยน",
  revisionHeading:"เปรียบเทียบฉบับร่าง",
- revisionHint:"สร้างจุดอ้างอิงชั่วคราวหรือเปิดร่างที่บันทึกไว้ แล้วเปรียบเทียบการแก้ไขในเครื่อง จุดอ้างอิงจะหายเมื่อปิดแท็บ ไม่มีการอัปโหลด",
+ revisionHint:"สร้างจุดตรวจชั่วคราว เปรียบเทียบการแก้ไข และคืนค่าเวอร์ชันเก่าได้ การคืนค่าจะสลับเวอร์ชัน จึงกดย้อนกลับได้อีกครั้ง จุดตรวจจะหายไปเมื่อปิดแท็บ ไม่มีการอัปโหลด",
  revisionCapture:"บันทึกจุดอ้างอิง",
  revisionCompare:"ตรวจการเปลี่ยนแปลง",
  revisionCopy:"คัดลอกสรุป",
@@ -530,6 +545,11 @@ const TH={
  clearCanceled:'เก็บร่างเดิมไว้',cleared:'ล้างร่างในแท็บนี้แล้ว'
 };
 const ES={
+ revisionRestore:"Restaurar punto de control (intercambiar)",
+ revisionRestoreConfirm:"¿Restaurar el punto de control? Se reemplazarán el título, el texto, el idioma, la categoría y la fuente actuales no guardados. La versión anterior pasará a ser el nuevo punto de control para deshacer el intercambio. Los archivos y borradores guardados no cambiarán.",
+ revisionRestored:"Punto de control restaurado localmente. La versión anterior es ahora el punto de control; restaura de nuevo para recuperarla. Descarga el .md para guardar.",
+ revisionRestoreCanceled:"Restauración cancelada. Ninguna versión ha cambiado.",
+ revisionRestoreSame:"El artículo actual ya coincide con el punto de control.",
  printGroup:"Imprimir vista previa local",
  printButton:"Imprimir / Guardar PDF",
  printHelp:"Imprime solo la vista previa local del artículo; no publica ni sube el borrador. El navegador elige la impresora o el PDF. Evita impresoras compartidas o en la nube para textos privados. Las imágenes externas permanecen ocultas hasta que las cargues.",
@@ -579,7 +599,7 @@ const ES={
  reviewPackValidSuffix:" bytes. Sin importar ni subir texto.",
  reviewPackInvalid:"Paquete no válido o dañado. El borrador no cambió.",
  revisionHeading:"Comparar versiones del borrador",
- revisionHint:"Crea un punto de referencia temporal o abre un borrador guardado. La comparación es local y se pierde al cerrar la pestaña. No se sube nada.",
+ revisionHint:"Crea un punto de control, compara los cambios y restaura la versión anterior cuando lo necesites. Restaurar intercambia las dos versiones y puede deshacerse restaurando de nuevo. El punto se pierde al cerrar la pestaña. No hay subidas.",
  revisionCapture:"Guardar punto de referencia",
  revisionCompare:"Revisar cambios",
  revisionCopy:"Copiar resumen",
@@ -705,6 +725,11 @@ const ES={
  clearCanceled:'Borrador conservado.',cleared:'Borrador borrado de esta pestaña.'
 };
 const FR={
+ revisionRestore:"Restaurer le point de contrôle (échanger)",
+ revisionRestoreConfirm:"Restaurer le point de contrôle ? Le titre, le texte, la langue, la catégorie et la source actuels seront remplacés. L’ancienne version deviendra le nouveau point de contrôle pour pouvoir revenir en arrière. Les fichiers et brouillons enregistrés resteront inchangés.",
+ revisionRestored:"Point de contrôle restauré localement. La version précédente est maintenant le point de contrôle : restaurez à nouveau pour revenir en arrière. Téléchargez le .md pour sauvegarder.",
+ revisionRestoreCanceled:"Restauration annulée. Les deux versions sont inchangées.",
+ revisionRestoreSame:"L’article correspond déjà au point de contrôle.",
  printGroup:"Imprimer l’aperçu local",
  printButton:"Imprimer / Enregistrer PDF",
  printHelp:"Seul l’aperçu local est imprimé ; aucun brouillon n’est envoyé ou publié. Le navigateur choisit l’imprimante ou le PDF. Évitez les imprimantes partagées ou cloud pour les textes privés. Les images externes restent masquées jusqu’à leur chargement volontaire.",
@@ -754,7 +779,7 @@ const FR={
  reviewPackValidSuffix:" octets. Aucun texte importé ou envoyé.",
  reviewPackInvalid:"Dossier invalide ou endommagé. Brouillon inchangé.",
  revisionHeading:"Comparer les versions du brouillon",
- revisionHint:"Créez un point de référence temporaire ou ouvrez un brouillon enregistré. La comparaison reste locale et disparaît à la fermeture de l’onglet. Aucun envoi.",
+ revisionHint:"Créez un point de contrôle, comparez les modifications et restaurez l’ancienne version si nécessaire. La restauration échange les deux versions et peut être annulée en restaurant à nouveau. Le point disparaît à la fermeture de l’onglet. Aucun envoi.",
  revisionCapture:"Créer un point de référence",
  revisionCompare:"Examiner les modifications",
  revisionCopy:"Copier le résumé",
@@ -880,6 +905,11 @@ const FR={
  clearCanceled:'Brouillon conservé.',cleared:'Brouillon effacé de cet onglet.'
 };
 const DE={
+ revisionRestore:"Prüfpunkt wiederherstellen (tauschen)",
+ revisionRestoreConfirm:"Prüfpunkt wiederherstellen? Titel, Text, Sprache, Kategorie und Quelle des aktuellen ungespeicherten Entwurfs werden ersetzt. Der bisherige Stand wird zum neuen Prüfpunkt, damit Sie den Tausch rückgängig machen können. Gespeicherte Dateien und Browserentwürfe bleiben unverändert.",
+ revisionRestored:"Prüfpunkt lokal wiederhergestellt. Der vorherige Stand ist jetzt der Prüfpunkt; zum Rückgängigmachen erneut wiederherstellen. Zum Sichern .md herunterladen.",
+ revisionRestoreCanceled:"Wiederherstellung abgebrochen. Beide Versionen bleiben unverändert.",
+ revisionRestoreSame:"Der aktuelle Artikel entspricht bereits dem Prüfpunkt.",
  printGroup:"Lokale Artikelvorschau drucken",
  printButton:"Drucken / Als PDF speichern",
  printHelp:"Nur die lokale Artikelvorschau wird gedruckt; kein Entwurf wird hochgeladen oder veröffentlicht. Der Browser wählt Drucker oder PDF. Vermeiden Sie gemeinsam genutzte oder Cloud-Drucker für private Texte. Externe Bilder bleiben bis zum bewussten Laden verborgen.",
@@ -929,7 +959,7 @@ const DE={
  reviewPackValidSuffix:" Byte. Kein Text importiert oder hochgeladen.",
  reviewPackInvalid:"Ungültiges oder beschädigtes Paket. Entwurf unverändert.",
  revisionHeading:"Entwurfsstände vergleichen",
- revisionHint:"Erstelle einen temporären Vergleichspunkt oder öffne einen gespeicherten Entwurf. Alles bleibt lokal; beim Schließen des Tabs geht der Vergleichspunkt verloren.",
+ revisionHint:"Erstelle einen Prüfpunkt, vergleiche Änderungen und stelle bei Bedarf die ältere Version wieder her. Die Wiederherstellung vertauscht beide Versionen und lässt sich erneut rückgängig machen. Der Prüfpunkt verfällt beim Schließen des Tabs. Kein Upload.",
  revisionCapture:"Vergleichspunkt setzen",
  revisionCompare:"Änderungen prüfen",
  revisionCopy:"Zusammenfassung kopieren",
@@ -1055,6 +1085,11 @@ const DE={
  clearCanceled:'Entwurf beibehalten.',cleared:'Entwurf aus diesem Tab gelöscht.'
 };
 const PT={
+ revisionRestore:"Restaurar ponto de controlo (trocar)",
+ revisionRestoreConfirm:"Restaurar o ponto de controlo? O título, texto, idioma, categoria e fonte atuais não guardados serão substituídos. A versão anterior passará a ser o novo ponto de controlo, permitindo desfazer a troca. Ficheiros e rascunhos guardados não serão alterados.",
+ revisionRestored:"Ponto de controlo restaurado localmente. A versão anterior é agora o novo ponto; restaure novamente para voltar. Transfira o .md para guardar.",
+ revisionRestoreCanceled:"Restauro cancelado. Ambas as versões permanecem iguais.",
+ revisionRestoreSame:"O artigo atual já corresponde ao ponto de controlo.",
  printGroup:"Imprimir pré-visualização local",
  printButton:"Imprimir / Guardar PDF",
  printHelp:"Imprime apenas a pré-visualização local; o rascunho não é enviado nem publicado. O navegador escolhe a impressora ou o PDF. Evite impressoras partilhadas ou na nuvem para textos privados. As imagens externas ficam ocultas até serem carregadas explicitamente.",
@@ -1104,7 +1139,7 @@ const PT={
  reviewPackValidSuffix:" bytes. Nenhum texto importado ou enviado.",
  reviewPackInvalid:"Pacote inválido ou danificado. Rascunho inalterado.",
  revisionHeading:"Comparar versões do rascunho",
- revisionHint:"Crie um ponto de referência temporário ou abra um rascunho guardado. A comparação é local e perde-se ao fechar o separador. Nada é enviado.",
+ revisionHint:"Crie um ponto de controlo, compare alterações e restaure a versão anterior se necessário. O restauro troca ambas as versões e pode ser desfeito com outro restauro. O ponto desaparece ao fechar o separador. Sem envio.",
  revisionCapture:"Criar ponto de referência",
  revisionCompare:"Rever alterações",
  revisionCopy:"Copiar resumo",
@@ -1230,6 +1265,11 @@ const PT={
  clearCanceled:'Rascunho mantido.',cleared:'Rascunho apagado desta aba.'
 };
 const ZH={
+ revisionRestore:"恢复检查点（交换版本）",
+ revisionRestoreConfirm:"确定恢复检查点吗？当前未保存的标题、正文、语言、分类和来源将被替换。原版本将成为新的检查点，您可以再次恢复以撤销本次交换。已保存的文件和浏览器草稿不会改变。",
+ revisionRestored:"检查点已在本地恢复。之前的版本现在是检查点，可再次点击恢复以撤销本次交换。请下载 .md 保存当前文章。",
+ revisionRestoreCanceled:"已取消恢复，两份版本均未更改。",
+ revisionRestoreSame:"当前文章已与检查点一致。",
  printGroup:"打印本地文章预览",
  printButton:"打印 / 保存 PDF",
  printHelp:"只打印本地文章预览，不会上传或发表草稿。打印机或 PDF 目标由浏览器选择。私人草稿请避免使用共享或云端打印机。外部图片在手动加载前仍然隐藏。",
@@ -1279,7 +1319,7 @@ const ZH={
  reviewPackValidSuffix:" 字节。未导入或上传正文。",
  reviewPackInvalid:"资料包无效或损坏，草稿未更改。",
  revisionHeading:"比较草稿版本",
- revisionHint:"创建临时检查点或打开已保存的草稿，便可在本地比较修改。关闭标签页后检查点将消失；不会上传内容。",
+ revisionHint:"创建本地检查点、比较修改，并在需要时恢复旧版本。恢复会交换两份版本，可再次恢复以撤销操作。关闭标签页后检查点消失，不会上传内容。",
  revisionCapture:"创建检查点",
  revisionCompare:"查看修改",
  revisionCopy:"复制变更摘要",

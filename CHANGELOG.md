@@ -1,3 +1,11 @@
+## Unreleased — reversible, consent-gated Draft Lab checkpoints
+
+- Add **Restore checkpoint (swap)** in the PUBLIC browser-only Markdown editor, completing the previously one-way checkpoint/compare workflow. After explicit confirmation, restore the entire in-tab checkpoint — title, article text, language, category and source — while placing the previous current manuscript into the checkpoint. A second confirmed restore reverses the swap without requiring a server, account or browser storage.
+- Preserve the original saved browser-vault entry and downloaded Markdown files. Reset the active saved slot, export baseline and temporary image insertion helpers so a restored article is treated as **unsaved** and cannot silently replace a saved article. Invalidate any pending import, asynchronous review-package export, stale comparisons and find selections.
+- Recheck the exact checkpoint, author text and independent editor revision **after** native confirmation: a newer edit, Clear, import or checkpoint replacement wins, instead of stale consent overwriting the manuscript. Cancellation and identical versions are no-ops.
+- Provide 44px touch controls and accessible messages/consent text in EN/RU/TH/ES/FR/DE/PT/ZH. Add tests for full Unicode/metadata swaps, cancellation, reentrant confirmation races, saved-vault isolation and real Chromium interactions at 280px and 390px phones, 844px landscape, 768px tablet and 1440px desktop; continue the complete 18×30 responsive matrix.
+- Checkpoints are only in the current browser tab and disappear when closed. This is **not** a hosted edit history, autosave, publication or moderation.
+
 ## Unreleased — make PUBLIC Pages releases resilient to GitHub artifact indexing lag
 
 - Fix a real deployment failure after the printed-article release: `actions/upload-pages-artifact@v4` successfully uploaded `github-pages`, but the immediately following `actions/deploy-pages@v4` API lookup briefly returned zero artifacts. Retrying only the failed job in the same workflow run then created **two same-name artifacts**; `deploy-pages` correctly failed on duplicate metadata. This was GitHub Actions artifact readiness, not a public-code, auth or database failure.
