@@ -1584,3 +1584,49 @@ test('an edit during open-file consent supersedes the old import without overwri
   'Existing unpublished author text. Updated while confirming.');
  assert.equal(app.beforeUnload().prevented,true);
 });
+
+
+test('print/PDF action requires a real title and body and never submits or saves a draft',()=>{
+ const app=build(),el=app.elements;
+ el.printDraft.listeners.click();
+ assert.equal(app.printCalls,0);
+ assert.equal(el.postTitle.focused,true);
+ assert.equal(el.formStatus.textContent,uiText('en','printEmpty'));
+ assert.equal(el.formStatus.dataset.error,'true');
+ el.postTitle.value=sample.title;
+ el.printDraft.listeners.click();
+ assert.equal(app.printCalls,0,'title alone must not print empty article');
+ el.postBody.value=sample.body;
+ el.postLocale.value=sample.locale;
+ el.postCategory.value=sample.category;
+ el.postSource.value=sample.source;
+ const copy={title:el.postTitle.value,body:el.postBody.value,
+  locale:el.postLocale.value,category:el.postCategory.value,
+  source:el.postSource.value};
+ el.printDraft.listeners.click();
+ assert.equal(app.printCalls,1,'one author click opens exactly one native print dialog');
+ assert.equal(el.formStatus.textContent,uiText('en','printRequested'));
+ assert.equal(el.formStatus.dataset.error,'false');
+ assert.deepEqual({
+  title:el.postTitle.value,body:el.postBody.value,
+  locale:el.postLocale.value,category:el.postCategory.value,
+  source:el.postSource.value
+ },copy,'printing must never edit the author's draft');
+ assert.equal(app.downloads.length,0,'browser—not Draft Lab—owns PDF destination');
+ assert.equal(app.localStorage.getItem(VAULT_KEY),null);
+ assert.equal(app.beforeUnload().prevented,true,'print is not a verified saved-draft baseline');
+});
+
+test('unsupported print API falls back to original local Markdown export without change',()=>{
+ const app=build(),el=app.elements;
+ el.postTitle.value=sample.title;
+ el.postBody.value=sample.body;
+ app.setPrintAvailable(false);
+ el.printDraft.listeners.click();
+ assert.equal(app.printCalls,0);
+ assert.equal(el.formStatus.textContent,uiText('en','printUnavailable'));
+ assert.equal(el.formStatus.dataset.error,'true');
+ assert.equal(el.postBody.value,sample.body);
+ assert.equal(app.downloads.length,0);
+ assert.equal(app.localStorage.getItem(VAULT_KEY),null);
+});
