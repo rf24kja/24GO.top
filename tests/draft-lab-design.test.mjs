@@ -145,3 +145,15 @@ test('external Markdown insert is an opt-in local-only action separate from rest
  assert.match(browser,/async function exerciseExternalMarkdownImport\(\)/);
  assert.match(browser,/await c\.call\(exerciseExternalMarkdownImport,sessionId\)/);
 });
+
+
+test('confirmed Draft Lab file opens recheck latest consent and preserve newer editor state',()=>{
+ const segment=js.slice(js.indexOf('async function openLocalDraft('),
+  js.indexOf("field('importDraftFile').addEventListener"));
+ assert.match(segment,/const confirmed=window\.confirm\(ui\('replaceConfirm'\)\)/);
+ assert.match(segment,/if\(!importGate\.isLatest\(ticket\)\)return;/);
+ assert.match(segment,/if\(!importGate\.canApply\(ticket\)\)return;/);
+ assert.ok(segment.indexOf('if(!importGate.canApply(ticket))return;')<
+  segment.indexOf('title.value = reopened.title;'));
+ assert.match(segment,/if\(!confirmed\)/);
+});
