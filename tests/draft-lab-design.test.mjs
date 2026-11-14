@@ -117,3 +117,15 @@ test('image insertion controls are keyboard accessible, offline and fit every vi
  assert.match(browser,/insertion\.selectedAltUsed/);
  assert.doesNotMatch(js,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|sessionStorage|innerHTML/);
 });
+
+
+test('image link helper fields cannot outlive a confirmed draft switch',()=>{
+ for(const content of [
+  "source.value = reopened.source;\n    clearImageInsertInputs();",
+  "source.value=saved.draft.source;\n  clearImageInsertInputs();",
+  "source.value = '';\n  clearImageInsertInputs();"
+ ])assert.ok(js.includes(content),'missing image input reset after document change');
+ assert.match(js,/function clearImageInsertInputs\(\)\{\s*field\('imageUrl'\)\.value='';\s*field\('imageAlt'\)\.value='';/);
+ const browser=readFileSync(new URL('../scripts/check-draft-lab-accessibility.mjs',import.meta.url),'utf8');
+ assert.match(browser,/!insertion\.reset/);
+});
