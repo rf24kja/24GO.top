@@ -76,3 +76,22 @@
 @media(prefers-color-scheme:light){.studio-button,.studio-tab-buttons button[aria-pressed="true"]{color:#fff}}
 @media(prefers-reduced-motion:reduce){.studio *{scroll-behavior:auto}}
 @media print{.studio-workspace,.studio-actions{display:none!important}}
+
+/* Explicit ZIP re-import: validation is local; code never auto-runs. */
+.studio-import{border:1px solid var(--border);border-radius:12px;
+ background:var(--bg);padding:16px;margin:16px 0 23px}
+.studio-import h3{font-size:17px;line-height:1.35;margin:0 0 7px}
+.studio-import p{font-size:12px;line-height:1.65;color:var(--muted);
+ overflow-wrap:anywhere}
+.studio-import strong{color:var(--text)}
+.studio-import label{display:block;font-size:12px;font-weight:800;margin:16px 0 9px}
+#studio-import-file{width:100%;max-width:100%;min-height:46px;background:var(--panel);
+ color:var(--text);border:1px solid var(--border);border-radius:9px;padding:9px;
+ font-size:12px}
+#studio-import-file::file-selector-button{min-height:44px;padding:8px 12px;
+ border:1px solid var(--accent);background:transparent;color:var(--accent);
+ font:inherit;font-weight:800;border-radius:7px;cursor:pointer;margin-right:11px}
+#studio-import-check{margin-top:13px}
+#studio-import-status[data-error=true]{color:#e4a098}
+@media(max-width:390px){.studio-import{padding:12px}
+ #studio-import-check{width:100%}}
