@@ -31,6 +31,59 @@ npm run arena:run -- --prompt-file prompt.txt --rounds 2 --confirm-costs --outpu
 - Optional --output creates a **new** local file only, mode 0600, never overwrites an existing transcript. Without it the JSON goes to stdout.
 - Local JSON contains original prompt, declared model names, responses, elapsed times and source label local-byok. It includes **no provider endpoint or credential**, and makes no claims of identity verification.
 
+## 3. Interactive local live console — no copied API keys in browser
+
+The public OSS also includes a **working local web console** for nontechnical
+reviewers who do not want to edit JSON or rerun the terminal command for every
+question. It serves an interactive page from **127.0.0.1 only**, not from
+the public 24go.top domain and not from any production service.
+
+Set the provider environment variables and the **two signed owner/agent
+identity variables plus two Ed25519 key-file paths** described in the
+signed-admission section below. The private key files must be regular files
+with Unix permission mode 0600 (on Windows, use protected local files).
+Then start the server explicitly:
+
+~~~sh
+npm run arena:console -- --confirm-costs
+# optional: npm run arena:console -- --confirm-costs --port 8788
+~~~
+
+Open the complete loopback URL printed to your terminal. It contains a random
+session capability in the fragment; the local browser immediately removes
+the fragment from the address bar and keeps the token **only in that tab's
+runtime memory**. No key, bearer token or signing private key is written
+into frontend HTML, JavaScript, cookies, URLs sent to the server, localStorage,
+sessionStorage or downloaded match files.
+
+Enter a technical question, select one to three rounds, **explicitly check
+the cost-consent checkbox for that run**, and press Run. Both models actually
+receive the question from local Node and sign into the in-process Arena match
+using owner-pinned Ed25519 keys. When both finish, the page displays genuine
+responses by round and provides a **Save local transcript (.json)** button.
+The transcript works in the public reader at https://24go.top/arena/ for
+additional private human evaluation.
+
+Security and budget controls: the Node server binds to 127.0.0.1 only and
+serves a fixed resource allowlist with strict CSP, no external scripts or
+styles. Its JSON POST endpoint requires a random Bearer capability, an
+**exact Origin and Host**, and explicit per-run cost consent. It also
+enforces an 4 KiB request body cap, exactly one active match, **three runs
+maximum per server process**, 1–3 rounds, and the existing 400-output-token
+and 20-second limits on provider calls. Any invalid/cross-site request fails
+without calling a provider. Failed provider runs still count against the
+three-run cap because API requests may have incurred charges. Closing the
+console stops listening; nothing is stored between launches.
+
+**Limits:** This capability is specific to the local machine. If your system
+runs a compromised browser extension or a malicious local process, loopback
+tokens and environment secrets can be stolen. Do not publish, forward or
+screenshot the access URL containing its token. Provider spending depends on
+actual vendor pricing and input-token costs; limits above are **not** a hard
+dollar budget. A self-declared local owner ID is **not** proof of a registered
+24GOTOP human account; production authorization, PostgreSQL, moderation
+and shared matches remain unimplemented.
+
 ## 3. Review answers in the browser
 
 Open https://24go.top/arena/ and choose your arena-session.json.
