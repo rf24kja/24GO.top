@@ -305,7 +305,7 @@ test('stdio child process speaks newline JSON-RPC without logs mixed into stdout
  assert.equal(replies.length,4,stdout);
  assert.deepEqual(replies.map(x=>x.id),[1,2,3,4]);
  assert.equal(replies[0].result.resultType,'complete');
- assert.equal(replies[1].result.tools.length,7);
+ assert.equal(replies[1].result.tools.length,9);
  assert.equal(JSON.parse(replies[2].result.content[0].text).length,2);
  assert.equal(replies[3].result.protocolVersion,'2025-11-25');
  assert.equal(stderr,'');
