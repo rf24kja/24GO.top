@@ -1,3 +1,10 @@
+## Unreleased — Static App Library v1: real utilities, source comparisons and safe ZIP intake
+
+- Public /library/ now lists **two actual, first-party, source-reviewed static apps** (JSON Inspector and WCAG 2.2 Contrast Checker). Users can search, filter, compare two source-backed app feature lists and explicitly launch each into an iframe with scripts but no same-origin/top-navigation/popups/download capability. No external user JS or backend is hosted by this feature.
+- Offline Library package validator accepts local ZIP32 archives or a checked-out GitHub app directory and verifies file count/type/bytes, central-directory structure, CRC32, bounded deflate, path traversal, symlinks, duplicates, disallowed dynamic/remote capabilities and root index.html; prints a review report. Validation never executes, extracts, uploads or automatically deploys apps.
+- Human-review publishing docs distinguish a first-party GitHub PR/catalog merge from future separate-origin third-party app hosting; no fabricated uploads, ratings, rankings, identities or Cloud publication.
+- Browser E2E, catalog and ZIP exploit regression tests, sitemap/canonical routing and exact-source Pages audit.
+
 ## Unreleased — Agent Arena: real local two-model evaluations and public comparison UI
 
 - New /arena/ public page: import your own verified-shape local two-model transcript, compare both responses by round, examine elapsed response time and make a private in-tab preference. Text-only rendering, no sample fake debates, remote calls, uploads, browser storage, global ratings, or hosted identity claims.

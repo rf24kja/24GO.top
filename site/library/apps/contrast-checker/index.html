@@ -1,0 +1,61 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none'">
+<title>Contrast Checker — 24GOTOP Library</title>
+<style>
+:root{color-scheme:dark light;--bg:#101a18;--panel:#182621;--border:#476159;--text:#edf9f3;--muted:#afc6bc;--accent:#4fe6a1}
+*{box-sizing:border-box}body{background:var(--bg);color:var(--text);font:15px/1.6 system-ui,Arial,sans-serif;margin:0;padding:22px}
+main{max-width:700px;margin:auto}h1{font-size:clamp(26px,5vw,37px);line-height:1.1;margin:0 0 6px}p{color:var(--muted)}
+.inputs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:20px 0}
+label{display:block;font-weight:800;margin-bottom:8px}
+input[type=color]{display:block;width:100%;height:52px;cursor:pointer;border:1px solid var(--border);border-radius:9px;background:var(--panel);padding:3px}
+button{cursor:pointer;font:inherit;font-weight:750;color:var(--accent);background:transparent;border:1px solid var(--accent);border-radius:10px;padding:9px 16px;min-height:44px}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.preview{padding:23px;min-height:140px;border-radius:12px;overflow-wrap:anywhere;transition:background .15s}
+.preview strong{display:block;font-size:28px;line-height:1.25}.preview span{display:block;font-size:14px;margin:10px 0 0}
+.ratio{font-size:clamp(27px,5vw,45px);font-weight:850;color:var(--accent);margin:18px 0}
+.badges{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:18px 0}
+.metric{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px}
+.metric strong{display:block;font-size:18px}.metric span{display:block;font-size:11px;color:var(--muted)}
+@media(max-width:360px){body{padding:12px}.inputs,.badges{grid-template-columns:minmax(0,1fr)}}
+@media(prefers-color-scheme:light){:root{--bg:#f5faf7;--panel:#fff;--border:#b5cec1;--text:#142620;--muted:#375c4a;--accent:#087b4e}}
+</style></head><body><main>
+<h1>Contrast Checker</h1>
+<p>Check text colors against WCAG 2.2 contrast thresholds. Runs completely offline.</p>
+<div class="inputs">
+<div><label for="foreground">Text color</label><input id="foreground" type="color" value="#f6fff8"></div>
+<div><label for="background">Background color</label><input id="background" type="color" value="#12392d"></div>
+</div>
+<div class="preview" id="preview" aria-label="Live sample of the selected text and background colors">
+<strong>Readable by design.</strong><span>The quick brown fox jumps over the lazy dog · 1234567890</span>
+</div>
+<p class="ratio" id="ratio" aria-live="polite">—</p>
+<div class="badges" aria-label="WCAG 2.2 assessments">
+<div class="metric"><strong id="aa-normal">—</strong><span>AA normal text · 4.5:1</span></div>
+<div class="metric"><strong id="aa-large">—</strong><span>AA large text · 3:1</span></div>
+<div class="metric"><strong id="aaa-normal">—</strong><span>AAA normal text · 7:1</span></div>
+<div class="metric"><strong id="aaa-large">—</strong><span>AAA large text · 4.5:1</span></div>
+</div>
+<p>WCAG contrast is only one part of accessibility. Some non-text elements have separate contrast criteria.</p>
+</main><script>
+'use strict';
+const $=id=>document.getElementById(id);
+function brightness(hex){
+ const raw=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)/255);
+ const [r,g,b]=raw.map(x=>x<=0.04045?x/12.92:Math.pow((x+0.055)/1.055,2.4));
+ return 0.2126*r+0.7152*g+0.0722*b;
+}
+function refresh(){
+ const fg=$('foreground').value,bg=$('background').value;
+ const a=brightness(fg),b=brightness(bg);
+ const ratio=(Math.max(a,b)+0.05)/(Math.min(a,b)+0.05);
+ $('ratio').textContent=ratio.toFixed(2)+':1 contrast';
+ $('preview').style.color=fg;$('preview').style.backgroundColor=bg;
+ for(const [id,threshold] of [['aa-normal',4.5],['aa-large',3],['aaa-normal',7],['aaa-large',4.5]]){
+  $(id).textContent=ratio>=threshold?'PASS':'FAIL';
+ }
+}
+$('foreground').addEventListener('input',refresh);
+$('background').addEventListener('input',refresh);
+refresh();
+</script></body></html>

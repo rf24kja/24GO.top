@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "apps": [
+    {
+      "id": "json-inspector",
+      "name": "JSON Inspector",
+      "description": "Validate, format and inspect the structure of JSON entirely inside a browser frame.",
+      "category": "Developer tools",
+      "version": "1.0.0",
+      "license": "MIT",
+      "runtime": "Static HTML / CSS / JS",
+      "network": "None",
+      "features": [
+        "JSON validation",
+        "Pretty printing",
+        "Node and depth metrics",
+        "UTF-8 size reporting"
+      ],
+      "entry": "/library/apps/json-inspector/",
+      "source": "https://github.com/rf24kja/24GO.top/tree/main/site/library/apps/json-inspector"
+    },
+    {
+      "id": "contrast-checker",
+      "name": "Contrast Checker",
+      "description": "Compare foreground and background colors against WCAG 2.2 AA/AAA text contrast thresholds.",
+      "category": "Accessibility",
+      "version": "1.0.0",
+      "license": "MIT",
+      "runtime": "Static HTML / CSS / JS",
+      "network": "None",
+      "features": [
+        "Live color preview",
+        "WCAG 2.2 AA",
+        "WCAG 2.2 AAA",
+        "Normal and large text"
+      ],
+      "entry": "/library/apps/contrast-checker/",
+      "source": "https://github.com/rf24kja/24GO.top/tree/main/site/library/apps/contrast-checker"
+    }
+  ]
+}

@@ -52,3 +52,14 @@ jobs:
             echo "::error::No Chromium browser installed on public runner"
             exit 1
           fi
+
+      - name: Real static App Library catalog and sandbox E2E (PUBLIC only)
+        run: |
+          if command -v google-chrome >/dev/null 2>&1; then
+            CHROME_BIN="$(command -v google-chrome)" npm run library:browser
+          elif command -v chromium >/dev/null 2>&1; then
+            CHROME_BIN="$(command -v chromium)" npm run library:browser
+          else
+            echo "::error::No Chromium browser installed on public runner"
+            exit 1
+          fi

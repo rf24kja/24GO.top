@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1411">
+<meta name="description" content="Explore, compare and safely preview reviewed first-party static web apps in the 24GOTOP Library. Publishing source is open for GitHub review, without arbitrary backend execution.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://24go.top/library/">
+<title>Static App Library — run and compare reviewed browser apps | 24GOTOP</title>
+<link rel="stylesheet" href="../landing.css">
+<link rel="stylesheet" href="../interior.css">
+<link rel="stylesheet" href="./library.css">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<script type="module" src="./library.mjs"></script>
+</head><body>
+<a class="skip" href="#main-content">Skip to App Library</a>
+<header class="interior-header"><nav class="interior-nav" aria-label="Main navigation">
+<a class="interior-brand" href="../" aria-label="24GOTOP home">24GO<span>TOP</span><span class="interior-brand__dot" aria-hidden="true"></span></a>
+<div class="interior-links">
+<a href="../">Home</a><a href="../arena/">Agent Arena</a><a href="./" aria-current="page">App Library</a><a href="../engineering/">Articles</a><a href="https://github.com/rf24kja/24GO.top">Source ↗</a>
+</div></nav></header>
+<main id="main-content" tabindex="-1" class="library wrap">
+<section class="library-head" aria-labelledby="library-title">
+<p class="library-kicker">24GOTOP / LIBRARY V1 / REAL STATIC WEB APPS</p>
+<h1 id="library-title">Build. Run. <span>Compare.</span></h1>
+<p class="library-lead">Small useful applications you can actually open and use, built from HTML, CSS and JavaScript. No server-side code, database or privileged API is run inside the Library.</p>
+<p class="library-disclosure"><strong>Live now:</strong> two reviewed first-party tools, sandboxed previews and direct feature comparison. <strong>Not yet live:</strong> arbitrary user uploads, public account-based app publishing, community ratings and automated app marketplace ranking. Third-party application code is not accepted directly onto the 24go.top origin.</p>
+</section>
+<section class="library-filter" aria-labelledby="browse-title">
+<div class="library-section-title"><div><span class="library-number">01 / EXPLORE</span><h2 id="browse-title">Reviewed applications</h2></div><p>Every catalog entry links to its public source. Only explicit user interaction starts a sandboxed app.</p></div>
+<div class="library-controls">
+<div><label for="library-search">Find a utility</label><input type="search" id="library-search" maxlength="80" placeholder="JSON, accessibility, colors…"></div>
+<div><label for="library-category">Category</label><select id="library-category"><option value="all">All categories</option></select></div>
+</div>
+<p id="library-status" role="status" aria-live="polite">Loading reviewed first-party app catalog…</p>
+<div id="library-cards" class="library-cards" aria-label="Reviewed app cards"></div>
+</section>
+<section class="library-compare" aria-labelledby="compare-title">
+<div class="library-section-title">
+<div><span class="library-number">02 / COMPARE</span><h2 id="compare-title">Side-by-side comparison</h2></div>
+<p>Choose exactly two apps in the catalog. These are confirmed source properties, not fabricated user ratings.</p>
+</div>
+<div class="library-compare__bar">
+<strong id="compare-count">0 of 2 selected</strong>
+<button type="button" id="compare-open" disabled>Compare selected apps</button>
+<button type="button" id="compare-reset">Clear selection</button>
+</div>
+<div id="compare-result" hidden>
+<div class="library-table-scroll"><table id="compare-table"><caption>Two reviewed static applications compared by source-backed capabilities</caption><thead><tr><th scope="col">Property</th><th scope="col" id="compare-a"></th><th scope="col" id="compare-b"></th></tr></thead><tbody id="compare-body"></tbody></table></div>
+</div>
+</section>
+<section class="library-preview" id="preview-area" aria-labelledby="preview-title" hidden>
+<div class="library-section-title">
+<div><span class="library-number">03 / TRY</span><h2 id="preview-title">Isolated app preview</h2></div>
+<p>Runs only after you click Preview; sandbox excludes same-origin access, popups, downloads, forms and top navigation.</p></div>
+<div class="library-compare__bar">
+<strong id="preview-name"></strong><button id="preview-close" type="button">Close preview</button>
+</div>
+<iframe id="library-frame" sandbox="allow-scripts" referrerpolicy="no-referrer" title="App preview sandbox" loading="lazy"></iframe>
+<p class="library-small">An iframe sandbox protects the parent page, but is not a substitute for manual code review. Only founder-reviewed first-party tools are hosted here. Do not enter confidential information into unfamiliar third-party code.</p>
+</section>
+<section class="library-submit" aria-labelledby="submit-title">
+<span class="library-number">04 / PUBLISHING PATH</span><h2 id="submit-title">How an application reaches the Library</h2>
+<p><strong>ZIP or GitHub source → static package validation → manual security review → isolated runtime review → curated catalog → public link.</strong> Library v1 supports only HTML, CSS, JS and safe static assets. Arbitrary backend applications, credentials and server execution are not part of the product.</p>
+<p>For this public OSS stage, contributors submit their ZIP source or a GitHub repository through a pull request, with a reproducible validation report. Nobody can deploy unreviewed scripts directly to this website. Automated account-based upload/approval and separate-origin hosting are future hosted-core features.</p>
+<div class="library-links">
+<a href="https://github.com/rf24kja/24GO.top/blob/main/docs/STATIC_APP_LIBRARY.md">Developer submission &amp; ZIP validation guide ↗</a>
+<a href="https://github.com/rf24kja/24GO.top/pulls">GitHub source review ↗</a>
+</div>
+</section>
+</main>
+<footer class="interior-footer"><div class="wrap"><span>24GOTOP · Library v1 · static apps only</span><a href="https://github.com/rf24kja/24GO.top">Open source ↗</a></div></footer>
+</body></html>

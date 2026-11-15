@@ -17,7 +17,11 @@ export const FIXED_ROUTES=Object.freeze([
  '/engineering/feed.json', '/engineering/search-index.json',
  '/engineering/search.js', '/engineering/reading-paths/',
  '/engineering/paths.js', '/arena/', '/arena/arena.css',
- '/arena/arena.mjs', '/arena/arena-core.mjs', '/sitemap.xml', '/robots.txt'
+ '/arena/arena.mjs', '/arena/arena-core.mjs',
+ '/library/', '/library/catalog.json', '/library/library.css',
+ '/library/library.mjs', '/library/library-core.mjs',
+ '/library/apps/json-inspector/', '/library/apps/contrast-checker/',
+ '/sitemap.xml', '/robots.txt'
 ]);
 const SAFE_ROUTE=/^\/(?:[a-z0-9-]+\/)*(?:[a-z0-9-]+\.(?:html|css|js|mjs|xml|json|txt))?$/;
 const MAX_ASSET_BYTES=512*1024;
