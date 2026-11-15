@@ -234,40 +234,26 @@ test('reading path interface has reviewed eight-language key coverage and safe E
 });
 
 test('locale application uses textContent, aria attributes and placeholders only',()=>{
- const dom=[
-  {type:'text',key:'heading',textContent:''},
-  {type:'label',key:'localeLabel',attributes:{}},
-  {type:'placeholder',key:'filterPlaceholder',attributes:{}}
+ const elements=[
+  {type:'text',key:'heading',textContent:'',attributes:{}},
+  {type:'label',key:'localeLabel',textContent:'',attributes:{}},
+  {type:'placeholder',key:'filterPlaceholder',textContent:'',attributes:{}}
  ];
- const get=type=>dom.filter(x=>x.type===type).map(x=>({
-  textContent:x.textContent,
-  getAttribute(){return x.key;},
-  setAttribute(key,value){x.attributes[key]=value;},
-  attributes:x.attributes,
-  ...x
- }));
- const doc={documentElement:{lang:'en'},querySelectorAll(q){
-  if(q==='[data-path-ui]')return get('text');
-  if(q==='[data-path-ui-label]')return get('label');
-  if(q==='[data-path-ui-placeholder]')return get('placeholder');
-  return [];
+ for(const element of elements){
+  element.getAttribute=name=>element.key;
+  element.setAttribute=(name,value)=>{element.attributes[name]=value;};
+ }
+ const doc={documentElement:{lang:'en'},querySelectorAll(selector){
+  const type=selector==='[data-path-ui]'?'text':
+   selector==='[data-path-ui-label]'?'label':
+   selector==='[data-path-ui-placeholder]'?'placeholder':null;
+  return elements.filter(element=>element.type===type);
  }};
- // Use persistent mock objects for assertions.
- doc.querySelectorAll=q=>dom.filter(x=>(
-  q==='[data-path-ui]'?x.type==='text':
-  q==='[data-path-ui-label]'?x.type==='label':
-  x.type==='placeholder'
- )).map(x=>({
-  getAttribute(){return x.key;},
-  set textContent(value){x.owner.textContent=value;},
-  get textContent(){return x.owner.textContent;},
-  setAttribute(k,v){x.attributes[k]=v;},attributes:x.attributes,owner:x
- }));
  assert.equal(applyReadingPathLocale(doc,'ru'),'ru');
  assert.equal(doc.documentElement.lang,'ru');
- assert.equal(dom[0].textContent,PATH_UI.ru.heading);
- assert.equal(dom[1].attributes['aria-label'],PATH_UI.ru.localeLabel);
- assert.equal(dom[2].attributes.placeholder,PATH_UI.ru.filterPlaceholder);
+ assert.equal(elements[0].textContent,PATH_UI.ru.heading);
+ assert.equal(elements[1].attributes['aria-label'],PATH_UI.ru.localeLabel);
+ assert.equal(elements[2].attributes.placeholder,PATH_UI.ru.filterPlaceholder);
  assert.equal(applyReadingPathLocale(doc,'bad'),'en');
- assert.equal(dom[0].textContent,PATH_UI.en.heading);
+ assert.equal(elements[0].textContent,PATH_UI.en.heading);
 });
