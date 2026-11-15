@@ -19,6 +19,34 @@ Each app has its own publicly inspectable HTML, no backend, no external network,
 
 The comparison table shows source-backed properties (features, category, version, license, runtime, network capability). It is **not** a manipulated popularity score or fabricated ranking. App list changes require a GitHub PR; anonymous users cannot add arbitrary executable code to the live site.
 
+## Browser submission preparation — available now
+
+At https://24go.top/library/, scroll to **Check a static app ZIP without uploading it**.
+Choose a ZIP32 file of up to 4 MiB and explicitly click **Check local ZIP**.
+The on-device browser validator checks central-directory consistency, file sizes
+and paths, non-symlink types, CRC32, supported deflate, source extensions,
+obvious forbidden dynamic capabilities, and computes SHA-256 checksums using
+Web Crypto. Files are never executed, extracted, sent to our servers, or
+persisted in storage. The browser shows a full file inventory and a
+copyable audit report; invalid packages are rejected without a GitHub
+review link.
+
+After a passing local check, enter an **application name** and the link to
+a **public GitHub source repository**. The site then prepares a GitHub
+*issue draft* containing the name, repository URL, validated file count,
+expanded size and ZIP hash. You must explicitly open the GitHub link, sign
+in, review the text and submit it. **No ZIP bytes are sent to GitHub by
+24GOTOP, and a GitHub issue does not publish an application.** The public
+repository must actually contain the source being proposed. Never put
+private source or credentials into GitHub public issues.
+
+This browser check is a convenience for ordinary contributors; the Node
+CLI remains the independent local intake and final reviewer reference.
+The browser may decline deflate in engines without the native
+DecompressionStream deflate-raw format; use the CLI in that case. Both
+checks are conservative and do not prove code is free from malicious
+behavior or that an applicant owns the source.
+
 ## Contributor submission: ZIP or GitHub checked-out source
 
 1. Prepare a static app directory with a root index.html, self-contained CSS/JS and optional supported local images. For now file paths must be ASCII slug-like names (including up to 3 nested folders). Do not include secrets, .env, credentials, analytics, remote JS, webhooks, sensitive user records, full repositories, or build artifacts unrelated to the executable static bundle.
