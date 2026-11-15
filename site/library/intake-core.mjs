@@ -86,7 +86,7 @@ async function decompressDeflate(input){
  * Validate standard ZIP32 bytes already read from an explicitly chosen File.
  * Browser never opens external links, parses HTML into a DOM or executes JS.
  */
-export async function validateBrowserZip(raw,{inflate=decompressDeflate}={}){
+export async function validateBrowserZip(raw,{inflate=decompressDeflate,digest=sha256}={}){
  const bytes=raw instanceof Uint8Array?raw:
    raw instanceof ArrayBuffer?new Uint8Array(raw):null;
  if(!bytes||bytes.length<22||bytes.length>LIMITS.archiveBytes)
@@ -165,7 +165,7 @@ export async function validateBrowserZip(raw,{inflate=decompressDeflate}={}){
    if(FORBIDDEN.some(pattern=>pattern.test(code)))error('disallowed active or remote capability');
    if(name==='index.html')rootHTML=code;
   }else imageSignature(name,content);
-  files.push({path:name,size:content.length,sha256:await sha256(content)});
+  files.push({path:name,size:content.length,sha256:await digest(content)});
  }
  if(at!==eocd)error('unreviewed central directory bytes');
  if(!rootHTML||!/<html(?:\s|>)/i.test(rootHTML)||
@@ -173,7 +173,7 @@ export async function validateBrowserZip(raw,{inflate=decompressDeflate}={}){
  files.sort((a,b)=>a.path.localeCompare(b.path));
  return Object.freeze({
   entry:'index.html',files:Object.freeze(files.map(x=>Object.freeze(x))),
-  totalBytes:total,archiveSha256:await sha256(bytes),
+  totalBytes:total,archiveSha256:await digest(bytes),
   reviewRequired:true,automaticHosting:false
  });
 }
