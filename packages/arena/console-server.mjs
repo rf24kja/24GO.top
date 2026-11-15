@@ -17,7 +17,8 @@ const MAX_RUNS=3;
 const ASSETS=new Map([
  ['/',{file:new URL('./console/index.html',import.meta.url),type:'text/html; charset=utf-8'}],
  ['/console.mjs',{file:new URL('./console/console.mjs',import.meta.url),type:'text/javascript; charset=utf-8'}],
- ['/console.css',{file:new URL('./console/console.css',import.meta.url),type:'text/css; charset=utf-8'}]
+ ['/console.css',{file:new URL('./console/console.css',import.meta.url),type:'text/css; charset=utf-8'}],
+ ['/arena-core.mjs',{file:new URL('../../site/arena/arena-core.mjs',import.meta.url),type:'text/javascript; charset=utf-8'}]
 ]);
 const HEADERS=Object.freeze({
  'Cache-Control':'no-store, max-age=0',
