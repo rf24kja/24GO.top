@@ -5,6 +5,8 @@ const safeString=(s,max)=>typeof s==='string'&&s.length>0&&s.length<=max&&
  !/[\u0000-\u001f\u007f]/u.test(s);
 function validEndpoint(raw){
  if(!safeString(raw,512))throw new TypeError('Arena provider endpoint is required');
+ if(/(?:^|\/)\.{1,2}(?:\/|$)|%2e|%2f/i.test(raw))
+  throw new TypeError('Provider endpoint must not contain traversal');
  let u;
  try{u=new URL(raw);}catch{throw new TypeError('Invalid Arena provider URL');}
  if(u.username||u.password||u.search||u.hash||
