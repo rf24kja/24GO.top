@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="./library.css">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <script type="module" src="./library.mjs"></script>
+<script type="module" src="./intake.mjs"></script>
 </head><body>
 <a class="skip" href="#main-content">Skip to App Library</a>
 <header class="interior-header"><nav class="interior-nav" aria-label="Main navigation">
@@ -62,6 +63,39 @@
 <span class="library-number">04 / PUBLISHING PATH</span><h2 id="submit-title">How an application reaches the Library</h2>
 <p><strong>ZIP or GitHub source → static package validation → manual security review → isolated runtime review → curated catalog → public link.</strong> Library v1 supports only HTML, CSS, JS and safe static assets. Arbitrary backend applications, credentials and server execution are not part of the product.</p>
 <p>For this public OSS stage, contributors submit their ZIP source or a GitHub repository through a pull request, with a reproducible validation report. Nobody can deploy unreviewed scripts directly to this website. Automated account-based upload/approval and separate-origin hosting are future hosted-core features.</p>
+<section class="library-intake" aria-labelledby="intake-title">
+<h3 id="intake-title">Check a static app ZIP without uploading it</h3>
+<p>Prepare a review request from your browser. ZIP32 packages with HTML/CSS/JS and static images are checked for safe paths, sizes, compression, checksums and suspicious capabilities. This is a <strong>preliminary source check, not a security approval or deployment</strong>. Nothing leaves your device unless you explicitly open a GitHub review request.</p>
+<div class="library-intake__controls">
+<label for="library-zip">Choose a ZIP file (up to 4 MiB)</label>
+<input type="file" id="library-zip" accept=".zip,application/zip,application/x-zip-compressed">
+<button type="button" id="library-validate" disabled>Check local ZIP</button>
+<button type="button" id="library-intake-clear">Reset check</button>
+</div>
+<p id="library-intake-status" role="status" aria-live="polite">Choose a ZIP to check in this browser. No files are sent to 24GOTOP.</p>
+<div id="library-intake-results" hidden>
+<h4>Local validation report</h4>
+<p id="library-intake-summary"></p>
+<ul id="library-intake-files" class="library-intake-files" aria-label="Locally checked package files"></ul>
+<p>This report does not establish ownership or permission to run this app on 24go.top. Human code review and separate-origin hosting remain mandatory for third-party software.</p>
+<div class="library-intake__actions">
+<button type="button" id="library-copy-report">Copy full review report</button>
+</div>
+<p id="library-copy-status" role="status" aria-live="polite"></p>
+<label for="library-copy-fallback" id="library-copy-label" hidden>Manually select and copy the review report</label>
+<textarea id="library-copy-fallback" readonly hidden rows="5"></textarea>
+<h4>Request a human source review</h4>
+<p>The review link sends only the title, public GitHub repository URL, file count and archive checksum to GitHub <strong>after you click it</strong>; the ZIP remains on your device. You must sign in to GitHub and submit the issue yourself. This is not public app publication.</p>
+<div class="library-intake__metadata">
+<div><label for="library-app-name">Application name</label>
+<input id="library-app-name" type="text" maxlength="70" placeholder="My Static Utility" autocomplete="off"></div>
+<div><label for="library-app-source">Public GitHub source repository</label>
+<input id="library-app-source" type="url" maxlength="220" placeholder="https://github.com/owner/repository" autocomplete="off"></div>
+</div>
+<p id="library-review-status" role="status" aria-live="polite">Enter an application name and a public source repository to prepare a review link.</p>
+<a id="library-review-link" href="#" target="_blank" rel="noopener noreferrer nofollow" hidden>Open GitHub source review request ↗</a>
+</div>
+</section>
 <div class="library-links">
 <a href="https://github.com/rf24kja/24GO.top/blob/main/docs/STATIC_APP_LIBRARY.md">Developer submission &amp; ZIP validation guide ↗</a>
 <a href="https://github.com/rf24kja/24GO.top/pulls">GitHub source review ↗</a>
