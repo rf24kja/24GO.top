@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {formatDraftSelection,formatDraftImageSelection,countDraftWords,findDraftText,replaceDraftFindMatch,replaceAllDraftMatches} from '../site/draft-lab-logic.js';
+import {formatDraftSelection,formatDraftImageSelection,countDraftWords,findDraftText,replaceDraftFindMatch,replaceAllDraftMatches,locateDraftSections} from '../site/draft-lab-logic.js';
 import {parsePreviewBlocks} from '../site/draft-lab-preview.js';
 function apply(value,start,end,action){
  const edit=formatDraftSelection(value,start,end,action);
@@ -285,4 +285,45 @@ test('bulk replace rejects invalid types, whitespace-only queries and expansions
  assert.throws(()=>replaceAllDraftMatches('a'.repeat(12000),'a','aa'),RangeError);
  assert.equal(replaceAllDraftMatches('a'.repeat(12000),'a','').body.length,0);
  assert.equal(replaceAllDraftMatches('a'.repeat(11999),'a','a'),null);
+});
+
+test('source section navigation uses exact UTF-16 offsets, including emoji, duplicate headings and CRLF',()=>{
+ const body=['# A','Intro 🌍','## Repeat','Some text','## Repeat',
+   '### 中文 ภาษาไทย','More'].join('\r\n');
+ const result=locateDraftSections(body);
+ assert.equal(result.length,4);
+ assert.deepEqual(result.map(x=>[x.level,x.title,x.line]),[
+  [1,'A',1],[2,'Repeat',3],[2,'Repeat',5],[3,'中文 ภาษาไทย',6]
+ ]);
+ assert.deepEqual(result.map(x=>body.slice(x.start,x.end)),[
+  '# A','## Repeat','## Repeat','### 中文 ภาษาไทย'
+ ]);
+ assert.ok(result.every(x=>Object.isFrozen(x)));
+ assert.ok(Object.isFrozen(result));
+ assert.notEqual(result[1].start,result[2].start,'identical headings navigate independently');
+ const emoji='🚀 intro\n## Next 🚀';
+ const selected=locateDraftSections(emoji)[0];
+ assert.equal(emoji.slice(selected.start,selected.end),'## Next 🚀');
+ assert.equal(selected.start,9,'UTF-16 (not code point) offset');
+});
+
+test('source section navigation ignores fenced code and indented code, caps counts',()=>{
+ const body=['## Real',
+   '````md','## Fake fenced','```','### Still fenced','````',
+   '    # Indented fake','\t## Tab-indented fake',
+   '~~~txt','# Tilde fake','~~~',
+   '  ### Real two','plain # not heading','#### Not in limited preview',
+   '# Final'].join('\n');
+ const result=locateDraftSections(body);
+ assert.deepEqual(result.map(x=>x.title),['Real','Real two','Final']);
+ assert.equal(result[0].start,0);
+ assert.equal(result[1].line,12);
+ assert.equal(result[2].line,15);
+ assert.deepEqual(locateDraftSections(''),[]);
+ assert.deepEqual(locateDraftSections('#### Four\n## \n# X').map(x=>x.title),['X']);
+ const many=Array.from({length:100},(_,i)=>'# S'+i).join('\n');
+ assert.equal(locateDraftSections(many).length,80);
+ for(const invalid of [null,undefined,15,{},'a'.repeat(12001)]){
+  assert.throws(()=>locateDraftSections(invalid),TypeError);
+ }
 });
