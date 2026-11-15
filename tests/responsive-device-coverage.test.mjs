@@ -113,7 +113,7 @@ test('every published HTML route is covered automatically by real Chromium devic
  // include the site navigation; the dedicated browser gate runs them instead.
  assert.match(script,/if\(path\.startsWith\('library\/apps\/'\)\)continue/);
  const appBrowser=read('scripts/check-library-browser.mjs');
- for(const app of ['json-inspector','contrast-checker']){
+ for(const app of ['json-inspector','contrast-checker','text-diff']){
   assert.ok(actual.includes('library/apps/'+app+'/index.html'));
   assert.ok(appBrowser.includes('/library/apps/'+app+'/'));
  }
