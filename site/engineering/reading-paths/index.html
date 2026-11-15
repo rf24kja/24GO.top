@@ -15,60 +15,69 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=portfolio3">
 </head>
 <body>
-<a class="skip" href="#main-content">Skip to reading path builder</a>
+<a class="skip" href="#main-content" data-path-ui="skip">Skip to reading path builder</a>
 <header class="interior-header">
 <nav class="wrap interior-nav" aria-label="Main navigation">
 <a class="interior-brand" href="../../" aria-label="24GOTOP home">24GO<span>TOP</span><span class="interior-brand__dot" aria-hidden="true"></span></a>
 <div class="interior-links">
-<a href="../../">Home</a><a href="../">Articles</a>
-<a href="./" aria-current="page">Reading paths</a>
+<a href="../../" data-path-ui="navHome">Home</a><a href="../" data-path-ui="navArticles">Articles</a>
+<a href="./" aria-current="page" data-path-ui="navPaths">Reading paths</a>
 <a href="../../draft-lab.html">Draft Lab</a>
-<a href="../../progress.html">Development</a>
+<a href="../../progress.html" data-path-ui="navDevelopment">Development</a>
 </div>
 </nav>
 </header>
 <main class="wrap path-main" id="main-content" tabindex="-1">
+<div class="path-locale"><label for="path-ui-locale" data-path-ui="localeLabel">Interface language</label>
+<select id="path-ui-locale" aria-label="Interface language" data-path-ui-label="localeLabel">
+<option value="en">English</option><option value="ru">Русский</option>
+<option value="th">ภาษาไทย</option><option value="es">Español</option>
+<option value="fr">Français</option><option value="de">Deutsch</option>
+<option value="pt">Português</option><option value="zh">中文</option>
+</select></div>
 <p class="eyebrow">24GOTOP / EXPLORE KNOWLEDGE</p>
-<h1>Build a reading path.</h1>
-<p class="path-lead">Pick original technical articles and arrange a learning journey for someone else. Share the order and title in a link. The articles are already publicly reviewed; this does not publish a new article or change anybody's account.</p>
-<div class="path-note" role="note"><strong>Your choices stay in this tab.</strong> The share link stores only selected public article filenames and your chosen title in the URL fragment. There is no sign-in, server-side collection, automatic browser storage or analytics. Anyone with the link can see the title and selected articles; do not include private information.</div>
-<div id="path-status" class="path-feedback" role="status" aria-live="polite" aria-atomic="true">Loading the public engineering catalog…</div>
+<h1 data-path-ui="heading">Build a reading path.</h1>
+<p class="path-lead" data-path-ui="intro">Choose reviewed technical articles and arrange them in a useful order. Share a link with another reader or a local AI agent. This does not publish an article.</p>
+<div class="path-note" role="note"><strong data-path-ui="privacyLead">Your choices stay in this tab.</strong><span data-path-ui="privacyTail"> The link contains only your title and selected public article IDs. No sign-in, automatic storage or upload. Do not put private information in the title.</span></div>
+<div id="path-status" class="path-feedback" role="status" aria-live="polite" aria-atomic="true" data-path-ui="loading">Loading the public engineering catalog…</div>
 <div class="path-columns">
 <section class="path-panel" aria-labelledby="catalog-heading">
-<div class="path-panel-head"><div><p class="eyebrow">01 / DISCOVER</p><h2 id="catalog-heading">Available articles</h2></div><span id="catalog-count" class="path-count">—</span></div>
-<label for="path-search">Filter public technical notes</label>
-<input id="path-search" type="search" placeholder="Security, API, Markdown, PostgreSQL…" maxlength="80" autocomplete="off">
+<div class="path-panel-head"><div><p class="eyebrow" data-path-ui="discover">01 / DISCOVER</p><h2 id="catalog-heading" data-path-ui="catalogHeading">Available articles</h2></div><span id="catalog-count" class="path-count">—</span></div>
+<label for="path-search" data-path-ui="filterLabel">Filter public technical notes</label>
+<input id="path-search" type="search" placeholder="Security, API, Markdown, PostgreSQL…" data-path-ui-placeholder="filterPlaceholder" maxlength="80" autocomplete="off">
 <ul id="path-catalog" class="path-catalog" aria-label="Available public articles"></ul>
-<p class="path-small">These are actual published engineering notes from the public archive. <a href="./">Browse the full archive</a>.</p>
+<p class="path-small"><span data-path-ui="browseIntro">Only published engineering notes.</span> <a href="../" data-path-ui="browseLink">Browse the archive</a>.</p>
 </section>
 <section class="path-panel" aria-labelledby="selection-heading">
-<div class="path-panel-head"><div><p class="eyebrow">02 / CURATE</p><h2 id="selection-heading">Your learning path</h2></div><span id="selected-count" class="path-count">0 / 10</span></div>
-<label for="path-title">Path title</label>
-<input id="path-title" maxlength="80" value="My 24GOTOP reading path" placeholder="My 24GOTOP reading path" autocomplete="off">
-<p class="path-small">Add up to 10 articles. Move them up or down to create a deliberate sequence. Your title is part of the shareable URL. You can also download the ordered list as a Markdown file to use offline.</p>
+<div class="path-panel-head"><div><p class="eyebrow" data-path-ui="curate">02 / CURATE</p><h2 id="selection-heading" data-path-ui="selectionHeading">Your learning path</h2></div><span id="selected-count" class="path-count">0 / 10</span></div>
+<label for="path-title" data-path-ui="titleLabel">Path title</label>
+<input id="path-title" maxlength="80" value="My 24GOTOP reading path" placeholder="My 24GOTOP reading path" data-path-ui-placeholder="titlePlaceholder" autocomplete="off">
+<p class="path-small" data-path-ui="selectionHelp">Choose up to 10 articles, adjust their order and share a link or download a Markdown list. Your title is visible to anyone with the link.</p>
 <ol id="path-selected" class="path-selected" aria-label="Selected articles in reading order"></ol>
 <div class="path-actions">
-<button id="path-copy-link" class="path-primary" type="button" disabled>Copy shareable link</button>
-<button id="path-copy-mcp" type="button" disabled>Copy MCP tool input</button>
-<button id="path-copy-markdown" type="button" disabled>Copy Markdown list</button>
-<button id="path-download-markdown" type="button" disabled>Download Markdown .md</button>
-<button id="path-reset" type="button" disabled>Clear path</button>
+<button id="path-copy-link" class="path-primary" type="button" disabled data-path-ui="copyLink">Copy shareable link</button>
+<button id="path-copy-mcp" type="button" disabled data-path-ui="copyMcp">Copy MCP tool input</button>
+<button id="path-copy-markdown" type="button" disabled data-path-ui="copyMarkdown">Copy Markdown list</button>
+<button id="path-download-markdown" type="button" disabled data-path-ui="downloadMarkdown">Download Markdown .md</button>
+<button id="path-reset" type="button" disabled data-path-ui="reset">Clear path</button>
 </div>
-<label for="path-manual-copy" id="path-manual-label" hidden>Manual copy when clipboard access is unavailable</label>
+<label for="path-manual-copy" id="path-manual-label" hidden data-path-ui="manualCopy">Copy this text manually if clipboard access is unavailable</label>
 <textarea id="path-manual-copy" rows="5" readonly spellcheck="false" hidden></textarea>
 <p id="path-copy-status" class="path-small" role="status" aria-live="polite" aria-atomic="true"></p>
 </section>
 </div>
 <section class="path-finish" aria-labelledby="finish-heading">
-<p class="eyebrow">03 / SHARE</p>
-<h2 id="finish-heading">A learning path, not another feed.</h2>
-<p>You decide what to read first, what to leave out, and which details are worth passing to another developer. Recipients open the real article URLs. No one can add unpublished drafts or arbitrary external links to this collection.</p>
-<h3>Share this path with a local AI agent</h3>
-<p>Choose your articles, then select <strong>Copy MCP tool input</strong>. Paste the JSON into the <code>resolve_reading_path</code> tool of the <a href="https://github.com/rf24kja/24GO.top/blob/main/docs/PUBLIC_ARTICLE_MCP.md" rel="noopener noreferrer">public, read-only 24GOTOP MCP server</a>. The MCP server runs from your own local Git checkout; there is no hosted MCP account or agent publishing endpoint. The copied JSON contains only the public article selection and the title in the link fragment. Do not put secrets in a reading path title.</p>
-<p>For a private draft, use the <a href="../../draft-lab.html">local Draft Lab</a>. For feedback and collaborative contributions, visit <a href="../../contribute.html">Contribute</a>. Verified community accounts and hosted public publishing are still in development.</p>
+<p class="eyebrow" data-path-ui="share">03 / SHARE</p>
+<h2 id="finish-heading" data-path-ui="finishHeading">A learning path, not another feed.</h2>
+<p data-path-ui="finishIntro">You choose the reading order; recipients open the original public articles. No drafts or arbitrary external links can be inserted.</p>
+<h3 data-path-ui="agentHeading">Share with a local AI agent</h3>
+<p data-path-ui="agentIntro">Copy MCP tool input, then pass the JSON to the local read-only resolve_reading_path MCP tool. The tool uses your own Git checkout; there is no hosted MCP service or automatic publication.</p>
+<p><a href="https://github.com/rf24kja/24GO.top/blob/main/docs/PUBLIC_ARTICLE_MCP.md" rel="noopener noreferrer">24GOTOP Public MCP documentation (EN)</a></p>
+<p data-path-ui="finishLast">For private writing use Draft Lab; for reviewed contributions use Contribute. Community accounts and hosted publishing are still in development.</p>
+<p><a href="../../draft-lab.html">Draft Lab</a> · <a href="../../contribute.html">Contribute</a></p>
 </section>
 <noscript><p class="path-note">This interactive feature requires JavaScript. You can still read all original technical notes in the <a href="../">engineering archive</a>.</p></noscript>
 </main>
-<footer class="interior-footer"><div class="wrap">24GOTOP · Public technical learning paths · <a href="../feed.json">Original article feed</a></div></footer>
+<footer class="interior-footer"><div class="wrap"><span data-path-ui="footer">24GOTOP · Public technical learning paths ·</span> <a href="../feed.json" data-path-ui="feedLink">Original article feed</a></div></footer>
 </body>
 </html>
