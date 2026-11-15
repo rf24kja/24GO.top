@@ -611,6 +611,63 @@ function exerciseDraftSourceNavigation(){
   scroll:Math.max(document.body.scrollWidth,document.documentElement.scrollWidth)};
 }
 
+// Real article-page handoff into the LOCAL read_article_section tool.
+// Checks DOM controls, clipboard permission fallback and mobile-safe layout.
+async function waitForArticleSectionMcp(){
+ for(let attempt=0;attempt<100;attempt++){
+  const tools=document.getElementById('article-reader-tools');
+  const buttons=document.querySelectorAll('.article-reader__toc-mcp');
+  if(tools&&buttons.length>=5)return buttons.length;
+  await new Promise(resolve=>setTimeout(resolve,40));
+ }
+ throw Error('Article section MCP controls failed to mount');
+}
+async function exerciseArticleSectionMcp(){
+ const menu=document.querySelector('.article-reader__menu');
+ const original=Object.getOwnPropertyDescriptor(navigator,'clipboard');
+ const doc=document.querySelector('article.article');
+ const buttons=[...document.querySelectorAll('.article-reader__toc-mcp')];
+ const navLinks=[...document.querySelectorAll('.article-reader__toc a')];
+ const manual=document.querySelector('.article-reader__manual');
+ const status=document.querySelector('.article-reader__status');
+ const oldStorage=localStorage.getItem('24gotop-public-reading-list-v1');
+ const oldArticle=doc.textContent;
+ const copyValues=[];
+ try{
+  menu.open=true;
+  Object.defineProperty(navigator,'clipboard',{configurable:true,value:{
+   async writeText(text){copyValues.push(text);}
+  }});
+  buttons[0].focus();buttons[0].click();
+  await new Promise(done=>setTimeout(done,0));
+  const parsed=JSON.parse(copyValues[0]);
+  const canonical=document.querySelector('link[rel="canonical"]').href;
+  const firstId=navLinks[0]?.getAttribute('href').slice(1);
+  const correct=parsed.url===canonical&&parsed.sectionId===firstId&&
+   copyValues.length===1&&status.textContent==='Copied to clipboard.'&&
+   menu.open&&!manual.hidden===false&&document.activeElement===buttons[0];
+  Object.defineProperty(navigator,'clipboard',{configurable:true,value:{
+   async writeText(){throw Error('Clipboard permission denied');}
+  }});
+  buttons[1].focus();buttons[1].click();
+  await new Promise(done=>setTimeout(done,0));
+  const fallback=manual.hidden===false&&
+   JSON.parse(manual.value).sectionId===navLinks[1]?.getAttribute('href').slice(1)&&
+   document.activeElement===manual&&status.textContent.includes('Clipboard unavailable');
+  const readOnly=doc.textContent===oldArticle&&
+   localStorage.getItem('24gotop-public-reading-list-v1')===oldStorage;
+  const heights=buttons.map(x=>x.getBoundingClientRect().height);
+  return {total:buttons.length,correct,fallback,readOnly,
+   validLinks:navLinks.every(x=>/^#section-[a-z0-9-]+$/.test(x.getAttribute('href'))),
+   heights,viewport:document.documentElement.clientWidth,
+   scroll:Math.max(document.documentElement.scrollWidth,document.body.scrollWidth)};
+ }finally{
+  if(original)Object.defineProperty(navigator,'clipboard',original);
+  else delete navigator.clipboard;
+  menu.open=false;
+ }
+}
+
 // Real Chromium interaction: no mocks for the editor or its local undo.
 // Confirmation is intercepted to avoid browser modal deadlocks in headless CI.
 function exerciseDraftReplaceAll(){
@@ -1223,6 +1280,34 @@ async function main(){
       JSON.stringify(result));
   }
   console.log('PASS Chromium article search Markdown downloads: 280/390/844 landscape/768 tablet/1440 desktop, canonical links and no browser storage');
+  // Human-to-local-MCP section input works on every published article,
+  // with no network/upload and accessible controls on the smallest phone.
+  for(const profile of [
+   {name:'compact-280',width:280,height:600,dpr:2,mobile:true},
+   {name:'phone-390',width:390,height:844,dpr:3,mobile:true},
+   {name:'landscape-844',width:844,height:390,dpr:3,mobile:true},
+   {name:'desktop-1440',width:1440,height:900,dpr:1,mobile:false}
+  ]){
+   await c.send('Emulation.setDeviceMetricsOverride',{
+    width:profile.width,height:profile.height,deviceScaleFactor:profile.dpr,
+    mobile:profile.mobile
+   },sessionId);
+   await c.send('Emulation.setTouchEmulationEnabled',{
+    enabled:profile.mobile,maxTouchPoints:profile.mobile?5:1
+   },sessionId);
+   await c.send('Page.navigate',{
+    url:origin+'/engineering/read-only-mcp-server-for-technical-articles.html'
+   },sessionId);
+   await c.call(waitForArticleSectionMcp,sessionId);
+   const handoff=await c.call(exerciseArticleSectionMcp,sessionId);
+   if(handoff.total<5||!handoff.correct||!handoff.fallback||
+      !handoff.readOnly||!handoff.validLinks||
+      handoff.heights.some(h=>h<43.5)||
+      handoff.scroll>handoff.viewport+1)
+    throw Error('On-article local MCP section handoff '+profile.name+': '+
+      JSON.stringify(handoff));
+  }
+  console.log('PASS Chromium article→local MCP section input: clipboard fallback, canonical URLs, 280/390/844/1440 layouts');
   // Exercise real dynamic reading-path DOM, not only the initial static HTML.
   // Each device is a fresh reload of the public feed and selected controls.
   const pathProfiles=[
