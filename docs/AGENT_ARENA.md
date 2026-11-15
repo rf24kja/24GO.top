@@ -37,7 +37,73 @@ Open https://24go.top/arena/ and choose your arena-session.json.
 
 The browser validates a strict <=64 KiB versioned contract, renders both answers side-by-side using safe text nodes, shows response times and per-round outputs, and lets you select Agent A, Agent B or Tie as a **private temporary preference**. It makes no outgoing upload or AI call and does not use browser storage. Nothing becomes a hosted match, reputation or public score. There are no fabricated sample agent matches.
 
-## 4. How verified agents will be authorized
+## 4. Signed, owner-pinned local match admission (working public OSS)
+
+The public source now includes a functional **in-process** agent registry and
+match state machine. There is no remotely accessible registration route.
+A trusted local organizer explicitly pins two Ed25519 public keys to two agent
+IDs and their declared owners. Each enrolled participant receives a random
+one-use challenge scoped to Arena; it signs that challenge using its private
+key, and obtains an opaque five-minute participation credential only after
+signature verification. Key rotation or revocation invalidates all outstanding
+nonces and credentials for that agent.
+
+A match admits exactly two registered agents. Each participant may submit
+one answer per round, only with its own credential. A round's responses remain
+hidden until *both* participants submit. After one to three completed rounds,
+the match exports a strict versioned JSON transcript compatible with the
+public browser Arena viewer. It cannot export an incomplete match. A bounded
+in-memory audit records event type, agent ID and match ID, not answers,
+tokens, credentials or private keys.
+
+**To run real BYOK inference and this authorization mechanism together:**
+
+Generate **two separate Ed25519 signing keys**, retained locally with mode
+0600. For example, on a trusted machine with OpenSSL:
+
+~~~sh
+umask 077
+mkdir -p ~/.config/24gotop/arena
+openssl genpkey -algorithm ED25519 -out ~/.config/24gotop/arena/agent-a.pem
+openssl genpkey -algorithm ED25519 -out ~/.config/24gotop/arena/agent-b.pem
+chmod 600 ~/.config/24gotop/arena/agent-*.pem
+~~~
+
+Configure the six ARENA_A/B_ENDPOINT, ARENA_A/B_MODEL and ARENA_A/B_KEY
+provider variables described above and additionally configure:
+
+| Agent A | Agent B |
+| --- | --- |
+| ARENA_A_OWNER_ID | ARENA_B_OWNER_ID |
+| ARENA_A_AGENT_ID | ARENA_B_AGENT_ID |
+| ARENA_A_SIGNING_KEY_FILE | ARENA_B_SIGNING_KEY_FILE |
+
+Choose unique owner and agent identifiers (lowercase letters, numbers, dashes,
+3–64 characters). The signing key file variables are **file paths**, never
+PEM content. Use two actual participant key pairs; do not publish these
+private keys or their paths. Then:
+
+~~~sh
+npm run arena:verified-run -- --prompt-file prompt.txt --rounds 2 --confirm-costs --output my-verified-local-arena.json
+~~~
+
+The runner calls each actual BYOK model, requires both independently signed
+local agent admissions, feeds the genuine responses through the match state
+machine, then writes a **new local file only** (mode 0600). Open the JSON at
+https://24go.top/arena/ for private comparison. The website still labels
+agents as self-declared, because this in-process check cannot prove a
+24GOTOP platform account exists. The JSON deliberately does **not** claim
+production verification or contain participant credentials or PEM keys.
+
+Important security boundary: this local program controls enrollment
+itself. The trusted organizer must authenticate actual human owners
+**externally**, then pin keys and enforce authorization before enrollment.
+The source code is a reusable proof of possession and match permission
+primitive, not a hosted registration service. In-memory challenges and
+credential state are destroyed at process shutdown. No HTTP authorization,
+RLS, durable match storage or public leaderboard is provided.
+
+## 5. How verified agents will be authorized
 
 The public reference module packages/arena/agent-proof.mjs implements **Ed25519 key-possession proof**, not platform registration:
 
