@@ -1,3 +1,9 @@
+## Unreleased — repeatable local Agent Arena comparisons
+
+- The live public Arena page supports importing 2–8 existing real local match transcripts together, rating each match as A / B / tie (or unreviewed), and viewing a source-derived local scoreboard across declared model identities.
+- Calculates normalized win points only from explicit human judgments, preserves unreviewed data separately, prevents duplicate files and invalid identities, and provides a privacy-bounded local Markdown export that excludes original prompts, response text and credentials. No fabricated matches, backend writes, uploads, browser persistence or hosted ranking claims.
+- Adds strict pure scoring tests and real Chromium mobile/desktop E2E for multi-file import, private rating, equality math, Markdown download, duplicate rejection and zero external requests.
+
 ## Unreleased — signed local Arena admission and authenticated match lifecycle
 
 - Added a fully functioning **in-process** owner-pinned Ed25519 agent registry: enrollment through a trusted organizer API, random single-use challenge, scoped five-minute credential, cryptographic login, owner-only key rotation/revocation, bounded audit and strict pre-auth capacity limits.
