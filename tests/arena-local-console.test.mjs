@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {generateKeyPairSync} from 'node:crypto';
+import {request as rawHttpRequest} from 'node:http';
 import {mkdtemp,writeFile,chmod,rm} from 'node:fs/promises';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
@@ -92,7 +93,7 @@ test('origin, host, missing bearer, content-type and cost consent reject without
   assert.equal(wrongOrigin.status,403);
   const noOrigin=await post(server,token,request(),{Origin:''});
   assert.equal(noOrigin.status,403);
-  const wrongToken=await post(server,token.slice(0,-1)+'_',request());
+  const wrongToken=await post(server,token.slice(0,-1)+(token.at(-1)==='a'?'b':'a'),request());
   assert.equal(wrongToken.status,401);
   const missingToken=await fetch(server.origin+'/api/run',{
    method:'POST',headers:{Origin:server.origin,'Content-Type':'application/json'},
@@ -111,8 +112,17 @@ test('origin, host, missing bearer, content-type and cost consent reject without
   assert.equal(badQuestion.status,400);
   const huge=await post(server,token,{...request(),prompt:'z'.repeat(25000)});
   assert.equal(huge.status,413);
-  const forbiddenHost=await fetch(server.origin+'/',{headers:{Host:'evil.example'}});
-  assert.equal(forbiddenHost.status,403);
+  // undici normalizes Host to URL authority, so use actual raw Node HTTP
+  // to send the attacker-controlled Host header under test.
+  const forbiddenHost=await new Promise((resolve,reject)=>{
+   const req=rawHttpRequest(server.origin+'/',{
+    method:'GET',headers:{Host:'evil.example'}
+   },response=>{
+    response.resume();response.on('end',()=>resolve(response.statusCode));
+   });
+   req.once('error',reject);req.end();
+  });
+  assert.equal(forbiddenHost,403);
   const missingPath=await fetch(server.origin+'/../../.env');
   assert.equal(missingPath.status,404);
   const method=await fetch(server.origin+'/api/run');
