@@ -123,14 +123,6 @@ async function main(){
  let browser,ws,server;
  try{
   const calls=[];
-  server=await startLocalArenaConsole({config:config(),fetcher:async(url,options)=>{
-   const data=JSON.parse(options.body);
-   calls.push(data);
-   return new Response(JSON.stringify({
-    choices:[{message:{content:'Real mocked '+data.model+' round '+
-     (data.messages[2].content.includes('<previous_self>')?'2':'1')}}]
-   }),{status:200});
-  }});
   browser=await launchChromium({profilePrefix:'24gotop-local-console-'});
   ws=new WebSocket(browser.address);
   await new Promise((ok,bad)=>{ws.addEventListener('open',ok,{once:true});
@@ -141,6 +133,14 @@ async function main(){
   for(const m of ['Page.enable','Runtime.enable','Network.enable'])
    await c.request(m,{},sessionId);
   for(const width of [280,390,844,1440]){
+  server=await startLocalArenaConsole({config:config(),fetcher:async(url,options)=>{
+   const data=JSON.parse(options.body);
+   calls.push(data);
+   return new Response(JSON.stringify({
+    choices:[{message:{content:'Real mocked '+data.model+' round '+
+     (data.messages[2].content.includes('<previous_self>')?'2':'1')}}]
+   }),{status:200});
+  }});
    await c.request('Emulation.setDeviceMetricsOverride',{
     width,height:width===844?390:850,mobile:width<1000,deviceScaleFactor:1
    },sessionId);
@@ -151,6 +151,7 @@ async function main(){
       'downloaded','touch','noStorage'].includes(key)&&!value)||
       data.scroll>data.width+1)
     throw Error('Live loopback Arena Chromium '+width+': '+JSON.stringify(data));
+   await server.close();server=null;
   }
   if(calls.length!==16||calls.some(x=>x.max_tokens!==400))
    throw Error('Unexpected actual model request count or output token budget');
