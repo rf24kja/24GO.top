@@ -42,3 +42,33 @@ export function filterLibrary(apps,query,category='all'){
  return apps.filter(app=>(category==='all'||app.category===category)&&
   [app.name,app.description,app.category,...app.features].join(' ').toLocaleLowerCase().includes(needle));
 }
+
+
+/** Offline comparison report of two selected, reviewed first-party static apps.
+ * Does not include user-provided app code, personal data, rankings or votes.
+ */
+export function libraryComparisonMarkdown(catalog,ids){
+ const [a,b]=selectComparison(catalog,ids);
+ const describe=app=>[
+  '## '+app.name,'',
+  '- Category: '+app.category,
+  '- Version: '+app.version,
+  '- License: '+app.license,
+  '- Runtime: '+app.runtime,
+  '- Network access: '+app.network,
+  '- Reviewed app: https://24go.top'+app.entry,
+  '- Public source: '+app.source,
+  '',
+  app.description,
+  '',
+  '### Source-backed features','',
+  ...app.features.map(feature=>'- '+feature),''
+ ].join('\n');
+ return [
+  '# 24GOTOP Library — static app comparison','',
+  'Two reviewed first-party static apps. Source-backed features only; no fabricated reviews, ratings, prices or performance benchmarks.','',
+  describe(a),describe(b),
+  '---','',
+  'Static app previews run in a restricted iframe. This report is not security certification or third-party publication.',''
+ ].join('\n');
+}

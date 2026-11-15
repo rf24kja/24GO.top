@@ -79,6 +79,36 @@ async function exerciseLibrary(){
   rows.some(x=>x.textContent.includes('WCAG 2.2'))&&
   document.getElementById('compare-a').textContent==='JSON Inspector'&&
   document.getElementById('compare-b').textContent==='Contrast Checker';
+ // Exercise the real Blob download without letting Chromium write a test file.
+ let downloadable=false;
+ const oldCreate=URL.createObjectURL,oldRevoke=URL.revokeObjectURL;
+ const oldClick=HTMLAnchorElement.prototype.click;
+ let blob=null,downloads=0,revoked=0,filename='';
+ try{
+  URL.createObjectURL=value=>{blob=value;return 'blob:http://127.0.0.1/library-test';};
+  URL.revokeObjectURL=url=>{if(url==='blob:http://127.0.0.1/library-test')revoked++;};
+  HTMLAnchorElement.prototype.click=function(){
+   if(this.download){downloads++;filename=this.download;}
+  };
+  const button=document.getElementById('compare-download');
+  const ready=!button.disabled&&button.getBoundingClientRect().height>=43.5;
+  button.click();
+  await new Promise(done=>setTimeout(done,35));
+  const markdown=blob&&await blob.text();
+  downloadable=ready&&downloads===1&&
+   filename==='24gotop-library-comparison.md'&&
+   blob.type==='text/markdown;charset=utf-8'&&
+   markdown.startsWith('# 24GOTOP Library — static app comparison')&&
+   markdown.includes('## JSON Inspector')&&
+   markdown.includes('## Contrast Checker')&&
+   markdown.includes('https://github.com/rf24kja/24GO.top/tree/main/site/library/apps/contrast-checker')&&
+   !markdown.includes('Authorization: Bearer')&&
+   revoked===1&&document.getElementById('compare-export-status').textContent.includes('download requested');
+ }finally{
+  URL.createObjectURL=oldCreate;
+  URL.revokeObjectURL=oldRevoke;
+  HTMLAnchorElement.prototype.click=oldClick;
+ }
  const launch=cards()[0].querySelector('button');
  const frame=document.getElementById('library-frame'),preview=document.getElementById('preview-area');
  launch.click();
@@ -94,9 +124,10 @@ async function exerciseLibrary(){
  const closed=preview.hidden&&!frame.hasAttribute('src');
  document.getElementById('compare-reset').click();
  const cleared=document.getElementById('compare-open').disabled&&
+  document.getElementById('compare-download').disabled&&
   document.getElementById('compare-count').textContent==='0 of 2 selected';
  const width=document.documentElement.clientWidth;
- return {initial,searched,category,selected,compared,launched,opaque,closed,cleared,
+ return {initial,searched,category,selected,compared,downloadable,launched,opaque,closed,cleared,
   width,scroll:Math.max(document.documentElement.scrollWidth,document.body.scrollWidth),
   actionHeight:launch.getBoundingClientRect().height,
   noStorage:localStorage.length===storageBefore};
@@ -282,7 +313,7 @@ async function main(){
    await c.evaluate(waitForLibrary,sessionId);
    const result=await c.evaluate(exerciseLibrary,sessionId);
    if(!result||Object.entries(result).some(([key,value])=>
-      ['initial','searched','category','selected','compared','launched','opaque','closed','cleared','noStorage'].includes(key)&&!value)||
+      ['initial','searched','category','selected','compared','downloadable','launched','opaque','closed','cleared','noStorage'].includes(key)&&!value)||
       result.scroll>result.width+1||result.actionHeight<43.5)
     throw Error('Library catalog Chromium '+width+': '+JSON.stringify(result));
    const intake=await c.evaluate(exerciseIntakeBrowser,sessionId,demoZipFixture());

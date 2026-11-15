@@ -1,8 +1,9 @@
-import {validateLibraryCatalog,selectComparison,filterLibrary} from './library-core.mjs';
+import {validateLibraryCatalog,selectComparison,filterLibrary,libraryComparisonMarkdown} from './library-core.mjs';
 
 const $=id=>document.getElementById(id);
 const cards=$('library-cards'),status=$('library-status'),search=$('library-search');
 const category=$('library-category'),compareBtn=$('compare-open'),resetBtn=$('compare-reset');
+const compareDownload=$('compare-download'),exportStatus=$('compare-export-status');
 const frame=$('library-frame'),preview=$('preview-area');
 let catalog=null;
 const chosen=new Set();
@@ -16,6 +17,7 @@ function announce(message,error=false){status.textContent=message;status.dataset
 function updateSelection(){
  $('compare-count').textContent=chosen.size+' of 2 selected';
  compareBtn.disabled=chosen.size!==2;
+ compareDownload.disabled=chosen.size!==2||$('compare-result').hidden;
  for(const btn of cards.querySelectorAll('[data-library-select]')){
   const selected=chosen.has(btn.dataset.librarySelect);
   btn.setAttribute('aria-pressed',String(selected));
@@ -95,13 +97,38 @@ compareBtn.addEventListener('click',()=>{
   appendComparisonRow(key,a[field],b[field]);
  appendComparisonRow('Source-backed features',a.features.join(' · '),b.features.join(' · '));
  $('compare-result').hidden=false;
+ compareDownload.disabled=false;
+ exportStatus.textContent='Comparison ready. Download a Markdown report to keep it on your device.';
  $('compare-result').scrollIntoView({block:'nearest',behavior:'auto'});
  $('compare-result').setAttribute('tabindex','-1');
  $('compare-result').focus({preventScroll:true});
 });
 resetBtn.addEventListener('click',()=>{
  chosen.clear();updateSelection();announce('Comparison selection cleared.');
+ exportStatus.textContent='Comparison selection cleared. Choose two apps to prepare a new report.';
 });
+compareDownload.addEventListener('click',()=>{
+ if(!catalog||chosen.size!==2||$('compare-result').hidden)return;
+ let objectUrl=null;
+ try{
+  const markdown=libraryComparisonMarkdown(catalog,[...chosen]);
+  const blob=new Blob([markdown],{type:'text/markdown;charset=utf-8'});
+  objectUrl=URL.createObjectURL(blob);
+  const link=document.createElement('a');
+  link.href=objectUrl;
+  link.download='24gotop-library-comparison.md';
+  link.hidden=true;
+  document.body.append(link);
+  try{link.click();}
+  finally{link.remove();}
+  exportStatus.textContent='Markdown comparison download requested. Verify the file was saved on your device.';
+ }catch{
+  exportStatus.textContent='Local comparison download unavailable. No network request was made.';
+ }finally{
+  if(objectUrl!==null)setTimeout(()=>URL.revokeObjectURL(objectUrl),0);
+ }
+});
+
 $('preview-close').addEventListener('click',()=>{
  closePreview();
  const button=cards.querySelector('button');
