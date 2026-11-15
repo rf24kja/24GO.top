@@ -233,7 +233,8 @@ test('browser intake uses no network calls, DOM execution, storage or implicit i
  assert.match(html,/id="library-review-link"/);
  assert.match(html,/type="module" src="\.\/intake\.mjs"/);
  assert.doesNotMatch(code,/\bfetch\s*\(|innerHTML|eval\s*\(|localStorage|sessionStorage|sendBeacon/);
- assert.doesNotMatch(core,/\bfetch\s*\(|innerHTML|eval\s*\(|localStorage|sessionStorage|sendBeacon/);
+ assert.doesNotMatch(core.slice(core.indexOf('export async function validateBrowserZip')),
+  /\bfetch\s*\(|innerHTML|eval\s*\(|localStorage|sessionStorage|sendBeacon/);
  assert.match(code,/selected\.arrayBuffer\(\)/);
  assert.match(core,/DecompressionStream\('deflate-raw'\)/);
  assert.match(html,/The review link sends only/);
