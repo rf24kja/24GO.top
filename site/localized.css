@@ -30,3 +30,11 @@
 
 /* Long German/French/Portuguese terms must wrap inside narrow mobile grid tracks. */
 .localized-roadmap>div,.localized-roadmap picture,.localized-roadmap img{min-width:0;max-width:100%}
+
+/* The localized public READ card offers both the original English archive
+   and the eight-language route builder. Keep links independently tappable. */
+.card>a.localized-reading-path{margin-top:12px;min-height:44px;
+ display:flex;align-items:center;overflow-wrap:anywhere;white-space:normal;
+ color:var(--accent)}
+.card>a.localized-reading-path:focus-visible{outline:3px solid var(--accent);
+ outline-offset:3px;border-radius:5px}
