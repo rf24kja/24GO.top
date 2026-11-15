@@ -1,3 +1,10 @@
+## Unreleased — localized instant topic shortcuts in public reading paths
+
+- Add five accessible, translated topic chips (Security, API, Markdown, Mobile, MCP) to the existing eight-language reading-path builder. Each chip searches the already downloaded, reviewed **English** title/summary corpus locally; the Security shortcut intentionally matches the corpus' existing word "safe". The chips do not translate article content or suggest semantic search.
+- Expose a single pressed state at a time with `aria-pressed`, toggle off on a second activation, clear chip selection when the author types their own search, and preserve existing selected articles, title, order, and canonical shared/MCP URL.
+- Add full eight-language labels/help, fixed allowlisted search terms, wrapping 44px+ touch controls, tests for nonempty real published results and real five-viewport Chromium checks, including no network/storage mutations.
+- Still PUBLIC read-only OSS, not hosted user publishing or private Core access. Native reviewer translations remain open in issue #8.
+
 ## Unreleased — multilingual browser reading-path builder (8 locales)
 
 - Localize the public reader-facing **Reading Paths** experience in English, Russian, Thai, Spanish, French, German, Portuguese and Chinese: core content, buttons, validation/clipboard feedback, search, keyboard labels and no-results states. Keep the source-reviewed technical articles in their original English; the UI explicitly explains the difference.
