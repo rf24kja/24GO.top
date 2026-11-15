@@ -1,3 +1,9 @@
+## Unreleased — local-language discovery of the Reading Paths builder
+
+- Connect the seven non-English public homepages (RU/TH/ES/FR/DE/PT/ZH) directly to the existing, deployed eight-language reading-path builder with each homepage's allowlisted `?ui=<locale>` parameter. Preserve the original English article archive and localized Draft Lab links.
+- Offer a second, accessible 44px+ touch/keyboard READ-card action. The destination contains no manuscript, personal information, account ID, analytics payload or automatic storage; shared reading-path URLs keep their strict canonical `#path=` format.
+- Validate the actual localized HTML, link placement, locale parity and accessibility CSS. CI's real Chromium mobile layouts and GitHub Pages exact-CDN audit must pass before publication.
+
 ## Unreleased — addressable published article sections via local read-only MCP
 
 - Add `list_article_sections` to enumerate source-ordered, anchor-linked H2/H3 headings from **already published** local technical articles, with exact canonical section links.
