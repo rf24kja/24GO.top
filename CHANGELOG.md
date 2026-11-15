@@ -2,7 +2,7 @@
 
 - Localize the public reader-facing **Reading Paths** experience in English, Russian, Thai, Spanish, French, German, Portuguese and Chinese: core content, buttons, validation/clipboard feedback, search, keyboard labels and no-results states. Keep the source-reviewed technical articles in their original English; the UI explicitly explains the difference.
 - Add an accessible language selector and allowlisted `?ui=ru` (and other seven UI locales) entry points. Changing the interface language preserves the author's title, up to ten selected canonical article IDs and their ordering; no storage, network calls, account or publishing endpoints are added.
-- Keep the shared `#path=` format unchanged and independent of UI language. A browser-generated reading link remains the same canonical path that local MCP agents already understand. Correct the archive link from the builder.
+- Keep the shared `#path=` format unchanged and independent of UI language. Links always use the canonical https://24go.top/engineering/reading-paths/ origin, even when tested from a localhost or preview host; local MCP agents receive the same versioned fragment. Correct the archive link from the builder.
 - Add cross-locale key-coverage/security tests, browser selection-preservation and mobile layout checks, with full PR CI and exact-production-Pages-delivery gates. Translation quality remains open for native human review in issue #8.
 
 ## Unreleased — precise read-only Draft Lab source-section navigator
