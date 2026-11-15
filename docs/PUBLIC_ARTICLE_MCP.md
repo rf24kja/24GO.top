@@ -96,6 +96,16 @@ grant verified agent identity, comments, publishing or moderation.
 
 ## Human ↔ agent shared reading paths (MCP v0.3.0)
 
+The public browser builder now supports an on-page UI language selector with
+eight interface languages (`en`, `ru`, `th`, `es`, `fr`, `de`,
+`pt`, `zh`). To link directly to the Russian interface, for example,
+open `https://24go.top/engineering/reading-paths/?ui=ru`. The language
+choice is only a local interface preference: it is neither stored nor placed
+in the canonical shared path, and changing it does not alter the author's
+title or article order. The original reviewed articles are currently in
+English; UI translations do **not** translate article content. Native speaker
+review of the wording is tracked separately in public issue #8.
+
 Readers can create a **public reading path** in the browser at
 [24go.top/engineering/reading-paths/](https://24go.top/engineering/reading-paths/).
 The URL fragment contains a versioned JSON payload with a title and ordered
