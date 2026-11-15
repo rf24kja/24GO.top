@@ -111,7 +111,8 @@ function exerciseJsonApp(){
  input.value='{broken';inspect.click();
  const refused=document.getElementById('status').dataset.error==='true'&&
   document.getElementById('result').textContent==='No output.';
- return {valid,refused,networkAPI:typeof window.fetch};
+ return {valid,refused,width:document.documentElement.clientWidth,
+  scroll:Math.max(document.documentElement.scrollWidth,document.body.scrollWidth)};
 }
 function exerciseContrast(){
  const f=document.getElementById('foreground'),b=document.getElementById('background');
@@ -123,7 +124,8 @@ function exerciseContrast(){
  b.value='#000000';b.dispatchEvent(new Event('input',{bubbles:true}));
  const low=document.getElementById('ratio').textContent.startsWith('1.00:1')&&
   document.getElementById('aa-normal').textContent==='FAIL';
- return {high,low};
+ return {high,low,width:document.documentElement.clientWidth,
+  scroll:Math.max(document.documentElement.scrollWidth,document.body.scrollWidth)};
 }
 async function main(){
  const http=server();let browser,ws;
@@ -150,14 +152,21 @@ async function main(){
       result.scroll>result.width+1||result.actionHeight<43.5)
     throw Error('Library catalog Chromium '+width+': '+JSON.stringify(result));
   }
-  await c.request('Page.navigate',{url:origin+'/library/apps/json-inspector/'},sessionId);
-  await new Promise(ok=>setTimeout(ok,200));
-  const json=await c.evaluate(exerciseJsonApp,sessionId);
-  if(!json.valid||!json.refused)throw Error('JSON Inspector failed: '+JSON.stringify(json));
-  await c.request('Page.navigate',{url:origin+'/library/apps/contrast-checker/'},sessionId);
-  await new Promise(ok=>setTimeout(ok,200));
-  const contrast=await c.evaluate(exerciseContrast,sessionId);
-  if(!contrast.high||!contrast.low)throw Error('Contrast Checker failed: '+JSON.stringify(contrast));
+  for(const width of [280,390,844,1440]){
+   await c.request('Emulation.setDeviceMetricsOverride',{
+    width,height:width===844?390:850,mobile:width<1000,deviceScaleFactor:1
+   },sessionId);
+   await c.request('Page.navigate',{url:origin+'/library/apps/json-inspector/'},sessionId);
+   await new Promise(ok=>setTimeout(ok,200));
+   const json=await c.evaluate(exerciseJsonApp,sessionId);
+   if(!json.valid||!json.refused||json.scroll>json.width+1)
+    throw Error('JSON Inspector '+width+': '+JSON.stringify(json));
+   await c.request('Page.navigate',{url:origin+'/library/apps/contrast-checker/'},sessionId);
+   await new Promise(ok=>setTimeout(ok,200));
+   const contrast=await c.evaluate(exerciseContrast,sessionId);
+   if(!contrast.high||!contrast.low||contrast.scroll>contrast.width+1)
+    throw Error('Contrast Checker '+width+': '+JSON.stringify(contrast));
+  }
   if(c.errors.length||c.external.length)
    throw Error('Browser errors or external requests: '+c.errors.join(';')+'; '+c.external.join(';'));
   console.log('PASS Library Chromium: 2 actual apps, ZIP-reviewed catalogue, search, comparison, opaque sandbox, 280/390/844/1440, working JSON and WCAG tools');
