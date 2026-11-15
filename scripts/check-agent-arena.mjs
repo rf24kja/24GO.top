@@ -114,6 +114,87 @@ async function examine(){
  return {before,loaded,safe,next,voted,isolated,remembered,
   actionHeight,inputHeight,width,overflow,invalid,safeStorage};
 }
+async function exerciseTournament(){
+ const source=document.getElementById('arena-tournament-files');
+ const status=document.getElementById('arena-tournament-status');
+ const exportBtn=document.getElementById('arena-tournament-export');
+ const clear=document.getElementById('arena-tournament-clear');
+ const oldStorage=localStorage.length;
+ const make=(textA,textB,day)=>({
+  version:1,source:'local-byok',
+  createdAt:'2026-11-'+day+'T09:15:00.000Z',
+  prompt:'Real locally produced comparison of two agents',
+  agents:[{id:'a',name:'Model Alpha',model:'model-a'},
+   {id:'b',name:'Model Bravo',model:'model-b'}],
+  rounds:[{number:1,responses:[
+   {agentId:'a',text:textA,durationMs:12},
+   {agentId:'b',text:textB,durationMs:16}
+  ]}]
+ });
+ function choose(raw){
+  const transfer=new DataTransfer();
+  for(const text of raw)transfer.items.add(new File([text],'match.json',
+   {type:'application/json'}));
+  source.files=transfer.files;
+  source.dispatchEvent(new Event('change',{bubbles:true}));
+ }
+ async function until(fn){
+  for(let i=0;i<120;i++){
+   if(fn())return true;
+   await new Promise(ok=>setTimeout(ok,25));
+  }
+  return false;
+ }
+ const first=JSON.stringify(make('A initial real model answer','B initial real model answer','14'));
+ const second=JSON.stringify(make('A corrected answer','B corrected answer','15'));
+ const before=exportBtn.disabled&&clear.disabled&&
+  status.textContent.includes('Choose two to eight');
+ choose([first,second]);
+ const loaded=await until(()=>document.querySelectorAll('.arena-tournament-match').length===2);
+ const nodes=[...document.querySelectorAll('.arena-tournament-match')];
+ const one=nodes[0].querySelectorAll('button');
+ one[0].focus();one[0].click();
+ const firstVote=document.querySelectorAll('.arena-tournament-match')[0]
+  .querySelectorAll('button')[0].getAttribute('aria-pressed')==='true';
+ const secondRow=document.querySelectorAll('.arena-tournament-match')[1];
+ secondRow.querySelectorAll('button')[1].click();
+ const secondVote=document.querySelectorAll('.arena-tournament-match')[1]
+  .querySelectorAll('button')[1].getAttribute('aria-pressed')==='true';
+ const scoreboard=document.querySelector('.arena-tournament-table');
+ const scored=scoreboard?.querySelectorAll('tbody tr').length===2&&
+  status.textContent.includes('Human decisions: 2')&&
+  [...scoreboard.querySelectorAll('tbody tr')].every(row=>
+   row.textContent.includes('50.0%'));
+ const oldURL=URL.createObjectURL,oldRevoke=URL.revokeObjectURL,
+  oldClick=HTMLAnchorElement.prototype.click;
+ let fileBlob=null,filename='',revoked=false;
+ URL.createObjectURL=blob=>{fileBlob=blob;return 'blob:local-review-test'};
+ URL.revokeObjectURL=url=>{revoked=url==='blob:local-review-test'};
+ HTMLAnchorElement.prototype.click=function(){filename=this.download;};
+ try{exportBtn.click();}
+ finally{
+  URL.createObjectURL=oldURL;
+  URL.revokeObjectURL=oldRevoke;
+  HTMLAnchorElement.prototype.click=oldClick;
+ }
+ const markdown=fileBlob?await fileBlob.text():'';
+ const exported=filename==='24gotop-local-arena-review.md'&&revoked&&
+  markdown.includes('Human-reviewed: 2')&&
+  markdown.includes('Agent Arena review')&&
+  !markdown.includes('A initial real model answer')&&
+  !markdown.includes('Real locally produced comparison');
+ const touch=one[0].getBoundingClientRect().height>=43.5&&
+  source.getBoundingClientRect().height>=43.5;
+ const width=document.documentElement.clientWidth,
+  scroll=Math.max(document.body.scrollWidth,document.documentElement.scrollWidth);
+ choose([first,first]);
+ const duplicates=await until(()=>status.dataset.error==='true'&&
+  document.querySelectorAll('.arena-tournament-match').length===0);
+ const storage=localStorage.length===oldStorage;
+ return {before,loaded,firstVote,secondVote,scored,exported,touch,duplicates,
+  storage,width,scroll};
+}
+
 async function main(){
  const http=local();let browser,ws;
  try{
@@ -135,6 +216,12 @@ async function main(){
    // Page load is asynchronous. Wait for the module-installed change listener.
    await new Promise(ok=>setTimeout(ok,150));
    const got=await c.evaluate(examine,sessionId);
+   const tournament=await c.evaluate(exerciseTournament,sessionId);
+   if(!tournament||Object.entries(tournament).some(([k,v])=>
+      ['before','loaded','firstVote','secondVote','scored','exported',
+       'touch','duplicates','storage'].includes(k)&&!v)||
+      tournament.scroll>tournament.width+1)
+    throw Error('Arena local tournament browser E2E '+width+': '+JSON.stringify(tournament));
    if(!got||Object.entries(got).some(([k,v])=>
       ['before','loaded','safe','next','voted','isolated','remembered','invalid','safeStorage'].includes(k)&&!v)||
       got.overflow>got.width+1||got.actionHeight<43.5||got.inputHeight<43.5)
@@ -142,7 +229,7 @@ async function main(){
   }
   if(c.errors.length||c.external.length)
    throw Error('Browser errors or external requests: '+c.errors.join(';')+'; '+c.external.join(';'));
-  console.log('PASS Arena Chromium: 280/390/844/1440px, safe JSON import, literal XSS text, rounds, private votes, invalid file and no upload');
+  console.log('PASS Arena Chromium: 280/390/844/1440px, individual bouts and local two-match tournament, private votes, scoreboard, Markdown export, duplicate rejection, no upload');
  }finally{
   if(ws)ws.close();
   if(browser){
