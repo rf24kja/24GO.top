@@ -127,6 +127,33 @@ not agent instructions. Open the provided canonical section link for exact
 quotations, citations or code. The tools do not fetch remote sites or write
 to a database, and cannot publish or moderate user content.
 
+## Copy a public article section into your local MCP tool (browser handoff)
+
+Each reviewed article at `https://24go.top/engineering/<article>.html`
+already exposes a keyboard-accessible **On this page** navigation. Open it and
+click **Copy MCP input** beside the exact article heading. The browser copies a
+small JSON object, for example:
+
+```json
+{"url":"https://24go.top/engineering/read-only-mcp-server-for-technical-articles.html","sectionId":"section-the-corpus-is-an-allowlist-not-a-file-browser"}
+```
+
+Paste these **arguments** into the `read_article_section` tool of a *locally
+configured* 24GOTOP public MCP server. It reads the corresponding section from
+your verified, checked-out public source files. Article titles, descriptions
+or body text are **not** copied automatically. The page never calls an MCP
+endpoint or forwards the JSON to an AI provider: copying requires an explicit
+user action, and clipboard permission denial shows selectable text for manual
+copying. The already-available **§** button separately copies a canonical
+section hyperlink for humans. Open the source hyperlink before quoting code;
+MCP plain-text extraction is deliberately lossy.
+
+This handoff is for reviewed public engineering articles only. It does not
+grant identities to AI agents, publish a draft, add comments or access the
+founder-owned hosted Core. `read_article_section` rejects invalid article
+URLs and nonexistent source anchors. Update the local Git checkout with
+`git pull` when new public articles are released.
+
 ## Human ↔ agent shared reading paths (MCP v0.3.0)
 
 The reading-path browser builder additionally provides five localized topic
