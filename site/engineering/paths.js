@@ -3,6 +3,7 @@ import {normalizeReadingPath,encodeReadingPath,
  readingPathMcpArguments,MAX_READING_PATH_ITEMS}
  from './paths-logic.mjs';
 import {loadStaticReadingPathCatalog} from './paths-feed.mjs';
+import {PATH_LOCALES,readingPathUiText,applyReadingPathLocale} from './paths-i18n.mjs';
 
 // This screen consumes only the already published, same-origin JSON Feed.
 // It does not store drafts, call an author API or publish new content.
@@ -12,6 +13,25 @@ const title=el('path-title'),search=el('path-search');
 const copyStatus=el('path-copy-status'),manual=el('path-manual-copy');
 const status=el('path-status');
 let approved=[],ids=[];
+const localePicker=el('path-ui-locale');
+const requestedLocale=new URL(window.location.href).searchParams.get('ui');
+let language=PATH_LOCALES.includes(requestedLocale)?requestedLocale:'en';
+localePicker.value=language;
+const tr=key=>readingPathUiText(language,key);
+applyReadingPathLocale(document,language);
+// Apply a localized initial title only before any author interaction.
+// Switching languages later never rewrites the user's chosen title.
+if(language!=='en'&&!window.location.hash&&
+   title.value===readingPathUiText('en','titlePlaceholder'))
+ title.value=tr('titlePlaceholder');
+localePicker.addEventListener('change',()=>{
+ language=PATH_LOCALES.includes(localePicker.value)?localePicker.value:'en';
+ applyReadingPathLocale(document,language);
+ if(approved.length){
+  render(); // Rebuild only labels. Current title, ids and order are unchanged.
+  status.textContent=tr('choosePrefix')+approved.length+tr('chooseSuffix');
+ }
+});
 // An obsolete clipboard permission result cannot rewrite newer path feedback.
 let copyRevision=0;
 const node=(name,value,className)=>{
@@ -35,14 +55,14 @@ function forgetManual(){
 function showManual(value){
  manual.value=value;manual.hidden=false;el('path-manual-label').hidden=false;
  manual.focus();manual.select();
- copyStatus.textContent='Clipboard unavailable. Select and copy the text above manually.';
+ copyStatus.textContent=tr('manualFallback');
 }
 function renderCatalog(){
  catalog.replaceChildren();
  const query=search.value.trim().toLocaleLowerCase();
  const matches=approved.filter(article=>(article.title+' '+article.summary)
   .toLocaleLowerCase().includes(query));
- el('catalog-count').textContent=matches.length+' notes';
+ el('catalog-count').textContent=matches.length+tr('notesSuffix');
  for(const article of matches){
   const li=node('li',undefined,'path-catalog-item');
   const info=node('div');
@@ -50,12 +70,12 @@ function renderCatalog(){
   link.href=article.url;link.rel='noopener noreferrer';info.append(link);
   const summary=node('p',article.summary,'path-small');info.append(summary);
   const active=ids.includes(article.id);
-  const add=button(active?'Added':'Add to path',()=>{
+  const add=button(tr(active?'added':'add'),()=>{
    try{
     const keepFocus=document.activeElement===add;
     ids=changeReadingPath(ids,article.id,'add',approved);
     render(); // The original button was replaced by the updated catalog.
-    status.textContent='Added '+article.title+' to the reading path.';
+    status.textContent=tr('addedPrefix')+article.title+tr('addedSuffix');
     if(keepFocus){
      // Preserve keyboard position by focusing the same reviewed article
      // link, not a detached or now-disabled button.
@@ -63,12 +83,12 @@ function renderCatalog(){
       .find(item=>item.href===article.url);
      (link||title).focus();
     }
-   }catch{status.textContent='You can select at most ten articles.';}
+   }catch{status.textContent=tr('maxItems');}
   },{disabled:active||ids.length>=MAX_READING_PATH_ITEMS,
-   ariaLabel:(active?'Already selected: ':'Add: ')+article.title});
+   ariaLabel:tr(active?'alreadySelected':'addAria')+article.title});
   li.append(info,add);catalog.append(li);
  }
- if(!matches.length)catalog.append(node('li','No matching public articles. Try another keyword.','path-small'));
+ if(!matches.length)catalog.append(node('li',tr('noMatches'),'path-small'));
 }
 function renderSelected(){
  selected.replaceChildren();
@@ -82,13 +102,13 @@ function renderSelected(){
   text.append(link);
   const tools=node('div',undefined,'path-item-actions');
   tools.append(
-   button('↑',()=>reorder(id,'up'),{disabled:index===0,ariaLabel:'Move '+article.title+' earlier'}),
-   button('↓',()=>reorder(id,'down'),{disabled:index===ids.length-1,ariaLabel:'Move '+article.title+' later'}),
-   button('Remove',()=>reorder(id,'remove'),{ariaLabel:'Remove '+article.title})
+   button('↑',()=>reorder(id,'up'),{disabled:index===0,ariaLabel:tr('moveEarlier')+article.title}),
+   button('↓',()=>reorder(id,'down'),{disabled:index===ids.length-1,ariaLabel:tr('moveLater')+article.title}),
+   button(tr('remove'),()=>reorder(id,'remove'),{ariaLabel:tr('remove')+': '+article.title})
   );
   li.append(text,tools);selected.append(li);
  });
- if(!ids.length)selected.append(node('li','No articles yet. Add one from the catalog to start.','path-empty'));
+ if(!ids.length)selected.append(node('li',tr('noItems'),'path-empty'));
  el('selected-count').textContent=ids.length+' / '+MAX_READING_PATH_ITEMS;
  el('path-copy-link').disabled=ids.length===0;
  el('path-copy-mcp').disabled=ids.length===0;
@@ -104,7 +124,7 @@ function reorder(id,action){
   ids=changeReadingPath(ids,id,action,approved);
   render();
   status.textContent=action==='remove'
-   ?'Removed an article from the reading path.':'Updated reading order.';
+   ?tr('removed'):tr('orderUpdated');
   if(keepFocus){
    // A re-render destroys the activated control. Move focus to the
    // remaining article at that position or a stable title input.
@@ -116,25 +136,24 @@ function reorder(id,action){
      ?.querySelector('.path-article-link');
    (target||title).focus();
   }
- }catch{status.textContent='Could not change your reading path.';}
+ }catch{status.textContent=tr('changeFailed');}
 }
 search.addEventListener('input',()=>{forgetManual();renderCatalog();});
 title.addEventListener('input',forgetManual);
 el('path-reset').addEventListener('click',()=>{
  ids=[];title.value='My 24GOTOP reading path';render();
- status.textContent='Path cleared from this tab. No account data was changed.';
+ status.textContent=tr('cleared');
 });
 async function copyValue(value){
  forgetManual();
  const ticket=copyRevision;
- copyStatus.textContent='Copying public reading path…';
+ copyStatus.textContent=tr('copying');
  try{
   if(!navigator.clipboard?.writeText)throw Error('no_clipboard');
   await navigator.clipboard.writeText(value);
   if(ticket===copyRevision)
-   copyStatus.textContent='Copied. '+(value.startsWith('{"url":')
-    ?'Paste JSON into your local MCP tool.'
-    :'Share it with another reader.');
+   copyStatus.textContent=value.startsWith('{"url":')
+    ?tr('copiedMcp'):tr('copied');
  }catch{
   // A newer copy, title edit, selection or reset invalidates this attempt.
   // No stale textarea or focus theft after a delayed browser denial.
@@ -144,18 +163,18 @@ async function copyValue(value){
 el('path-copy-link').addEventListener('click',()=>{
  try{
   const state=normalizeReadingPath({title:title.value,ids},approved,{requireItems:true});
-  const url=new URL('./',window.location.href);
+  const url=new URL('https://24go.top/engineering/reading-paths/');
   url.hash=encodeReadingPath(state,approved);
   void copyValue(url.href);
- }catch{forgetManual();copyStatus.textContent='Check your title and select at least one article.';}
+ }catch{forgetManual();copyStatus.textContent=tr('invalid');}
 });
 el('path-copy-mcp').addEventListener('click',()=>{
  try{void copyValue(readingPathMcpArguments({title:title.value,ids},approved));}
- catch{forgetManual();copyStatus.textContent='Check your title and select at least one article.';}
+ catch{forgetManual();copyStatus.textContent=tr('invalid');}
 });
 el('path-copy-markdown').addEventListener('click',()=>{
  try{void copyValue(readingPathMarkdown({title:title.value,ids},approved));}
- catch{forgetManual();copyStatus.textContent='Check your title and select at least one article.';}
+ catch{forgetManual();copyStatus.textContent=tr('invalid');}
 });
 // Explicit local download is independent from browser clipboard permissions.
 // No link, title or draft content is sent to a remote service.
@@ -172,9 +191,9 @@ el('path-download-markdown').addEventListener('click',()=>{
   anchor.download='24gotop-reading-path.md';
   document.body.append(anchor);
   anchor.click();
-  copyStatus.textContent='Markdown download requested. Check your browser downloads.';
+  copyStatus.textContent=tr('downloadRequested');
  }catch{
-  copyStatus.textContent='Could not download the reading path. Use Copy Markdown list instead.';
+  copyStatus.textContent=tr('downloadFailed');
  }finally{
   anchor?.remove();
   // Keep the temporary download URL alive long enough for the browser to
@@ -190,16 +209,16 @@ async function load(){
    try{
     const shared=decodeReadingPath(window.location.hash,approved);
     if(shared){ids=[...shared.ids];title.value=shared.title;}
-    status.textContent='Shared reading path loaded from the URL fragment.';
+    status.textContent=tr('sharedLoaded');
    }catch{
-    status.textContent='The shared path is invalid or contains missing articles. Start a new path below.';
+    status.textContent=tr('sharedInvalid');
    }
   }else{
-   status.textContent='Choose from '+approved.length+' original public engineering articles.';
+   status.textContent=tr('choosePrefix')+approved.length+tr('chooseSuffix');
   }
   render();
  }catch{
-  status.textContent='The article catalog is unavailable. Use the engineering archive link instead.';
+  status.textContent=tr('unavailable');
   search.disabled=true;title.disabled=true;
  }
 }

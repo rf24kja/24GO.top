@@ -283,7 +283,8 @@ async function waitForReadingPaths(){
  for(let attempt=0;attempt<100;attempt++){
   const ready=document.querySelectorAll('#path-catalog .path-catalog-item');
   const status=document.getElementById('path-status')?.textContent||'';
-  if(ready.length>=5&&status.includes('Choose from '))return ready.length;
+  if(ready.length>=5&&(status.includes('Choose from ')||
+    status.includes('Доступно статей: ')))return ready.length;
   if(status.includes('catalog is unavailable'))throw Error('Reading path feed unavailable');
   await new Promise(resolve=>setTimeout(resolve,40));
  }
@@ -398,6 +399,85 @@ async function exerciseReadingPathsClipboardRace(){
   const scroll=Math.max(document.documentElement.scrollWidth,document.body.scrollWidth);
   return {newestSuccess,staleTitleSafe,currentFallback,staleResetSafe,
    agentCopied,viewport,scroll,requests:pending.length};
+ }finally{
+  if(original)Object.defineProperty(navigator,'clipboard',original);
+  else delete navigator.clipboard;
+ }
+}
+
+// Exercise all 8 language choices on the live rendered reading-path builder.
+// UI language changes must never rewrite a reader's title, IDs or URL.
+function exerciseReadingPathsLocales(){
+ const lang=document.getElementById('path-ui-locale');
+ const title=document.getElementById('path-title');
+ const catalog=document.getElementById('path-catalog');
+ const selected=document.getElementById('path-selected');
+ const beforeStorage=localStorage.getItem('24gotop-public-reading-list-v1');
+ const initialUrl=window.location.href;
+ const first=catalog.querySelector('.path-catalog-item button');
+ first.click();
+ title.value='安全 • ภาษาไทย • Русский 🚀';
+ title.dispatchEvent(new Event('input',{bubbles:true}));
+ const expectedOrder=[...selected.querySelectorAll('.path-article-link')].map(x=>x.href);
+ const expectedTitle=title.value;
+ const headings={
+  en:'Build a reading path.',ru:'Составьте маршрут чтения.',
+  th:'สร้างเส้นทางการอ่าน',es:'Crea una ruta de lectura.',
+  fr:'Créez un parcours de lecture.',de:'Erstelle einen Lesepfad.',
+  pt:'Crie uma trilha de leitura.',zh:'创建阅读路线'
+ };
+ const results=[];
+ for(const locale of ['en','ru','th','es','fr','de','pt','zh']){
+  lang.value=locale;
+  lang.dispatchEvent(new Event('change',{bubbles:true}));
+  const order=[...selected.querySelectorAll('.path-article-link')].map(x=>x.href);
+  const h1=document.querySelector('.path-main h1')?.textContent;
+  const current=document.documentElement.lang;
+  results.push({
+   locale,translated:h1===headings[locale],lang:current===locale,
+   title:title.value===expectedTitle,order:JSON.stringify(order)===JSON.stringify(expectedOrder),
+   buttons:!document.getElementById('path-copy-link').disabled&&
+    !document.getElementById('path-copy-mcp').disabled,
+   noStorage:localStorage.getItem('24gotop-public-reading-list-v1')===beforeStorage,
+   noNavigation:window.location.href===initialUrl,
+   count:document.getElementById('selected-count').textContent==='1 / 10'
+  });
+ }
+ return {results,
+  height:lang.getBoundingClientRect().height,
+  viewport:document.documentElement.clientWidth,
+  scroll:Math.max(document.documentElement.scrollWidth,document.body.scrollWidth)};
+}
+
+// A language-specific entry point must not infect a canonical shared link.
+async function exerciseReadingPathInitialLocale(){
+ const lang=document.getElementById('path-ui-locale');
+ const title=document.getElementById('path-title');
+ const first=document.querySelector('#path-catalog .path-catalog-item button');
+ const storage=localStorage.getItem('24gotop-public-reading-list-v1');
+ const original=Object.getOwnPropertyDescriptor(navigator,'clipboard');
+ let copied='';
+ Object.defineProperty(navigator,'clipboard',{configurable:true,value:{
+  async writeText(value){copied=value;}
+ }});
+ try{
+  const localized=document.documentElement.lang==='ru'&&lang.value==='ru'&&
+    title.value==='Мой маршрут 24GOTOP'&&
+    document.querySelector('.path-main h1')?.textContent==='Составьте маршрут чтения.';
+  first.click();
+  document.getElementById('path-copy-link').click();
+  await new Promise(resolve=>setTimeout(resolve,0));
+  const url=new URL(copied);
+  const fragment=JSON.parse(decodeURIComponent(url.hash.slice(6)));
+  return {localized,
+   canonical:url.origin==='https://24go.top'&&
+     url.pathname==='/engineering/reading-paths/'&&
+     url.search===''&&url.hash.startsWith('#path=%7B'),
+   titleSame:fragment.title===title.value,
+   ids:fragment.ids.length,
+   noStorage:localStorage.getItem('24gotop-public-reading-list-v1')===storage,
+   noNavigate:window.location.search==='?ui=ru'
+  };
  }finally{
   if(original)Object.defineProperty(navigator,'clipboard',original);
   else delete navigator.clipboard;
@@ -1142,7 +1222,20 @@ async function main(){
       !copyRace.agentCopied||copyRace.requests!==6||copyRace.scroll>copyRace.viewport+1)
     throw Error('Reading path clipboard focus/permission race '+profile.name+': '+
       JSON.stringify(copyRace));
+   const locales=await c.call(exerciseReadingPathsLocales,sessionId);
+   if(locales.results.length!==8||locales.height<43.5||
+      locales.scroll>locales.viewport+1||
+      locales.results.some(row=>!row.translated||!row.lang||!row.title||
+       !row.order||!row.buttons||!row.noStorage||!row.noNavigation||!row.count))
+    throw Error('Reading path 8-locale live UI '+profile.name+': '+JSON.stringify(locales));
   }
+  // Direct localizations are only UI preferences; canonical share links omit ?ui.
+  await c.send('Page.navigate',{url:origin+'/engineering/reading-paths/?ui=ru'},sessionId);
+  await c.call(waitForReadingPaths,sessionId);
+  const direct=await c.call(exerciseReadingPathInitialLocale,sessionId);
+  if(!direct.localized||!direct.canonical||!direct.titleSame||
+     direct.ids!==1||!direct.noStorage||!direct.noNavigate)
+   throw Error('Reading path direct Russian UI entry point: '+JSON.stringify(direct));
   assert(!c.exceptions.length,'Unexpected browser JS exception '+c.exceptions.join('; '));
   assert(!c.external.length,'External network request '+c.external.join('; '));
   console.log('PASS Chromium reading-path builder: touch layouts and real clipboard permission/focus races on 280/390/844 landscape/1440 desktop');

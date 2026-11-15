@@ -1,5 +1,16 @@
 :root{color-scheme:dark;--path-ink:#ecf5f0;--path-muted:#b0c4ba;--path-panel:#15231e;--path-border:#355044;--path-accent:#50e0a2}
 @media(prefers-color-scheme:light){:root{color-scheme:light;--path-ink:#142a20;--path-muted:#4a6357;--path-panel:#fff;--path-border:#bbd3c4;--path-accent:#007e51}}
+.path-locale{display:flex;align-items:center;justify-content:flex-end;
+ gap:.7rem;flex-wrap:wrap;margin-bottom:1.2rem}
+.path-locale label{font-size:.9rem;font-weight:650;color:var(--path-muted)}
+.path-locale select{font:inherit;min-height:44px;min-width:160px;max-width:100%;
+ border:1px solid var(--path-border);border-radius:10px;background:var(--path-panel);
+ color:var(--path-ink);padding:.5rem .8rem}
+.path-locale select:focus-visible{outline:3px solid var(--path-accent);outline-offset:3px}
+[lang="th"] .eyebrow,[lang="zh"] .eyebrow{letter-spacing:.03em}
+@media(max-width:360px){.path-locale{align-items:stretch;justify-content:stretch}
+ .path-locale label,.path-locale select{width:100%}}
+
 .path-main{padding-top:2.5rem;padding-bottom:4rem;max-width:1200px}
 .path-main h1{font-size:clamp(2rem,6vw,3.5rem);letter-spacing:-.045em;margin:.4rem 0 1rem;line-height:1.09}
 .path-lead{font-size:1.1rem;line-height:1.75;max-width:75ch}

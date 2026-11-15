@@ -4,6 +4,8 @@ import {readFileSync} from 'node:fs';
 import {approvedReadingArticles,normalizeReadingPath,encodeReadingPath,
  decodeReadingPath,changeReadingPath,readingPathMarkdown,readingPathMcpArguments,MAX_READING_PATH_ITEMS}
  from '../site/engineering/paths-logic.mjs';
+import {PATH_LOCALES,PATH_UI,readingPathUiText,applyReadingPathLocale}
+ from '../site/engineering/paths-i18n.mjs';
 
 const feed=JSON.parse(readFileSync(new URL('../site/engineering/feed.json',import.meta.url),'utf8'));
 const articles=approvedReadingArticles(feed);
@@ -87,6 +89,8 @@ test('the feature is a genuine accessible, browser-only workflow linked from arc
  assert.match(html,/id="path-selected"/);
  assert.match(html,/id="path-copy-link"/);
  assert.match(html,/id="path-copy-mcp"/);
+ assert.match(html,/id="path-ui-locale"/);
+ assert.match(html,/data-path-ui="heading"/);
  assert.match(html,/resolve_reading_path/);
  assert.match(html,/id="path-copy-markdown"/);
  assert.match(html,/id="path-manual-copy"/);
@@ -94,6 +98,7 @@ test('the feature is a genuine accessible, browser-only workflow linked from arc
  assert.match(html,/canonical" href="https:\/\/24go.top\/engineering\/reading-paths\/"/);
  assert.match(js,/loadStaticReadingPathCatalog\(\)/);
  assert.match(js,/encodeReadingPath\(/);
+ assert.ok(js.includes("new URL('https://24go.top/engineering/reading-paths/')"));
  assert.match(js,/navigator\.clipboard/);
  assert.match(js,/textContent/);
  assert.doesNotMatch(js,/\binnerHTML\b|localStorage|sessionStorage|document\.cookie|supabase/i);
@@ -124,7 +129,7 @@ test('real Chromium runs delayed clipboard permission and focus regression on al
  assert.match(ui,/let copyRevision=0/);
  assert.match(ui,/\+\+copyRevision/);
  assert.match(ui,/if\(ticket===copyRevision\)showManual\(value\)/);
- assert.match(ui,/if\(ticket===copyRevision\)[\s\S]*?copyStatus\.textContent='Copied\./);
+ assert.match(ui,/if\(ticket===copyRevision\)[\s\S]*?copyStatus\.textContent=value\.startsWith/);
  assert.match(browser,/async function exerciseReadingPathsClipboardRace\(\)/);
  assert.match(browser,/await c\.call\(exerciseReadingPathsClipboardRace,sessionId\)/);
  assert.match(browser,/copyRace\.newestSuccess/);
@@ -143,7 +148,7 @@ test('reading-path Markdown download is a manual local-only action with responsi
  const html=readFileSync(new URL('../site/engineering/reading-paths/index.html',import.meta.url),'utf8');
  const ui=readFileSync(new URL('../site/engineering/paths.js',import.meta.url),'utf8');
  const browser=readFileSync(new URL('../scripts/check-draft-lab-accessibility.mjs',import.meta.url),'utf8');
- assert.match(html,/<button id="path-download-markdown" type="button" disabled>Download Markdown \.md<\/button>/);
+ assert.match(html,/<button id="path-download-markdown" type="button" disabled data-path-ui="downloadMarkdown">Download Markdown \.md<\/button>/);
  assert.match(ui,/el\('path-download-markdown'\)\.disabled=ids\.length===0/);
  assert.match(ui,/el\('path-copy-mcp'\)\.disabled=ids\.length===0/);
  assert.match(ui,/new Blob\(\[markdown\],\{type:'text\/markdown;charset=utf-8'\}\)/);
@@ -205,4 +210,51 @@ test('MCP argument copy rejects unreviewed paths and escapes untrusted titles',(
  assert.ok(payload.url.includes('#path='));
  assert.equal(decodeReadingPath(payload.url.slice('https://24go.top/engineering/reading-paths/'.length),articles).title,suspicious);
  assert.ok(!output.includes('<script>'), 'JSON must contain a URL-encoded fragment only');
+});
+
+
+test('reading path interface has reviewed eight-language key coverage and safe English fallback',()=>{
+ assert.deepEqual(PATH_LOCALES,['en','ru','th','es','fr','de','pt','zh']);
+ const keys=Object.keys(PATH_UI.en);
+ assert.ok(keys.length>=55);
+ for(const locale of PATH_LOCALES){
+  assert.deepEqual(Object.keys(PATH_UI[locale]).sort(),keys.slice().sort(),
+   'no missing or unexpected UI key in '+locale);
+  for(const key of keys){
+   const value=readingPathUiText(locale,key);
+   assert.equal(typeof value,'string');
+   assert.ok(value.trim().length>0,locale+': '+key);
+   assert.ok(!/[\u0000-\u001f\u007f]/u.test(value),'no control characters in UI strings');
+   assert.ok(!/<script|onerror\s*=|javascript:/i.test(value),'no executable markup');
+  }
+ }
+ assert.equal(readingPathUiText('missing','heading'),PATH_UI.en.heading);
+ assert.throws(()=>readingPathUiText('en','unknown'),TypeError);
+ assert.notEqual(readingPathUiText('ru','heading'),PATH_UI.en.heading);
+ assert.notEqual(readingPathUiText('th','copyMcp'),PATH_UI.en.copyMcp);
+});
+
+test('locale application uses textContent, aria attributes and placeholders only',()=>{
+ const elements=[
+  {type:'text',key:'heading',textContent:'',attributes:{}},
+  {type:'label',key:'localeLabel',textContent:'',attributes:{}},
+  {type:'placeholder',key:'filterPlaceholder',textContent:'',attributes:{}}
+ ];
+ for(const element of elements){
+  element.getAttribute=name=>element.key;
+  element.setAttribute=(name,value)=>{element.attributes[name]=value;};
+ }
+ const doc={documentElement:{lang:'en'},querySelectorAll(selector){
+  const type=selector==='[data-path-ui]'?'text':
+   selector==='[data-path-ui-label]'?'label':
+   selector==='[data-path-ui-placeholder]'?'placeholder':null;
+  return elements.filter(element=>element.type===type);
+ }};
+ assert.equal(applyReadingPathLocale(doc,'ru'),'ru');
+ assert.equal(doc.documentElement.lang,'ru');
+ assert.equal(elements[0].textContent,PATH_UI.ru.heading);
+ assert.equal(elements[1].attributes['aria-label'],PATH_UI.ru.localeLabel);
+ assert.equal(elements[2].attributes.placeholder,PATH_UI.ru.filterPlaceholder);
+ assert.equal(applyReadingPathLocale(doc,'bad'),'en');
+ assert.equal(elements[0].textContent,PATH_UI.en.heading);
 });
