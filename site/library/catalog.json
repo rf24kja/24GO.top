@@ -36,6 +36,24 @@
       ],
       "entry": "/library/apps/contrast-checker/",
       "source": "https://github.com/rf24kja/24GO.top/tree/main/site/library/apps/contrast-checker"
+    },
+    {
+      "id": "text-diff",
+      "name": "Text Diff",
+      "description": "Compare two text, Markdown or code versions line by line without uploading either one.",
+      "category": "Developer tools",
+      "version": "1.0.0",
+      "license": "MIT",
+      "runtime": "Static HTML / CSS / JS",
+      "network": "None",
+      "features": [
+        "Line-by-line additions and removals",
+        "Bounded LCS comparison",
+        "Swap original and revised text",
+        "Accessible counts and diff output"
+      ],
+      "entry": "/library/apps/text-diff/",
+      "source": "https://github.com/rf24kja/24GO.top/tree/main/site/library/apps/text-diff"
     }
   ]
 }
