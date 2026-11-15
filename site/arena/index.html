@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1411">
+<meta name="description" content="Compare two real AI-agent responses from a local BYOK Arena duel. Load a transcript privately, inspect rounds, and evaluate answers without a hosted account or uploads.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://24go.top/arena/">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<title>Agent Arena — local two-agent evaluation | 24GOTOP</title>
+<link rel="stylesheet" href="../landing.css">
+<link rel="stylesheet" href="../interior.css">
+<link rel="stylesheet" href="./arena.css">
+<script type="module" src="./arena.mjs"></script>
+</head>
+<body>
+<a class="skip" href="#main-content">Skip to Agent Arena</a>
+<header class="interior-header">
+<nav class="interior-nav" aria-label="Main navigation">
+<a class="interior-brand" href="../" aria-label="24GOTOP home">24GO<span>TOP</span><span class="interior-brand__dot" aria-hidden="true"></span></a>
+<div class="interior-links">
+<a href="../">Home</a><a href="../engineering/">Articles</a><a href="./" aria-current="page">Agent Arena</a><a href="../library/">App Library</a><a href="https://github.com/rf24kja/24GO.top">Source ↗</a>
+</div>
+</nav>
+</header>
+<main class="arena wrap" id="main-content" tabindex="-1">
+<section class="arena-head" aria-labelledby="arena-title">
+<p class="arena-kicker">24GOTOP / AI AGENTS / PUBLIC OSS LAB</p>
+<h1 id="arena-title">Agent <span>Arena.</span></h1>
+<p class="arena-lead">Two actual AI models. The same technical question. Side-by-side answers and optional rebuttal rounds.</p>
+<p class="arena-disclosure"><strong>Local evaluation is available.</strong> This is not the hosted multiplayer Agent Arena: no registered agents, verified platform identities, public matches, global ratings or account-based debates yet. Human discussions remain completely separate.</p>
+</section>
+<section class="arena-start" aria-labelledby="start-title">
+<div class="arena-step">
+<span class="arena-number">01 / RUN LOCALLY</span>
+<h2 id="start-title">Connect your own models</h2>
+<p>Use the public Node.js runner with two OpenAI-compatible chat-completions endpoints and your own credentials. One to three rounds, 400 output tokens per agent per round. You must opt in to any model charges.</p>
+<p>Set the <code>ARENA_A_ENDPOINT</code>, <code>ARENA_A_MODEL</code>, <code>ARENA_A_KEY</code> environment variables and the equivalent <code>ARENA_B_*</code> variables locally. Never put keys in a browser, shared transcript, Git commit or URL.</p>
+<pre><code>git clone https://github.com/rf24kja/24GO.top.git
+cd 24GO.top
+# Create your local prompt.txt with a technical question.
+npm run arena:run -- --prompt-file prompt.txt \
+  --rounds 2 --confirm-costs --output arena-session.json</code></pre>
+<p><a href="https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_ARENA.md">Local Arena setup and identity/security boundaries ↗</a></p>
+</div>
+<div class="arena-step" aria-labelledby="open-title">
+<span class="arena-number">02 / OPEN ON YOUR DEVICE</span>
+<h2 id="open-title">Load a local transcript</h2>
+<label class="arena-label" for="arena-file">Local Arena JSON transcript (max 64 KiB)</label>
+<input id="arena-file" type="file" accept=".json,application/json">
+<p class="arena-privacy">The JSON is read only in this tab. No file is uploaded, tracked or stored. Open your own real session; we do not fabricate example agent answers.</p>
+<p id="arena-status" class="arena-status" role="status" aria-live="polite">No session loaded. Choose a locally produced Arena JSON file.</p>
+<button id="arena-clear" type="button" class="arena-button arena-button--quiet" disabled>Clear session</button>
+</div>
+</section>
+<section class="arena-results" id="arena-results" aria-labelledby="result-title" hidden>
+<div class="arena-results__top">
+<div><p class="arena-kicker">03 / HUMAN REVIEW</p><h2 id="result-title">Compare the actual responses</h2></div>
+<p class="arena-local-label">LOCAL RESULTS · NOT PUBLIC RATINGS</p>
+</div>
+<p id="arena-question" class="arena-question"></p>
+<div class="arena-controls">
+<label for="arena-round">Select comparison round</label>
+<select id="arena-round"></select>
+<span id="arena-round-count" aria-live="polite"></span>
+</div>
+<div class="arena-duel" aria-label="Side by side AI responses">
+<article class="arena-response" aria-labelledby="arena-a-name">
+<p class="arena-agent-label">AGENT A · SELF-DECLARED, NOT PLATFORM-VERIFIED</p>
+<h3 id="arena-a-name"></h3><p id="arena-a-model" class="arena-model"></p>
+<p id="arena-a-meta" class="arena-time"></p>
+<div class="arena-answer" id="arena-a-text"></div>
+</article>
+<article class="arena-response" aria-labelledby="arena-b-name">
+<p class="arena-agent-label">AGENT B · SELF-DECLARED, NOT PLATFORM-VERIFIED</p>
+<h3 id="arena-b-name"></h3><p id="arena-b-model" class="arena-model"></p>
+<p id="arena-b-meta" class="arena-time"></p>
+<div class="arena-answer" id="arena-b-text"></div>
+</article>
+</div>
+<div class="arena-vote" aria-labelledby="arena-review-title">
+<h3 id="arena-review-title">Which response was more useful?</h3>
+<p>This is your private, in-tab judgment for this round—not an agent reputation score, verified identity or public vote.</p>
+<div class="arena-vote__actions" role="group" aria-label="Local round preference">
+<button type="button" data-arena-vote="a" aria-pressed="false">Agent A</button>
+<button type="button" data-arena-vote="b" aria-pressed="false">Agent B</button>
+<button type="button" data-arena-vote="tie" aria-pressed="false">Equal / tie</button>
+</div>
+<p id="arena-vote-status" role="status" aria-live="polite">No preference selected for this round.</p>
+</div>
+</section>
+<section class="arena-roadmap" aria-labelledby="security-title">
+<h2 id="security-title">What makes a real agent trustworthy?</h2>
+<p>A chat-completions API key is <strong>not</strong> a 24GOTOP agent identity. Hosted Arena must register an owner-bound agent, bind a public verification key to an authorized account, issue expiring challenges, enforce scoped permissions and replay protection, and audit every participation event. Agent-only conversations must never enter human threads without an explicit human action.</p>
+<p>Those hosted authorization, moderation, evidence and reputation controls are <strong>not live</strong>. The public Arena runner is a real local model comparison tool; the site is its offline viewer, not a substitute for a verified production agent service.</p>
+</section>
+</main>
+<footer class="interior-footer"><div class="wrap"><span>24GOTOP · Public AI agent evaluation lab</span><a href="https://github.com/rf24kja/24GO.top">Source &amp; tests ↗</a></div></footer>
+</body></html>
