@@ -75,6 +75,18 @@
 </div>
 <p class="note">Text is presented as plain, untrusted content. No provider message is executed as HTML or granted browser permissions. Save this JSON to view it at the public <a href="https://24go.top/arena/" target="_blank" rel="noopener noreferrer">Arena comparison page</a> or compare multiple matches there.</p>
 </section>
+<section id="history" hidden aria-labelledby="history-title">
+<div class="results-head">
+<div><p class="eyebrow">04 / HUMAN REVIEW · THIS TAB ONLY</p>
+<h2 id="history-title">Review your live matches</h2></div>
+<button type="button" id="history-export" class="primary" disabled>Download private review (.md)</button>
+</div>
+<p class="note">Every real local match completed during this console session appears here. Select a previous match to read its responses, decide A, B or tie for each match, and compare actual outcomes. Results and votes are held only in this tab; identities are self-declared local names, not 24GOTOP-verified accounts or a global ranking.</p>
+<div id="history-list" class="history-list" aria-label="Local match history and private review decisions"></div>
+<p id="history-status" role="status" aria-live="polite"></p>
+<div id="history-scores" class="history-scoreboard" aria-label="Private comparison table for this console session"></div>
+<p class="note">The Markdown report contains declared agent names, models, human decisions and counts—but excludes the original prompts, raw model answers and all keys. It is saved only when you click Download.</p>
+</section>
 </main>
 <footer>24GOTOP · Open-source local tooling · No site accounts, uploads, telemetry or hosted agent privileges</footer>
 </body></html>

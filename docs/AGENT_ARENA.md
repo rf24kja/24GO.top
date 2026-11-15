@@ -64,6 +64,25 @@ responses by round and provides a **Save local transcript (.json)** button.
 The transcript works in the public reader at https://24go.top/arena/ for
 additional private human evaluation.
 
+### Review successive matches without importing files
+
+The local console now retains **up to three real completed matches in the
+current browser tab** (matching the server's three-attempt per-process cap).
+After every signed run, it adds a review card with two independent human
+judgment controls (Agent A / Agent B / Tie), plus a way to revisit that
+match's actual answers and rounds **without another paid model request**.
+
+A private scoreboard shows reviewed matches, wins, ties, losses and normalized
+win points, with unreviewed matches excluded from rating denominators.
+Review choices are always voluntary and never presented as an official
+platform ranking. The **Download private review (.md)** button produces a
+local source-backed summary that excludes prompts, answer bodies and
+credentials. The existing **Save local transcript (.json)** button still
+exports the currently viewed individual match, which can be inspected in
+the public Arena. All match bodies and decisions are forgotten on page reload:
+no database, localStorage, cookies, telemetry or cloud synchronization.
+
+
 Security and budget controls: the Node server binds to 127.0.0.1 only and
 serves a fixed resource allowlist with strict CSP, no external scripts or
 styles. Its JSON POST endpoint requires a random Bearer capability, an

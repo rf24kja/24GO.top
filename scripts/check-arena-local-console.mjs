@@ -112,11 +112,61 @@ async function inspectConsole(){
   json?.rounds?.length===2&&json.source==='local-byok'&&
   !JSON.stringify(json).includes('never-visible')&&
   !JSON.stringify(json).includes('owner-');
+ const firstInHistory=document.querySelectorAll('.history-match').length===1&&
+  document.getElementById('history').hidden===false;
+ const firstVote=document.querySelectorAll('.history-match')[0]?.querySelectorAll('button')[1];
+ firstVote?.click();
+ const firstRated=document.querySelectorAll('.history-match')[0]
+  ?.querySelectorAll('button')[1]?.getAttribute('aria-pressed')==='true';
+ prompt.value='Which authorization and audit controls protect app publication?';
+ document.getElementById('rounds').value='2';consent.checked=true;
+ form.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));
+ let twice=false;
+ for(let i=0;i<150;i++){
+  if(document.querySelectorAll('.history-match').length===2){twice=true;break;}
+  await new Promise(ok=>setTimeout(ok,30));
+ }
+ const secondVote=document.querySelectorAll('.history-match')[1]?.querySelectorAll('button')[2];
+ secondVote?.click();
+ const secondRated=document.querySelectorAll('.history-match')[1]
+  ?.querySelectorAll('button')[2]?.getAttribute('aria-pressed')==='true';
+ const scoreboard=document.querySelector('.history-table');
+ const tableRows=[...(scoreboard?.querySelectorAll('tbody tr')||[])];
+ const scoring=twice&&secondRated&&tableRows.length===2&&
+  tableRows.every(r=>r.textContent.includes('50.0%'))&&
+  document.querySelector('.history-scoreboard')?.textContent.includes('Human-reviewed: 2 / 2')&&
+  document.getElementById('status').textContent.includes('1 run(s) remain');
+ const oldObjectURL=URL.createObjectURL,oldRevoke=URL.revokeObjectURL,
+  oldAnchor=HTMLAnchorElement.prototype.click;
+ let mdBlob=null,mdFilename='',mdRevoked=false;
+ URL.createObjectURL=b=>{mdBlob=b;return 'blob:local-review'};
+ URL.revokeObjectURL=url=>{mdRevoked=url==='blob:local-review'};
+ HTMLAnchorElement.prototype.click=function(){mdFilename=this.download;};
+ try{document.getElementById('history-export').click();}
+ finally{
+  URL.createObjectURL=oldObjectURL;URL.revokeObjectURL=oldRevoke;
+  HTMLAnchorElement.prototype.click=oldAnchor;
+ }
+ const markdown=mdBlob?await mdBlob.text():'';
+ const privateReport=mdFilename==='24gotop-local-live-arena-review.md'&&
+  mdRevoked&&markdown.includes('Human-reviewed: 2')&&
+  !markdown.includes('How would you safely sandbox')&&
+  !markdown.includes('Which authorization and audit controls')&&
+  !markdown.includes('Real mocked alpha-v1')&&
+  !markdown.includes('never-visible');
+ document.querySelectorAll('.history-match')[0]?.querySelector('button')?.click();
+ const returned=document.getElementById('results-prompt').textContent===
+  'How would you safely sandbox third-party static HTML and JavaScript?'&&
+  document.getElementById('agent-a-answer').textContent.includes('alpha-v1')&&
+  document.getElementById('status').textContent.includes('No model request was sent');
+ const historySafe=!document.documentElement.outerHTML.includes('never-visible-alpha-secret')&&
+  localStorage.length===0&&sessionStorage.length===0;
  const width=document.documentElement.clientWidth;
  const scroll=Math.max(document.documentElement.scrollWidth,document.body.scrollWidth);
  const touch=button.getBoundingClientRect().height>=43.5&&
   document.getElementById('download').getBoundingClientRect().height>=43.5;
  return {initial,credentialHidden,ready,session,second,downloaded,touch,
+  firstInHistory,firstRated,twice,secondRated,scoring,privateReport,returned,historySafe,
   width,scroll,noStorage:localStorage.length===0&&sessionStorage.length===0};
 }
 async function main(){
@@ -148,17 +198,18 @@ async function main(){
    const data=await c.evaluate(inspectConsole,sessionId);
    if(!data||Object.entries(data).some(([key,value])=>
      ['initial','credentialHidden','ready','session','second',
-      'downloaded','touch','noStorage'].includes(key)&&!value)||
+      'downloaded','touch','noStorage','firstInHistory','firstRated','twice',
+       'secondRated','scoring','privateReport','returned','historySafe'].includes(key)&&!value)||
       data.scroll>data.width+1)
     throw Error('Live loopback Arena Chromium '+width+': '+JSON.stringify(data));
    await server.close();server=null;
   }
-  if(calls.length!==16||calls.some(x=>x.max_tokens!==400))
+  if(calls.length!==32||calls.some(x=>x.max_tokens!==400))
    throw Error('Unexpected actual model request count or output token budget');
   if(c.exceptions.length||c.external.length)
    throw Error('Browser errors or outbound URLs: '+
     c.exceptions.join(';')+' / '+c.external.join(';'));
-  console.log('PASS Chromium loopback Arena: real signed two-model HTTP session, two rounds, private download and 280/390/844/1440 layouts');
+  console.log('PASS Chromium loopback Arena: two successive real signed BYOK matches, private W/L/T scoreboard, safe report, revisiting matches, 280/390/844/1440 layouts');
  }finally{
   if(ws)ws.close();
   if(browser){

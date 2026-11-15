@@ -1,3 +1,9 @@
+## Unreleased — live Arena session history and private match comparisons
+
+- Extended the secure loopback Arena console so up to three genuine signed, paid BYOK matches completed in a local session remain available in that browser tab. Users can revisit old answers and rounds without another provider call, voluntarily select Agent A/B/Tie per match, and see correctly normalized win/tie/loss results for declared local participants.
+- Reuse the already tested strict `aggregateTournament`/`tournamentMarkdown` primitives from the public Arena; serve them only as a fixed local ESM asset. Export a private Markdown review with no prompts or raw model answers, and preserve the existing per-match JSON download.
+- No new network endpoint, uploaded results, stored credentials, global ratings or hosted-core changes. Extended real Chromium E2E for **two separate signed model runs**, privacy-safe vote accounting, exported report and revisiting the earlier match across 280/390/844/1440px.
+
 ## Unreleased — interactive signed local Agent Arena console
 
 - Built a self-hosted **127.0.0.1-only** browser console: enter an actual question, choose 1–3 rounds, explicitly authorize provider costs, run two real BYOK agents with owner-pinned Ed25519 signatures and view both genuine responses in-browser. Users can save the bounded transcript as a local JSON file for the published Arena comparator.
