@@ -645,7 +645,7 @@ async function exerciseArticleSectionMcp(){
   const firstId=navLinks[0]?.getAttribute('href').slice(1);
   const correct=parsed.url===canonical&&parsed.sectionId===firstId&&
    copyValues.length===1&&status.textContent==='Copied to clipboard.'&&
-   menu.open&&!manual.hidden===false&&document.activeElement===buttons[0];
+   menu.open&&manual.hidden&&document.activeElement===buttons[0];
   Object.defineProperty(navigator,'clipboard',{configurable:true,value:{
    async writeText(){throw Error('Clipboard permission denied');}
   }});
