@@ -292,6 +292,104 @@ function exerciseTextDiff(){
   width,scroll:Math.max(document.documentElement.scrollWidth,document.body.scrollWidth),
   height:document.getElementById('compare').getBoundingClientRect().height};
 }
+async function exerciseStudio(){
+ const $=id=>document.getElementById(id);
+ const beforeStorage=localStorage.length,front=$('studio-frame');
+ const initial=front.hidden&&$('studio-preview-placeholder').hidden===false&&
+  $('studio-name').value==='Counter Lab'&&
+  $('studio-html').value.includes('id="increase"')&&
+  $('studio-css').value.includes('.count')&&
+  $('studio-js').value.includes("getElementById('increase')");
+ $('studio-tab-css').click();
+ const tab=$('studio-source-css').hidden===false&&
+  $('studio-tab-css').getAttribute('aria-pressed')==='true'&&
+  $('studio-source-html').hidden===true;
+ $('studio-tab-js').click();
+ const js=$('studio-js');
+ js.value+="\nwindow.addEventListener('message', function(event) {\n"+
+  " if (event.data !== 'studio-probe') return;\n"+
+  " document.getElementById('increase').click();\n"+
+  " event.source.postMessage({studioProbe: document.getElementById('count').textContent}, '*');\n"+
+  "});";
+ js.dispatchEvent(new Event('input',{bubbles:true}));
+ $('studio-preview-run').click();
+ const waitFor=async(fn)=>{
+  for(let i=0;i<160;i++){
+   if(fn())return true;
+   await new Promise(done=>setTimeout(done,30));
+  }
+  return false;
+ };
+ const running=await waitFor(()=>$('studio-status').textContent.includes('Isolated preview running'));
+ const frame=front;
+ const sandbox=running&&!frame.hidden&&
+  frame.getAttribute('sandbox')==='allow-scripts'&&
+  !frame.sandbox.contains('allow-same-origin')&&
+  !frame.sandbox.contains('allow-top-navigation')&&
+  !frame.sandbox.contains('allow-popups')&&
+  !frame.sandbox.contains('allow-forms')&&
+  frame.referrerPolicy==='no-referrer'&&
+  frame.getAttribute('srcdoc').includes("connect-src 'none'")&&
+  frame.getAttribute('srcdoc').includes("default-src 'none'");
+ let opaque=false;
+ try{opaque=frame.contentDocument===null;}catch{opaque=true;}
+ let interactive=false,childOrigin='';
+ if(running){
+  for(let attempt=0;attempt<3&&!interactive;attempt++){
+   const result=await new Promise(resolve=>{
+    const timer=setTimeout(()=>{window.removeEventListener('message',onMessage);resolve(null)},550);
+    function onMessage(event){
+     if(event.source!==frame.contentWindow||event.data?.studioProbe!=='1')return;
+     clearTimeout(timer);
+     window.removeEventListener('message',onMessage);
+     resolve({count:event.data.studioProbe,origin:event.origin});
+    }
+    window.addEventListener('message',onMessage);
+    frame.contentWindow.postMessage('studio-probe','*');
+   });
+   if(result){interactive=result.count==='1';childOrigin=result.origin;}
+  }
+ }
+ let blob=null,filename='',revoked=false;
+ const originalCreate=URL.createObjectURL,originalRevoke=URL.revokeObjectURL,
+  originalClick=HTMLAnchorElement.prototype.click;
+ try{
+  URL.createObjectURL=next=>{blob=next;return 'blob:studio-zip-test'};
+  URL.revokeObjectURL=url=>{revoked=url==='blob:studio-zip-test'};
+  HTMLAnchorElement.prototype.click=function(){filename=this.download;};
+  $('studio-download').click();
+  await waitFor(()=>$('studio-status').textContent.includes('download requested'));
+ }finally{
+  URL.createObjectURL=originalCreate;
+  URL.revokeObjectURL=originalRevoke;
+  HTMLAnchorElement.prototype.click=originalClick;
+ }
+ const archive=blob?new Uint8Array(await blob.arrayBuffer()):null;
+ const exported=filename==='counter-lab.zip'&&revoked&&
+  blob.type==='application/zip'&&archive.length>100&&
+  archive[0]===0x50&&archive[1]===0x4b&&archive[2]===0x03&&archive[3]===0x04&&
+  $('studio-status').textContent.includes('SHA-256');
+ const width=document.documentElement.clientWidth;
+ const overflow=Math.max(document.documentElement.scrollWidth,document.body.scrollWidth);
+ const touch=$('studio-preview-run').getBoundingClientRect().height>=43.5&&
+  $('studio-download').getBoundingClientRect().height>=43.5&&
+  $('studio-tab-js').getBoundingClientRect().height>=43.5;
+ $('studio-html').value='<script>window.bad=true</script>';
+ $('studio-html').dispatchEvent(new Event('input',{bubbles:true}));
+ const stopped=frame.hidden&&$('studio-close').disabled;
+ $('studio-preview-run').click();
+ const rejected=await waitFor(()=>$('studio-status').dataset.error==='true')&&
+  frame.hidden&&!frame.hasAttribute('srcdoc')&&window.bad!==true;
+ $('studio-reset').click();
+ const restored=$('studio-name').value==='Counter Lab'&&
+  $('studio-html').value.includes('id="increase"')&&
+  $('studio-tab-html').getAttribute('aria-pressed')==='true';
+ return {initial,tab,running,sandbox,opaque,interactive,
+  childOrigin,exported,touch,stopped,rejected,restored,
+  noStorage:localStorage.length===beforeStorage,
+  width,overflow};
+}
+
 async function main(){
  const http=server();let browser,ws;
  try{
@@ -326,6 +424,19 @@ async function main(){
    await c.request('Emulation.setDeviceMetricsOverride',{
     width,height:width===844?390:850,mobile:width<1000,deviceScaleFactor:1
    },sessionId);
+   await c.request('Page.navigate',{url:origin+'/library/studio/'},sessionId);
+   await new Promise(ok=>setTimeout(ok,160));
+   const studio=await c.evaluate(exerciseStudio,sessionId);
+   if(!studio||Object.entries(studio).some(([key,value])=>
+      ['initial','tab','running','sandbox','opaque','interactive',
+       'exported','touch','stopped','rejected','restored','noStorage'].includes(key)&&!value)||
+      studio.childOrigin!=='null'||studio.overflow>studio.width+1)
+    throw Error('Library App Studio Chromium '+width+': '+JSON.stringify(studio));
+  }
+  for(const width of [280,390,844,1440]){
+   await c.request('Emulation.setDeviceMetricsOverride',{
+    width,height:width===844?390:850,mobile:width<1000,deviceScaleFactor:1
+   },sessionId);
    await c.request('Page.navigate',{url:origin+'/library/apps/json-inspector/'},sessionId);
    await new Promise(ok=>setTimeout(ok,200));
    const json=await c.evaluate(exerciseJsonApp,sessionId);
@@ -345,7 +456,7 @@ async function main(){
   }
   if(c.errors.length||c.external.length)
    throw Error('Browser errors or external requests: '+c.errors.join(';')+'; '+c.external.join(';'));
-  console.log('PASS Library Chromium: catalog, 3 actual apps, 4 viewports, browser ZIP32 deflate validation, CRC corruption rejection, manual copy fallback, review link, opaque sandbox and no uploads');
+  console.log('PASS Library Chromium: catalog, three real apps and App Studio at 280/390/844/1440; actual opaque iframe counter execution, validated ZIP32 export, malformed source rejection and no uploads');
  }finally{
   if(ws)ws.close();
   if(browser){
