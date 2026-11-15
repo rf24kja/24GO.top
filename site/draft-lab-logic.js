@@ -256,7 +256,7 @@ export function locateDraftSections(text){
   }else if(marker){
    fence={char:marker[1][0],size:marker[1].length};
   }else if(!/^(?: {4}|\t)/.test(line)){
-   const heading=line.match(/^ {0,3}(#{1,3})[ \t]+(.\S.*?)\s*$/u);
+   const heading=line.match(/^ {0,3}(#{1,3})[ \t]+(\S.*?)\s*$/u);
    if(heading&&sections.length<80){
     sections.push(Object.freeze({
      level:heading[1].length,title:heading[2].trim(),
