@@ -16,7 +16,8 @@ export const FIXED_ROUTES=Object.freeze([
  '/contribute-board.js', '/engineering/', '/engineering/feed.xml',
  '/engineering/feed.json', '/engineering/search-index.json',
  '/engineering/search.js', '/engineering/reading-paths/',
- '/engineering/paths.js', '/sitemap.xml', '/robots.txt'
+ '/engineering/paths.js', '/arena/', '/arena/arena.css',
+ '/arena/arena.mjs', '/arena/arena-core.mjs', '/sitemap.xml', '/robots.txt'
 ]);
 const SAFE_ROUTE=/^\/(?:[a-z0-9-]+\/)*(?:[a-z0-9-]+\.(?:html|css|js|mjs|xml|json|txt))?$/;
 const MAX_ASSET_BYTES=512*1024;
