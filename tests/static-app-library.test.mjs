@@ -32,7 +32,7 @@ function makeZip(items,{deflate=false,corrupt=false,symlink=false}={}){
   central.writeUInt16LE(method,10);central.writeUInt32LE(crc32(content)^(corrupt?1:0),16);
   central.writeUInt32LE(packed.length,20);central.writeUInt32LE(content.length,24);
   central.writeUInt16LE(n.length,28);central.writeUInt32LE(offset,42);
-  central.writeUInt32LE((symlink?0xa1ff:0x81a4)<<16,38);
+  central.writeUInt32LE(((symlink?0xa1ff:0x81a4)<<16)>>>0,38);
   centrals.push(central,n);
   offset+=local.length+n.length+packed.length;
  }
