@@ -1,3 +1,10 @@
+## Unreleased — bounded local MCP stdio input framing
+
+- Replace a post-read size check on Node `readline` with fixed-size byte framing (64 KiB + optional CRLF terminator) **before decoding or parsing JSON**. Oversized un-terminated streams are dropped without retaining arbitrary memory, while the next request is still processed.
+- Strict UTF-8 decoding rejects truncated/malformed sequences; preserve split multibyte characters, CRLF/LF, EOF without newline, notifications, legacy and modern JSON-RPC response shape. No input or secrets are echoed in malformed-request errors.
+- Real stream regression tests cover 64 KiB boundary, 8 MiB no-newline flood, UTF-8 splits, multiple messages, oversized/malformed recovery, explicit close and absence of leaked buffer content.
+- No HTTP endpoint, credential, network write, database access, publication or hosted-Core change.
+
 ## Unreleased — human article-to-local MCP section handoff
 
 - Every reviewed public article's existing **On this page** menu now offers a **Copy MCP input** action for each canonical heading. It creates the exact local `read_article_section` arguments (`url`, `sectionId`) from verified page metadata and the already rendered `section-*` anchors; nothing is uploaded, persisted, published or inferred from arbitrary external URLs.

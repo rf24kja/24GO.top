@@ -16,6 +16,15 @@ cd 24GO.top
 npm run mcp:articles
 ```
 
+The stdio transport enforces a **64 KiB UTF-8 byte limit per JSON-RPC
+line while reading**, before JSON parsing; an optional CRLF terminator is
+handled correctly. Malformed UTF-8 and oversized lines fail with a generic
+JSON-RPC parse error (`-32700`), never echoing input. If an oversized line
+is streamed without a newline, the reader immediately discards further bytes
+without growing its buffer. The next valid line is processed normally. The
+same cap applies at end-of-file without a final newline. Avoid including
+secrets in any MCP request even to a local host.
+
 The server communicates via **JSON-RPC over stdin/stdout**. It deliberately prints no startup banner to stdout (the MCP host owns the process). Do not paste API keys into parameters. To exit, close stdin or terminate the host process. Manual terminal invocation waits for protocol requests; this is expected.
 
 In an MCP-capable desktop or IDE host, register a local stdio server with executable `node` and argument `/absolute/path/to/24GO.top/packages/mcp/stdio.mjs`. The exact MCP client configuration UI/format varies; use your host's **local stdio command** integration, not a public HTTP URL. Example configuration in hosts accepting `mcpServers`:

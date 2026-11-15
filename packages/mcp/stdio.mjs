@@ -1,7 +1,6 @@
 // Local, read-only MCP stdio server. Public reviewed engineering articles only.
 // No network, database, authentication, file writes, account or publish tool.
 import {readFileSync} from 'node:fs';
-import {createInterface} from 'node:readline';
 import {fileURLToPath} from 'node:url';
 import {rankPublishedArticles,slicePublishedText} from './discovery.mjs';
 import {indexPublishedArticleSections,slicePublishedSection} from './sections.mjs';
@@ -226,23 +225,78 @@ export function handleMcpRequest(req,articles=loadPublishedCorpus()){
  default:return {error:fail(-32601,'Method not found')};
  }
 }
-export function runStdio({input=process.stdin,output=process.stdout,articles=loadPublishedCorpus()}={}){
- const lines=createInterface({input,crlfDelay:Infinity});
- lines.on('line',line=>{
-  // Do not read arbitrary source paths or echo malformed contents.
-  let result,id=null;
+// The previous readline handler checked 64 KiB only AFTER buffering an
+// entire newline-delimited frame. A malicious client could therefore stream
+// unlimited bytes without a newline and exhaust the process. Frame BEFORE
+// decoding/JSON.parse, while retaining only a fixed 64 KiB (+ CRLF) buffer.
+export const MAX_STDIO_FRAME_BYTES=65536;
+export function runStdio({
+ input=process.stdin,output=process.stdout,articles=loadPublishedCorpus()
+}={}){
+ const bytes=Buffer.allocUnsafe(MAX_STDIO_FRAME_BYTES+1);
+ const decoder=new TextDecoder('utf-8',{fatal:true});
+ let used=0,discarding=false,closed=false;
+ const respond=(id,result)=>{
+  output.write(JSON.stringify({jsonrpc:'2.0',id,...result})+'\n');
+ };
+ const error=()=>({error:fail(-32700,'Invalid or oversized JSON-RPC input')});
+ const reset=()=>{used=0;discarding=false;};
+ const accumulate=piece=>{
+  if(discarding||piece.byteLength===0)return;
+  if(used+piece.byteLength>MAX_STDIO_FRAME_BYTES+1){
+   used=0;discarding=true;return; // keep dropping until frame boundary
+  }
+  bytes.set(piece,used);used+=piece.byteLength;
+ };
+ const finish=()=>{
+  // A literal CR before LF is the transport terminator, not JSON payload.
+  const length=used&&bytes[used-1]===13?used-1:used;
+  if(discarding||length>MAX_STDIO_FRAME_BYTES){
+   respond(null,error());reset();return;
+  }
+  let id=null,result;
   try{
-   if(Buffer.byteLength(line,'utf8')>65536)throw Error('Oversized JSON-RPC frame');
-   const req=JSON.parse(line);
+   const req=JSON.parse(decoder.decode(bytes.subarray(0,length)));
    id=req?.id??null;
-   if(req?.id===undefined||req?.id===null)return; // notifications are one-way
+   if(req?.id===undefined||req?.id===null){reset();return;} // notification
    result=handleMcpRequest(req,articles);
-  }catch{result={error:fail(-32700,'Invalid or oversized JSON-RPC input')};}
-  const response={jsonrpc:'2.0',id,...result};
-  output.write(JSON.stringify(response)+'\n');
- });
- return lines;
+  }catch{result=error();}
+  respond(id,result);
+  reset();
+ };
+ const onData=chunk=>{
+  // Node stdio normally emits Buffer chunks. Re-encode a caller-provided
+  // string chunk only for compatibility with custom readable test streams.
+  const data=typeof chunk==='string'?Buffer.from(chunk,'utf8'):chunk;
+  if(!(data instanceof Uint8Array)){discarding=true;used=0;return;}
+  let at=0;
+  for(;;){
+   const lineEnd=data.indexOf(10,at); // LF byte, including across chunks
+   if(lineEnd<0){accumulate(data.subarray(at));break;}
+   accumulate(data.subarray(at,lineEnd));
+   finish();
+   at=lineEnd+1;
+  }
+ };
+ const close=()=>{
+  if(closed)return;
+  closed=true;
+  input.off('data',onData);
+  input.off('end',onEnd);
+  input.off('error',onError);
+  reset();
+ };
+ const onEnd=()=>{
+  if(used||discarding)finish(); // Like readline: accept final line sans LF
+  close();
+ };
+ const onError=()=>close(); // Do not print input content or credentials.
+ input.on('data',onData);
+ input.once('end',onEnd);
+ input.once('error',onError);
+ return {close,get bufferedBytes(){return used;}};
 }
+
 if(process.argv[1]&&fileURLToPath(import.meta.url)===process.argv[1]){
  try{runStdio();}catch{process.stderr.write('MCP initialization failed\n');process.exitCode=1;}
 }
