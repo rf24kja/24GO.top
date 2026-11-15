@@ -236,6 +236,40 @@ export function matchesDraftExportSnapshot(expected,current){
    typeof expected[key]==='string'&&current[key]===expected[key]));
 }
 
+/** Locate source Markdown headings for editing, not for publishing.
+ * Recognizes the same # / ## / ### heading range as the restricted preview.
+ * Ignores fenced and indented code; offsets use UTF-16, as required by
+ * textarea.setSelectionRange (including emoji and CRLF manuscripts).
+ */
+export function locateDraftSections(text){
+ if(typeof text!=='string'||text.length>12000)
+  throw new TypeError('Invalid local article text');
+ const sections=[];
+ const pieces=text.split(/(\r\n|\r|\n)/);
+ let offset=0,lineNumber=1,fence=null;
+ for(let i=0;i<pieces.length;i+=2){
+  const line=pieces[i],breakText=pieces[i+1]??'';
+  const marker=line.match(/^ {0,3}(`{3,}|~{3,})(.*)$/);
+  if(fence){
+   const close=line.match(/^ {0,3}(`{3,}|~{3,})\s*$/);
+   if(close&&close[1][0]===fence.char&&close[1].length>=fence.size)fence=null;
+  }else if(marker){
+   fence={char:marker[1][0],size:marker[1].length};
+  }else if(!/^(?: {4}|\t)/.test(line)){
+   const heading=line.match(/^ {0,3}(#{1,3})[ \t]+(.\S.*?)\s*$/u);
+   if(heading&&sections.length<80){
+    sections.push(Object.freeze({
+     level:heading[1].length,title:heading[2].trim(),
+     line:lineNumber,start:offset,end:offset+line.length
+    }));
+   }
+  }
+  offset+=line.length+breakText.length;
+  lineNumber++;
+ }
+ return Object.freeze(sections);
+}
+
 /** Find an exact, case-sensitive literal string in a local manuscript.
  * Returns UTF-16 textarea selection offsets; no replacements or side effects.
  * A match wraps to the other end when the cursor has passed it.
