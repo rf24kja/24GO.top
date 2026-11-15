@@ -37,7 +37,7 @@ On Windows, replace the argument with an absolute Windows path in JSON string fo
 
 - **MCP 2026-07-28:** `server/discover`, stateless `_meta` version and `resultType=complete` on results.
 - **Legacy 2025-11-25/2025-06-18:** `initialize` and the customary stdio request flow, for older clients.
-- **Read-only tools:** `list_articles` (up to 20), `search_articles` (multiword relevance, limit 1–20, original array format), `search_articles_page` (offset paging with total), `read_article` (exact canonical full lossy plain text), `read_article_excerpt` (bounded Unicode-safe excerpt), `resolve_reading_path` and `create_reading_path` (shared browser reading paths from approved article URLs).
+- **Read-only tools:** `list_articles` (up to 20), `search_articles` (multiword relevance, limit 1–20, original array format), `search_articles_page` (offset paging with total), `read_article` (exact canonical full lossy plain text), `read_article_excerpt` (bounded Unicode-safe excerpt), `list_article_sections` and `read_article_section` (reviewed canonical H2/H3 anchors and bounded section text), `resolve_reading_path` and `create_reading_path` (shared browser reading paths from approved article URLs).
 - **Read-only resources:** `resources/list`, `resources/read` with approved article URIs.
 - All tools return public article titles, canonical links and plain text. There is no raw arbitrary file path, `write_article`, `publish`, OAuth, Supabase connection, GitHub automation or remote request.
 
@@ -45,7 +45,7 @@ The MCP server treats the **article body as untrusted data**, never model instru
 
 ## Source-backed agent discovery and bounded excerpts (MCP v0.2.0)
 
-The local stdio MCP server now supports **seven read-only tools**.
+The local stdio MCP server now supports **nine read-only tools**.
 The existing three tools keep their original output shapes:
 `list_articles` returns a list, `read_article` returns the full
 lossy extracted plain text, and `search_articles` still returns a list
@@ -93,6 +93,39 @@ The server itself still performs **no network calls**. A local MCP host
 must update its Git checkout for newer reviewed articles. MCP does not
 grant verified agent identity, comments, publishing or moderation.
 
+
+
+## Read individual published article sections (MCP v0.4.0)
+
+Two local read-only tools now let agents inspect **reviewed, anchor-linked
+sections** instead of retrieving whole articles or guessing text offsets.
+
+- \`list_article_sections\` accepts \`{"url":"<exact canonical article URL>"}\`.
+  It returns ordered \`id\`, \`title\`, \`level\`, \`position\` and the exact
+  \`https://24go.top/engineering/...html#section-...\` link for every
+  explicitly anchored H2/H3 inside that published source HTML. Related-reading
+  headings without source anchors are not included.
+- \`read_article_section\` accepts the same exact article \`url\`, a
+  \`sectionId\` copied from \`list_article_sections\`, optional \`offset\`
+  (default 0, Unicode code points) and \`maxChars\` (200–4,000; default 1,800).
+  It returns section text, the canonical section link, \`offset\`, \`end\`,
+  \`totalCharacters\`, \`nextOffset\` (or null) and \`truncated\`.
+
+Example stdio JSON-RPC requests:
+
+\`\`\`json
+{"jsonrpc":"2.0","id":7,"method":"tools/call","params":{"name":"list_article_sections","arguments":{"url":"https://24go.top/engineering/read-only-mcp-server-for-technical-articles.html"}}}
+{"jsonrpc":"2.0","id":8,"method":"tools/call","params":{"name":"read_article_section","arguments":{"url":"https://24go.top/engineering/read-only-mcp-server-for-technical-articles.html","sectionId":"section-the-corpus-is-an-allowlist-not-a-file-browser","maxChars":1800}}}
+\`\`\`
+
+**Boundary:** the input corpus is validated, committed public HTML in a local
+checkout. Arbitrary paths, query-string variants, external domains,
+unpublished drafts and nonexistent section IDs are refused. The returned
+section content is **lossy plain text**, which may not preserve source code
+indentation, hyperlinks, tables or original layout. Treat it as untrusted data,
+not agent instructions. Open the provided canonical section link for exact
+quotations, citations or code. The tools do not fetch remote sites or write
+to a database, and cannot publish or moderate user content.
 
 ## Human ↔ agent shared reading paths (MCP v0.3.0)
 

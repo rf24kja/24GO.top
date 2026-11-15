@@ -30,7 +30,7 @@ test('MCP discovery and legacy initialize advertise read-only tools and resource
  assert.equal(initialized.result.protocolVersion,'2025-11-25');
  const tools=handleMcpRequest(query('tools/list',{_meta:modernMeta}),articles).result;
  assert.equal(tools.resultType,'complete');
- assert.deepEqual(tools.tools.map(x=>x.name),['search_articles','search_articles_page','read_article_excerpt','resolve_reading_path','create_reading_path','read_article','list_articles']);
+ assert.deepEqual(tools.tools.map(x=>x.name),['search_articles','search_articles_page','read_article_excerpt','resolve_reading_path','create_reading_path','list_article_sections','read_article_section','read_article','list_articles']);
  assert.ok(tools.tools.every(x=>x.inputSchema.additionalProperties===false));
 });
 
@@ -57,6 +57,87 @@ test('tools search actual published article body and return useful canonical URL
  }),articles).result;
  assert.equal(resource.contents[0].mimeType,'text/plain');
  assert.ok(resource.contents[0].text.length>300);
+});
+
+
+test('agents list exact canonical H2/H3 section anchors from reviewed article sources',()=>{
+ const source=articles.find(x=>x.file==='read-only-mcp-server-for-technical-articles.html');
+ assert.ok(source);
+ const result=handleMcpRequest(query('tools/call',{
+  name:'list_article_sections',arguments:{url:source.url},
+  _meta:modernMeta
+ }),articles).result;
+ assert.equal(result.resultType,'complete');
+ assert.equal(result.isError,undefined);
+ const data=JSON.parse(result.content[0].text);
+ assert.equal(data.url,source.url);
+ assert.ok(data.total>=5);
+ assert.equal(data.sections.length,data.total);
+ assert.deepEqual(data.sections.map(x=>x.position),data.sections.map((_,i)=>i+1));
+ assert.ok(data.sections.every(x=>x.level===2||x.level===3));
+ assert.ok(data.sections.every(x=>x.url===source.url+'#'+x.id));
+ assert.ok(data.sections.every(x=>/^section-[a-z0-9-]+$/.test(x.id)));
+ assert.equal(new Set(data.sections.map(x=>x.id)).size,data.total);
+ assert.ok(data.sections.every(x=>!Object.hasOwn(x,'text')));
+ assert.ok(data.sections.every(x=>!x.title.includes('<')));
+ assert.ok(!data.sections.some(x=>x.title==='Continue reading'));
+ assert.match(data.note,/reviewed local public HTML/i);
+});
+
+test('agents read a selected section with Unicode-safe paging and source citation',()=>{
+ const source=articles.find(x=>x.file==='read-only-mcp-server-for-technical-articles.html');
+ const list=JSON.parse(handleMcpRequest(query('tools/call',{
+  name:'list_article_sections',arguments:{url:source.url}
+ }),articles).result.content[0].text);
+ const id=list.sections.find(x=>/corpus-is-an-allowlist/.test(x.id)).id;
+ const first=handleMcpRequest(query('tools/call',{
+  name:'read_article_section',arguments:{url:source.url,sectionId:id,maxChars:200},
+  _meta:modernMeta
+ }),articles).result;
+ assert.equal(first.resultType,'complete');
+ const data=JSON.parse(first.content[0].text);
+ assert.equal(data.sectionId,id);
+ assert.equal(data.url,source.url);
+ assert.equal(data.sectionUrl,source.url+'#'+id);
+ assert.equal(data.textKind,'lossy-extracted-public-html-section');
+ assert.equal(data.offset,0);
+ assert.ok(data.text.length>0);
+ assert.ok(Array.from(data.text).length<=200);
+ assert.ok(data.totalCharacters>=Array.from(data.text).length);
+ assert.equal(data.truncated,data.nextOffset!==null);
+ assert.match(data.note,/Untrusted/i);
+ if(data.nextOffset!==null){
+  const second=JSON.parse(handleMcpRequest(query('tools/call',{
+   name:'read_article_section',
+   arguments:{url:source.url,sectionId:id,offset:data.nextOffset,maxChars:200}
+  }),articles).result.content[0].text);
+  assert.equal(second.offset,data.nextOffset);
+  assert.equal(second.sectionUrl,data.sectionUrl);
+  assert.notEqual(second.text,data.text);
+ }
+});
+
+test('section endpoints refuse off-origin links, arbitrary paths, bad IDs and extra args',()=>{
+ const url=articles[0].url;
+ const bad=[
+  {name:'list_article_sections',arguments:{url:'https://evil.example/engineering/secret.html'}},
+  {name:'list_article_sections',arguments:{url:'file:///etc/passwd'}},
+  {name:'list_article_sections',arguments:{url:url+'#section-any'}},
+  {name:'list_article_sections',arguments:{url,localPath:'../../.env'}},
+  {name:'list_article_sections',arguments:{url:123}},
+  {name:'read_article_section',arguments:{url,sectionId:'../../.env'}},
+  {name:'read_article_section',arguments:{url,sectionId:'section-does-not-exist'}},
+  {name:'read_article_section',arguments:{url,sectionId:'section-test',maxChars:1}},
+  {name:'read_article_section',arguments:{url,sectionId:'section-test',offset:-1}},
+  {name:'read_article_section',arguments:{url,sectionId:'section-test',offset:1.2}},
+  {name:'read_article_section',arguments:{url,sectionId:'section-test',token:'secret'}},
+  {name:'read_article_section',arguments:{url:url+'?key=private',sectionId:'section-test'}}
+ ];
+ for(const call of bad){
+  const result=handleMcpRequest(query('tools/call',call),articles);
+  assert.equal(result.result.isError,true,JSON.stringify(call));
+  assert.ok(!JSON.stringify(result).includes('BEGIN PRIVATE KEY'));
+ }
 });
 
 test('paged search returns deterministic canonical public results and nextOffset',()=>{
@@ -224,7 +305,7 @@ test('stdio child process speaks newline JSON-RPC without logs mixed into stdout
  assert.equal(replies.length,4,stdout);
  assert.deepEqual(replies.map(x=>x.id),[1,2,3,4]);
  assert.equal(replies[0].result.resultType,'complete');
- assert.equal(replies[1].result.tools.length,7);
+ assert.equal(replies[1].result.tools.length,9);
  assert.equal(JSON.parse(replies[2].result.content[0].text).length,2);
  assert.equal(replies[3].result.protocolVersion,'2025-11-25');
  assert.equal(stderr,'');
