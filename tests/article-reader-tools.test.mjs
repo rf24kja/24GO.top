@@ -268,6 +268,30 @@ test('denied clipboard reveals a selectable manual copy field, never sends a req
  assert.match(tools.children[2].textContent,/Clipboard unavailable/);
 });
 
+
+test('stale MCP section clipboard errors cannot override a newer citation copy',async()=>{
+ const pending=[];
+ const env=stub({clipboardWriter:value=>new Promise((resolve,reject)=>{
+  pending.push({value,resolve,reject});
+ })});
+ assert.equal(mountArticleReader(env.doc,env.view),true);
+ const tools=env.main.inserted[0],actions=tools.children[1];
+ const mcp=actions.children[0].children[1].children[0].children[0].children[1];
+ const older=mcp.listeners.click();
+ const newest=actions.children[1].listeners.click();
+ assert.equal(pending.length,2);
+ assert.deepEqual(Object.keys(JSON.parse(pending[0].value)),['url','sectionId']);
+ assert.match(pending[1].value,/^\[/);
+ pending[1].resolve();
+ await newest;
+ pending[0].reject(new Error('Old permission denied'));
+ await older;
+ assert.equal(tools.children[3].hidden,true);
+ assert.equal(tools.children[3].focused,false);
+ assert.equal(tools.children[2].textContent,'Copied to clipboard.');
+ assert.deepEqual(env.writes,[]);
+});
+
 test('mismatched JSON-LD fails closed without a bogus reference UI',()=>{
  const env=stub({malformed:true});
  assert.equal(mountArticleReader(env.doc,env.view),false);
@@ -317,7 +341,7 @@ test('code-copy feature remains static, keyboard focusable and absent on printed
  assert.match(css,/\.article-reader__copy-code:focus-visible/);
  assert.match(css,/\.article-reader__toc-mcp:focus-visible/);
  assert.match(css,/\.article-reader__toc-mcp\{[^}]*min-height:44px/);
- assert.match(css,/@media print\{[^}]*\.article-reader__copy-code\{display:none!important/);
+ assert.match(css,/@media print\{[^}]*\.article-reader__copy-code,\.article-reader__toc-mcp\{display:none!important/);
  assert.match(js,/article\.querySelectorAll\('pre > code'\)/);
  assert.doesNotMatch(js,/fetch\(|sendBeacon|sessionStorage|innerHTML|eval\(/);
 });
