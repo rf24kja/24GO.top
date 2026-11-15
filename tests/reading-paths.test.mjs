@@ -4,6 +4,8 @@ import {readFileSync} from 'node:fs';
 import {approvedReadingArticles,normalizeReadingPath,encodeReadingPath,
  decodeReadingPath,changeReadingPath,readingPathMarkdown,readingPathMcpArguments,MAX_READING_PATH_ITEMS}
  from '../site/engineering/paths-logic.mjs';
+import {PATH_LOCALES,PATH_UI,readingPathUiText,applyReadingPathLocale}
+ from '../site/engineering/paths-i18n.mjs';
 
 const feed=JSON.parse(readFileSync(new URL('../site/engineering/feed.json',import.meta.url),'utf8'));
 const articles=approvedReadingArticles(feed);
@@ -87,6 +89,8 @@ test('the feature is a genuine accessible, browser-only workflow linked from arc
  assert.match(html,/id="path-selected"/);
  assert.match(html,/id="path-copy-link"/);
  assert.match(html,/id="path-copy-mcp"/);
+ assert.match(html,/id="path-ui-locale"/);
+ assert.match(html,/data-path-ui="heading"/);
  assert.match(html,/resolve_reading_path/);
  assert.match(html,/id="path-copy-markdown"/);
  assert.match(html,/id="path-manual-copy"/);
@@ -124,7 +128,7 @@ test('real Chromium runs delayed clipboard permission and focus regression on al
  assert.match(ui,/let copyRevision=0/);
  assert.match(ui,/\+\+copyRevision/);
  assert.match(ui,/if\(ticket===copyRevision\)showManual\(value\)/);
- assert.match(ui,/if\(ticket===copyRevision\)[\s\S]*?copyStatus\.textContent='Copied\./);
+ assert.match(ui,/if\(ticket===copyRevision\)[\s\S]*?copyStatus\.textContent=value\.startsWith/);
  assert.match(browser,/async function exerciseReadingPathsClipboardRace\(\)/);
  assert.match(browser,/await c\.call\(exerciseReadingPathsClipboardRace,sessionId\)/);
  assert.match(browser,/copyRace\.newestSuccess/);
@@ -143,7 +147,7 @@ test('reading-path Markdown download is a manual local-only action with responsi
  const html=readFileSync(new URL('../site/engineering/reading-paths/index.html',import.meta.url),'utf8');
  const ui=readFileSync(new URL('../site/engineering/paths.js',import.meta.url),'utf8');
  const browser=readFileSync(new URL('../scripts/check-draft-lab-accessibility.mjs',import.meta.url),'utf8');
- assert.match(html,/<button id="path-download-markdown" type="button" disabled>Download Markdown \.md<\/button>/);
+ assert.match(html,/<button id="path-download-markdown" type="button" disabled data-path-ui="downloadMarkdown">Download Markdown \.md<\/button>/);
  assert.match(ui,/el\('path-download-markdown'\)\.disabled=ids\.length===0/);
  assert.match(ui,/el\('path-copy-mcp'\)\.disabled=ids\.length===0/);
  assert.match(ui,/new Blob\(\[markdown\],\{type:'text\/markdown;charset=utf-8'\}\)/);
@@ -205,4 +209,65 @@ test('MCP argument copy rejects unreviewed paths and escapes untrusted titles',(
  assert.ok(payload.url.includes('#path='));
  assert.equal(decodeReadingPath(payload.url.slice('https://24go.top/engineering/reading-paths/'.length),articles).title,suspicious);
  assert.ok(!output.includes('<script>'), 'JSON must contain a URL-encoded fragment only');
+});
+
+
+test('reading path interface has reviewed eight-language key coverage and safe English fallback',()=>{
+ assert.deepEqual(PATH_LOCALES,['en','ru','th','es','fr','de','pt','zh']);
+ const keys=Object.keys(PATH_UI.en);
+ assert.ok(keys.length>=55);
+ for(const locale of PATH_LOCALES){
+  assert.deepEqual(Object.keys(PATH_UI[locale]).sort(),keys.slice().sort(),
+   'no missing or unexpected UI key in '+locale);
+  for(const key of keys){
+   const value=readingPathUiText(locale,key);
+   assert.equal(typeof value,'string');
+   assert.ok(value.trim().length>0,locale+': '+key);
+   assert.ok(!/[\u0000-\u001f\u007f]/u.test(value),'no control characters in UI strings');
+   assert.ok(!/<script|onerror\s*=|javascript:/i.test(value),'no executable markup');
+  }
+ }
+ assert.equal(readingPathUiText('missing','heading'),PATH_UI.en.heading);
+ assert.throws(()=>readingPathUiText('en','unknown'),TypeError);
+ assert.notEqual(readingPathUiText('ru','heading'),PATH_UI.en.heading);
+ assert.notEqual(readingPathUiText('th','copyMcp'),PATH_UI.en.copyMcp);
+});
+
+test('locale application uses textContent, aria attributes and placeholders only',()=>{
+ const dom=[
+  {type:'text',key:'heading',textContent:''},
+  {type:'label',key:'localeLabel',attributes:{}},
+  {type:'placeholder',key:'filterPlaceholder',attributes:{}}
+ ];
+ const get=type=>dom.filter(x=>x.type===type).map(x=>({
+  textContent:x.textContent,
+  getAttribute(){return x.key;},
+  setAttribute(key,value){x.attributes[key]=value;},
+  attributes:x.attributes,
+  ...x
+ }));
+ const doc={documentElement:{lang:'en'},querySelectorAll(q){
+  if(q==='[data-path-ui]')return get('text');
+  if(q==='[data-path-ui-label]')return get('label');
+  if(q==='[data-path-ui-placeholder]')return get('placeholder');
+  return [];
+ }};
+ // Use persistent mock objects for assertions.
+ doc.querySelectorAll=q=>dom.filter(x=>(
+  q==='[data-path-ui]'?x.type==='text':
+  q==='[data-path-ui-label]'?x.type==='label':
+  x.type==='placeholder'
+ )).map(x=>({
+  getAttribute(){return x.key;},
+  set textContent(value){x.owner.textContent=value;},
+  get textContent(){return x.owner.textContent;},
+  setAttribute(k,v){x.attributes[k]=v;},attributes:x.attributes,owner:x
+ }));
+ assert.equal(applyReadingPathLocale(doc,'ru'),'ru');
+ assert.equal(doc.documentElement.lang,'ru');
+ assert.equal(dom[0].textContent,PATH_UI.ru.heading);
+ assert.equal(dom[1].attributes['aria-label'],PATH_UI.ru.localeLabel);
+ assert.equal(dom[2].attributes.placeholder,PATH_UI.ru.filterPlaceholder);
+ assert.equal(applyReadingPathLocale(doc,'bad'),'en');
+ assert.equal(dom[0].textContent,PATH_UI.en.heading);
 });
