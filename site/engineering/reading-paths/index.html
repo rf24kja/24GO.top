@@ -45,6 +45,15 @@
 <div class="path-panel-head"><div><p class="eyebrow" data-path-ui="discover">01 / DISCOVER</p><h2 id="catalog-heading" data-path-ui="catalogHeading">Available articles</h2></div><span id="catalog-count" class="path-count">—</span></div>
 <label for="path-search" data-path-ui="filterLabel">Filter public technical notes</label>
 <input id="path-search" type="search" placeholder="Security, API, Markdown, PostgreSQL…" data-path-ui-placeholder="filterPlaceholder" maxlength="80" autocomplete="off">
+<div class="path-topics" role="group" aria-label="Explore by topic" data-path-ui-label="topicGroup">
+<p class="path-small" data-path-ui="topicHint">Choose a topic to filter existing English article titles and summaries locally.</p>
+<div class="path-topics__buttons">
+<button type="button" data-path-topic="security" aria-pressed="false" data-path-ui="topicSecurity">Security</button>
+<button type="button" data-path-topic="api" aria-pressed="false" data-path-ui="topicApi">API</button>
+<button type="button" data-path-topic="markdown" aria-pressed="false" data-path-ui="topicMarkdown">Markdown</button>
+<button type="button" data-path-topic="mobile" aria-pressed="false" data-path-ui="topicMobile">Mobile</button>
+<button type="button" data-path-topic="mcp" aria-pressed="false" data-path-ui="topicMcp">MCP</button>
+</div></div>
 <ul id="path-catalog" class="path-catalog" aria-label="Available public articles"></ul>
 <p class="path-small"><span data-path-ui="browseIntro">Only published engineering notes.</span> <a href="../" data-path-ui="browseLink">Browse the archive</a>.</p>
 </section>

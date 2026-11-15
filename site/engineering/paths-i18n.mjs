@@ -3,6 +3,13 @@
 // Never infer a user's identity or transmit their reading selections.
 export const PATH_LOCALES=Object.freeze(['en','ru','th','es','fr','de','pt','zh']);
 const EN={
+ topicGroup:"Explore by topic",
+ topicHint:"Choose a shortcut to filter published English article titles and summaries locally.",
+ topicSecurity:"Security",
+ topicApi:"API",
+ topicMarkdown:"Markdown",
+ topicMobile:"Mobile",
+ topicMcp:"MCP",
  localeLabel:'Interface language',skip:'Skip to reading path builder',
  navHome:'Home',navArticles:'Articles',navPaths:'Reading paths',navDevelopment:'Development',
  heading:'Build a reading path.',
@@ -49,6 +56,13 @@ const EN={
  unavailable:'The article catalog is unavailable. Use the engineering archive link instead.'
 };
 const RU={
+ topicGroup:"Темы",
+ topicHint:"Кнопки ищут английские названия и описания опубликованных статей только в этой вкладке.",
+ topicSecurity:"Безопасность",
+ topicApi:"API",
+ topicMarkdown:"Markdown",
+ topicMobile:"Мобильные",
+ topicMcp:"MCP",
  localeLabel:'Язык интерфейса',skip:'Перейти к подборке статей',
  navHome:'Главная',navArticles:'Статьи',navPaths:'Маршруты чтения',navDevelopment:'Разработка',
  heading:'Составьте маршрут чтения.',
@@ -94,6 +108,13 @@ const RU={
  unavailable:'Каталог недоступен. Откройте архив технических статей.'
 };
 const TH={
+ topicGroup:"ค้นหาตามหัวข้อ",
+ topicHint:"ใช้ปุ่มหัวข้อเพื่อกรองชื่อและคำอธิบายบทความภาษาอังกฤษในแท็บนี้",
+ topicSecurity:"ความปลอดภัย",
+ topicApi:"API",
+ topicMarkdown:"Markdown",
+ topicMobile:"มือถือ",
+ topicMcp:"MCP",
  localeLabel:'ภาษาอินเทอร์เฟซ',skip:'ข้ามไปยังตัวจัดเส้นทางการอ่าน',
  navHome:'หน้าแรก',navArticles:'บทความ',navPaths:'เส้นทางการอ่าน',navDevelopment:'การพัฒนา',
  heading:'สร้างเส้นทางการอ่าน',
@@ -140,6 +161,13 @@ const TH={
 };
 
 const ES={
+ topicGroup:"Explorar por tema",
+ topicHint:"Filtra localmente los títulos y resúmenes originales en inglés.",
+ topicSecurity:"Seguridad",
+ topicApi:"API",
+ topicMarkdown:"Markdown",
+ topicMobile:"Móvil",
+ topicMcp:"MCP",
  localeLabel:'Idioma de la interfaz',skip:'Ir al creador de rutas de lectura',
  navHome:'Inicio',navArticles:'Artículos',navPaths:'Rutas de lectura',navDevelopment:'Desarrollo',
  heading:'Crea una ruta de lectura.',
@@ -185,6 +213,13 @@ const ES={
  unavailable:'El catálogo no está disponible. Abre el archivo de artículos.'
 };
 const FR={
+ topicGroup:"Explorer par thème",
+ topicHint:"Filtrez localement les titres et résumés originaux en anglais.",
+ topicSecurity:"Sécurité",
+ topicApi:"API",
+ topicMarkdown:"Markdown",
+ topicMobile:"Mobile",
+ topicMcp:"MCP",
  localeLabel:'Langue de l’interface',skip:'Aller au créateur de parcours',
  navHome:'Accueil',navArticles:'Articles',navPaths:'Parcours de lecture',navDevelopment:'Développement',
  heading:'Créez un parcours de lecture.',
@@ -230,6 +265,13 @@ const FR={
  unavailable:'Catalogue indisponible. Consultez les archives.'
 };
 const DE={
+ topicGroup:"Themen entdecken",
+ topicHint:"Filtere englische Titel und Zusammenfassungen nur in diesem Tab.",
+ topicSecurity:"Sicherheit",
+ topicApi:"API",
+ topicMarkdown:"Markdown",
+ topicMobile:"Mobil",
+ topicMcp:"MCP",
  localeLabel:'Sprache der Oberfläche',skip:'Zum Lesepfad-Editor springen',
  navHome:'Startseite',navArticles:'Artikel',navPaths:'Lesepfade',navDevelopment:'Entwicklung',
  heading:'Erstelle einen Lesepfad.',
@@ -275,6 +317,13 @@ const DE={
  unavailable:'Katalog nicht verfügbar. Artikelarchiv öffnen.'
 };
 const PT={
+ topicGroup:"Explorar por tema",
+ topicHint:"Filtre os títulos e resumos originais em inglês localmente.",
+ topicSecurity:"Segurança",
+ topicApi:"API",
+ topicMarkdown:"Markdown",
+ topicMobile:"Celular",
+ topicMcp:"MCP",
  localeLabel:'Idioma da interface',skip:'Ir para o criador de trilhas',
  navHome:'Início',navArticles:'Artigos',navPaths:'Trilhas de leitura',navDevelopment:'Desenvolvimento',
  heading:'Crie uma trilha de leitura.',
@@ -320,6 +369,13 @@ const PT={
  unavailable:'Catálogo indisponível. Consulte o arquivo de artigos.'
 };
 const ZH={
+ topicGroup:"按主题查找",
+ topicHint:"在本标签页筛选英文原始文章标题和摘要。",
+ topicSecurity:"安全",
+ topicApi:"API",
+ topicMarkdown:"Markdown",
+ topicMobile:"移动端",
+ topicMcp:"MCP",
  localeLabel:'界面语言',skip:'跳转到阅读路线编辑器',
  navHome:'首页',navArticles:'文章',navPaths:'阅读路线',navDevelopment:'开发进度',
  heading:'创建阅读路线',

@@ -484,6 +484,51 @@ async function exerciseReadingPathInitialLocale(){
  }
 }
 
+// Topic buttons search only the already loaded English feed, while their
+// labels translate. No network requests or storage writes are permitted.
+function exerciseReadingPathsTopics(){
+ const chips=[...document.querySelectorAll('[data-path-topic]')];
+ const input=document.getElementById('path-search');
+ const selected=document.getElementById('path-selected');
+ const title=document.getElementById('path-title');
+ const count=document.getElementById('catalog-count');
+ const beforeStorage=localStorage.getItem('24gotop-public-reading-list-v1');
+ const beforeTitle=title.value;
+ const beforeOrder=[...selected.querySelectorAll('.path-article-link')].map(x=>x.href);
+ const terms={security:'safe',api:'api',markdown:'markdown',mobile:'mobile',mcp:'mcp'};
+ const results=[];
+ for(const chip of chips){
+  const topic=chip.getAttribute('data-path-topic');
+  chip.focus();chip.click();
+  const active=chip.getAttribute('aria-pressed')==='true';
+  const matches=Number.parseInt(count.textContent,10);
+  const current=input.value;
+  const sole=chips.filter(x=>x.getAttribute('aria-pressed')==='true').length===1;
+  const focus=document.activeElement===chip;
+  chip.click();
+  const cleared=chip.getAttribute('aria-pressed')==='false'&&
+   !input.value&&chips.every(x=>x.getAttribute('aria-pressed')==='false');
+  results.push({topic,active,sole,focus,term:current===terms[topic],
+   matches:matches>0&&matches<12,cleared});
+ }
+ const security=chips.find(x=>x.getAttribute('data-path-topic')==='security');
+ security.click();
+ input.value='mobile';
+ input.dispatchEvent(new Event('input',{bubbles:true}));
+ const manualOverride=chips.every(x=>x.getAttribute('aria-pressed')==='false')&&
+  input.value==='mobile'&&Number.parseInt(count.textContent,10)>0;
+ input.value='';
+ input.dispatchEvent(new Event('input',{bubbles:true}));
+ return {results,manualOverride,
+  titlePreserved:title.value===beforeTitle,
+  orderPreserved:JSON.stringify([...selected.querySelectorAll('.path-article-link')]
+   .map(x=>x.href))===JSON.stringify(beforeOrder),
+  storagePreserved:localStorage.getItem('24gotop-public-reading-list-v1')===beforeStorage,
+  heights:chips.map(x=>x.getBoundingClientRect().height),
+  width:document.documentElement.clientWidth,
+  scroll:Math.max(document.documentElement.scrollWidth,document.body.scrollWidth)};
+}
+
 // Exercise the actual browser Blob download path on each responsive viewport.
 // Intercept only the final anchor activation so CI never downloads files.
 async function exerciseReadingPathsDownload(){
@@ -1228,6 +1273,13 @@ async function main(){
       locales.results.some(row=>!row.translated||!row.lang||!row.title||
        !row.order||!row.buttons||!row.noStorage||!row.noNavigation||!row.count))
     throw Error('Reading path 8-locale live UI '+profile.name+': '+JSON.stringify(locales));
+   const topics=await c.call(exerciseReadingPathsTopics,sessionId);
+   if(topics.results.length!==5||!topics.manualOverride||
+      !topics.titlePreserved||!topics.orderPreserved||!topics.storagePreserved||
+      topics.heights.some(height=>height<43.5)||topics.scroll>topics.width+1||
+      topics.results.some(row=>!row.active||!row.sole||!row.focus||
+       !row.term||!row.matches||!row.cleared))
+    throw Error('Reading path localized topic shortcuts '+profile.name+': '+JSON.stringify(topics));
   }
   // Direct localizations are only UI preferences; canonical share links omit ?ui.
   await c.send('Page.navigate',{url:origin+'/engineering/reading-paths/?ui=ru'},sessionId);
