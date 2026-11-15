@@ -18,7 +18,7 @@ The main 24go.top origin must **never** be an arbitrary third-party JavaScript u
 
 Each app has its own publicly inspectable HTML, no backend, no external network, and an internal Content Security Policy disabling network connections. Preview runs on an iframe with ONLY allow-scripts; it deliberately does not include allow-same-origin, allow-top-navigation, allow-popups or allow-downloads. No app loads automatically when you open the catalogue.
 
-The comparison table shows source-backed properties (features, category, version, license, runtime, network capability). It is **not** a manipulated popularity score or fabricated ranking. App list changes require a GitHub PR; anonymous users cannot add arbitrary executable code to the live site.
+The comparison table shows source-backed properties (features, category, version, license, runtime, network capability). After comparing two reviewed apps, an explicit **Download comparison (.md)** control saves their source-backed descriptions, features, versions and canonical repository links as a local Markdown report without uploading, logging or persisting the choice. It is **not** a manipulated popularity score or fabricated ranking. App list changes require a GitHub PR; anonymous users cannot add arbitrary executable code to the live site.
 
 ## Browser submission preparation — available now
 
