@@ -13,6 +13,27 @@ const title=el('path-title'),search=el('path-search');
 const copyStatus=el('path-copy-status'),manual=el('path-manual-copy');
 const status=el('path-status');
 let approved=[],ids=[];
+// These exact English search terms run against the already downloaded
+// reviewed public feed; topic button labels are translated, data is not.
+const allowedTopics=new Set(['security','api','markdown','mobile','mcp']);
+const topicButtons=[...document.querySelectorAll('[data-path-topic]')];
+let activeTopic='';
+function refreshTopicButtons(){
+ for(const control of topicButtons)
+  control.setAttribute('aria-pressed',String(control.getAttribute('data-path-topic')===activeTopic&&activeTopic!==''));
+}
+for(const control of topicButtons){
+ const topic=control.getAttribute('data-path-topic');
+ if(!allowedTopics.has(topic))continue;
+ control.addEventListener('click',()=>{
+  activeTopic=activeTopic===topic?'':topic;
+  search.value=activeTopic;
+  forgetManual();
+  renderCatalog();
+  refreshTopicButtons();
+ });
+}
+
 const localePicker=el('path-ui-locale');
 const requestedLocale=new URL(window.location.href).searchParams.get('ui');
 let language=PATH_LOCALES.includes(requestedLocale)?requestedLocale:'en';
@@ -138,7 +159,12 @@ function reorder(id,action){
   }
  }catch{status.textContent=tr('changeFailed');}
 }
-search.addEventListener('input',()=>{forgetManual();renderCatalog();});
+search.addEventListener('input',()=>{
+ activeTopic='';
+ refreshTopicButtons();
+ forgetManual();
+ renderCatalog();
+});
 title.addEventListener('input',forgetManual);
 el('path-reset').addEventListener('click',()=>{
  ids=[];title.value='My 24GOTOP reading path';render();
