@@ -19,6 +19,11 @@ let language=PATH_LOCALES.includes(requestedLocale)?requestedLocale:'en';
 localePicker.value=language;
 const tr=key=>readingPathUiText(language,key);
 applyReadingPathLocale(document,language);
+// Apply a localized initial title only before any author interaction.
+// Switching languages later never rewrites the user's chosen title.
+if(language!=='en'&&!window.location.hash&&
+   title.value===readingPathUiText('en','titlePlaceholder'))
+ title.value=tr('titlePlaceholder');
 localePicker.addEventListener('change',()=>{
  language=PATH_LOCALES.includes(localePicker.value)?localePicker.value:'en';
  applyReadingPathLocale(document,language);
