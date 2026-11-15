@@ -21,6 +21,8 @@ export const FIXED_ROUTES=Object.freeze([
  '/library/', '/library/catalog.json', '/library/library.css',
  '/library/library.mjs', '/library/library-core.mjs',
  '/library/intake.mjs', '/library/intake-core.mjs',
+ '/library/studio/', '/library/studio/studio.mjs',
+ '/library/studio/studio-core.mjs', '/library/studio/studio.css',
  '/library/apps/json-inspector/', '/library/apps/contrast-checker/',
  '/library/apps/text-diff/',
  '/sitemap.xml', '/robots.txt'
