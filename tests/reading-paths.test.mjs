@@ -258,3 +258,37 @@ test('locale application uses textContent, aria attributes and placeholders only
  assert.equal(applyReadingPathLocale(doc,'bad'),'en');
  assert.equal(elements[0].textContent,PATH_UI.en.heading);
 });
+
+
+test('local topic shortcuts have reviewable fixed vocabulary in all eight languages',()=>{
+ const html=readFileSync(new URL('../site/engineering/reading-paths/index.html',import.meta.url),'utf8');
+ const ui=readFileSync(new URL('../site/engineering/paths.js',import.meta.url),'utf8');
+ const css=readFileSync(new URL('../site/engineering/paths.css',import.meta.url),'utf8');
+ const expected=['security','api','markdown','mobile','mcp'];
+ const actual=[...html.matchAll(/data-path-topic="([a-z]+)"/g)].map(x=>x[1]);
+ assert.deepEqual(actual,expected);
+ assert.match(html,/class="path-topics" role="group" aria-label="Explore by topic" data-path-ui-label="topicGroup"/);
+ assert.equal((html.match(/aria-pressed="false" data-path-ui="topic/g)||[]).length,5);
+ for(const locale of PATH_LOCALES){
+  for(const key of ['topicGroup','topicHint','topicSecurity','topicApi','topicMarkdown','topicMobile','topicMcp']){
+   assert.ok(readingPathUiText(locale,key).length>=2,locale+': '+key);
+  }
+ }
+ assert.match(ui,/const topicTerms=Object.freeze/);
+ assert.match(ui,/security:'safe'/);
+ assert.match(ui,/setAttribute\('aria-pressed'/);
+ assert.match(ui,/activeTopic='';/);
+ assert.match(css,/\.path-topics__buttons button\{[^}]*min-height:44px/);
+ assert.doesNotMatch(ui,/\bfetch\(|XMLHttpRequest|sendBeacon|localStorage|sessionStorage/i);
+});
+
+test('every topic shortcut matches only the currently published English article catalog',()=>{
+ const terms={security:'safe',api:'api',markdown:'markdown',mobile:'mobile',mcp:'mcp'};
+ for(const [topic,term] of Object.entries(terms)){
+  const matches=articles.filter(item=>(item.title+' '+item.summary)
+   .toLocaleLowerCase().includes(term));
+  assert.ok(matches.length>=1,'approved topic must show results: '+topic);
+  assert.ok(matches.length<articles.length,'topic must filter catalog: '+topic);
+  assert.ok(matches.every(item=>/^https:\/\/24go\.top\/engineering\//.test(item.url)));
+ }
+});
