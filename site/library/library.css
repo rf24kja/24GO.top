@@ -121,3 +121,11 @@
 @media(prefers-color-scheme:light){.library-intake button{color:#fff}}
 
 #compare-export-status{color:var(--muted);font-size:13px;line-height:1.55;min-height:22px;overflow-wrap:anywhere;margin:8px 0 16px}
+
+/* Real App Studio entrypoint from Library's front door. */
+.library-studio-link{margin:24px 0;padding:18px 21px;border-radius:12px;
+ border:1px solid var(--accent);background:var(--panel);color:var(--text);
+ line-height:1.7;font-size:14px}
+.library-studio-link strong{color:var(--accent)}
+.library-studio-link a{color:var(--accent);font-weight:850;display:inline-block;
+ margin-left:8px;min-height:44px;align-content:center}
