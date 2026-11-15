@@ -1,6 +1,6 @@
 'use strict';
 
-import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, readDraftFileStrict, formatDraftSelection, formatDraftImageSelection, readExternalMarkdownStrict, formatExternalMarkdownInsertion, countDraftWords, createDraftImportGate, matchesDraftExportSnapshot, invalidDraftField, findDraftText, replaceDraftFindMatch, replaceAllDraftMatches } from './draft-lab-logic.js';
+import { safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent, hasUnexportedChanges, readDraftFileStrict, formatDraftSelection, formatDraftImageSelection, readExternalMarkdownStrict, formatExternalMarkdownInsertion, countDraftWords, createDraftImportGate, matchesDraftExportSnapshot, invalidDraftField, findDraftText, replaceDraftFindMatch, replaceAllDraftMatches, locateDraftSections } from './draft-lab-logic.js';
 import { renderMarkdownPreview,renderPreviewOutline } from './draft-lab-preview.js';
 import {appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS} from './draft-lab-guidance.js';
 import {captureDraftRevision,compareDraftRevisions,revisionSummary} from './draft-lab-revisions.js';
@@ -193,6 +193,50 @@ function updateSafetyNotice() {
   }
 }
 
+// Source navigator intentionally leaves editor content, undo stack, vault,
+// review exports and reopened-file baseline unchanged.
+const sectionPicker=field('draftSectionPicker');
+const sectionJump=field('draftSectionJump');
+let sourceSectionSnapshot=null,sourceSections=[];
+function refreshSourceSections(){
+ const prior=sourceSectionSnapshot===body.value?sectionPicker.value:'';
+ const changed=sourceSectionSnapshot!==body.value;
+ sourceSections=locateDraftSections(body.value);
+ sourceSectionSnapshot=body.value;
+ sectionPicker.replaceChildren();
+ const empty=document.createElement('option');
+ empty.value='';
+ empty.textContent=ui(sourceSections.length?'sectionNavChoose':'sectionNavEmpty');
+ sectionPicker.append(empty);
+ sourceSections.forEach((section,index)=>{
+  const option=document.createElement('option');
+  option.value=String(index+1);
+  const shown=section.title.slice(0,90)+(section.title.length>90?'…':'');
+  option.textContent='#'.repeat(section.level)+' '+shown+
+   ' · '+ui('sectionNavLine')+section.line;
+  sectionPicker.append(option);
+ });
+ sectionPicker.value=prior&&sourceSections[Number(prior)-1]?prior:'';
+ sectionJump.disabled=!sectionPicker.value;
+ if(changed)field('draftSectionStatus').textContent='';
+}
+sectionPicker.addEventListener('change',()=>{
+ sectionJump.disabled=!sectionPicker.value;
+ field('draftSectionStatus').textContent='';
+});
+sectionJump.addEventListener('click',()=>{
+ const index=Number(sectionPicker.value);
+ const section=sourceSections[index-1];
+ if(!sectionPicker.value||!Number.isSafeInteger(index)||!section||
+    sourceSectionSnapshot!==body.value){
+  sectionJump.disabled=true;
+  field('draftSectionStatus').textContent=ui('sectionNavStale');
+  return;
+ }
+ body.focus();
+ body.setSelectionRange(section.start,section.end);
+ field('draftSectionStatus').textContent=ui('sectionNavMoved')+section.line;
+});
 function preview() {
   // textContent prevents user HTML or Markdown from executing.
   field('previewHeading').textContent = title.value.trim() || ui('emptyTitle');
@@ -201,6 +245,7 @@ function preview() {
   renderMarkdownPreview(field('previewBody'), body.value.trim() ? body.value : ui('emptyBody'),
     document,{imageLoad:ui('previewImageLoad'),imageFailed:ui('previewImageFailed')});
   field('articleOutlineSection').hidden=renderPreviewOutline(field('articleOutline'),body.value)===0;
+  refreshSourceSections();
   field('previewLocale').textContent = locale.value.toUpperCase();
   field('previewCategory').textContent = ui(['guides','tools','news','models'].includes(category.value)?category.value:'guides');
   field('bodyCount').textContent = body.value.length.toLocaleString('en-US') + ' / 12,000';

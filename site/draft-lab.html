@@ -89,6 +89,18 @@
             </div>
             <p id="draftFindStatus" class="draft-find__status" role="status" aria-live="polite" aria-atomic="true"></p>
           </div>
+          <section class="draft-sections" aria-labelledby="draftSectionsHeading">
+            <h3 id="draftSectionsHeading" data-ui="sectionNavHeading">Edit a section</h3>
+            <p class="hint" data-ui="sectionNavHelp">Select a Markdown heading to jump back to its exact source line. Code blocks and quoted examples are not treated as sections. This does not change your article or save it.</p>
+            <div class="draft-sections__controls">
+              <label for="draftSectionPicker" data-ui="sectionNavLabel">Article section</label>
+              <select id="draftSectionPicker" aria-controls="postBody">
+                <option value="" data-ui="sectionNavChoose">Choose a heading</option>
+              </select>
+              <button id="draftSectionJump" type="button" disabled data-ui="sectionNavJump">Edit selected section</button>
+            </div>
+            <p id="draftSectionStatus" class="draft-sections__status" role="status" aria-live="polite" aria-atomic="true"></p>
+          </section>
           <p class="hint format-help" data-ui="formatHelp">Select text to format it, or place the cursor to insert an editable placeholder. Export to keep changes. In the article field: Ctrl/⌘+B bold, Ctrl/⌘+I italic, Ctrl/⌘+K link.</p>
           <section class="draft-starters" aria-labelledby="templateHeading">
             <h3 id="templateHeading" data-ui="templateHeading">Article starters</h3>

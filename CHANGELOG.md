@@ -1,3 +1,10 @@
+## Unreleased — precise read-only Draft Lab source-section navigator
+
+- Add an **Edit a section** navigator directly in the authoring panel. It identifies Markdown H1/H2/H3 headings outside fenced and indented code, shows the source line, and moves the textarea's selection to the exact heading on author request. Duplicate headings are distinguished by their UTF-16 positions; CRLF and multilingual text are preserved.
+- Pure parsing never writes drafts, triggers a network call, changes the manual browser vault, resets a Markdown export baseline or claims hosted publication. A stale selection is rejected after the manuscript changes. A hard cap of 80 headings prevents unbounded UI.
+- Translate source navigation controls, messages and empty states into all eight existing interface languages. Add deterministic unit tests, UI mock tests and real Chromium viewport/security regression checks on 280/390/844/768/1440px layouts.
+- This is public OSS browser functionality only; protected hosted-Core registration, PostgreSQL publishing and agent authorization are not implemented.
+
 ## Unreleased — one-click human-to-MCP reading path handoff
 
 - Add an author-initiated **Copy MCP tool input** control to the published reading-path builder. It constructs the canonical `resolve_reading_path` argument JSON from the same validated article order and versioned fragment used by the browser share link. An agent can use the JSON with the local, read-only public MCP server shipped in PR #226.
