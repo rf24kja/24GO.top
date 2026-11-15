@@ -62,7 +62,7 @@ async function exerciseLibrary(){
  const cards=()=>[...document.querySelectorAll('.library-card')];
  const input=document.getElementById('library-search'),cat=document.getElementById('library-category');
  const storageBefore=localStorage.length;
- const initial=cards().length===2;
+ const initial=cards().length===3;
  input.value='JSON';input.dispatchEvent(new Event('input',{bubbles:true}));
  const searched=cards().length===1&&cards()[0].querySelector('h3').textContent==='JSON Inspector';
  input.value='';input.dispatchEvent(new Event('input',{bubbles:true}));
@@ -231,6 +231,36 @@ function exerciseContrast(){
  return {high,low,width:document.documentElement.clientWidth,
   scroll:Math.max(document.documentElement.scrollWidth,document.body.scrollWidth)};
 }
+function exerciseTextDiff(){
+ const left=document.getElementById('before'),right=document.getElementById('after');
+ const originalStorage=localStorage.length;
+ left.value='alpha\n<script>window.hacked=true</script>\nremoved';
+ right.value='alpha\n<script>window.hacked=true</script>\nadded';
+ document.getElementById('compare').click();
+ const diff=document.getElementById('diff');
+ const added=document.getElementById('added-count').textContent;
+ const removed=document.getElementById('removed-count').textContent;
+ const same=document.getElementById('same-count').textContent;
+ const compared=added==='1'&&removed==='1'&&same==='2'&&
+  diff.children.length===4&&
+  diff.textContent.includes('window.hacked=true')&&
+  !diff.querySelector('script')&&window.hacked!==true;
+ document.getElementById('swap').click();
+ const swapped=left.value.includes('added')&&right.value.includes('removed')&&
+  document.getElementById('added-count').textContent==='1'&&
+  document.getElementById('removed-count').textContent==='1';
+ document.getElementById('clear').click();
+ const cleared=diff.children.length===0&&left.value===''&&right.value===''&&
+  document.activeElement===left;
+ left.value=new Array(121).fill('over-limit').join('\n');
+ document.getElementById('compare').click();
+ const bounded=document.getElementById('status').dataset.error==='true'&&
+  !diff.children.length;
+ const width=document.documentElement.clientWidth;
+ return {compared,swapped,cleared,bounded,noStorage:localStorage.length===originalStorage,
+  width,scroll:Math.max(document.documentElement.scrollWidth,document.body.scrollWidth),
+  height:document.getElementById('compare').getBoundingClientRect().height};
+}
 async function main(){
  const http=server();let browser,ws;
  try{
@@ -275,10 +305,16 @@ async function main(){
    const contrast=await c.evaluate(exerciseContrast,sessionId);
    if(!contrast.high||!contrast.low||contrast.scroll>contrast.width+1)
     throw Error('Contrast Checker '+width+': '+JSON.stringify(contrast));
+   await c.request('Page.navigate',{url:origin+'/library/apps/text-diff/'},sessionId);
+   await new Promise(ok=>setTimeout(ok,200));
+   const diff=await c.evaluate(exerciseTextDiff,sessionId);
+   if(!diff.compared||!diff.swapped||!diff.cleared||!diff.bounded||
+      !diff.noStorage||diff.scroll>diff.width+1||diff.height<43.5)
+    throw Error('Text Diff '+width+': '+JSON.stringify(diff));
   }
   if(c.errors.length||c.external.length)
    throw Error('Browser errors or external requests: '+c.errors.join(';')+'; '+c.external.join(';'));
-  console.log('PASS Library Chromium: catalog, 2 actual apps, 4 viewports, browser ZIP32 deflate validation, CRC corruption rejection, manual copy fallback, review link, opaque sandbox and no uploads');
+  console.log('PASS Library Chromium: catalog, 3 actual apps, 4 viewports, browser ZIP32 deflate validation, CRC corruption rejection, manual copy fallback, review link, opaque sandbox and no uploads');
  }finally{
   if(ws)ws.close();
   if(browser){
