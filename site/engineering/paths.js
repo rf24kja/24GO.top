@@ -15,7 +15,7 @@ const status=el('path-status');
 let approved=[],ids=[];
 // These exact English search terms run against the already downloaded
 // reviewed public feed; topic button labels are translated, data is not.
-const allowedTopics=new Set(['security','api','markdown','mobile','mcp']);
+const topicTerms=Object.freeze({security:'safe',api:'api',markdown:'markdown',mobile:'mobile',mcp:'mcp'});
 const topicButtons=[...document.querySelectorAll('[data-path-topic]')];
 let activeTopic='';
 function refreshTopicButtons(){
@@ -24,10 +24,10 @@ function refreshTopicButtons(){
 }
 for(const control of topicButtons){
  const topic=control.getAttribute('data-path-topic');
- if(!allowedTopics.has(topic))continue;
+ if(!Object.hasOwn(topicTerms,topic))continue;
  control.addEventListener('click',()=>{
   activeTopic=activeTopic===topic?'':topic;
-  search.value=activeTopic;
+  search.value=activeTopic?topicTerms[activeTopic]:'';
   forgetManual();
   renderCatalog();
   refreshTopicButtons();
