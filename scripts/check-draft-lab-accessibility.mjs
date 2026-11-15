@@ -448,6 +448,44 @@ async function exerciseReadingPathsDownload(){
 }
 
 
+// Real browser check of the read-only source navigator at all five widths.
+// Code fences, repeated headings, selection offsets and stale-editor guards.
+function exerciseDraftSourceNavigation(){
+ const $=id=>document.getElementById(id);
+ const body=$('postBody'),picker=$('draftSectionPicker'),jump=$('draftSectionJump');
+ const old=localStorage.getItem('24gotop-draft-vault-v1');
+ const manuscript='## Start\n~~~md\n# Fake inside code\n~~~\nParagraph 🚀\n## Repeat\n## Repeat';
+ body.value=manuscript;
+ body.dispatchEvent(new Event('input',{bubbles:true}));
+ const filled=picker.options.length===4&&jump.disabled&&
+  ![...picker.options].some(x=>x.textContent.includes('Fake inside code'));
+ picker.value='3';
+ picker.dispatchEvent(new Event('change',{bubbles:true}));
+ const ready=!jump.disabled;
+ jump.click();
+ const selected=body.selectionStart===manuscript.lastIndexOf('## Repeat')&&
+  body.selectionEnd===manuscript.length&&document.activeElement===body;
+ const saved=localStorage.getItem('24gotop-draft-vault-v1')===old;
+ body.value='## New';
+ body.dispatchEvent(new Event('input',{bubbles:true}));
+ const invalidated=picker.value===''&&jump.disabled&&picker.options.length===2;
+ picker.value='1';picker.dispatchEvent(new Event('change',{bubbles:true}));
+ body.value='## Changed without input';
+ const prev=[body.selectionStart,body.selectionEnd];
+ jump.click();
+ const stale=jump.disabled&&body.value==='## Changed without input'&&
+  body.selectionStart===prev[0]&&body.selectionEnd===prev[1];
+ body.dispatchEvent(new Event('input',{bubbles:true}));
+ body.value='A document with no headings.';
+ body.dispatchEvent(new Event('input',{bubbles:true}));
+ const empty=picker.options.length===1&&picker.value===''&&jump.disabled;
+ return {filled,ready,selected,saved,invalidated,stale,empty,
+  buttonHeight:jump.getBoundingClientRect().height,
+  pickerHeight:picker.getBoundingClientRect().height,
+  viewport:document.documentElement.clientWidth,
+  scroll:Math.max(document.body.scrollWidth,document.documentElement.scrollWidth)};
+}
+
 // Real Chromium interaction: no mocks for the editor or its local undo.
 // Confirmation is intercepted to avoid browser modal deadlocks in headless CI.
 function exerciseDraftReplaceAll(){
@@ -934,6 +972,12 @@ async function main(){
       insertion.fieldWidths.some(width=>width<70)||
       insertion.scroll>insertion.viewport+1)
     throw Error('Markdown image insertion '+profile.name+': '+JSON.stringify(insertion));
+   const sections=await c.call(exerciseDraftSourceNavigation,sessionId);
+   if(!sections.filled||!sections.ready||!sections.selected||
+      !sections.saved||!sections.invalidated||!sections.stale||!sections.empty||
+      sections.buttonHeight<43.5||sections.pickerHeight<43.5||
+      sections.scroll>sections.viewport+1)
+    throw Error('Draft Lab source heading navigation '+profile.name+': '+JSON.stringify(sections));
    const bulk=await c.call(exerciseDraftReplaceAll,sessionId);
    if(!bulk.beforeDisabled||!bulk.replaced||!bulk.reversed||
       !bulk.canceled||!bulk.limited||!bulk.stale||!bulk.storageSame||
