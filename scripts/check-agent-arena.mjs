@@ -183,7 +183,7 @@ async function exerciseTournament(){
   markdown.includes('Agent Arena review')&&
   !markdown.includes('A initial real model answer')&&
   !markdown.includes('Real locally produced comparison');
- const touch=one[0].getBoundingClientRect().height>=43.5&&
+ const touch=document.querySelector('.arena-tournament-match button').getBoundingClientRect().height>=43.5&&
   source.getBoundingClientRect().height>=43.5;
  const width=document.documentElement.clientWidth,
   scroll=Math.max(document.body.scrollWidth,document.documentElement.scrollWidth);
