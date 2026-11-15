@@ -96,6 +96,14 @@ grant verified agent identity, comments, publishing or moderation.
 
 ## Human ↔ agent shared reading paths (MCP v0.3.0)
 
+The reading-path browser builder additionally provides five localized topic
+shortcuts: Security, API, Markdown, Mobile and MCP. These filter the already
+downloaded approved English article titles and summaries **locally**; they do
+not translate full article bodies, call MCP, use remote semantic search, or
+alter the selected reading path. The Security shortcut uses the published
+corpus' existing English "safe" terminology. Manual keyword entry overrides
+the selected shortcut.
+
 The public browser builder now supports an on-page UI language selector with
 eight interface languages (`en`, `ru`, `th`, `es`, `fr`, `de`,
 `pt`, `zh`). To link directly to the Russian interface, for example,
