@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
+import {readFileSync} from 'node:fs';
 import {STUDIO_STARTER,buildStudioZip,buildStudioHtml}
  from '../site/library/studio/studio-core.mjs';
 import {parseStudioHtml,readValidatedStudioZip}
@@ -48,7 +49,7 @@ test('Studio HTML import fails closed on alternate layout, injected scripts or f
  const html=buildStudioHtml(STUDIO_STARTER);
  assert.deepEqual(parseStudioHtml(html),STUDIO_STARTER);
  for(const altered of [
-  html.replace('Counter Lab</title>','Attacker</title>'),
+  html.replace('Counter Lab</title>','<img src=x onerror=alert(1)></title>'),
   html.replace("default-src 'none'","default-src *"),
   html.replace('<script>','<script src="https://evil.example/app.js">'),
   html.replace('</body></html>','<img src=x onerror=alert(1)></body></html>'),
@@ -58,11 +59,11 @@ test('Studio HTML import fails closed on alternate layout, injected scripts or f
 });
 test('import UI requires explicit file selection and never automatically executes a package',()=>{
  const page=new URL('../site/library/studio/',import.meta.url);
- const html=requireRead('index.html'),code=requireRead('studio.mjs');
- function requireRead(p){
-  return import.meta.url&&globalThis.readFileSync?
-   globalThis.readFileSync(new URL(p,page),'utf8'):null;
- }
- assert.ok(html===null||html.includes('studio-import-file'));
- assert.ok(code===null||code.includes('readValidatedStudioZip'));
+ const html=readFileSync(new URL('index.html',page),'utf8');
+ const code=readFileSync(new URL('studio.mjs',page),'utf8');
+ assert.match(html,/id="studio-import-file"/);
+ assert.match(html,/id="studio-import-check"/);
+ assert.match(code,/readValidatedStudioZip/);
+ assert.match(code,/stopPreview\(\); \/\/ import source only/);
+ assert.doesNotMatch(code,/innerHTML|localStorage|sessionStorage|sendBeacon/);
 });
