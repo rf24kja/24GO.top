@@ -77,7 +77,7 @@ test('private Markdown report omits prompts, model answer bodies and keys, escap
   {session:match({nameA:'Agent | One',nameB:'Agent Three',modelB:'model-c',id:2}),choice:'tie'}
  ];
  const md=tournamentMarkdown(data);
- assert.match(md,/Agent \\| One/);
+ assert.ok(md.includes('Agent \\| One'));
  assert.match(md,/Human-reviewed: 2/);
  assert.match(md,/50\.0%|75\.0%/);
  assert.doesNotMatch(md,/confidential prompt/);
