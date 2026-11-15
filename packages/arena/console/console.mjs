@@ -1,9 +1,11 @@
 import {validateArenaSession} from './arena-core.mjs';
+import {aggregateTournament,tournamentMarkdown} from './tournament-core.mjs';
 
 const $=id=>document.getElementById(id);
 const form=$('console-form'),run=$('run'),status=$('status');
 const results=$('results'),select=$('round-choice'),download=$('download');
 let auth=null,session=null,remaining=3,pending=false;
+let pastMatches=[];
 function announce(message,error=false){
  status.textContent=message;
  status.dataset.error=String(error);
@@ -46,6 +48,95 @@ function load(next){
  results.hidden=false;download.disabled=false;
  render();
 }
+const pastSection=$('history'),pastList=$('history-list');
+const pastScores=$('history-scores'),pastExport=$('history-export');
+function element(tag,value){
+ const n=document.createElement(tag);
+ if(value!==undefined)n.textContent=value;
+ return n;
+}
+function renderPast(){
+ pastList.replaceChildren();pastScores.replaceChildren();
+ if(!pastMatches.length){pastSection.hidden=true;pastExport.disabled=true;return;}
+ const tally=aggregateTournament(pastMatches);
+ for(const [index,entry] of pastMatches.entries()){
+  const match=entry.session;
+  const article=element('article');
+  article.className='history-match';
+  const title=element('h3','Match '+(index+1)+' · '+
+   match.agents[0].name+' vs '+match.agents[1].name);
+  const description=element('p',match.rounds.length+
+   ' actual signed round(s) · '+match.agents.map(a=>a.model).join(' / '));
+  const actions=element('div');actions.className='history-actions';
+  actions.setAttribute('role','group');
+  actions.setAttribute('aria-label','Private review for match '+(index+1));
+  const read=element('button','View responses');
+  read.type='button';read.className='secondary-action';
+  read.addEventListener('click',()=>{
+   load(match);
+   announce('Viewing existing local match '+(index+1)+'. No model request was sent.');
+   $('results-title').focus({preventScroll:true});
+  });
+  actions.append(read);
+  for(const [choice,label] of [
+   ['a','Prefer '+match.agents[0].name],
+   ['b','Prefer '+match.agents[1].name],
+   ['tie','Tie']
+  ]){
+   const button=element('button',label);
+   button.className='secondary-action';
+   button.type='button';
+   button.setAttribute('aria-pressed',String(entry.choice===choice));
+   button.addEventListener('click',()=>{
+    pastMatches[index]={session:match,choice:entry.choice===choice?null:choice};
+    renderPast();
+    const updated=pastList.children[index]?.querySelectorAll('button');
+    if(updated)updated[['a','b','tie'].indexOf(choice)+1]?.focus({preventScroll:true});
+   });
+   actions.append(button);
+  }
+  article.append(title,description,actions);
+  pastList.append(article);
+ }
+ const intro=element('p','Human-reviewed: '+tally.reviewed+' / '+
+  tally.matches+' local signed matches. No unreviewed match is counted as a loss.');
+ intro.className='note';
+ const wrapper=element('div');wrapper.className='history-table-wrap';
+ const table=element('table');table.className='history-table';
+ const head=element('thead'),row=element('tr');
+ for(const label of ['Declared agent / model','Reviewed','Wins','Ties','Losses','Win points']){
+  const cell=element('th',label);cell.scope='col';row.append(cell);
+ }
+ head.append(row);table.append(head);
+ const body=element('tbody');
+ for(const agent of tally.scores){
+  const line=element('tr');
+  const name=element('th',agent.name+' · '+agent.model);
+  name.scope='row';line.append(name);
+  for(const value of [
+   agent.played,agent.wins,agent.ties,agent.losses,
+   agent.winRate===null?'—':(100*agent.winRate).toFixed(1)+'%'
+  ])line.append(element('td',String(value)));
+  body.append(line);
+ }
+ table.append(body);wrapper.append(table);
+ pastScores.append(intro,wrapper);
+ pastSection.hidden=false;pastExport.disabled=false;
+ $('history-status').textContent=tally.matches+' actual local match(es) in this tab. '+
+  tally.reviewed+' reviewed by you.';
+}
+pastExport.addEventListener('click',()=>{
+ if(!pastMatches.length)return;
+ const markdown=tournamentMarkdown(pastMatches);
+ const blob=new Blob([markdown],{type:'text/markdown;charset=utf-8'});
+ const url=URL.createObjectURL(blob);
+ const link=document.createElement('a');
+ link.href=url;link.download='24gotop-local-live-arena-review.md';link.hidden=true;
+ document.body.append(link);
+ try{link.click();}finally{link.remove();URL.revokeObjectURL(url);}
+ $('history-status').textContent='Private review download requested; verify your local file.';
+});
+
 form.addEventListener('submit',async e=>{
  e.preventDefault();
  if(pending||!auth||remaining<=0)return;
@@ -75,6 +166,8 @@ form.addEventListener('submit',async e=>{
    return;
   }
   load(result.session);
+  pastMatches.push({session,choice:null});
+  renderPast();
   announce('Real signed local match completed: '+session.rounds.length+
    ' round(s). '+remaining+' run(s) remain in this process. No transcript uploaded.');
   $('results-title').focus({preventScroll:true});
