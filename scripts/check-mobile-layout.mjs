@@ -89,6 +89,10 @@ async function main(){
     ]
    },sessionId);
    for(const path of PATHS){
+    // Isolated first-party app documents intentionally do not have global
+    // navigation or shared stylesheet links. The separate library:browser
+    // gate runs their actual HTML/CSS/JS, sandbox and responsive layouts.
+    if(path.startsWith('library/apps/'))continue;
     const html=await inlinePage(path);
     await c.send('Page.setDocumentContent',{frameId:frame,html},sessionId);
     await c.send('Runtime.evaluate',{
@@ -158,7 +162,7 @@ async function main(){
    printedRoutes.size+' published articles × 280/768/1440px: attribution retained, reader controls hidden, code wrapped, white paper');
 
   console.log('PASS '+passed+' Chromium mobile/tablet layouts and desktop viewports: no horizontal overflow, accessible phone navigation and safe landscape headers');
-  console.log('Coverage: '+RESPONSIVE_VIEWPORTS.length+' representative CSS viewports × ALL '+PATHS.length+' shipped public HTML routes; touch, DPR, orientation, desktop mode, light/dark and reduced-motion samples.');
+  console.log('Coverage: '+RESPONSIVE_VIEWPORTS.length+' CSS viewports × '+PATHS.filter(p=>!p.startsWith('library/apps/')).length+' site-chrome HTML routes. Isolated app documents are covered by library:browser separately.');
   console.log('Scope: real Chromium with source-rendered public HTML/CSS; not physical iOS/Android/Safari testing, user usability evidence or live network smoke.');
  }finally{
   if(ws)ws.close();
