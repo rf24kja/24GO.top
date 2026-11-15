@@ -22,6 +22,7 @@ export const FIXED_ROUTES=Object.freeze([
  '/library/library.mjs', '/library/library-core.mjs',
  '/library/intake.mjs', '/library/intake-core.mjs',
  '/library/apps/json-inspector/', '/library/apps/contrast-checker/',
+ '/library/apps/text-diff/',
  '/sitemap.xml', '/robots.txt'
 ]);
 const SAFE_ROUTE=/^\/(?:[a-z0-9-]+\/)*(?:[a-z0-9-]+\.(?:html|css|js|mjs|xml|json|txt))?$/;
