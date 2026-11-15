@@ -7,7 +7,7 @@ import {validateBrowserZip,validateGitHubSource,buildLibraryReviewIssue,LIMITS}
  from '../site/library/intake-core.mjs';
 import {validateStaticAppFiles,validateStaticZip,validateStaticDirectory,
  MAX_FILE_BYTES,MAX_APP_BYTES} from '../packages/library/validator.mjs';
-import {validateLibraryCatalog,selectComparison,filterLibrary}
+import {validateLibraryCatalog,selectComparison,filterLibrary,libraryComparisonMarkdown}
  from '../site/library/library-core.mjs';
 
 const site=new URL('../site/library/',import.meta.url);
@@ -239,4 +239,23 @@ test('browser intake uses no network calls, DOM execution, storage or implicit i
  assert.match(code,/selected\.arrayBuffer\(\)/);
  assert.match(core,/DecompressionStream\('deflate-raw'\)/);
  assert.match(html,/The review link sends only/);
+});
+
+
+test('offline Library comparison Markdown uses only approved source metadata and no synthetic rankings',()=>{
+ const report=libraryComparisonMarkdown(catalog,['text-diff','contrast-checker']);
+ assert.match(report,/^# 24GOTOP Library — static app comparison\n/);
+ assert.ok(report.indexOf('## Text Diff')<report.indexOf('## Contrast Checker'));
+ assert.match(report,/https:\/\/24go\.top\/library\/apps\/text-diff\//);
+ assert.match(report,/https:\/\/github\.com\/rf24kja\/24GO\.top\/tree\/main\/site\/library\/apps\/text-diff/);
+ assert.match(report,/WCAG 2\.2 AA/);
+ assert.match(report,/Static HTML \/ CSS \/ JS/);
+ assert.match(report,/No fabricated reviews|no fabricated reviews/);
+ assert.doesNotMatch(report,/Bearer |secret|API_KEY|personal data|user ratings: [0-9]/i);
+ assert.ok(report.length<6000);
+ assert.equal(report.slice(-1),'\n');
+ for(const ids of [
+  [],['text-diff'],['text-diff','text-diff'],['text-diff','unlisted-app'],
+  ['../etc/passwd','text-diff']
+ ])assert.throws(()=>libraryComparisonMarkdown(catalog,ids),TypeError);
 });
