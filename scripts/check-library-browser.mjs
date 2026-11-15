@@ -384,8 +384,33 @@ async function exerciseStudio(){
  const restored=$('studio-name').value==='Counter Lab'&&
   $('studio-html').value.includes('id="increase"')&&
   $('studio-tab-html').getAttribute('aria-pressed')==='true';
+ const importFile=$('studio-import-file');
+ function putStudioZip(bytes){
+  const transfer=new DataTransfer();
+  transfer.items.add(new File([bytes],'previous-studio.zip',{type:'application/zip'}));
+  importFile.files=transfer.files;
+  importFile.dispatchEvent(new Event('change',{bubbles:true}));
+ }
+ $('studio-name').value='Temporary Draft';
+ putStudioZip(archive);
+ const importEnabled=!$('studio-import-check').disabled;
+ $('studio-import-check').click();
+ const imported=await waitFor(()=>$('studio-import-status').textContent.includes('Imported Counter Lab'))&&
+  $('studio-name').value==='Counter Lab'&&
+  $('studio-js').value.includes('studio-probe')&&
+  frame.hidden&&$('studio-close').disabled&&
+  $('studio-status').textContent.includes('Preview is stopped');
+ const beforeCorrupt=$('studio-js').value;
+ const corrupted=new Uint8Array(archive);
+ corrupted[65]^=1;
+ putStudioZip(corrupted);
+ $('studio-import-check').click();
+ const corruptRejected=await waitFor(()=>$('studio-import-status').dataset.error==='true')&&
+  $('studio-js').value===beforeCorrupt&&frame.hidden;
+ const importButtonHeight=$('studio-import-check').getBoundingClientRect().height;
  return {initial,tab,running,sandbox,opaque,interactive,
   childOrigin,exported,touch,stopped,rejected,restored,
+  importEnabled,imported,corruptRejected,importButtonHeight,
   noStorage:localStorage.length===beforeStorage,
   width,overflow};
 }
@@ -429,8 +454,9 @@ async function main(){
    const studio=await c.evaluate(exerciseStudio,sessionId);
    if(!studio||Object.entries(studio).some(([key,value])=>
       ['initial','tab','running','sandbox','opaque','interactive',
-       'exported','touch','stopped','rejected','restored','noStorage'].includes(key)&&!value)||
-      studio.childOrigin!=='null'||studio.overflow>studio.width+1)
+       'exported','touch','stopped','rejected','restored','noStorage',
+       'importEnabled','imported','corruptRejected'].includes(key)&&!value)||
+      studio.childOrigin!=='null'||studio.importButtonHeight<43.5||studio.overflow>studio.width+1)
     throw Error('Library App Studio Chromium '+width+': '+JSON.stringify(studio));
   }
   for(const width of [280,390,844,1440]){
@@ -456,7 +482,7 @@ async function main(){
   }
   if(c.errors.length||c.external.length)
    throw Error('Browser errors or external requests: '+c.errors.join(';')+'; '+c.external.join(';'));
-  console.log('PASS Library Chromium: catalog, three real apps and App Studio at 280/390/844/1440; actual opaque iframe counter execution, validated ZIP32 export, malformed source rejection and no uploads');
+  console.log('PASS Library Chromium: catalog, three real apps and App Studio at 280/390/844/1440; actual opaque iframe counter execution, ZIP32 export/reimport, CRC corruption rejection, and no uploads');
  }finally{
   if(ws)ws.close();
   if(browser){
