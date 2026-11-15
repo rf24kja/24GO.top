@@ -1,3 +1,9 @@
+## Unreleased — App Studio source-to-ZIP-to-editor roundtrip
+
+- App Studio now opens previously downloaded Studio ZIP files back into the original HTML, CSS and JavaScript editor tabs. Before importing, it validates the archive using the independent browser ZIP32/CRC32/SHA-256 pipeline, requires exactly one `index.html`, checks the strict generated Studio document envelope and re-verifies source safety/canonical byte equality.
+- **Import never executes code**, uploads a ZIP, opens a third-party repository or replaces the current working editors on validation failure. Only a successful explicit import restores source; the user must separately choose Run isolated preview and can change/re-export a new local app version.
+- Node and actual Chromium 280/390/844/1440 tests verify lossless ZIP roundtrip, changed-version SHA, file import, opaque preview stays stopped, source restores, malicious/fake/corrupted archives fail closed and existing user edits are preserved.
+
 ## Unreleased — App Studio: edit, run and export a real static application
 
 - Launched a public mobile-first **Library App Studio** at `/library/studio/`: edit separate HTML, CSS and JavaScript source, explicitly run a working counter app or personal code in an opaque-origin sandboxed iframe, stop/restart on source changes, and download a **real deterministic ZIP32** with the final self-contained `index.html`.
