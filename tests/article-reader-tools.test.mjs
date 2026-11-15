@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readdirSync,readFileSync} from 'node:fs';
 import {articleCitations,validatedReaderMetadata,mountArticleReader,
- validatedPublicReadingList,PUBLIC_READING_LIST_KEY,PUBLIC_READING_FILES}
+ validatedPublicReadingList,PUBLIC_READING_LIST_KEY,PUBLIC_READING_FILES,articleSectionMcpArguments}
  from '../site/engineering/article-reader.mjs';
 
 const dir=new URL('../site/engineering/',import.meta.url);
@@ -171,6 +171,90 @@ test('render safe TOC and interactive citations without changing the reviewed ar
  assert.equal(mountArticleReader(env.doc,env.view),false,'cannot mount twice');
 });
 
+
+test('human-readable article headings copy the strict local MCP section arguments',async()=>{
+ const env=stub();
+ assert.equal(mountArticleReader(env.doc,env.view),true);
+ const tools=env.main.inserted[0];
+ const toc=tools.children[1].children[0].children[1].children[0];
+ assert.equal(toc.children.length,2);
+ for(const [index,section] of ['section-reproducible-steps','section-strict-utf-8'].entries()){
+  const row=toc.children[index],mcp=row.children[1];
+  assert.equal(mcp.tagName,'BUTTON');
+  assert.equal(mcp.textContent,'Copy MCP input');
+  assert.equal(mcp.type,'button');
+  assert.match(mcp.attributes['aria-label'],/read_article_section/);
+  await mcp.listeners.click();
+  assert.equal(env.copied.length,index+1);
+  const parsed=JSON.parse(env.copied[index]);
+  assert.deepEqual(parsed,{
+   url:'https://24go.top/engineering/markdown-preview-safety.html',
+   sectionId:section
+  });
+  assert.ok(!env.copied[index].includes('A safe technical guide'));
+ }
+ const explanation=tools.children[1].children[0].children[1].children[1];
+ assert.match(explanation.textContent,/local read-only/);
+ assert.ok(explanation.children.some(child=>child.href===
+  'https://github.com/rf24kja/24GO.top/blob/main/docs/PUBLIC_ARTICLE_MCP.md'));
+ assert.deepEqual(env.writes,[]);
+ assert.equal(env.headings[0].textContent,'Reproducible steps');
+ assert.equal(env.headings[1].textContent,'Strict UTF-8');
+});
+
+test('refuse unreviewed section requests before constructing MCP JSON',()=>{
+ const url='https://24go.top/engineering/markdown-preview-safety.html';
+ const trusted=articleSectionMcpArguments(url,'section-tested-source');
+ assert.deepEqual(Object.keys(JSON.parse(trusted)),['url','sectionId']);
+ for(const [link,section] of [
+  ['https://evil.example/engineering/markdown-preview-safety.html','section-a'],
+  ['https://24go.top/engineering/../.env','section-a'],
+  [url+'#section-a','section-a'],[url+'?ui=ru','section-a'],
+  [url,'../secret'],[url,'javascript:alert(1)'],
+  [url,'section-a\nb'],[url,'section-'],[url,'section-'.concat('a'.repeat(121))],
+  [null,'section-a'],[url,null],['file:///etc/passwd','section-a'],
+  [url,'section-☠']
+ ])assert.throws(()=>articleSectionMcpArguments(link,section),TypeError);
+});
+
+test('article MCP section copy respects clipboard denial and manual selection',async()=>{
+ const env=stub({clipboard:false});
+ assert.equal(mountArticleReader(env.doc,env.view),true);
+ const tools=env.main.inserted[0];
+ const mcp=tools.children[1].children[0].children[1].children[0].children[0].children[1];
+ await mcp.listeners.click();
+ const manual=tools.children[3];
+ assert.equal(manual.hidden,false);
+ assert.equal(manual.focused,true);
+ assert.equal(manual.selected,true);
+ assert.deepEqual(JSON.parse(manual.value),{
+  url:'https://24go.top/engineering/markdown-preview-safety.html',
+  sectionId:'section-reproducible-steps'
+ });
+ assert.match(tools.children[2].textContent,/manual copying/);
+ assert.deepEqual(env.writes,[]);
+});
+
+test('reader section handoff is accepted by the actual local read-only MCP',async()=>{
+ const {handleMcpRequest,loadPublishedCorpus}=
+  await import('../packages/mcp/stdio.mjs');
+ const source=loadPublishedCorpus().find(x=>x.file==='markdown-preview-safety.html');
+ assert.ok(source);
+ const html=readFileSync(new URL(source.file,dir),'utf8');
+ const sectionId=html.match(/<h2 id="(section-[a-z0-9-]+)">/)[1];
+ const argumentsObject=JSON.parse(articleSectionMcpArguments(source.url,sectionId));
+ const response=handleMcpRequest({
+  jsonrpc:'2.0',id:42,method:'tools/call',
+  params:{name:'read_article_section',arguments:argumentsObject}
+ });
+ assert.equal(response.result.isError,undefined);
+ const result=JSON.parse(response.result.content[0].text);
+ assert.equal(result.sectionUrl,source.url+'#'+sectionId);
+ assert.equal(result.sectionId,sectionId);
+ assert.equal(result.url,source.url);
+ assert.ok(result.text.length>0);
+});
+
 test('denied clipboard reveals a selectable manual copy field, never sends a request',async()=>{
  const env=stub({clipboard:false});
  assert.equal(mountArticleReader(env.doc,env.view),true);
@@ -182,6 +266,30 @@ test('denied clipboard reveals a selectable manual copy field, never sends a req
  assert.equal(manual.focused,true);
  assert.ok(manual.value.includes('https://24go.top/engineering/markdown-preview-safety.html'));
  assert.match(tools.children[2].textContent,/Clipboard unavailable/);
+});
+
+
+test('stale MCP section clipboard errors cannot override a newer citation copy',async()=>{
+ const pending=[];
+ const env=stub({clipboardWriter:value=>new Promise((resolve,reject)=>{
+  pending.push({value,resolve,reject});
+ })});
+ assert.equal(mountArticleReader(env.doc,env.view),true);
+ const tools=env.main.inserted[0],actions=tools.children[1];
+ const mcp=actions.children[0].children[1].children[0].children[0].children[1];
+ const older=mcp.listeners.click();
+ const newest=actions.children[1].listeners.click();
+ assert.equal(pending.length,2);
+ assert.deepEqual(Object.keys(JSON.parse(pending[0].value)),['url','sectionId']);
+ assert.match(pending[1].value,/^\[/);
+ pending[1].resolve();
+ await newest;
+ pending[0].reject(new Error('Old permission denied'));
+ await older;
+ assert.equal(tools.children[3].hidden,true);
+ assert.equal(tools.children[3].focused,false);
+ assert.equal(tools.children[2].textContent,'Copied to clipboard.');
+ assert.deepEqual(env.writes,[]);
 });
 
 test('mismatched JSON-LD fails closed without a bogus reference UI',()=>{
@@ -231,7 +339,9 @@ test('code-copy feature remains static, keyboard focusable and absent on printed
  const css=readFileSync(new URL('../site/engineering/notes.css',import.meta.url),'utf8');
  const js=readFileSync(new URL('../site/engineering/article-reader.mjs',import.meta.url),'utf8');
  assert.match(css,/\.article-reader__copy-code:focus-visible/);
- assert.match(css,/@media print\{[^}]*\.article-reader__copy-code\{display:none!important/);
+ assert.match(css,/\.article-reader__toc-mcp:focus-visible/);
+ assert.match(css,/\.article-reader__toc-mcp\{[^}]*min-height:44px/);
+ assert.match(css,/@media print\{[^}]*\.article-reader__copy-code,\.article-reader__toc-mcp\{display:none!important/);
  assert.match(js,/article\.querySelectorAll\('pre > code'\)/);
  assert.doesNotMatch(js,/fetch\(|sendBeacon|sessionStorage|innerHTML|eval\(/);
 });

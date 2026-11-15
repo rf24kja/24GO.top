@@ -65,6 +65,17 @@ export function validatedPublicReadingList(raw){
  return saved.files;
 }
 
+/** Copy/paste-ready, bounded input for the local read_article_section MCP tool.
+ * Both fields must come from a validated reviewed article and its exact
+ * in-document section ID. No remote agent call or network request is made.
+ */
+export function articleSectionMcpArguments(url,sectionId){
+ if(typeof url!=='string'||!CANONICAL.test(url)||
+    typeof sectionId!=='string'||sectionId.length>128||!SECTION.test(sectionId))
+  throw new TypeError('Invalid public article section');
+ return JSON.stringify({url,sectionId});
+}
+
 /**
  * Mount only on canonical reviewed article pages. Existing article HTML and
  * indexed prose remain untouched: additions are in a sibling before article.
@@ -116,14 +127,24 @@ export function mountArticleReader(doc,view){
   const li=create('li',header.tagName.toLowerCase()==='h3'?'article-reader__sub':'');
   const anchor=create('a','',label);
   anchor.setAttribute('href','#'+id);
-  li.append(anchor);ol.append(li);
+  const mcp=create('button','article-reader__toc-mcp','Copy MCP input');
+  mcp.type='button';
+  mcp.setAttribute('aria-label','Copy local read_article_section MCP input for '+label);
+  mcp.addEventListener('click',()=>copyText(articleSectionMcpArguments(meta.url,id)));
+  li.append(anchor,mcp);ol.append(li);
   const link=create('button','article-reader__section','§');
   link.type='button';
   link.setAttribute('aria-label','Copy link to section: '+label);
   link.addEventListener('click',()=>copyText(meta.url+'#'+id));
   header.append(link);
  }
- nav.append(ol);menu.append(nav);actions.append(menu);
+ const mcpHelp=create('p','article-reader__mcp-help',
+  'Copy MCP input uses the local read-only read_article_section tool. No article content is sent to an AI service.');
+ const mcpDocs=create('a','','Local public MCP setup guide (English)');
+ mcpDocs.href='https://github.com/rf24kja/24GO.top/blob/main/docs/PUBLIC_ARTICLE_MCP.md';
+ mcpDocs.rel='noopener noreferrer';
+ mcpHelp.append(' ',mcpDocs);
+ nav.append(ol,mcpHelp);menu.append(nav);actions.append(menu);
  const status=create('p','article-reader__status');
  status.setAttribute('role','status');
  status.setAttribute('aria-live','polite');

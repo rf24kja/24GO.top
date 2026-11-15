@@ -1,3 +1,9 @@
+## Unreleased — human article-to-local MCP section handoff
+
+- Every reviewed public article's existing **On this page** menu now offers a **Copy MCP input** action for each canonical heading. It creates the exact local `read_article_section` arguments (`url`, `sectionId`) from verified page metadata and the already rendered `section-*` anchors; nothing is uploaded, persisted, published or inferred from arbitrary external URLs.
+- Reuse the same race-safe clipboard and manual-text fallback as the existing citation tools; keep human-friendly **§** section link copying unchanged. Add a direct link to the public local MCP setup guide and separate source/agent boundaries.
+- Add pure input validation, real local MCP interoperability, hostile URLs, clipboard rejection and delayed-permission race tests. Chromium checks real TOC interactions, focus, mobile touch targets, overflow and no-network behavior on 280/390/844/1440px layouts.
+
 ## Unreleased — local-language discovery of the Reading Paths builder
 
 - Connect the seven non-English public homepages (RU/TH/ES/FR/DE/PT/ZH) directly to the existing, deployed eight-language reading-path builder with each homepage's allowlisted `?ui=<locale>` parameter. Preserve the original English article archive and localized Draft Lab links.
