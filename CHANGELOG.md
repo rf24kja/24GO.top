@@ -1,3 +1,9 @@
+## Unreleased — offline export of actual two-app Library comparisons
+
+- The Library's real comparison view now offers explicit Markdown download of the two selected reviewed apps: categories, version, license, static runtime, network policy, features, canonical app URLs and public source links. No user ratings, benchmarks, accounts or fabricated rankings.
+- Reuse the validated catalog; Markdown is derived only from reviewed source metadata, downloaded via local Blob and an explicit button. No network, upload, storage writes or consent-less download. Handles browser download permission failures without claiming the file was saved.
+- Add regression tests for offline report integrity, invalid selection and real Chromium download with focus/privacy/viewport checks.
+
 ## Unreleased — repeatable first-party Library app publication gate and Text Diff
 
 - Third real first-party static app, **Text Diff**, is available for bounded local line-by-line comparisons of code, Markdown or configuration files; added/removed/unchanged counts and keyboard-accessible results without uploading or executing text.
