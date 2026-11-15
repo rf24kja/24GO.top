@@ -28,13 +28,21 @@
 <p class="studio-kicker">24GOTOP / LIBRARY V1 / CREATE YOUR OWN APP</p>
 <h1>Make it. <span>Test it.</span> Share it.</h1>
 <p class="studio-lead">Write HTML, CSS and JavaScript. Run your project in a locked-down preview, validate the static package, then download a real ZIP for source review.</p>
-<p class="studio-note"><strong>Your work stays on your device.</strong> No account, upload, analytics, external code execution or remote save. Your draft exists only in this browser tab. Copy your source or download the ZIP before closing.</p>
+<p class="studio-note"><strong>Your work stays on your device.</strong> No account, upload, analytics, external code execution or remote save. Your draft exists only in this browser tab. Copy your source or download the ZIP before closing. Previously downloaded Studio ZIPs can be imported back into these editors.</p>
 </header>
 <section class="studio-workspace" aria-labelledby="editor-title">
 <div class="studio-editor">
 <div class="studio-section-head">
 <div><p class="studio-kicker">01 / SOURCE</p><h2 id="editor-title">Your application</h2></div>
 <button type="button" id="studio-reset" class="studio-button studio-button--quiet">Restore example</button>
+</div>
+<div class="studio-import" aria-labelledby="studio-import-heading">
+<h3 id="studio-import-heading">Continue an earlier Studio project</h3>
+<p>Choose a ZIP that was previously exported by App Studio. Its stored HTML is checked for exact Studio structure and static-only rules before it replaces the editors. Import <strong>never executes</strong> the app automatically.</p>
+<label for="studio-import-file">Your earlier Studio ZIP (max 4 MiB)</label>
+<input type="file" id="studio-import-file" accept=".zip,application/zip,application/x-zip-compressed">
+<button type="button" id="studio-import-check" class="studio-button studio-button--quiet" disabled>Load ZIP into editors</button>
+<p id="studio-import-status" role="status" aria-live="polite">No existing project selected.</p>
 </div>
 <label for="studio-name">Application name <span>(3–60 characters)</span></label>
 <input id="studio-name" type="text" maxlength="60" autocomplete="off" spellcheck="false">
