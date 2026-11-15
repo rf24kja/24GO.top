@@ -67,3 +67,20 @@ Use real feedback to scope accessible formatting (including code blocks), conten
 **Implemented source behavior (subject to CI and Pages checks):** pressing Ctrl+S or ⌘+S in the Draft Lab invokes the existing **Download .md** button; this is an explicit one-time local file download, never autosave, publishing or remote upload. A visible explanation is translated in all eight interface languages. Save-key interception is limited to Ctrl/Cmd+S without Alt/Shift/repeated keydown, and does not alter other shortcuts.
 
 On failed Download or Copy, validation uses the same field constraints as the Markdown exporter and focuses **the actual invalid control** (including too-long title/body and incorrect language/category), marks `aria-invalid` and points `aria-describedby` at the existing live status. Editing the offending field or replacing/clearing the draft removes stale invalid markers. Do not infer that synthetic keyboard tests prove full screen-reader compatibility: Issue #29 still requires real volunteer and 320px mobile sessions; no volunteer outcomes are asserted.
+
+## Precise source-section navigation (public browser-only feature)
+
+The Compose panel has an optional **Edit a section** picker. It lists up to
+80 Markdown `#`, `##`, or `###` headings from the current textarea,
+excluding fenced/indented code, with their source line numbers. Selecting a
+heading and pressing **Edit selected section** places the caret/selection on
+that exact original line (UTF-16 offsets, including emoji and CRLF). Duplicate
+titles remain distinct. Updating the manuscript invalidates an obsolete
+selection. Navigation only moves the local cursor: no upload, persistence,
+automatic save, publication or editor content mutation.
+
+The eight UI locales translate the picker and status. Keyboard and mobile
+touch controls are checked in Chromium; `npm run check && npm test` covers
+the pure source scanning and UI guards. The existing preview outline continues
+to navigate the rendered preview; this new control navigates the **source**
+text, where the author can edit it.
