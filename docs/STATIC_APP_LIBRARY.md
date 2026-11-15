@@ -71,7 +71,16 @@ API key, existing ZIP or public account is required to start:
    becomes \`index.html\` in an actual, portable ZIP32 file. The browser
    checks CRC32, static-only limits and SHA-256 before offering the download.
    Nothing is uploaded to 24GOTOP or GitHub.
-4. Keep your ZIP and source code. In the main Library, use **Check local ZIP**
+4. **Continue later:** Return to App Studio and use **Continue an earlier
+   Studio project → Load ZIP into editors**. Choose the ZIP you previously
+   downloaded from App Studio; the browser rechecks its ZIP structure,
+   hash and original canonical Studio envelope, then restores the name,
+   HTML, CSS and JavaScript without running any imported code. External,
+   multi-file or modified non-Studio archives fail closed. Only after
+   an explicit **Run isolated preview** click does the restored project
+   execute in the opaque sandbox. Editing and re-exporting creates a new
+   deterministic ZIP with a different SHA-256.
+5. Keep your ZIP and source code. In the main Library, use **Check local ZIP**
    to verify it again, add a public GitHub repository that actually contains
    the source, and explicitly create a human review request. A review
    request does **not** create a hosted application or grant automatic
