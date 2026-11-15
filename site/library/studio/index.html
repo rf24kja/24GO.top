@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1411">
+<meta name="description" content="Build a real static HTML, CSS and JavaScript app in the browser. Preview it in an opaque sandbox, validate the package and export a ZIP for human-reviewed 24GOTOP Library submission.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://24go.top/library/studio/">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<title>App Studio — build your own static web app | 24GOTOP</title>
+<link rel="stylesheet" href="../../landing.css">
+<link rel="stylesheet" href="../../interior.css">
+<link rel="stylesheet" href="./studio.css">
+<script type="module" src="./studio.mjs"></script>
+</head><body>
+<a class="skip" href="#studio-main">Skip to App Studio</a>
+<header class="interior-header"><nav class="interior-nav" aria-label="Main navigation">
+<a class="interior-brand" href="../../" aria-label="24GOTOP home">24GO<span>TOP</span><span class="interior-brand__dot" aria-hidden="true"></span></a>
+<div class="interior-links">
+<a href="../../">Home</a>
+<a href="../">App Library</a>
+<a href="../../arena/">Agent Arena</a>
+<a href="./" aria-current="page">App Studio</a>
+<a href="https://github.com/rf24kja/24GO.top">Source ↗</a>
+</div>
+</nav></header>
+<main id="studio-main" tabindex="-1" class="studio wrap">
+<header class="studio-intro">
+<p class="studio-kicker">24GOTOP / LIBRARY V1 / CREATE YOUR OWN APP</p>
+<h1>Make it. <span>Test it.</span> Share it.</h1>
+<p class="studio-lead">Write HTML, CSS and JavaScript. Run your project in a locked-down preview, validate the static package, then download a real ZIP for source review.</p>
+<p class="studio-note"><strong>Your work stays on your device.</strong> No account, upload, analytics, external code execution or remote save. Your draft exists only in this browser tab. Copy your source or download the ZIP before closing.</p>
+</header>
+<section class="studio-workspace" aria-labelledby="editor-title">
+<div class="studio-editor">
+<div class="studio-section-head">
+<div><p class="studio-kicker">01 / SOURCE</p><h2 id="editor-title">Your application</h2></div>
+<button type="button" id="studio-reset" class="studio-button studio-button--quiet">Restore example</button>
+</div>
+<label for="studio-name">Application name <span>(3–60 characters)</span></label>
+<input id="studio-name" type="text" maxlength="60" autocomplete="off" spellcheck="false">
+<fieldset class="studio-tabs" aria-label="Source editor language">
+<legend>Choose a source file</legend>
+<div class="studio-tab-buttons" role="group" aria-label="Code editors">
+<button type="button" id="studio-tab-html" data-lang="html" aria-pressed="true">HTML</button>
+<button type="button" id="studio-tab-css" data-lang="css" aria-pressed="false">CSS</button>
+<button type="button" id="studio-tab-js" data-lang="js" aria-pressed="false">JavaScript</button>
+</div>
+</fieldset>
+<div class="studio-source" id="studio-source-html">
+<label for="studio-html">HTML body <span>(markup inside the app body, max 16,000 characters)</span></label>
+<textarea id="studio-html" rows="18" maxlength="16000" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
+</div>
+<div class="studio-source" id="studio-source-css" hidden>
+<label for="studio-css">CSS <span>(local styles only, max 16,000 characters)</span></label>
+<textarea id="studio-css" rows="18" maxlength="16000" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
+</div>
+<div class="studio-source" id="studio-source-js" hidden>
+<label for="studio-js">JavaScript <span>(no network APIs or privileged browser capabilities)</span></label>
+<textarea id="studio-js" rows="18" maxlength="16000" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
+</div>
+<p class="studio-hint">Use element IDs to connect HTML buttons to JavaScript. This conservative studio supports one self-contained HTML page with inline CSS and JavaScript. No npm, external APIs, backend, remote assets or application secrets.</p>
+<div class="studio-actions">
+<button type="button" id="studio-preview-run" class="studio-button">Run isolated preview</button>
+<button type="button" id="studio-download" class="studio-button studio-button--quiet">Validate &amp; download ZIP</button>
+<button type="button" id="studio-close" class="studio-button studio-button--quiet" disabled>Stop preview</button>
+</div>
+<p id="studio-status" role="status" aria-live="polite">The starter project is ready. Code runs only after you choose Run isolated preview.</p>
+</div>
+<div class="studio-runtime" aria-labelledby="preview-title">
+<div class="studio-section-head">
+<div><p class="studio-kicker">02 / SANDBOX</p><h2 id="preview-title">Live preview</h2></div>
+<span class="studio-privacy-marker">OPAQUE ORIGIN</span>
+</div>
+<div id="studio-preview-placeholder" class="studio-placeholder">
+<icon aria-hidden="true">◇</icon>
+<p>Preview is stopped.</p>
+<span>Code runs only after you click Run isolated preview. No app is published or sent to a server.</span>
+</div>
+<iframe id="studio-frame" title="Untrusted local app preview" sandbox="allow-scripts" referrerpolicy="no-referrer" hidden></iframe>
+<p class="studio-hint"><strong>Security boundary:</strong> the preview uses an opaque sandbox without same-origin permissions, popups, downloads, forms, top navigation, storage or network resources. It does not make untrusted scripts safe to host on 24go.top. Never enter secrets in third-party code.</p>
+</div>
+</section>
+<section class="studio-release" aria-labelledby="release-title">
+<div class="studio-section-head">
+<div><p class="studio-kicker">03 / REVIEW &amp; RELEASE</p><h2 id="release-title">From prototype to Library</h2></div>
+</div>
+<p>Download generates a real one-file <code>index.html</code> ZIP32 package, checks its CRC32, SHA-256 and static-only rules locally, then saves the archive to your device. The same HTML runs in the preview and goes in the ZIP. No upload occurs automatically.</p>
+<div class="studio-steps">
+<div><strong>1. Create</strong><span>Edit HTML, CSS and JavaScript here.</span></div>
+<div><strong>2. Validate</strong><span>Run the local preview and export the validated ZIP.</span></div>
+<div><strong>3. Submit for review</strong><span>Publish source in your own GitHub repository and use Library's ZIP check to prepare a human review request.</span></div>
+<div><strong>4. Publish after approval</strong><span>Reviewed first-party apps may enter the catalog through CI and maintainer merge. Public user uploads, separate-origin hosting and app ownership are not live yet.</span></div>
+</div>
+<p><a href="../#intake-title">Open Library's local ZIP review workflow</a> · <a href="https://github.com/rf24kja/24GO.top/blob/main/docs/STATIC_APP_LIBRARY.md">Read publishing rules</a></p>
+<p class="studio-hint">A passing static ZIP check is not a malware clearance, account verification or deployment authorization. User-created code is never hosted on the main 24go.top origin by this Studio.</p>
+</section>
+</main>
+<footer class="interior-footer"><div class="wrap"><span>24GOTOP · App Studio · local static prototypes only</span><a href="https://github.com/rf24kja/24GO.top">Review source ↗</a></div></footer>
+</body></html>

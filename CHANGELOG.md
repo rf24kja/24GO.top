@@ -1,3 +1,10 @@
+## Unreleased — App Studio: edit, run and export a real static application
+
+- Launched a public mobile-first **Library App Studio** at `/library/studio/`: edit separate HTML, CSS and JavaScript source, explicitly run a working counter app or personal code in an opaque-origin sandboxed iframe, stop/restart on source changes, and download a **real deterministic ZIP32** with the final self-contained `index.html`.
+- Both the live preview and exported ZIP use **exactly the same generated HTML**. Before running or downloading, the existing independent on-device browser ZIP validator checks file limits, CRC32, expanded source, SHA-256, static-only rules and review flags. No automatic hosting, backend execution, login, storage, uploaded code, paid AI or external dependencies.
+- Block embedded scripts in HTML, remote resources, browser storage/network APIs and CSS imports/URLs in Studio drafts. Inject a restrictive network-denying CSP into the single-file app; iframe sandbox permits scripts only (no same origin, parent access, top navigation, forms or popups). Unreviewed source remains local; publication still requires a manual GitHub source review and future isolated hosting.
+- Added source/ZIP negative tests, actual browser preview/working counter interaction, download and corrupt-source rejection tests; canonical URL, sitemap, Library entrypoint and static release CDN audit.
+
 ## Unreleased — live Arena session history and private match comparisons
 
 - Extended the secure loopback Arena console so up to three genuine signed, paid BYOK matches completed in a local session remain available in that browser tab. Users can revisit old answers and rounds without another provider call, voluntarily select Agent A/B/Tie per match, and see correctly normalized win/tie/loss results for declared local participants.

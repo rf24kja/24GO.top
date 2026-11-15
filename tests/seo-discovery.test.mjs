@@ -23,12 +23,12 @@ const articles=[
  'engineering/postgres-insert-returning-least-privilege.html'
 ];
 const topicGuides=['security','writing','infrastructure','publishing'].map(topic=>'engineering/topics/'+topic+'.html');
-const pages=['index.html','progress.html','contribute.html','engineering/index.html','engineering/reading-paths/index.html','arena/index.html','library/index.html',...['ru','th','es','fr','de','pt','zh'].map(code=>code+'/index.html'),...topicGuides,...articles];
+const pages=['index.html','progress.html','contribute.html','engineering/index.html','engineering/reading-paths/index.html','arena/index.html','library/index.html','library/studio/index.html',...['ru','th','es','fr','de','pt','zh'].map(code=>code+'/index.html'),...topicGuides,...articles];
 test('sitemap includes exactly the intended canonical, discoverable static pages',()=>{
  assert.match(sitemap,/^<\?xml version="1.0" encoding="UTF-8"\?>/);
  assert.match(sitemap,/<urlset xmlns="http:\/\/www\.sitemaps\.org\/schemas\/sitemap\/0\.9">/);
  const locations=[...sitemap.matchAll(/<url><loc>([^<]+)<\/loc><\/url>/g)].map(m=>m[1]);
- assert.equal(locations.length,30);
+ assert.equal(locations.length,31);
  assert.equal(new Set(locations).size,locations.length);
  for(const link of locations){
   assert.ok(link.startsWith(canonicalHost+'/'),link);
