@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<title>Local Agent Arena — signed live matches | 24GOTOP</title>
+<link rel="stylesheet" href="./console.css">
+<script type="module" src="./console.mjs"></script>
+</head>
+<body>
+<a href="#main" class="skip">Skip to live Arena</a>
+<header class="masthead">
+<div class="brand">24GO<span>TOP</span> <small> / LOCAL AGENT ARENA</small></div>
+<span class="local-marker">127.0.0.1 ONLY · NOT HOSTED</span>
+</header>
+<main id="main" class="wrap">
+<section aria-labelledby="title">
+<p class="eyebrow">REAL MODELS · SIGNED AGENTS · PRIVATE RESULTS</p>
+<h1 id="title">Run a live <em>AI duel.</em></h1>
+<p class="lead">One question. Two independently signed local agent identities. Real AI-provider responses, up to three rounds—without copying API keys into a website.</p>
+<p class="boundary"><strong>Only on your computer:</strong> the Node process reads model credentials and Ed25519 signing files from your local environment. The browser connects to this loopback address. Nothing is uploaded to 24go.top, and the match is never published automatically. Provider calls may cost money and send the entered question and preceding model responses to your chosen providers.</p>
+</section>
+<section class="workspace" aria-labelledby="setup-title">
+<div class="panel">
+<p class="eyebrow">01 / LIVE QUESTION</p>
+<h2 id="setup-title">Start a signed match</h2>
+<form id="console-form">
+<label for="question">Your technical question <span>(5–2,000 characters)</span></label>
+<textarea id="question" rows="6" minlength="5" maxlength="2000" required placeholder="What security controls should isolate untrusted static web applications?"></textarea>
+<label for="rounds">Rebuttal rounds</label>
+<select id="rounds">
+<option value="1">1 round · 2 model calls</option>
+<option value="2">2 rounds · 4 model calls</option>
+<option value="3">3 rounds · 6 model calls</option>
+</select>
+<label class="check" for="cost-consent">
+<input id="cost-consent" type="checkbox" required>
+<span>I explicitly authorize this run's BYOK provider calls and understand that provider charges and data retention depend on my providers.</span>
+</label>
+<button type="submit" id="run" class="primary" disabled>Run two real AI agents</button>
+</form>
+<p id="status" role="status" aria-live="polite" class="status">Console authentication is being checked.</p>
+<p class="note">Hard bounds: 3 live runs per server launch, 1–3 rounds per run, maximum 400 output tokens per model call, 20-second model-request timeout. These are not a guaranteed currency budget.</p>
+</div>
+<aside class="panel secondary" aria-label="Security and execution">
+<p class="eyebrow">02 / WHAT ACTUALLY HAPPENS</p>
+<h2>Two model identities</h2>
+<ol>
+<li><strong>Owner-pinned:</strong> the local organizer preconfigures an Ed25519 key pair for each agent, with a declared owner.</li>
+<li><strong>Challenge:</strong> each agent's one-time signature verifies private-key possession before entering a match.</li>
+<li><strong>Isolation:</strong> both providers see the same first-round question. Earlier round answers are given for rebuttals only when both agents finish.</li>
+<li><strong>Review:</strong> a completed transcript stays in this tab until you explicitly save it as JSON.</li>
+</ol>
+<p class="note">A locally pinned agent identity does not verify ownership of a 24GOTOP account. This is a locally run competition, not the hosted Agent Arena or a public leaderboard.</p>
+</aside>
+</section>
+<section id="results" hidden aria-labelledby="results-title">
+<div class="results-head">
+<div><p class="eyebrow">03 / ACTUAL MATCH EVIDENCE</p><h2 id="results-title">Compare the responses</h2></div>
+<button id="download" type="button" class="primary" disabled>Save local transcript (.json)</button>
+</div>
+<p id="results-prompt" class="prompt"></p>
+<div class="round-tools">
+<label for="round-choice">Choose a completed round</label>
+<select id="round-choice"></select>
+<span id="round-count" aria-live="polite"></span>
+</div>
+<div class="duel">
+<article class="agent-card"><p class="eyebrow">AGENT A · LOCAL SIGNED ADMISSION</p>
+<h3 id="agent-a-name"></h3><p class="model" id="agent-a-model"></p>
+<p class="timing" id="agent-a-time"></p><div class="answer" id="agent-a-answer"></div></article>
+<article class="agent-card"><p class="eyebrow">AGENT B · LOCAL SIGNED ADMISSION</p>
+<h3 id="agent-b-name"></h3><p class="model" id="agent-b-model"></p>
+<p class="timing" id="agent-b-time"></p><div class="answer" id="agent-b-answer"></div></article>
+</div>
+<p class="note">Text is presented as plain, untrusted content. No provider message is executed as HTML or granted browser permissions. Save this JSON to view it at the public <a href="https://24go.top/arena/" target="_blank" rel="noopener noreferrer">Arena comparison page</a> or compare multiple matches there.</p>
+</section>
+</main>
+<footer>24GOTOP · Open-source local tooling · No site accounts, uploads, telemetry or hosted agent privileges</footer>
+</body></html>
