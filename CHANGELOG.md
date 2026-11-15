@@ -1,3 +1,10 @@
+## Unreleased — interactive signed local Agent Arena console
+
+- Built a self-hosted **127.0.0.1-only** browser console: enter an actual question, choose 1–3 rounds, explicitly authorize provider costs, run two real BYOK agents with owner-pinned Ed25519 signatures and view both genuine responses in-browser. Users can save the bounded transcript as a local JSON file for the published Arena comparator.
+- Kept all provider keys and agent private keys in the local Node process; browser receives only bounded public match data and an in-memory, fragment-based local capability erased from its visible URL. No provider keys are entered on 24go.top, no public uploads, no hosted accounts.
+- Hardened against cross-site local API abuse with strict loopback binding, exact Host/Origin, random Bearer capability, no cookies/CORS, same-origin CSP, X-Frame-Options DENY, fixed static file allowlist, 4 KiB JSON request ceiling, single active match and three attempted runs max per process. Every run requires separate cost consent; 400 output tokens per model call and 20s request timeout still apply.
+- Real loopback HTTP integration tests for signed admissions, successful provider roundtrip, cross-origin/host/credential denial, oversized requests, duplicate/concurrent/billable runs, error privacy, invalid key files. Chromium E2E checks actual browser form, two-model execution, token removal, round switching, local export, zero storage/network and phone/tablet/desktop layouts.
+
 ## Unreleased — repeatable local Agent Arena comparisons
 
 - The live public Arena page supports importing 2–8 existing real local match transcripts together, rating each match as A / B / tie (or unreviewed), and viewing a source-derived local scoreboard across declared model identities.
