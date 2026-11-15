@@ -48,8 +48,8 @@ function makeZip(items,{deflate=false,corrupt=false,symlink=false}={}){
 }
 test('actual first-party static apps and catalog are source-backed and canonical',async()=>{
  const data=validateLibraryCatalog(catalog);
- assert.equal(data.apps.length,2);
- assert.deepEqual(data.apps.map(x=>x.id),['json-inspector','contrast-checker']);
+ assert.equal(data.apps.length,3);
+ assert.deepEqual(data.apps.map(x=>x.id),['json-inspector','contrast-checker','text-diff']);
  for(const app of data.apps){
   const filename='apps/'+app.id+'/index.html';
   const content=read(filename);
@@ -76,6 +76,7 @@ test('source-backed feature comparison is ordered and excludes fabricated rankin
  const apps=validateLibraryCatalog(catalog);
  assert.equal(selectComparison(apps,['contrast-checker','json-inspector'])[0].name,'Contrast Checker');
  assert.deepEqual(filterLibrary(apps.apps,'WCAG').map(x=>x.id),['contrast-checker']);
+ assert.deepEqual(filterLibrary(apps.apps,'Diff').map(x=>x.id),['text-diff']);
  assert.deepEqual(filterLibrary(apps.apps,'json').map(x=>x.id),['json-inspector']);
  assert.deepEqual(filterLibrary(apps.apps,'','Accessibility').map(x=>x.id),['contrast-checker']);
  assert.throws(()=>selectComparison(apps,['json-inspector','json-inspector']),TypeError);
