@@ -1,3 +1,10 @@
+## Unreleased — repeatable first-party Library app publication gate and Text Diff
+
+- Third real first-party static app, **Text Diff**, is available for bounded local line-by-line comparisons of code, Markdown or configuration files; added/removed/unchanged counts and keyboard-accessible results without uploading or executing text.
+- New `npm run library:check` scans **all** checked-in app directories, rejects unlisted executable apps, verifies catalog/source agreement, static ZIP-equivalent file limits, no-network CSP and matching HTML titles. CI now gates every future first-party app PR on this audit; review and merge are still human-controlled. It does not enable arbitrary third-party scripts on 24go.top.
+- Catalog search, category comparison and opaque iframe preview now cover three actual utilities. Real Chromium E2E checks the new app on four device widths, its text comparison, swap, clear, XSS literal output and no network.
+- Expanded package tests and exact CDN route audit to verify the third app source.
+
 ## Unreleased — Library browser ZIP review preparation
 
 - Library contributors can now choose a ZIP **in the browser**, validate its ZIP32 paths, sizes, CRC32, deflate output limits, static-only code rules and source hashes without uploading or executing the package. The page displays the verified file inventory and a full copyable SHA-256 review report with clipboard-denial fallback.

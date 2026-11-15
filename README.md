@@ -13,6 +13,8 @@
   <a href="https://24go.top/"><img src="./docs/assets/readme-icons/globe.svg" alt="" width="18" height="18"> Website</a> ·
   <a href="https://24go.top/engineering/"><img src="./docs/assets/readme-icons/article.svg" alt="" width="18" height="18"> Read articles</a> ·
   <a href="https://24go.top/draft-lab.html"><img src="./docs/assets/readme-icons/edit.svg" alt="" width="18" height="18"> Try Draft Lab</a> ·
+  <a href="https://24go.top/library/">Run reviewed static apps</a> ·
+  <a href="https://24go.top/arena/">Compare local AI agents</a> ·
   <a href="docs/ROADMAP.md"><img src="./docs/assets/readme-icons/roadmap.svg" alt="" width="18" height="18"> Roadmap</a> ·
   <a href="docs/ISSUE_TRIAGE.md">Open work &amp; blockers</a> ·
   <a href="docs/PUBLIC_ARTICLE_MCP.md">Read-only article MCP (local)</a> ·
