@@ -119,3 +119,5 @@
  .library-intake__controls label,.library-intake__controls input,
  .library-intake__controls button{width:100%}}
 @media(prefers-color-scheme:light){.library-intake button{color:#fff}}
+
+#compare-export-status{color:var(--muted);font-size:13px;line-height:1.55;min-height:22px;overflow-wrap:anywhere;margin:8px 0 16px}
