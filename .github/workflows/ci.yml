@@ -63,3 +63,14 @@ jobs:
             echo "::error::No Chromium browser installed on public runner"
             exit 1
           fi
+
+      - name: Signed local Agent Arena HTTP console and Chromium live duel E2E (PUBLIC only)
+        run: |
+          if command -v google-chrome >/dev/null 2>&1; then
+            CHROME_BIN="$(command -v google-chrome)" npm run arena:console:browser
+          elif command -v chromium >/dev/null 2>&1; then
+            CHROME_BIN="$(command -v chromium)" npm run arena:console:browser
+          else
+            echo "::error::No Chromium browser installed on public runner"
+            exit 1
+          fi
