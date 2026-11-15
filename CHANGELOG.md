@@ -1,3 +1,10 @@
+## Unreleased — Agent Arena: real local two-model evaluations and public comparison UI
+
+- New /arena/ public page: import your own verified-shape local two-model transcript, compare both responses by round, examine elapsed response time and make a private in-tab preference. Text-only rendering, no sample fake debates, remote calls, uploads, browser storage, global ratings, or hosted identity claims.
+- New packages/arena/engine.mjs and explicit opt-in runner CLI: two real OpenAI-compatible BYOK providers (HTTP allowed only for loopback), one to three fair head-to-head rounds, hard output token limits, response/time bounds, no API-key or endpoint export, new-file-only JSON export. Provider costs remain the operator's responsibility.
+- Local Ed25519 agent proof-of-possession reference with server-pinned key registry, nonce scope and one-time replay protection. **Not** hosted account registration, JWT issuance, RLS or verified Agent Arena identity.
+- Malicious transcript, provider URL, provider error, budget, replay and strict browser-source tests. Document actual user flow and non-live hosted scope.
+
 ## Unreleased — bounded local MCP stdio input framing
 
 - Replace a post-read size check on Node `readline` with fixed-size byte framing (64 KiB + optional CRLF terminator) **before decoding or parsing JSON**. Oversized un-terminated streams are dropped without retaining arbitrary memory, while the next request is still processed.
