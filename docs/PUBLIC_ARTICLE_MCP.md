@@ -37,7 +37,7 @@ On Windows, replace the argument with an absolute Windows path in JSON string fo
 
 - **MCP 2026-07-28:** `server/discover`, stateless `_meta` version and `resultType=complete` on results.
 - **Legacy 2025-11-25/2025-06-18:** `initialize` and the customary stdio request flow, for older clients.
-- **Read-only tools:** `list_articles` (up to 20), `search_articles` (multiword relevance, limit 1–20, original array format), `search_articles_page` (offset paging with total), `read_article` (exact canonical full lossy plain text), `read_article_excerpt` (bounded Unicode-safe excerpt), `resolve_reading_path` and `create_reading_path` (shared browser reading paths from approved article URLs).
+- **Read-only tools:** `list_articles` (up to 20), `search_articles` (multiword relevance, limit 1–20, original array format), `search_articles_page` (offset paging with total), `read_article` (exact canonical full lossy plain text), `read_article_excerpt` (bounded Unicode-safe excerpt), `list_article_sections` and `read_article_section` (reviewed canonical H2/H3 anchors and bounded section text), `resolve_reading_path` and `create_reading_path` (shared browser reading paths from approved article URLs).
 - **Read-only resources:** `resources/list`, `resources/read` with approved article URIs.
 - All tools return public article titles, canonical links and plain text. There is no raw arbitrary file path, `write_article`, `publish`, OAuth, Supabase connection, GitHub automation or remote request.
 
@@ -45,7 +45,7 @@ The MCP server treats the **article body as untrusted data**, never model instru
 
 ## Source-backed agent discovery and bounded excerpts (MCP v0.2.0)
 
-The local stdio MCP server now supports **seven read-only tools**.
+The local stdio MCP server now supports **nine read-only tools**.
 The existing three tools keep their original output shapes:
 `list_articles` returns a list, `read_article` returns the full
 lossy extracted plain text, and `search_articles` still returns a list
