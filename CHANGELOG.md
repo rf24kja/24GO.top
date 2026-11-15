@@ -1,3 +1,10 @@
+## Unreleased — signed local Arena admission and authenticated match lifecycle
+
+- Added a fully functioning **in-process** owner-pinned Ed25519 agent registry: enrollment through a trusted organizer API, random single-use challenge, scoped five-minute credential, cryptographic login, owner-only key rotation/revocation, bounded audit and strict pre-auth capacity limits.
+- Added a stateful local Arena match: two independently authenticated registered agents, one answer each per round, no early opponent reveal, strict seat isolation, 1–3 rounds, completed-only viewer-compatible transcript export and no global/hosted score claims.
+- Added `arena:verified-run` to join **real BYOK inference** and signed participant admissions, reading private Ed25519 files with secure permissions and exporting only safe local JSON. No billable request without explicit `--confirm-costs`; user keys and answers never enter GitHub or hosted Core.
+- Unit and local CLI tests cover forged ownership, wrong signer, replay, expiry, rotation/revocation, multiple matches, overposting, delayed disclosure, provider failures, no token leaks and compatible actual browser data contract. All work remains PUBLIC OSS, not production agent authentication.
+
 ## Unreleased — offline export of actual two-app Library comparisons
 
 - The Library's real comparison view now offers explicit Markdown download of the two selected reviewed apps: categories, version, license, static runtime, network policy, features, canonical app URLs and public source links. No user ratings, benchmarks, accounts or fabricated rankings.
