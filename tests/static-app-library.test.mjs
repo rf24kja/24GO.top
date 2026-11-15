@@ -29,7 +29,7 @@ function makeZip(items,{deflate=false,corrupt=false,symlink=false}={}){
   bodies.push(local,n,packed);
   const central=Buffer.alloc(46);
   central.writeUInt32LE(0x02014b50,0);central.writeUInt16LE(20,4);central.writeUInt16LE(20,6);
-  central.writeUInt16LE(method,10);central.writeUInt32LE(crc32(content)^(corrupt?1:0),16);
+  central.writeUInt16LE(method,10);central.writeUInt32LE((crc32(content)^(corrupt?1:0))>>>0,16);
   central.writeUInt32LE(packed.length,20);central.writeUInt32LE(content.length,24);
   central.writeUInt16LE(n.length,28);central.writeUInt32LE(offset,42);
   central.writeUInt32LE(((symlink?0xa1ff:0x81a4)<<16)>>>0,38);
