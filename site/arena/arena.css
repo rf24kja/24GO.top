@@ -85,3 +85,48 @@
  .arena-question,.arena-status{border-width:2px}}
 @media print{.arena-start,.arena-vote{display:none!important}
  .arena-response{break-inside:avoid}}
+
+
+/* Explicit local multi-match human review — no remote leaderboard. */
+.arena-tournament{margin:55px 0 0;padding:clamp(17px,3vw,28px);
+ background:var(--panel);border:1px solid var(--border);border-radius:16px;min-width:0}
+.arena-tournament p{line-height:1.6;font-size:14px;color:var(--muted);overflow-wrap:anywhere}
+.arena-tournament-import{margin:22px 0;padding:20px;min-width:0;
+ background:var(--bg);border:1px solid var(--border);border-radius:12px}
+.arena-tournament-import label{display:block;font-size:14px;font-weight:800;margin-bottom:11px}
+#arena-tournament-files{display:block;max-width:100%;width:100%;padding:11px;
+ border-radius:9px;border:1px solid var(--border);background:var(--panel);color:var(--text);
+ font:inherit;font-size:13px}
+#arena-tournament-files::file-selector-button{min-height:44px;margin-right:10px;
+ border:0;border-radius:7px;padding:8px 12px;background:var(--accent);
+ color:#08251b;font:inherit;font-weight:750;cursor:pointer}
+.arena-tournament-actions{display:flex;flex-wrap:wrap;gap:10px;margin:17px 0}
+#arena-tournament-status{min-height:25px;margin:12px 0 0}
+#arena-tournament-status[data-error="true"]{color:#e09b98}
+.arena-tournament-match-list{display:grid;gap:15px}
+.arena-tournament-match{min-width:0;background:var(--bg);border:1px solid var(--border);
+ padding:16px;border-radius:11px}
+.arena-tournament-match h4{font-size:16px;line-height:1.35;margin:0;overflow-wrap:anywhere}
+.arena-tournament-match p{margin:8px 0 12px;font-size:12px}
+.arena-tournament-decisions{display:flex;gap:10px;flex-wrap:wrap}
+.arena-tournament-decisions .arena-button[aria-pressed="true"]{
+ background:var(--accent);color:#08251b}
+.arena-tournament-scoreboard{margin:25px 0 0}
+.arena-tournament-table-title{font-weight:800}
+.arena-tournament-table-scroll{max-width:100%;overflow-x:auto}
+.arena-tournament-table{min-width:570px;width:100%;border-collapse:collapse;font-size:13px}
+.arena-tournament-table th,.arena-tournament-table td{border:1px solid var(--border);
+ padding:10px;text-align:left;vertical-align:top;overflow-wrap:anywhere}
+.arena-tournament-table thead{background:var(--bg)}
+.arena-tournament-table tbody th{min-width:165px}
+.arena-tournament-disclaimer{margin:20px 0 0}
+.arena-tournament button:focus-visible,.arena-tournament input:focus-visible{
+ outline:3px solid var(--accent);outline-offset:3px}
+@media(max-width:390px){.arena-tournament{padding:14px}
+ .arena-tournament-import{padding:13px}
+ .arena-tournament-actions,.arena-tournament-decisions{display:grid;grid-template-columns:minmax(0,1fr)}
+ .arena-tournament-actions button,.arena-tournament-decisions button{width:100%}}
+@media(prefers-color-scheme:light){
+ #arena-tournament-files::file-selector-button{color:#fff}
+ .arena-tournament-decisions .arena-button[aria-pressed="true"]{color:#fff}
+}

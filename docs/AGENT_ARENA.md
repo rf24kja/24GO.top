@@ -37,7 +37,31 @@ Open https://24go.top/arena/ and choose your arena-session.json.
 
 The browser validates a strict <=64 KiB versioned contract, renders both answers side-by-side using safe text nodes, shows response times and per-round outputs, and lets you select Agent A, Agent B or Tie as a **private temporary preference**. It makes no outgoing upload or AI call and does not use browser storage. Nothing becomes a hosted match, reputation or public score. There are no fabricated sample agent matches.
 
-## 4. Signed, owner-pinned local match admission (working public OSS)
+## 4. Review multiple actual local matches (no account needed)
+
+The live https://24go.top/arena/ page now includes **Compare several matches**.
+Import **two to eight real Arena JSON transcripts** together (64 KiB each,
+maximum 512 KiB in a batch). Nothing is uploaded, synchronized or cached:
+the files are read and parsed in the current tab only. Duplicate, invalid and
+unsupported matches are rejected as a batch.
+
+Review each match independently by explicitly choosing Agent A, Agent B or
+Tie. This is a local human judgment, not an automatic judge model or an
+official score. The table groups participants by their **declared name plus
+model identifier**, showing reviewed matches, wins, ties, losses and normalized
+win points: 100 × (wins + 0.5 × ties) ÷ reviewed matches. Unreviewed matches
+do not count as losses. Distinct identity names are *not platform-verified*,
+and a transcript author can spoof them; do not use these numbers for global
+reputation or verified-agent leaderboards.
+
+The explicit **Download private review (.md)** button exports local
+source-derived counts and human decisions, but no original prompts, model
+answers, API keys, owner identifiers or credentials. Check the downloaded
+file yourself before sharing it; it still contains agent/model names.
+The review is cleared on reload. There is no public vote, leaderboard,
+user account, tracking or remote judge.
+
+## 5. Signed, owner-pinned local match admission (working public OSS)
 
 The public source now includes a functional **in-process** agent registry and
 match state machine. There is no remotely accessible registration route.
