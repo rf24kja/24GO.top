@@ -3,6 +3,7 @@ import {createServer} from 'node:http';
 import {readFile,rm} from 'node:fs/promises';
 import {resolve,sep} from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {deflateRawSync} from 'node:zlib';
 import {launchChromium} from './chromium-startup.mjs';
 const root=resolve(fileURLToPath(new URL('../site/',import.meta.url)));
 const types={html:'text/html',css:'text/css',js:'text/javascript',
@@ -41,9 +42,9 @@ class CDP{
    this.ws.send(JSON.stringify({id,method,params,...(sessionId?{sessionId}:{})}));
   });
  }
- async evaluate(fn,sessionId){
+ async evaluate(fn,sessionId,...args){
   const result=await this.request('Runtime.evaluate',{
-   expression:'('+fn.toString()+')()',awaitPromise:true,returnByValue:true
+   expression:'('+fn.toString()+')('+args.map(x=>JSON.stringify(x)).join(',')+')',awaitPromise:true,returnByValue:true
   },sessionId);
   if(result.exceptionDetails)throw Error('Browser evaluation failed');
   return result.result?.value;
@@ -100,6 +101,109 @@ async function exerciseLibrary(){
   actionHeight:launch.getBoundingClientRect().height,
   noStorage:localStorage.length===storageBefore};
 }
+
+function demoZipFixture(){
+ const name=Buffer.from('index.html');
+ const source=Buffer.from('<html lang="en"><head><title>Browser ZIP Test App</title></head><body>Offline app</body></html>');
+ let crc=0xffffffff;
+ for(const v of source){crc^=v;for(let i=0;i<8;i++)crc=(crc>>>1)^((crc&1)?0xedb88320:0);}
+ crc=(crc^0xffffffff)>>>0;
+ const compressed=deflateRawSync(source);
+ const local=Buffer.alloc(30);
+ local.writeUInt32LE(0x04034b50,0);
+ local.writeUInt16LE(20,4);local.writeUInt16LE(8,8);
+ local.writeUInt32LE(crc,14);local.writeUInt32LE(compressed.length,18);
+ local.writeUInt32LE(source.length,22);local.writeUInt16LE(name.length,26);
+ const central=Buffer.alloc(46);
+ central.writeUInt32LE(0x02014b50,0);central.writeUInt16LE(20,4);
+ central.writeUInt16LE(20,6);central.writeUInt16LE(8,10);
+ central.writeUInt32LE(crc,16);central.writeUInt32LE(compressed.length,20);
+ central.writeUInt32LE(source.length,24);central.writeUInt16LE(name.length,28);
+ const offset=local.length+name.length+compressed.length;
+ const eocd=Buffer.alloc(22);
+ eocd.writeUInt32LE(0x06054b50,0);
+ eocd.writeUInt16LE(1,8);eocd.writeUInt16LE(1,10);
+ eocd.writeUInt32LE(central.length+name.length,12);eocd.writeUInt32LE(offset,16);
+ return Buffer.concat([local,name,compressed,central,name,eocd]).toString('base64');
+}
+async function exerciseIntakeBrowser(validBase64){
+ const $=id=>document.getElementById(id);
+ const zip=$('library-zip'),status=$('library-intake-status');
+ const beforeStorage=localStorage.length;
+ const bytes=Uint8Array.from(atob(validBase64),c=>c.charCodeAt(0));
+ const put=(blob,name)=>{
+  const transfer=new DataTransfer();
+  transfer.items.add(new File([blob],name,{type:'application/zip'}));
+  zip.files=transfer.files;
+  zip.dispatchEvent(new Event('change',{bubbles:true}));
+ };
+ const waitFor=async(fn)=>{
+  for(let i=0;i<220;i++){
+   if(fn())return true;
+   await new Promise(done=>setTimeout(done,35));
+  }
+  return false;
+ };
+ const originally=$('library-intake-results').hidden;
+ put(bytes,'good.zip');
+ $('library-validate').click();
+ const succeeded=await waitFor(()=>$('library-intake-results').hidden===false||
+  status.dataset.error==='true');
+ const accepted=succeeded&&!$('library-intake-results').hidden&&
+  status.textContent.includes('passed')&&
+  $('library-intake-files').children.length===1&&
+  /[a-f0-9]{64}/.test($('library-intake-summary').textContent);
+ const original=Object.getOwnPropertyDescriptor(navigator,'clipboard');
+ let manual=false;
+ try{
+  Object.defineProperty(navigator,'clipboard',{configurable:true,value:{
+   async writeText(){throw Error('Denied in test');}
+  }});
+  $('library-copy-report').click();
+  manual=await waitFor(()=>$('library-copy-fallback').hidden===false)&&
+   $('library-copy-fallback').value.includes('LOCAL SOURCE CHECK ONLY')&&
+   document.activeElement===$('library-copy-fallback');
+ }finally{
+  if(original)Object.defineProperty(navigator,'clipboard',original);
+  else delete navigator.clipboard;
+ }
+ const name=$('library-app-name'),source=$('library-app-source');
+ name.value='Browser Test Utility';
+ source.value='https://github.com/example/utility';
+ name.dispatchEvent(new Event('input',{bubbles:true}));
+ source.dispatchEvent(new Event('input',{bubbles:true}));
+ const link=$('library-review-link'),parsed=!link.hidden?new URL(link.href):null;
+ const body=parsed?.searchParams.get('body')||'';
+ const reviewReady=parsed?.origin==='https://github.com'&&
+  parsed.pathname==='/rf24kja/24GO.top/issues/new'&&
+  body.includes('Browser Test Utility')&&
+  body.includes('https://github.com/example/utility')&&
+  !body.includes('Offline app')&&
+  body.includes('No ZIP was uploaded')&&
+  link.target==='_blank';
+ source.value='javascript:alert(1)';
+ source.dispatchEvent(new Event('input',{bubbles:true}));
+ const badSource=link.hidden;
+ // Corrupt the accepted ZIP by changing one CRC byte (central directory).
+ const tampered=new Uint8Array(bytes);
+ const centralAt=tampered.findIndex((v,i)=>i>0&&
+  v===0x50&&tampered[i+1]===0x4b&&tampered[i+2]===0x01&&tampered[i+3]===0x02);
+ if(centralAt>0)tampered[centralAt+16]^=1;
+ put(tampered,'tampered.zip');
+ $('library-validate').click();
+ const rejected=await waitFor(()=>status.dataset.error==='true')&&
+  $('library-intake-results').hidden&&link.hidden;
+ $('library-intake-clear').click();
+ const reset=zip.value===''&&$('library-validate').disabled&&
+  $('library-intake-results').hidden&&!$('library-review-link').hasAttribute('href');
+ const viewport=document.documentElement.clientWidth;
+ const overflow=Math.max(document.documentElement.scrollWidth,document.body.scrollWidth);
+ return {originally,accepted,manual,reviewReady,badSource,rejected,reset,
+  noStorage:localStorage.length===beforeStorage,
+  buttonHeight:$('library-intake-clear').getBoundingClientRect().height,
+  viewport,overflow};
+}
+
 function exerciseJsonApp(){
  const input=document.getElementById('source'),inspect=document.getElementById('inspect');
  input.value='{"title":"Hello","data":[1,true,null]}';
@@ -151,6 +255,11 @@ async function main(){
       ['initial','searched','category','selected','compared','launched','opaque','closed','cleared','noStorage'].includes(key)&&!value)||
       result.scroll>result.width+1||result.actionHeight<43.5)
     throw Error('Library catalog Chromium '+width+': '+JSON.stringify(result));
+   const intake=await c.evaluate(exerciseIntakeBrowser,sessionId,demoZipFixture());
+   if(!intake||Object.entries(intake).some(([key,value])=>
+      ['originally','accepted','manual','reviewReady','badSource','rejected','reset','noStorage'].includes(key)&&!value)||
+      intake.buttonHeight<43.5||intake.overflow>intake.viewport+1)
+    throw Error('Library ZIP browser intake '+width+': '+JSON.stringify(intake));
   }
   for(const width of [280,390,844,1440]){
    await c.request('Emulation.setDeviceMetricsOverride',{
@@ -169,7 +278,7 @@ async function main(){
   }
   if(c.errors.length||c.external.length)
    throw Error('Browser errors or external requests: '+c.errors.join(';')+'; '+c.external.join(';'));
-  console.log('PASS Library Chromium: 2 actual apps, ZIP-reviewed catalogue, search, comparison, opaque sandbox, 280/390/844/1440, working JSON and WCAG tools');
+  console.log('PASS Library Chromium: catalog, 2 actual apps, 4 viewports, browser ZIP32 deflate validation, CRC corruption rejection, manual copy fallback, review link, opaque sandbox and no uploads');
  }finally{
   if(ws)ws.close();
   if(browser){

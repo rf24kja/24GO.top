@@ -1,3 +1,9 @@
+## Unreleased — Library browser ZIP review preparation
+
+- Library contributors can now choose a ZIP **in the browser**, validate its ZIP32 paths, sizes, CRC32, deflate output limits, static-only code rules and source hashes without uploading or executing the package. The page displays the verified file inventory and a full copyable SHA-256 review report with clipboard-denial fallback.
+- After validation, a public GitHub source repository and application name can generate an **explicit user-clicked GitHub issue draft** for maintainer source review. Only bounded metadata enters that URL; ZIP contents, secrets and full source are never included. This is not application publication.
+- Added separate strict browser ZIP parser, race-safe file imports, accessible forms/mobile layout and conformance/regression tests. CI and CDN source inventory include both browser modules. Hosted identity, direct user upload and arbitrary app runtime remain unreleased.
+
 ## Unreleased — Static App Library v1: real utilities, source comparisons and safe ZIP intake
 
 - Public /library/ now lists **two actual, first-party, source-reviewed static apps** (JSON Inspector and WCAG 2.2 Contrast Checker). Users can search, filter, compare two source-backed app feature lists and explicitly launch each into an iframe with scripts but no same-origin/top-navigation/popups/download capability. No external user JS or backend is hosted by this feature.
