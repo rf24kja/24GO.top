@@ -2,7 +2,7 @@
 
 **Live catalogue:** https://24go.top/library/
 
-**Released experience:** two actual first-party, source-reviewed static applications, searchable cards, two-app feature comparison, and **explicit click-only iframe previews** without same-origin access. The source code is under site/library/apps/. This is *not* a user-uploading cloud marketplace. No hosted app account or end-user submission API is open.
+**Released experience:** three actual first-party, source-reviewed static applications, searchable cards, two-app feature comparison, and **explicit click-only iframe previews** without same-origin access. The source code is under site/library/apps/. This is *not* a user-uploading cloud marketplace. No hosted app account or end-user submission API is open.
 
 ## Why Library v1 is deliberately narrow
 
@@ -14,6 +14,7 @@ The main 24go.top origin must **never** be an arbitrary third-party JavaScript u
 
 - JSON Inspector: actual local JSON validation, pretty-print, depth, node count and UTF-8 size reporting.
 - Contrast Checker: actual WCAG 2.2 ratio calculation and AA/AAA checks for normal/large text.
+- Text Diff: actual bounded line-by-line comparisons for Markdown, source code and configuration changes with added/removed/unchanged metrics.
 
 Each app has its own publicly inspectable HTML, no backend, no external network, and an internal Content Security Policy disabling network connections. Preview runs on an iframe with ONLY allow-scripts; it deliberately does not include allow-same-origin, allow-top-navigation, allow-popups or allow-downloads. No app loads automatically when you open the catalogue.
 
