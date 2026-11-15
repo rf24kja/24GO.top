@@ -1,5 +1,6 @@
 import {STUDIO_STARTER,buildStudioHtml,buildStudioZip} from './studio-core.mjs';
 import {validateBrowserZip} from '../intake-core.mjs';
+import {readValidatedStudioZip} from './studio-import.mjs';
 
 const $=id=>document.getElementById(id);
 const frame=$('studio-frame'),placeholder=$('studio-preview-placeholder');
@@ -11,10 +12,55 @@ const fields={
 };
 const tabs=[...document.querySelectorAll('[data-lang]')];
 let epoch=0,running=false,active='html';
+let importEpoch=0;
 function announce(message,isError=false){
  status.textContent=message;
  status.dataset.error=String(isError);
 }
+const importedFile=$('studio-import-file'),importCheck=$('studio-import-check');
+const importStatus=$('studio-import-status');
+function announceImport(message,isError=false){
+ importStatus.textContent=message;
+ importStatus.dataset.error=String(isError);
+}
+importedFile.addEventListener('change',()=>{
+ importEpoch++;
+ importCheck.disabled=!importedFile.files?.length;
+ announceImport(importCheck.disabled?'No existing project selected.':
+  'ZIP selected. Choose Load ZIP into editors. This will replace your unsaved edits.');
+});
+importCheck.addEventListener('click',async()=>{
+ const selected=importedFile.files?.[0];
+ if(!selected)return;
+ const ticket=++importEpoch;
+ importCheck.disabled=true;
+ if(!selected.size||selected.size>4*1024*1024){
+  announceImport('App Studio ZIP must be nonempty and at most 4 MiB.',true);
+  importCheck.disabled=false;return;
+ }
+ announceImport('Verifying ZIP integrity and canonical Studio source locally…');
+ try{
+  const bytes=new Uint8Array(await selected.arrayBuffer());
+  if(ticket!==importEpoch)return;
+  const report=await validateBrowserZip(bytes);
+  if(ticket!==importEpoch)return;
+  const draft=readValidatedStudioZip(bytes,report);
+  if(ticket!==importEpoch)return;
+  stopPreview(); // import source only — never execute it without a new click
+  for(const [name,value] of Object.entries(draft))fields[name].value=value;
+  showTab('html');
+  announce('Imported previously validated App Studio source. Preview is stopped; click Run isolated preview to execute it.');
+  announceImport('Imported '+draft.name+' · ZIP SHA-256: '+report.archiveSha256+
+   '. No code executed, uploaded or saved to the cloud.');
+  importedFile.value='';
+  importCheck.disabled=true;
+ }catch{
+  if(ticket!==importEpoch)return;
+  announceImport('Import rejected. Select a ZIP previously created by App Studio; arbitrary or malformed ZIPs will not load. Current editors remain unchanged.',true);
+ }finally{
+  if(ticket===importEpoch&&importedFile.files?.length)importCheck.disabled=false;
+ }
+});
 function readDraft(){
  return Object.fromEntries(Object.entries(fields).map(([key,field])=>[key,field.value]));
 }
