@@ -48,6 +48,48 @@ DecompressionStream deflate-raw format; use the CLI in that case. Both
 checks are conservative and do not prove code is free from malicious
 behavior or that an applicant owns the source.
 
+## App Studio — author, test and export entirely in browser (available now)
+
+The live [App Studio](https://24go.top/library/studio/) provides a real
+authoring experience for beginning contributors. No Node.js installation,
+API key, existing ZIP or public account is required to start:
+
+1. Open the Studio and edit the **HTML**, **CSS** and **JavaScript** tabs.
+   A working counter app is supplied, but the editors can be changed to
+   create an original tool. The Studio supports one self-contained page;
+   no npm, imports, remote scripts, external assets, backend processes
+   or separate app files in this first release.
+2. Click **Run isolated preview**. The Studio first compiles one HTML file
+   with a strict no-network CSP, builds a deterministic ZIP32 archive in
+   memory, and runs the independent browser ZIP validator. Only a passing
+   static package is placed in an explicit-click iframe with
+   \`sandbox="allow-scripts"\` and **no \`allow-same-origin\`**.
+   The iframe has an **opaque origin**; no iframe parent DOM access, top
+   navigation, forms, popups or privileged permissions. Changing source
+   stops the old preview; explicit **Stop preview** also destroys it.
+3. Click **Validate & download ZIP**. The same HTML that was just previewed
+   becomes \`index.html\` in an actual, portable ZIP32 file. The browser
+   checks CRC32, static-only limits and SHA-256 before offering the download.
+   Nothing is uploaded to 24GOTOP or GitHub.
+4. Keep your ZIP and source code. In the main Library, use **Check local ZIP**
+   to verify it again, add a public GitHub repository that actually contains
+   the source, and explicitly create a human review request. A review
+   request does **not** create a hosted application or grant automatic
+   publication rights.
+
+The current Studio rejects HTML with embedded scripts, remote resource
+attributes, iframes or forms; it also rejects prohibited network/browser
+storage APIs, external imports and CSS remote URLs. These are **conservative
+source rules, not formal proof of safety**. An opaque iframe is important
+isolation against arbitrary untrusted JavaScript, but it does not authorize
+hosting that JavaScript at \`https://24go.top\`, where a direct app URL might
+otherwise gain the main origin's ambient privileges.
+
+**Data lifecycle:** Editor text and local app output remain in the current
+tab, without upload, cookies, analytics, account storage or background save.
+Download the ZIP or save your source **before closing or reloading** the tab.
+No one can restore a closed-tab draft through 24GOTOP's servers.
+
 ## Contributor submission: ZIP or GitHub checked-out source
 
 1. Prepare a static app directory with a root index.html, self-contained CSS/JS and optional supported local images. For now file paths must be ASCII slug-like names (including up to 3 nested folders). Do not include secrets, .env, credentials, analytics, remote JS, webhooks, sensitive user records, full repositories, or build artifacts unrelated to the executable static bundle.
