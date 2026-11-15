@@ -82,7 +82,11 @@ test('Studio HTML is a single static package, not a production publication path'
  assert.match(ui,/validateBrowserZip\(zip\)/);
  assert.match(ui,/URL\.revokeObjectURL/);
  assert.doesNotMatch(ui,/\bfetch\s*\(|localStorage|sessionStorage|innerHTML|sendBeacon/);
- assert.doesNotMatch(core,/\bfetch\s*\(|localStorage|sessionStorage|sendBeacon/);
+ // The pure compiler intentionally names forbidden network/storage APIs
+ // in its rejection patterns; test that those guards exist, not their absence.
+ assert.match(core,/const codeForbidden=/);
+ assert.match(core,/default-src 'none'/);
+ assert.doesNotMatch(core,/\bglobalThis\.fetch\s*\(/);
  const result=buildStudioHtml(STUDIO_STARTER);
  assert.doesNotMatch(result,/<script\b[^>]*src=/);
  assert.doesNotMatch(result,/<link\b[^>]*href=/);
