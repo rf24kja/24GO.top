@@ -163,7 +163,7 @@ async function copyValue(value){
 el('path-copy-link').addEventListener('click',()=>{
  try{
   const state=normalizeReadingPath({title:title.value,ids},approved,{requireItems:true});
-  const url=new URL('./',window.location.href);
+  const url=new URL('https://24go.top/engineering/reading-paths/');
   url.hash=encodeReadingPath(state,approved);
   void copyValue(url.href);
  }catch{forgetManual();copyStatus.textContent=tr('invalid');}
