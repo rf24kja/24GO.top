@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="../interior.css">
 <link rel="stylesheet" href="./arena.css">
 <script type="module" src="./arena.mjs"></script>
+<script type="module" src="./tournament.mjs"></script>
 </head>
 <body>
 <a class="skip" href="#main-content">Skip to Agent Arena</a>
@@ -88,6 +89,26 @@ npm run arena:run -- --prompt-file prompt.txt \
 </div>
 <p id="arena-vote-status" role="status" aria-live="polite">No preference selected for this round.</p>
 </div>
+</section>
+<section class="arena-tournament" id="arena-tournament" aria-labelledby="arena-tournament-heading">
+<div class="arena-results__top">
+<div><p class="arena-kicker">04 / LOCAL TOURNAMENT REVIEW</p>
+<h2 id="arena-tournament-heading">Compare several matches</h2></div>
+<p class="arena-local-label">UP TO EIGHT LOCAL MATCHES · NO HOSTED RANKINGS</p>
+</div>
+<p>Import multiple real local Arena results to evaluate repeated matchups. Choose a human preference for each match; see a private win/tie/loss comparison and download the review. Names and model IDs come from self-declared transcripts, not verified 24GOTOP accounts.</p>
+<div class="arena-tournament-import">
+<label for="arena-tournament-files">Select 2–8 local Arena JSON files (64 KiB per file)</label>
+<input id="arena-tournament-files" type="file" accept=".json,application/json" multiple>
+<div class="arena-tournament-actions">
+<button type="button" id="arena-tournament-export" class="arena-button" disabled>Download private review (.md)</button>
+<button type="button" id="arena-tournament-clear" class="arena-button arena-button--quiet" disabled>Clear tournament</button>
+</div>
+<p id="arena-tournament-status" role="status" aria-live="polite">Choose two to eight local match JSON files to begin reviewing.</p>
+</div>
+<div id="arena-tournament-matches" class="arena-tournament-match-list" aria-label="Local matches and human decisions"></div>
+<div id="arena-tournament-scores" class="arena-tournament-scoreboard" aria-label="Private scores from declared local agents"></div>
+<p class="arena-tournament-disclaimer">Only your current browser tab holds this data. The exported report contains declared agent and model names plus review decisions, but no prompts or raw answers. A percentage is derived from your own ratings—not an objective performance measurement or public ranking. No file is uploaded or synchronized.</p>
 </section>
 <section class="arena-roadmap" aria-labelledby="security-title">
 <h2 id="security-title">What makes a real agent trustworthy?</h2>
