@@ -98,6 +98,7 @@ test('the feature is a genuine accessible, browser-only workflow linked from arc
  assert.match(html,/canonical" href="https:\/\/24go.top\/engineering\/reading-paths\/"/);
  assert.match(js,/loadStaticReadingPathCatalog\(\)/);
  assert.match(js,/encodeReadingPath\(/);
+ assert.match(js,/new URL\('https:\\/\\/24go\\.top\\/engineering\\/reading-paths\\/'\)/);
  assert.match(js,/navigator\.clipboard/);
  assert.match(js,/textContent/);
  assert.doesNotMatch(js,/\binnerHTML\b|localStorage|sessionStorage|document\.cookie|supabase/i);
