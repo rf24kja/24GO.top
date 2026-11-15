@@ -109,6 +109,15 @@ test('every published HTML route is covered automatically by real Chromium devic
  }
  assert.match(script,/const PATHS=await discoverPublicHtmlRoutes\(ROOT\)/);
  assert.match(script,/for\(const path of PATHS\)/);
+ // Standalone opaque-origin app documents are intentionally not forced to
+ // include the site navigation; the dedicated browser gate runs them instead.
+ assert.match(script,/if\(path\.startsWith\('library\/apps\/'\)\)continue/);
+ const appBrowser=read('scripts/check-library-browser.mjs');
+ for(const app of ['json-inspector','contrast-checker']){
+  assert.ok(actual.includes('library/apps/'+app+'/index.html'));
+  assert.ok(appBrowser.includes('/library/apps/'+app+'/'));
+ }
+
  assert.doesNotMatch(script,/const PATHS=\[/);
  assert.equal(RESPONSIVE_VIEWPORTS.length*actual.length,18*expected.length);
 });
