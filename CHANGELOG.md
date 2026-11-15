@@ -1,3 +1,10 @@
+## Unreleased — addressable published article sections via local read-only MCP
+
+- Add `list_article_sections` to enumerate source-ordered, anchor-linked H2/H3 headings from **already published** local technical articles, with exact canonical section links.
+- Add `read_article_section` to retrieve bounded, Unicode-safe plain text of one exact reviewed heading, with code-point pagination, total count and truncation markers. The returned text is explicitly **lossy and untrusted**; clients must visit the canonical source before quoting/copying code.
+- Restrict tools to exact canonical article URLs already in the verified local feed and exact `section-*` identifiers inside the article HTML. Refuse path traversal, off-origin links, unknown anchors, malformed offsets and extra arguments. Exclude unlinked related-reading headings from the manuscript's last section.
+- No remote fetch, file writes, private drafts, account access or hosted publishing. Add pure/parser, MCP compatibility and hostile-input regression tests; keep the existing seven tools and their result contracts.
+
 ## Unreleased — localized instant topic shortcuts in public reading paths
 
 - Add five accessible, translated topic chips (Security, API, Markdown, Mobile, MCP) to the existing eight-language reading-path builder. Each chip searches the already downloaded, reviewed **English** title/summary corpus locally; the Security shortcut intentionally matches the corpus' existing word "safe". The chips do not translate article content or suggest semantic search.
