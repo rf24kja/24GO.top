@@ -7,7 +7,7 @@ import {webcrypto} from 'node:crypto';
 import {encryptDraftLibraryBackup,decryptDraftLibraryBackup,ENCRYPTED_BACKUP_MAX_BYTES} from '../site/draft-lab-encrypted-backup.js';
 import {
   safeSourceUrl, validateDraft, formatDraft, draftFilename, hasDraftContent,
-  parseDraftFile, readDraftFileStrict, MAX_DRAFT_FILE_BYTES, hasUnexportedChanges, formatDraftSelection, formatDraftImageSelection, readExternalMarkdownStrict, formatExternalMarkdownInsertion, countDraftWords, createDraftImportGate,matchesDraftExportSnapshot, invalidDraftField,findDraftText,replaceDraftFindMatch,replaceAllDraftMatches
+  parseDraftFile, readDraftFileStrict, MAX_DRAFT_FILE_BYTES, hasUnexportedChanges, formatDraftSelection, formatDraftImageSelection, readExternalMarkdownStrict, formatExternalMarkdownInsertion, countDraftWords, createDraftImportGate,matchesDraftExportSnapshot, invalidDraftField,findDraftText,replaceDraftFindMatch,replaceAllDraftMatches,locateDraftSections
 } from '../site/draft-lab-logic.js';
 import {uiText,applyUiLanguage} from '../site/draft-lab-i18n.js';
 import {appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS} from '../site/draft-lab-guidance.js';
@@ -44,7 +44,7 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
     'revisionCapture','revisionCompare','revisionRestore','revisionCopy','revisionClear','revisionStatus','revisionFields','revisionLines',
     'downloadReviewPack','verifyReviewPack','reviewPackFile','insertExternalMarkdown','externalMarkdownFile','printDraft',
     'previewSource','draftSafety','articleOutline','articleOutlineSection','downloadDraft','copyDraft','clearDraft','importDraft','importDraftFile','draftForm',
-    'draftFindQuery','draftFindNext','draftFindPrevious','draftFindStatus','draftReplaceText','draftFindReplace','draftFindReplaceAll','draftFindUndoAll',
+    'draftSectionPicker','draftSectionJump','draftSectionStatus','draftFindQuery','draftFindNext','draftFindPrevious','draftFindStatus','draftReplaceText','draftFindReplace','draftFindReplaceAll','draftFindUndoAll',
     'formatBold','formatItalic','formatInlineCode','formatHeading','formatList','formatOrderedList','formatQuote','formatCode','formatTable','formatLink','insertImage','imageUrl','imageAlt','uiLocale','draftDropZone','homeBrandLink','homeNavLink','proposeDraft',
     'saveBrowserDraft','savedBrowserDraft','openBrowserDraft','deleteBrowserDraft','vaultCount','exportDraftLibrary','restoreDraftLibrary','draftLibraryFile','vaultBackupPassword','exportEncryptedDraftLibrary','restoreEncryptedDraftLibrary','encryptedBackupFile'
   ];
@@ -71,6 +71,7 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
   elements.uiLocale.value='en';
   elements.postLocale.value='en';
   elements.postCategory.value='guides';
+  elements.draftSectionJump.disabled=true;
   elements.draftFindReplace.disabled=true;
   elements.draftFindUndoAll.disabled=true;
   elements.draftTemplate.value='guide';
@@ -104,7 +105,7 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
   runInNewContext(source, {
     document, window, navigator, URL:BrowserURL, Blob, setTimeout,
     safeSourceUrl,validateDraft,formatDraft,draftFilename,hasDraftContent,
-    parseDraftFile,readDraftFileStrict,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,formatDraftImageSelection,readExternalMarkdownStrict,formatExternalMarkdownInsertion,countDraftWords,createDraftImportGate,matchesDraftExportSnapshot,invalidDraftField,findDraftText,replaceDraftFindMatch,replaceAllDraftMatches,
+    parseDraftFile,readDraftFileStrict,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,formatDraftImageSelection,readExternalMarkdownStrict,formatExternalMarkdownInsertion,countDraftWords,createDraftImportGate,matchesDraftExportSnapshot,invalidDraftField,findDraftText,replaceDraftFindMatch,replaceAllDraftMatches,locateDraftSections,
     uiText,applyUiLanguage,appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS,captureDraftRevision,compareDraftRevisions,revisionSummary,createEditorialReviewPack:reviewPackGenerator,readEditorialReviewPackFile:reviewPackReader,buildArticleProposalUrl,
     createDraftVault,MAX_SAVED_DRAFTS,MAX_VAULT_BACKUP_BYTES,VAULT_KEY,TextDecoder,
     encryptDraftLibraryBackup:(text,password)=>encryptDraftLibraryBackup(text,password,{cryptoImpl:webcrypto}),
@@ -362,6 +363,65 @@ test('live outline visibility follows headings without modifying the article or 
  app.elements.postBody.value='A technical note without a Markdown section title.';
  app.elements.postBody.listeners.input();
  assert.equal(app.elements.articleOutlineSection.hidden,true);
+});
+
+
+test('source section picker navigates to a precise duplicate heading without changing manuscript',()=>{
+ const app=build();
+ const text='## Introduction\nSome content.\n~~~md\n## Fake in code\n~~~\n## Same\nParagraph 🚀\n## Same';
+ app.elements.postBody.value=text;
+ app.elements.postBody.listeners.input();
+ const picker=app.elements.draftSectionPicker;
+ const jump=app.elements.draftSectionJump;
+ assert.deepEqual(picker.children.map(x=>x.value),['','1','2','3']);
+ assert.match(picker.children[2].textContent,/Same/);
+ assert.equal(jump.disabled,true);
+ picker.value='3';
+ picker.listeners.change();
+ assert.equal(jump.disabled,false);
+ const saved=app.localStorage.getItem(VAULT_KEY);
+ jump.listeners.click();
+ assert.equal(app.elements.postBody.value,text);
+ assert.equal(app.elements.postBody.selectionStart,text.lastIndexOf('## Same'));
+ assert.equal(app.elements.postBody.selectionEnd,text.length);
+ assert.equal(app.elements.postBody.focused,true);
+ assert.match(app.elements.draftSectionStatus.textContent,/line 8/);
+ assert.equal(app.localStorage.getItem(VAULT_KEY),saved);
+ assert.equal(app.beforeUnload().prevented,true,'navigation cannot pretend the draft was saved');
+});
+
+test('source picker rejects obsolete headings and updates safely in all eight UI languages',()=>{
+ const app=build();
+ const picker=app.elements.draftSectionPicker;
+ const jump=app.elements.draftSectionJump;
+ for(const lng of ['en','ru','th','es','fr','de','pt','zh']){
+  assert.ok(uiText(lng,'sectionNavHeading').length>=3);
+  assert.ok(uiText(lng,'sectionNavLine').length>=2);
+  assert.ok(uiText(lng,'sectionNavMoved').length>=3);
+ }
+ app.elements.postBody.value='# Alpha\n## Beta';
+ app.elements.postBody.listeners.input();
+ picker.value='2';picker.listeners.change();
+ app.elements.postBody.value='# New manuscript'; // stale, bypass input handler
+ jump.listeners.click();
+ assert.equal(jump.disabled,true);
+ assert.equal(app.elements.postBody.value,'# New manuscript');
+ assert.equal(app.elements.postBody.selectionStart,0);
+ app.elements.postBody.listeners.input();
+ assert.equal(picker.value,'');
+ assert.deepEqual(picker.children.map(x=>x.value),['','1']);
+ app.elements.uiLocale.value='ru';
+ app.elements.uiLocale.listeners.change();
+ assert.match(picker.children[1].textContent,/строка 1/);
+ picker.value='1';picker.listeners.change();
+ jump.listeners.click();
+ assert.equal(app.elements.postBody.selectionEnd,'# New manuscript'.length);
+ assert.match(app.elements.draftSectionStatus.textContent,/строка 1/);
+ app.elements.postBody.value='No heading at all';
+ app.elements.postBody.listeners.input();
+ assert.equal(jump.disabled,true);
+ assert.equal(picker.children.length,1);
+ assert.equal(picker.children[0].textContent,uiText('ru','sectionNavEmpty'));
 });
 
 function deferred(){
