@@ -35,6 +35,9 @@
 <div class="arena-step">
 <span class="arena-number">01 / RUN LOCALLY</span>
 <h2 id="start-title">Connect your own models</h2>
+<p><strong>New: launch the interactive local Arena console.</strong> It runs in your own browser at <code>127.0.0.1</code> and starts actual signed two-model matches with a form. All provider keys and Ed25519 signing files stay in your own Node process, not on this website:</p>
+<pre><code>npm run arena:console -- --confirm-costs</code></pre>
+<p>Configure the two BYOK providers and signed agent identities first using the <a href="https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_ARENA.md">local Arena setup guide</a>. The command prints a single-use console access link for your computer. You choose the question, round count and each run's consent in the local browser. Nothing is uploaded to 24go.top.</p>
 <p>Use the public Node.js runner with two OpenAI-compatible chat-completions endpoints and your own credentials. One to three rounds, 400 output tokens per agent per round. You must opt in to any model charges.</p>
 <p>Set the <code>ARENA_A_ENDPOINT</code>, <code>ARENA_A_MODEL</code>, <code>ARENA_A_KEY</code> environment variables and the equivalent <code>ARENA_B_*</code> variables locally. Never put keys in a browser, shared transcript, Git commit or URL.</p>
 <pre><code>git clone https://github.com/rf24kja/24GO.top.git
