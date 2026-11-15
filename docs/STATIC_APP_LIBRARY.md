@@ -72,6 +72,40 @@ npm run library:validate -- --dir ./my-project/dist
 - Conservative rejection of remote active resources, dynamic remote fetch, forms, service workers, browser storage, parent/top frame access, eval and other disallowed primitives. This pattern-based check is **not a comprehensive security sandbox** and **cannot establish that arbitrary JS is safe**. Manual review remains mandatory. Validating a ZIP is not permission to upload it to 24go.top.
 - GitHub checkout validation reads local files and rejects symlinks and unsupported source files. It does not execute a remote git clone or trust any third-party GitHub repository by name alone.
 
+### Repeatable maintainer publication gate (implemented)
+
+The Library now has a real first-party source publication check, not merely
+instructions. All maintainers and contributors can run:
+
+~~~sh
+npm run library:check
+npm run check
+npm test
+npm run library:browser
+~~~
+
+The Library check enumerates **every** folder under site/library/apps.
+It fails if an executable source directory is missing from the reviewed
+site/library/catalog.json inventory, if the catalog lists a missing app, or
+if a directory contains unsupported paths, scripts or symlinks. Every
+listed app must pass the Node static package validator, retain a matching
+catalog/document title and include the no-network CSP requirements
+(default-src, connect-src, form-action, base-uri and object-src all set
+to none). The check validates *all* reviewed apps rather than hard-coding
+the existing first two examples.
+
+To introduce a **new first-party reviewed app**, add its fully auditable
+source under site/library/apps/<slug>/ and a matching entry to
+site/library/catalog.json. Run the checks, submit a GitHub PR and let
+maintainers review the actual source and provenance. Once a PR passes
+CI and human review and is merged into main, GitHub Pages publishes it
+and the exact-CDN audit verifies the app's deployed bytes. This workflow
+does **not** let anonymous third parties publish arbitrary JavaScript;
+they must not receive deployment rights to the main 24go.top origin.
+Production third-party uploads must eventually use a separately
+sandboxed hostname with owner-bound authorization, content moderation
+and independent security checks.
+
 ### Review, rollback and honest readiness
 
 The publication transaction for the **current first-party OSS catalogue** is a reviewed Git commit → required CI → merge → GitHub Pages static deployment → exact CDN source check → stable public URL. A failed review/CI blocks release; rollback is reverting the app and its catalog entry. There is no user-upload endpoint, public package registry or automatic cloud deployment.
