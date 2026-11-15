@@ -404,6 +404,50 @@ async function exerciseReadingPathsClipboardRace(){
  }
 }
 
+// Exercise all 8 language choices on the live rendered reading-path builder.
+// UI language changes must never rewrite a reader's title, IDs or URL.
+function exerciseReadingPathsLocales(){
+ const lang=document.getElementById('path-ui-locale');
+ const title=document.getElementById('path-title');
+ const catalog=document.getElementById('path-catalog');
+ const selected=document.getElementById('path-selected');
+ const beforeStorage=localStorage.getItem('24gotop-public-reading-list-v1');
+ const initialUrl=window.location.href;
+ const first=catalog.querySelector('.path-catalog-item button');
+ first.click();
+ title.value='安全 • ภาษาไทย • Русский 🚀';
+ title.dispatchEvent(new Event('input',{bubbles:true}));
+ const expectedOrder=[...selected.querySelectorAll('.path-article-link')].map(x=>x.href);
+ const expectedTitle=title.value;
+ const headings={
+  en:'Build a reading path.',ru:'Составьте маршрут чтения.',
+  th:'สร้างเส้นทางการอ่าน',es:'Crea una ruta de lectura.',
+  fr:'Créez un parcours de lecture.',de:'Erstelle einen Lesepfad.',
+  pt:'Crie uma trilha de leitura.',zh:'创建阅读路线'
+ };
+ const results=[];
+ for(const locale of ['en','ru','th','es','fr','de','pt','zh']){
+  lang.value=locale;
+  lang.dispatchEvent(new Event('change',{bubbles:true}));
+  const order=[...selected.querySelectorAll('.path-article-link')].map(x=>x.href);
+  const h1=document.querySelector('.path-main h1')?.textContent;
+  const current=document.documentElement.lang;
+  results.push({
+   locale,translated:h1===headings[locale],lang:current===locale,
+   title:title.value===expectedTitle,order:JSON.stringify(order)===JSON.stringify(expectedOrder),
+   buttons:!document.getElementById('path-copy-link').disabled&&
+    !document.getElementById('path-copy-mcp').disabled,
+   noStorage:localStorage.getItem('24gotop-public-reading-list-v1')===beforeStorage,
+   noNavigation:window.location.href===initialUrl,
+   count:document.getElementById('selected-count').textContent==='1 / 10'
+  });
+ }
+ return {results,
+  height:lang.getBoundingClientRect().height,
+  viewport:document.documentElement.clientWidth,
+  scroll:Math.max(document.documentElement.scrollWidth,document.body.scrollWidth)};
+}
+
 // Exercise the actual browser Blob download path on each responsive viewport.
 // Intercept only the final anchor activation so CI never downloads files.
 async function exerciseReadingPathsDownload(){
@@ -1142,6 +1186,12 @@ async function main(){
       !copyRace.agentCopied||copyRace.requests!==6||copyRace.scroll>copyRace.viewport+1)
     throw Error('Reading path clipboard focus/permission race '+profile.name+': '+
       JSON.stringify(copyRace));
+   const locales=await c.call(exerciseReadingPathsLocales,sessionId);
+   if(locales.results.length!==8||locales.height<43.5||
+      locales.scroll>locales.viewport+1||
+      locales.results.some(row=>!row.translated||!row.lang||!row.title||
+       !row.order||!row.buttons||!row.noStorage||!row.noNavigation||!row.count))
+    throw Error('Reading path 8-locale live UI '+profile.name+': '+JSON.stringify(locales));
   }
   assert(!c.exceptions.length,'Unexpected browser JS exception '+c.exceptions.join('; '));
   assert(!c.external.length,'External network request '+c.external.join('; '));
