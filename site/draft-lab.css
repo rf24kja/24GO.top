@@ -80,6 +80,25 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
  .draft-find__controls button{flex:1 1 calc(50% - 8px)}}
 @media(max-width:550px){.format-tools button{flex:1 1 calc(50% - 8px)}}
 
+/* Direct source-section navigation is read-only until the author edits. */
+.draft-sections{margin:14px 0 8px;padding:14px;border:1px solid var(--border);
+ border-radius:10px;background:var(--field);min-width:0}
+.draft-sections h3{font-size:15px;margin:0 0 7px;color:var(--text)}
+.draft-sections .hint{margin:0 0 12px;line-height:1.5}
+.draft-sections__controls{display:flex;gap:8px;align-items:end;flex-wrap:wrap}
+.draft-sections__controls label{flex-basis:100%;font-size:13px;font-weight:700;margin:0}
+.draft-sections__controls select{min-width:0;flex:1 1 200px;max-width:100%;
+ background:var(--field);color:var(--text);border:1px solid var(--border)}
+.draft-sections__controls button{min-height:46px;font:inherit;font-size:13px;
+ font-weight:700;cursor:pointer;background:var(--panel);color:var(--text);
+ border:1px solid var(--border);border-radius:8px;padding:8px 13px}
+.draft-sections__controls button:disabled{opacity:.5;cursor:not-allowed}
+.draft-sections__controls button:focus-visible,.draft-sections__controls select:focus-visible{
+ outline:3px solid var(--accent);outline-offset:3px}
+.draft-sections__status{font-size:12px;min-height:18px;color:var(--muted);margin:7px 0 0}
+@media(max-width:550px){.draft-sections__controls select,
+ .draft-sections__controls button{flex-basis:100%;width:100%}}
+
 /* Editor UI language is separate from authored content language. */
 .interface-picker{display:flex;align-items:center;flex-wrap:wrap;gap:10px 16px;margin:18px 0 4px}
 .interface-picker label{margin:0;font-size:14px;color:var(--muted)}
