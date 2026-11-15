@@ -65,6 +65,7 @@ test('real loopback HTTP enforces one-click signed dual-agent end to end, no key
   assert.equal(script.status,200);
   assert.ok((await script.text()).includes('credentialFromFragment'));
   assert.equal((await fetch(server.origin+'/arena-core.mjs')).status,200);
+  assert.equal((await fetch(server.origin+'/tournament-core.mjs')).status,200);
   const match=await post(server,token,request(2));
   assert.equal(match.status,200);
   const body=await match.json();
