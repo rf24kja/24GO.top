@@ -44,3 +44,11 @@ test('Studio browser wiring protects cancel, verified import, unchanged exit and
  assert.match(css,/\.studio-save-notice\[data-unsaved="true"\]/);
  assert.doesNotMatch(ui,/localStorage|sessionStorage|indexedDB|sendBeacon|\bfetch\s*\(/);
 });
+
+test('Studio ZIP remains available after click and receives delayed URL cleanup',()=>{
+ const ui=readFileSync(new URL('../site/library/studio/studio.mjs',import.meta.url),'utf8');
+ assert.ok(ui.includes('try{link.click();}finally{'));
+ assert.ok(ui.includes('setTimeout(()=>URL.revokeObjectURL(url),10000);'));
+ assert.ok(!ui.includes('link.remove();URL.revokeObjectURL(url)'));
+ assert.ok(ui.includes('Confirm the download in your browser.'));
+});
