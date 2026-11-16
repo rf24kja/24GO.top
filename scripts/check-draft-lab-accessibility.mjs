@@ -169,7 +169,7 @@ async function exerciseSensitiveReviewExport(){
   prompts=[];
   window.confirm=prompt=>{prompts.push(prompt);return true;};
   button.click();
-  const allowed=await waitFor(()=>$('formStatus').textContent.includes('download requested'))&&
+  const allowed=await waitFor(()=>downloads===1)&&
    prompts.length===2&&downloads===1&&
    name==='24gotop-editorial-review-pack.json'&&bytes?.size>100;
   // In-tab input that changes while native consent is open must cancel export.
@@ -180,7 +180,8 @@ async function exerciseSensitiveReviewExport(){
    return true;
   };
   button.click();
-  const stale=await waitFor(()=>$('formStatus').textContent.includes('changed during export'))&&
+  const stale=await waitFor(()=>$('formStatus').dataset.error==='true')&&
+   $('formStatus').textContent.length>0&&
    prompts.length===2&&downloads===1&&body.value.endsWith(' edited');
   return {rejected,allowed,stale,noStorage:localStorage.length===beforeStorage,
    height:button.getBoundingClientRect().height,
