@@ -121,7 +121,7 @@ test('image insertion controls are keyboard accessible, offline and fit every vi
 
 test('image link helper fields cannot outlive a confirmed draft switch',()=>{
  for(const content of [
-  "source.value = reopened.source;\n    clearImageInsertInputs();",
+  "source.value = reopened.source;\n clearImageInsertInputs();",
   "source.value=saved.draft.source;\n  clearImageInsertInputs();",
   "source.value = '';\n  clearImageInsertInputs();"
  ])assert.ok(js.includes(content),'missing image input reset after document change');
@@ -154,8 +154,10 @@ test('confirmed Draft Lab file opens recheck latest consent and preserve newer e
  assert.match(segment,/if\(!importGate\.isLatest\(ticket\)\)return;/);
  assert.match(segment,/if\(!importGate\.canApply\(ticket\)\)return;/);
  assert.ok(segment.indexOf('if(!importGate.canApply(ticket))return;')<
-  segment.indexOf('title.value = reopened.title;'));
+  segment.indexOf('commitOpenedDraft(reopened);'));
  assert.match(segment,/if\(!confirmed\)/);
+ assert.match(js,/function commitOpenedDraft\(reopened\)\{/);
+ assert.match(js,/commitOpenedDraft\(verified\.draft\)/);
 });
 
 
