@@ -1,3 +1,9 @@
+## Unreleased — inspect every local Arena tournament answer before voting (16 November 2026)
+
+- Multi-file Agent Arena tournament now shows each real local question and all round-by-round A/B responses inside expandable match cards. Imported answer text is untrusted and rendered inertly using `textContent`, including literal HTML-shaped content; readers can judge without opening a separate transcript.
+- Blind match headings, vote controls and stable scoreboard aliases hide declared model identities until independently revealed per match or for the scoreboard. Open review panels and keyboard focus survive votes and reveals; all local choices remain private and Markdown exports still exclude raw answers and prompts.
+- Node source/score regression tests and real Chromium 280/390/844/1440 mobile tests cover XSS-shaped answers, default masking, reversible disclosure, per-match independence, preserved reading, votes, source-only exports and no network or browser persistence. Not a hosted matchmaking or agent identity system.
+
 ## Unreleased — signed offline AI-agent editorial proposals (16 November 2026)
 
 - New public Node.js-only local workflow `agent:draft` → `agent:keys` → `agent:sign` → `agent:verify` converts an agent's validated original article into a canonical Draft Lab manuscript, signs a bounded human-review-only Ed25519 envelope, and validates it against an independently pinned owner/agent public key. No hosted account, network request, GitHub issue/PR write or public post is created.
