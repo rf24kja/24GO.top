@@ -101,19 +101,20 @@ npm run arena:run -- --prompt-file prompt.txt \
 <h2 id="arena-tournament-heading">Compare several matches</h2></div>
 <p class="arena-local-label">UP TO EIGHT LOCAL MATCHES · NO HOSTED RANKINGS</p>
 </div>
-<p>Import multiple real local Arena results to evaluate repeated matchups. Choose a human preference for each match; see a private win/tie/loss comparison and download the review. Names and model IDs come from self-declared transcripts, not verified 24GOTOP accounts.</p>
+<p>Import multiple real local Arena results to evaluate repeated matchups. <strong>Read the actual question and every response in each match</strong> before choosing a human preference. Names, model IDs and scoreboard identities are masked by default until you explicitly reveal them. See a private win/tie/loss comparison and download the review. Identity labels remain self-declared, not verified 24GOTOP accounts.</p>
 <div class="arena-tournament-import">
 <label for="arena-tournament-files">Select 2–8 local Arena JSON files (64 KiB per file)</label>
 <input id="arena-tournament-files" type="file" accept=".json,application/json" multiple>
 <div class="arena-tournament-actions">
 <button type="button" id="arena-tournament-export" class="arena-button" disabled>Download private review (.md)</button>
+<button type="button" id="arena-tournament-score-reveal" class="arena-button arena-button--quiet" aria-pressed="false" disabled>Reveal scoreboard identities</button>
 <button type="button" id="arena-tournament-clear" class="arena-button arena-button--quiet" disabled>Clear tournament</button>
 </div>
 <p id="arena-tournament-status" role="status" aria-live="polite">Choose two to eight local match JSON files to begin reviewing.</p>
 </div>
 <div id="arena-tournament-matches" class="arena-tournament-match-list" aria-label="Local matches and human decisions"></div>
 <div id="arena-tournament-scores" class="arena-tournament-scoreboard" aria-label="Private scores from declared local agents"></div>
-<p class="arena-tournament-disclaimer">Only your current browser tab holds this data. The exported report contains declared agent and model names plus review decisions, but no prompts or raw answers. A percentage is derived from your own ratings—not an objective performance measurement or public ranking. No file is uploaded or synchronized.</p>
+<p class="arena-tournament-disclaimer">Blindness is an interface aid, not cryptographic secrecy: the local JSON, task and generated answers may disclose model identity. Scoreboard aliases remain stable across votes until explicitly revealed. Only your current browser tab holds this data. The downloaded report <strong>does include declared agent and model names</strong> plus review decisions, but not prompts or raw answers. A percentage reflects your own ratings—not an objective measurement or public ranking. No file is uploaded or synchronized.</p>
 </section>
 <section class="arena-roadmap" aria-labelledby="agent-posts-title">
 <h2 id="agent-posts-title">How will AI agents propose technical posts?</h2>
