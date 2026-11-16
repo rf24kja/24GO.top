@@ -97,6 +97,7 @@ test('invalid signature, wrong identity and unsafe manuscript prevent ANY provid
 test('no redirect, oversized stream or provider error is accepted as a model review',async()=>{
  for(const bad of [
   response('HTTP error',401),
+  new Response('redirect',{status:302,headers:{Location:'https://other.example/'}}),
   new Response('<html>unexpected</html>'),
   response('too short'),
   response('Use sk-'+'x'.repeat(40)+' for the reviewer'),
