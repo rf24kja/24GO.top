@@ -127,6 +127,73 @@ function exerciseDraftPrivacyPreflight(){
   width:document.documentElement.clientWidth,
   scroll:Math.max(document.documentElement.scrollWidth,document.body.scrollWidth)};
 }
+async function exerciseSensitiveReviewExport(){
+ const $=id=>document.getElementById(id);
+ const body=$('postBody'),title=$('postTitle'),status=$('draftPrivacyStatus');
+ const button=$('downloadReviewPack');
+ const originalConfirm=window.confirm;
+ const originalCreate=URL.createObjectURL;
+ const originalRevoke=URL.revokeObjectURL;
+ const originalClick=HTMLAnchorElement.prototype.click;
+ const beforeStorage=localStorage.length;
+ let prompts=[],downloads=0,name='',bytes=null;
+ const secret='Bearer '+'Z'.repeat(34);
+ const set=(id,value)=>{
+  const field=$(id);
+  field.value=value;field.dispatchEvent(new Event('input',{bubbles:true}));
+ };
+ const waitFor=async(fn)=>{
+  for(let i=0;i<80;i++){
+   if(fn())return true;
+   await new Promise(resolve=>setTimeout(resolve,30));
+  }
+  return false;
+ };
+ try{
+  set('postTitle','Public technical explanation with a private token example');
+  set('postBody','A sample tutorial about safeguarding manuscript text. '+secret);
+  set('postSource','');
+  $('postLocale').value='en';
+  $('postCategory').value='guides';
+  URL.createObjectURL=blob=>{downloads++;bytes=blob;return 'blob:review-safety-test';};
+  URL.revokeObjectURL=()=>{};
+  HTMLAnchorElement.prototype.click=function(){name=this.download;};
+  window.confirm=prompt=>{prompts.push(prompt);return prompts.length===1;};
+  button.click();
+  const rejected=await waitFor(()=>$('formStatus').textContent.length>0)&&
+   prompts.length===2&&downloads===0&&
+   status.dataset.risk==='true'&&!status.textContent.includes(secret)&&
+   body.value.includes(secret)&&
+   !prompts.some(prompt=>prompt.includes(secret));
+  // A second explicit, full-text consent can authorize a local download.
+  prompts=[];
+  window.confirm=prompt=>{prompts.push(prompt);return true;};
+  button.click();
+  const allowed=await waitFor(()=>downloads===1)&&
+   prompts.length===2&&downloads===1&&
+   name==='24gotop-editorial-review-pack.json'&&bytes?.size>100;
+  // In-tab input that changes while native consent is open must cancel export.
+  prompts=[];
+  window.confirm=prompt=>{
+   prompts.push(prompt);
+   if(prompts.length===2)set('postBody',body.value+' edited');
+   return true;
+  };
+  button.click();
+  const stale=await waitFor(()=>$('formStatus').dataset.error==='true')&&
+   $('formStatus').textContent.length>0&&
+   prompts.length===2&&downloads===1&&body.value.endsWith(' edited');
+  return {rejected,allowed,stale,noStorage:localStorage.length===beforeStorage,
+   height:button.getBoundingClientRect().height,
+   width:document.documentElement.clientWidth,
+   scroll:Math.max(document.body.scrollWidth,document.documentElement.scrollWidth)};
+ }finally{
+  window.confirm=originalConfirm;
+  URL.createObjectURL=originalCreate;
+  URL.revokeObjectURL=originalRevoke;
+  HTMLAnchorElement.prototype.click=originalClick;
+ }
+}
 function switchLanguage(locale){
  const $=id=>document.getElementById(id);
  $('uiLocale').value=locale;
@@ -1170,6 +1237,13 @@ async function main(){
       privacy.role!=='status'||privacy.live!=='polite'||!privacy.noStorage||
       privacy.buttonHeight<43.5||privacy.scroll>privacy.width+1)
     throw Error('Draft local privacy preflight '+profile.name+': '+JSON.stringify(privacy));
+   const sensitiveExport=await c.call(exerciseSensitiveReviewExport,sessionId);
+   if(!sensitiveExport.rejected||!sensitiveExport.allowed||
+      !sensitiveExport.stale||!sensitiveExport.noStorage||
+      sensitiveExport.height<43.5||
+      sensitiveExport.scroll>sensitiveExport.width+1)
+    throw Error('Draft reviewer sensitive export consent '+profile.name+': '+
+      JSON.stringify(sensitiveExport));
    const photo=await c.call(exerciseDraftImageGate,sessionId);
    if(!photo.before.noSrc||!photo.before.hidden||!photo.before.domain||
       photo.before.alt!=='Technical architecture'||!photo.before.anonymous||
