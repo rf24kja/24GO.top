@@ -76,7 +76,7 @@ test('public capability manifest URL fields do not allow credentials or arbitrar
   assert.equal(url.hash,'');
   assert.equal(url.search,'');
   assert.ok(url.origin==='https://24go.top'||
-   (url.origin==='https://github.com'&&url.pathname.startsWith('/rf24kja/24GO.top/')),
+   (url.origin==='https://github.com'&&(url.pathname==='/rf24kja/24GO.top'||url.pathname.startsWith('/rf24kja/24GO.top/'))),
    raw);
  }
  assert.doesNotMatch(content,/\b(?:sk-[A-Za-z0-9_-]{20,}|github_pat_[A-Za-z0-9_]{20,}|Bearer\s+[A-Za-z0-9_.-]{24,})\b/);
