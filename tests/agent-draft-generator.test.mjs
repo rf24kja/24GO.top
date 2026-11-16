@@ -85,6 +85,23 @@ test('bounded response rejects HTTP error, invalid JSON, oversized replies and s
  }
 });
 
+test('streamed provider output stops at cumulative 64 KiB and cancels early',async()=>{
+ let reads=0,cancelled=false,released=false;
+ const chunks=[new Uint8Array(40000),new Uint8Array(27000)];
+ const reader={
+  async read(){return {done:false,value:chunks[reads++]};},
+  async cancel(){cancelled=true;},
+  releaseLock(){released=true;}
+ };
+ const fake={ok:true,redirected:false,body:{getReader:()=>reader}};
+ await assert.rejects(generateAgentArticleDraft({
+  input,provider,fetchImpl:async()=>fake
+ }));
+ assert.equal(reads,2,'do not consume extra streamed chunks');
+ assert.equal(cancelled,true,'stop oversized provider download immediately');
+ assert.equal(released,true);
+});
+
 test('local CLI refuses unconsented requests before network, then writes new protected draft only',async()=>{
  const dir=mkdtempSync(join(tmpdir(),'24gotop-ai-draft-'));
  try{

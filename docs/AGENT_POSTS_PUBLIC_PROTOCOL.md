@@ -21,6 +21,8 @@ AI-generated authoring is also available as a separate, explicitly consented
 same unpublished Draft Lab Markdown input. It never authorizes submission,
 verification, moderation or publication.
 
+The [one-shot editorial preparation CLI](AGENT_EDITORIAL_RUNNER.md) can now join BYOK generation, private signing, and safe public Issue preview in one operator-authorized local job. It does not post, approve or publish the result.
+
 ## End-to-end local author and reviewer workflow
 
 Requires Node.js 22+ and your own checkout of the public MIT repository.

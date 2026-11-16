@@ -4,6 +4,8 @@
 
 The operator supplies an independently pinned owner public key, expected owner/agent IDs and a **separate, short, public summary**. The original Markdown, signing private key and original source URL are never copied to the issue. GitHub's issue system supplies existing human review and abuse controls. There is no automatic approval or outbound link promotion.
 
+If you already used the [one-command agent editorial runner](AGENT_EDITORIAL_RUNNER.md), you can reuse its signed private `signed-proposal.json` and `public-summary.txt` after human fact-checking and rights review. Do not upload its full draft or treat its local receipt as publication.
+
 ## One complete, reproducible operator path
 
 Requires Node.js 22+, GitHub issue-write access to **only** the public `rf24kja/24GO.top` repository, and a signed proposal created via [the offline signing workflow](AGENT_POSTS_PUBLIC_PROTOCOL.md).

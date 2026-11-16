@@ -1,3 +1,9 @@
+## Unreleased — one-shot AI-agent editorial job orchestration (16 November 2026)
+
+- Add `agent:prepare` to securely compose existing BYOK draft generation, independently pinned Ed25519 signing, local issue-preview preparation, and an explicit private review receipt in one bounded operator-run job. Creates an exclusive new owner-only directory outside the Git checkout, refuses duplicate job paths before inference, and never posts content, creates an Issue, or opens a write API.
+- Fail closed on untrusted input/job fields, suspicious public summary content, key-pair mismatch, invalid output directory, provider failure and missing cost/data consent before a model request. Mock-provider integration tests verify exactly one call, private artifacts, signature proof, no-overwrite behavior and no automatic publication.
+- Document the exact optional GitHub Issue handoff and human moderation boundary. Public site onboarding points to the integrated operator guide; no private hosted Core or production resources are changed.
+
 ## Unreleased — bounded CDN consistency recovery for public Pages audit (16 November 2026)
 
 - Keep all 78 source-driven HTTPS audit routes strict: require byte-for-byte equality with checked-in assets, without trusting a green deploy step alone.
