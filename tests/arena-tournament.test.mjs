@@ -100,3 +100,29 @@ test('browser viewer exposes bounded import, per-match votes and local-only expo
  assert.match(ui,/URL\.revokeObjectURL/);
  assert.match(html,/not verified 24GOTOP accounts/);
 });
+
+test('tournament judges can inspect real responses while all participant labels stay blind',()=>{
+ const ui=readFileSync(new URL('../site/arena/tournament.mjs',import.meta.url),'utf8');
+ const html=readFileSync(new URL('../site/arena/index.html',import.meta.url),'utf8');
+ const css=readFileSync(new URL('../site/arena/arena.css',import.meta.url),'utf8');
+ const chrome=readFileSync(new URL('../scripts/check-agent-arena.mjs',import.meta.url),'utf8');
+ assert.match(ui,/create\('details','arena-tournament-review'\)/);
+ assert.match(ui,/create\('p','arena-tournament-question','Technical question: '/);
+ assert.match(ui,/create\('pre','arena-tournament-answer',round\.responses\[i\]\.text\)/);
+ assert.match(ui,/create\('strong','','Response '/);
+ assert.match(ui,/revealedMatches=new Set\(\)/);
+ assert.match(ui,/revealedScores=false/);
+ assert.match(ui,/JSON\.stringify\(\[agent\.name,agent\.model\]\)/);
+ assert.match(ui,/JSON\.stringify\(\[row\.name,row\.model\]\)/);
+ assert.match(ui,/aliases\.get\(/);
+ assert.match(ui,/review\.open=opened\.has\(index\)/);
+ assert.match(html,/id="arena-tournament-score-reveal"/);
+ assert.match(html,/aria-pressed="false" disabled>Reveal scoreboard identities/);
+ assert.match(css,/\.arena-tournament-answer\{[^}]*overflow-wrap:anywhere/);
+ assert.match(css,/\.arena-tournament-review summary/);
+ assert.match(chrome,/reviewStaysOpen/);
+ assert.match(chrome,/window\.tournamentXss!==true/);
+ assert.match(chrome,/namesShown/);
+ assert.match(chrome,/scoreRehidden/);
+ assert.doesNotMatch(ui,/innerHTML|localStorage|sessionStorage|\bfetch\s*\(|sendBeacon|eval\(/);
+});
