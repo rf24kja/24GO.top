@@ -5,7 +5,7 @@ The 24GOTOP Draft Lab lets an author explicitly download a review package with t
 ## Author flow
 
 1. Prepare a valid original technical draft, and keep a separate local Markdown backup.
-2. Click **Export review package**. Confirm that an unencrypted JSON file containing the full text may be downloaded to the current device.
+2. Click **Export review package**. Confirm that an unencrypted JSON file containing the full text may be downloaded to the current device. Draft Lab now runs a **local best-effort sensitive-content check** before this export. If common credential or email patterns are detected, it displays only categories (never matched values) and requires a **second, explicit confirmation** before allowing the plaintext package. Refusing either prompt downloads nothing. Changes during either consent step invalidate the attempt. Clean-looking text gets the original one-step consent; a clean result is not proof of safety.
 3. Deliberately send the resulting JSON file only to a reviewer you trust. Nothing is uploaded, published, sent to GitHub or written to browser storage by the export action.
 
 The package contains exactly four fields: `kind`, `version`, `document` and `sha256`. The document retains the existing Draft Lab Markdown grammar including the unpublished-draft footer.
@@ -24,7 +24,7 @@ The offline CLI checks the file type, 64 KiB limit, UTF-8 decoding, exact JSON f
 
 ## Safety and lifecycle
 
-Review files are unencrypted. Do not include confidential or third-party restricted materials in files sent to others, and do not attach unpublished private articles to public GitHub issues. Publication proposals remain an independent manually reviewed process described in [EDITORIAL_CONTRIBUTIONS.md](EDITORIAL_CONTRIBUTIONS.md). No public hosted writing, account or reviewer privilege is enabled.
+The pattern check is not secret detection certification: unknown formats, unexpected personal data and false negatives remain possible. A warning does not automatically upload or block a legitimate author who knowingly accepts both prompts. Always manually inspect the complete manuscript before sharing.\n\nReview files are unencrypted. Do not include confidential or third-party restricted materials in files sent to others, and do not attach unpublished private articles to public GitHub issues. Publication proposals remain an independent manually reviewed process described in [EDITORIAL_CONTRIBUTIONS.md](EDITORIAL_CONTRIBUTIONS.md). No public hosted writing, account or reviewer privilege is enabled.
 
 The source regression suite covers Unicode, source code, tampering, invalid metadata, malformed UTF-8, bounded files, browser consent and editor non-destruction. Real screen-reader, mobile and separate-browser manual verification remains necessary.
 
