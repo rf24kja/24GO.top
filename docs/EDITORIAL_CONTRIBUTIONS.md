@@ -16,7 +16,7 @@ The owner may ask questions, request reproducibility evidence or decline the pro
 
 ## 3. Optional article PR after discussion
 
-For an approved idea, fork the PUBLIC MIT repository and open a focused PR. Real articles live as static HTML in `site/engineering/`, not as Draft Lab `.md` files in an unpublished-article database. The exported Draft Lab file can be used as your personal writing source, but it is **not** automatically compatible with the editorial HTML, metadata, RSS or JSON Feed build.
+For an approved idea, fork the PUBLIC MIT repository and open a focused PR. Real articles live as static HTML in `site/engineering/`, not as Draft Lab `.md` files in an unpublished-article database. The exported Draft Lab file can be used as your personal writing source. Authors and reviewers can also reopen an explicitly selected, integrity-verified offline review-package JSON into Draft Lab after confirming any replacement; the separate Check action never modifies a manuscript. Neither imported format is **automatically compatible** with editorial HTML, metadata, RSS or JSON Feed build.
 
 ### Optional, entirely offline HTML review preview (Node.js 22+)
 
