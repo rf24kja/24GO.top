@@ -294,6 +294,11 @@ function exerciseTextDiff(){
 }
 async function exerciseStudio(){
  const $=id=>document.getElementById(id);
+ // Browser tests explicitly accept ordinary destructive changes, then verify
+ // that cancelling each confirmation preserves real in-tab author source.
+ const realConfirm=window.confirm;
+ let confirmations=0;
+ window.confirm=()=>{confirmations++;return true;};
  const beforeStorage=localStorage.length,front=$('studio-frame');
  const initial=front.hidden&&$('studio-preview-placeholder').hidden===false&&
   $('studio-name').value==='Counter Lab'&&
@@ -473,12 +478,59 @@ async function exerciseStudio(){
  const staticImported=await waitFor(()=>$('studio-import-status').textContent.includes('Imported Static Resource Card'))&&
   $('studio-js').value===''&&$('studio-css').value.length>0&&
   front.hidden&&$('studio-close').disabled;
+ // Import is a recoverable baseline, unlike a mere ZIP download request.
+ const cleanImport=$('studio-save-status').dataset.unsaved==='false';
+ const cleanEvent=new Event('beforeunload',{cancelable:true});
+ window.dispatchEvent(cleanEvent);
+ const cleanNavigation=!cleanEvent.defaultPrevented;
+ const originalCss=$('studio-css').value;
+ $('studio-css').value+='\\n/* in-progress change */';
+ $('studio-css').dispatchEvent(new Event('input',{bubbles:true}));
+ const dirtyNotice=$('studio-save-status').dataset.unsaved==='true'&&
+  $('studio-save-status').textContent.includes('Unsaved source');
+ const dirtyEvent=new Event('beforeunload',{cancelable:true});
+ window.dispatchEvent(dirtyEvent);
+ const dirtyNavigation=dirtyEvent.defaultPrevented;
+ // Replacing a dirty template must be opt-in, and cancellation must not
+ // stop a correctly running opaque preview or alter any source.
+ $('studio-preview-run').click();
+ const previewReady=await waitFor(()=>$('studio-status').textContent.includes('Isolated preview running'));
+ const previewHtml=front.getAttribute('srcdoc');
+ let denies=0;
+ window.confirm=()=>{denies++;return false;};
+ $('studio-reset').click();
+ const declinedTemplate=previewReady&&!front.hidden&&
+  front.getAttribute('srcdoc')===previewHtml&&
+  $('studio-css').value===originalCss+'\\n/* in-progress change */'&&
+  $('studio-save-status').dataset.unsaved==='true'&&
+  $('studio-status').textContent.includes('cancelled');
+ putStudioZip(archive,'confirm-studio.zip');
+ $('studio-import-check').click();
+ const declinedImport=await waitFor(()=>$('studio-import-status').textContent.includes('ZIP import cancelled'))&&
+  !front.hidden&&front.getAttribute('srcdoc')===previewHtml&&
+  $('studio-css').value===originalCss+'\\n/* in-progress change */'&&
+  $('studio-save-status').dataset.unsaved==='true';
+ // Reverting the exact changed field restores the imported-file baseline.
+ $('studio-css').value=originalCss;
+ $('studio-css').dispatchEvent(new Event('input',{bubbles:true}));
+ const reverted=$('studio-save-status').dataset.unsaved==='false';
+ const revertedEvent=new Event('beforeunload',{cancelable:true});
+ window.dispatchEvent(revertedEvent);
+ const revertNavigation=!revertedEvent.defaultPrevented;
+ window.confirm=()=>true;
+ $('studio-reset').click();
+ const resetClean=$('studio-name').value==='Counter Lab'&&
+  $('studio-save-status').dataset.unsaved==='false';
+ window.confirm=realConfirm;
  const staticButtonHeight=$('studio-static').getBoundingClientRect().height;
  const importButtonHeight=$('studio-import-check').getBoundingClientRect().height;
  return {initial,tab,running,sandbox,opaque,interactive,
   childOrigin,exported,touch,stopped,rejected,restored,
   importEnabled,imported,corruptRejected,importRaceEdit,importRaceReset,
-  staticReady,staticPreview,staticExported,staticImported,staticButtonHeight,importButtonHeight,
+  staticReady,staticPreview,staticExported,staticImported,
+  cleanImport,cleanNavigation,dirtyNotice,dirtyNavigation,declinedTemplate,
+  declinedImport,reverted,revertNavigation,resetClean,
+  consentInvoked:confirmations>0&&denies===2,staticButtonHeight,importButtonHeight,
   noStorage:localStorage.length===beforeStorage,
   width,overflow};
 }
@@ -524,7 +576,10 @@ async function main(){
       ['initial','tab','running','sandbox','opaque','interactive',
        'exported','touch','stopped','rejected','restored','noStorage',
        'importEnabled','imported','corruptRejected','importRaceEdit','importRaceReset',
-       'staticReady','staticPreview','staticExported','staticImported'].includes(key)&&!value)||
+       'staticReady','staticPreview','staticExported','staticImported',
+       'cleanImport','cleanNavigation','dirtyNotice','dirtyNavigation',
+       'declinedTemplate','declinedImport','reverted','revertNavigation',
+       'resetClean','consentInvoked'].includes(key)&&!value)||
       studio.childOrigin!=='null'||studio.staticButtonHeight<43.5||studio.importButtonHeight<43.5||studio.overflow>studio.width+1)
     throw Error('Library App Studio Chromium '+width+': '+JSON.stringify(studio));
   }
@@ -551,7 +606,7 @@ async function main(){
   }
   if(c.errors.length||c.external.length)
    throw Error('Browser errors or external requests: '+c.errors.join(';')+'; '+c.external.join(';'));
-  console.log('PASS Library Chromium: catalog, three real apps and App Studio at 280/390/844/1440; actual opaque iframe counter execution, ZIP32 export/reimport, no-JavaScript static page, cancelled stale imports on edits/reset, CRC corruption rejection, and no uploads');
+  console.log('PASS Library Chromium: catalog, three real apps and App Studio at 280/390/844/1440; actual opaque iframe counter execution, ZIP32 export/reimport, no-JavaScript static page, cancelled stale imports, unsaved-change confirm/leave guards, CRC corruption rejection, and no uploads');
  }finally{
   if(ws)ws.close();
   if(browser){
