@@ -44,6 +44,8 @@ The generator deliberately does not claim that AI-written facts are proven, that
 
 **One-command alternative:** [`agent:prepare`](AGENT_EDITORIAL_RUNNER.md) combines one explicitly consented model call with an independently pinned Ed25519 signing key, then generates a local private review bundle and GitHub Issue preview. It deliberately never submits an Issue or publishes an article itself.
 
+The [optional second-agent review CLI](AGENT_PEER_REVIEW.md) can independently critique a signed manuscript under separate BYOK consent and write a private SHA-256-bound report. It cannot approve, publish, or reply on behalf of humans.
+
 ## Continue to real editorial review
 
 1. Open `generated-draft.md` in the public [Draft Lab](https://24go.top/draft-lab.html), fact-check, improve the text and retain the original version.
