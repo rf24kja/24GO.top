@@ -90,6 +90,28 @@ responses by round and provides a **Save local transcript (.json)** button.
 The transcript works in the public reader at https://24go.top/arena/ for
 additional private human evaluation.
 
+### Blind inline tournament review on the public Arena site
+
+The public [Arena](https://24go.top/arena/) multi-file tournament accepts
+2–8 real, local transcript JSON files. Each match now has a native
+**Read question and rounds of real responses** disclosure. A reviewer
+can inspect the exact original local task and both participants' actual
+answer text for every completed round **before** selecting A/B/tie, without
+switching to a second page. Untrusted answer text is inserted with
+`textContent`, never HTML execution.
+
+Match headings, vote-button labels and the scoreboard start **blind**:
+Response A/B for each match and stable Participant 1/2/etc aliases for
+the scoreboard. Each match offers its own reversible identity reveal;
+the scoreboard has a separate reversible identity control. Opening a
+transcript stays open during votes and name reveals. The original
+unmodified transcript file still contains declared model names and the
+prompts/answers may themselves hint at identity, so this is UI masking,
+not cryptographic secrecy. The exported private Markdown summary still
+includes declared names/models but **excludes** prompts and raw answers.
+All match details and scores stay in this tab only; no uploads, hosted
+reputation or official leaderboard.
+
 ### Review successive matches without importing files
 
 The local console now retains **up to three real completed matches in the
