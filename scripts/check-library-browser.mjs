@@ -385,9 +385,9 @@ async function exerciseStudio(){
   $('studio-html').value.includes('id="increase"')&&
   $('studio-tab-html').getAttribute('aria-pressed')==='true';
  const importFile=$('studio-import-file');
- function putStudioZip(bytes){
+ function putStudioZip(bytes,name='previous-studio.zip'){
   const transfer=new DataTransfer();
-  transfer.items.add(new File([bytes],'previous-studio.zip',{type:'application/zip'}));
+  transfer.items.add(new File([bytes],name,{type:'application/zip'}));
   importFile.files=transfer.files;
   importFile.dispatchEvent(new Event('change',{bubbles:true}));
  }
@@ -407,10 +407,41 @@ async function exerciseStudio(){
  $('studio-import-check').click();
  const corruptRejected=await waitFor(()=>$('studio-import-status').dataset.error==='true')&&
   $('studio-js').value===beforeCorrupt&&frame.hidden;
+ // A deliberately delayed real File read must never replace newer author edits.
+ const originalRead=File.prototype.arrayBuffer;
+ let importRaceEdit=false,importRaceReset=false;
+ try{
+  for(const mode of ['edit','reset']){
+   let release;
+   File.prototype.arrayBuffer=function(){
+    if(this.name==='race-studio.zip')return new Promise(resolve=>{
+     release=()=>resolve(archive.buffer.slice(archive.byteOffset,archive.byteOffset+archive.byteLength));
+    });
+    return originalRead.call(this);
+   };
+   putStudioZip(archive,'race-studio.zip');
+   $('studio-import-check').click();
+   if(!await waitFor(()=>typeof release==='function'))throw Error('Delayed ZIP read not entered');
+   if(mode==='edit'){
+    $('studio-name').value='New Author Edits';
+    $('studio-name').dispatchEvent(new Event('input',{bubbles:true}));
+   }else $('studio-reset').click();
+   const cancelled=$('studio-import-status').textContent.includes('import cancelled');
+   release();
+   await new Promise(done=>setTimeout(done,90));
+   const preserved=mode==='edit'?
+    $('studio-name').value==='New Author Edits':
+    $('studio-name').value==='Counter Lab'&&!$('studio-js').value.includes('studio-probe');
+   const safe=cancelled&&preserved&&
+    $('studio-import-check').disabled===false&&front.hidden;
+   if(mode==='edit')importRaceEdit=safe;
+   else importRaceReset=safe;
+  }
+ }finally{File.prototype.arrayBuffer=originalRead;}
  const importButtonHeight=$('studio-import-check').getBoundingClientRect().height;
  return {initial,tab,running,sandbox,opaque,interactive,
   childOrigin,exported,touch,stopped,rejected,restored,
-  importEnabled,imported,corruptRejected,importButtonHeight,
+  importEnabled,imported,corruptRejected,importRaceEdit,importRaceReset,importButtonHeight,
   noStorage:localStorage.length===beforeStorage,
   width,overflow};
 }
@@ -455,7 +486,7 @@ async function main(){
    if(!studio||Object.entries(studio).some(([key,value])=>
       ['initial','tab','running','sandbox','opaque','interactive',
        'exported','touch','stopped','rejected','restored','noStorage',
-       'importEnabled','imported','corruptRejected'].includes(key)&&!value)||
+       'importEnabled','imported','corruptRejected','importRaceEdit','importRaceReset'].includes(key)&&!value)||
       studio.childOrigin!=='null'||studio.importButtonHeight<43.5||studio.overflow>studio.width+1)
     throw Error('Library App Studio Chromium '+width+': '+JSON.stringify(studio));
   }
@@ -482,7 +513,7 @@ async function main(){
   }
   if(c.errors.length||c.external.length)
    throw Error('Browser errors or external requests: '+c.errors.join(';')+'; '+c.external.join(';'));
-  console.log('PASS Library Chromium: catalog, three real apps and App Studio at 280/390/844/1440; actual opaque iframe counter execution, ZIP32 export/reimport, CRC corruption rejection, and no uploads');
+  console.log('PASS Library Chromium: catalog, three real apps and App Studio at 280/390/844/1440; actual opaque iframe counter execution, ZIP32 export/reimport, cancelled stale imports on edits/reset, CRC corruption rejection, and no uploads');
  }finally{
   if(ws)ws.close();
   if(browser){
