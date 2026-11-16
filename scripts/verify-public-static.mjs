@@ -11,7 +11,7 @@ export const FIXED_ROUTES=Object.freeze([
  '/', '/landing.css', '/localized.css', '/interior.css',
  '/draft-lab.css', '/contribute.css', '/progress.css',
  '/engineering/notes.css', '/engineering/paths.css',
- '/draft-lab.html', '/draft-lab.js', '/draft-lab-logic.js',
+ '/draft-lab.html', '/draft-lab.js', '/draft-lab-privacy.js', '/draft-lab-logic.js',
  '/draft-lab-preview.js', '/draft-lab-vault.js', '/contribute.html',
  '/contribute-board.js', '/engineering/', '/engineering/feed.xml',
  '/engineering/feed.json', '/engineering/search-index.json',
@@ -22,7 +22,8 @@ export const FIXED_ROUTES=Object.freeze([
  '/library/library.mjs', '/library/library-core.mjs',
  '/library/intake.mjs', '/library/intake-core.mjs',
  '/library/studio/', '/library/studio/studio.mjs',
- '/library/studio/studio-core.mjs', '/library/studio/studio-import.mjs', '/library/studio/studio.css',
+ '/library/studio/studio-core.mjs', '/library/studio/studio-import.mjs',
+ '/library/studio/studio-session.mjs', '/library/studio/studio.css',
  '/library/apps/json-inspector/', '/library/apps/contrast-checker/',
  '/library/apps/text-diff/',
  '/sitemap.xml', '/robots.txt'
