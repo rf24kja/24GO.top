@@ -96,6 +96,37 @@ function exerciseEditor(){
     id:el.id,left:Math.round(r.left),right:Math.round(r.right)};
   }).filter(x=>x.right>document.documentElement.clientWidth+1&&x.left<document.documentElement.clientWidth).slice(0,15)};
 }
+function exerciseDraftPrivacyPreflight(){
+ const $=id=>document.getElementById(id);
+ const body=$('postBody'),source=$('postSource'),status=$('draftPrivacyStatus');
+ const button=$('checkDraftPrivacy'),storageBefore=localStorage.length;
+ const set=value=>{
+  body.value=value;
+  body.dispatchEvent(new Event('input',{bubbles:true}));
+ };
+ const fake='Bearer '+'Q'.repeat(34);
+ source.value='';
+ source.dispatchEvent(new Event('input',{bubbles:true}));
+ set('Explain why code comments should never contain '+fake);
+ button.click();
+ const credential=status.dataset.risk==='true'&&status.textContent.length>12&&
+  !status.textContent.includes(fake);
+ set('A public guide with safe examples only.');
+ const cleared=status.textContent==='';
+ set('Contact a reviewer at reviewer@example.org for a public example.');
+ button.click();
+ const email=status.dataset.risk==='true'&&status.textContent.length>12&&
+  !status.textContent.includes('reviewer@example.org');
+ set('A public guide explaining an offline editor with no credentials.');
+ button.click();
+ const clean=status.dataset.risk==='false'&&status.textContent.length>12;
+ return {credential,cleared,email,clean,
+  buttonHeight:button.getBoundingClientRect().height,
+  role:status.getAttribute('role'),live:status.getAttribute('aria-live'),
+  noStorage:localStorage.length===storageBefore,
+  width:document.documentElement.clientWidth,
+  scroll:Math.max(document.documentElement.scrollWidth,document.body.scrollWidth)};
+}
 function switchLanguage(locale){
  const $=id=>document.getElementById(id);
  $('uiLocale').value=locale;
@@ -1134,6 +1165,11 @@ async function main(){
    await c.send('Emulation.setTouchEmulationEnabled',{
     enabled:profile.mobile,maxTouchPoints:profile.mobile?5:1
    },sessionId);
+   const privacy=await c.call(exerciseDraftPrivacyPreflight,sessionId);
+   if(!privacy.credential||!privacy.cleared||!privacy.email||!privacy.clean||
+      privacy.role!=='status'||privacy.live!=='polite'||!privacy.noStorage||
+      privacy.buttonHeight<43.5||privacy.scroll>privacy.width+1)
+    throw Error('Draft local privacy preflight '+profile.name+': '+JSON.stringify(privacy));
    const photo=await c.call(exerciseDraftImageGate,sessionId);
    if(!photo.before.noSrc||!photo.before.hidden||!photo.before.domain||
       photo.before.alt!=='Technical architecture'||!photo.before.anonymous||
