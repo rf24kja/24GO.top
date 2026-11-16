@@ -1,3 +1,9 @@
+## Unreleased — static-only App Studio pages (16 November 2026)
+
+- Author HTML-only and HTML/CSS static resources without mandatory JavaScript; load a purpose-built **Static Resource Card** example in the browser and edit or export it without executing custom code.
+- Both CSS and JS are optional; existing no-network CSP, ZIP integrity checking, explicit preview click, reimport-only-after-validation and human-review publication boundary remain in force.
+- Node tests and real Chromium 280/390/844/1440 E2E cover deterministic empty-script/CSS ZIPs, opaque preview, export/reimport and rejection of unsafe source. Switching templates replaces in-tab unsaved content, so authors should export their current ZIP first.
+
 ## Unreleased — App Studio source-to-ZIP-to-editor roundtrip
 
 - App Studio now opens previously downloaded Studio ZIP files back into the original HTML, CSS and JavaScript editor tabs. Before importing, it validates the archive using the independent browser ZIP32/CRC32/SHA-256 pipeline, requires exactly one `index.html`, checks the strict generated Studio document envelope and re-verifies source safety/canonical byte equality.
