@@ -139,6 +139,11 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 .proposal-bridge{margin-top:20px;padding:20px;border:1px solid var(--border);border-radius:14px;background:var(--field)}
 .proposal-bridge h3{font-size:clamp(17px,2.5vw,21px);margin:9px 0}
 .proposal-bridge p{line-height:1.55;color:var(--muted);overflow-wrap:anywhere}
+.proposal-privacy-check{margin:13px 0 16px;padding:13px;border:1px solid var(--border);border-radius:11px}
+.proposal-privacy-check button{min-height:44px;max-width:100%;white-space:normal}
+.proposal-privacy-check p{margin:8px 0;overflow-wrap:anywhere}
+#draftPrivacyStatus:not(:empty){border-left:3px solid var(--accent);padding:8px 11px;font-weight:650}
+#draftPrivacyStatus[data-risk="true"]{border-left-color:#e3a06f}
 .proposal-bridge__link{display:inline-flex;align-items:center;min-height:46px;margin:5px 0;padding:10px 17px;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none;font-weight:700}
 .proposal-bridge__link:hover{filter:brightness(.88);color:#fff}
 .proposal-bridge__link:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
