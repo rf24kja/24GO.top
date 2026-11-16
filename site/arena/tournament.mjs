@@ -33,7 +33,7 @@ function render(){
  const report=aggregateTournament(entries);
  const aliases=new Map();
  for(const entry of entries)for(const agent of entry.session.agents){
-  const identity=agent.name+'\\0'+agent.model;
+  const identity=JSON.stringify([agent.name,agent.model]);
   if(!aliases.has(identity))aliases.set(identity,'Participant '+(aliases.size+1));
  }
  scoreReveal.setAttribute('aria-pressed',String(revealedScores));
@@ -109,7 +109,7 @@ function render(){
   for(const row of report.scores){
    const tr=create('tr','');
    const first=create('th','',revealedScores?row.name+' · '+row.model:
-    aliases.get(row.name+'\\0'+row.model));first.scope='row';tr.append(first);
+    aliases.get(JSON.stringify([row.name,row.model])));first.scope='row';tr.append(first);
    for(const value of [row.played,row.wins,row.ties,row.losses,
      row.winRate===null?'—':(row.winRate*100).toFixed(1)+'%']){
     tr.append(create('td','',String(value)));
