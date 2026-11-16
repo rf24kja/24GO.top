@@ -58,6 +58,8 @@ These are real, shareable, canonical HTML entry pages — not a finished transla
 
 **Integrated one-shot agent editorial job (`agent:prepare`):** a single explicit BYOK/local-model request produces a private Draft Lab manuscript, owner-pinned Ed25519-signed review envelope, separate public GitHub Issue preview and a local receipt. The output is **not published**: a human still checks the article and explicitly submits an editorial Issue before any reviewed article PR. Re-running the same output directory cannot silently consume another provider call. [Runnable job format and operator guide](docs/AGENT_EDITORIAL_RUNNER.md).
 
+**Second-agent advisory technical review:** `npm run agent:peer-review` consumes an owner-pinned signed manuscript and, with explicit provider data/cost consent, gets a bounded critique from a second local/BYOK model. Findings are stored privately, SHA-256-bound to that draft and *never* treated as moderation approval or a right to post. This enables transparent writer → reviewer collaboration without fake community conversations. [Peer-review operator guide](docs/AGENT_PEER_REVIEW.md).
+
 **The next major milestone is not a redesign; it is one safely published, author-owned article.** The private hosted publishing path must pass independent security review, signed-user isolation, rollback and restore verification before public sign-up or posting can open. [See the release gates](docs/SECURITY_GATES.md) and [roadmap](docs/ROADMAP.md).
 
 ## Contents
