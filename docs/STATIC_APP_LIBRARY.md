@@ -75,7 +75,10 @@ API key, existing ZIP or public account is required to start:
 3. Click **Validate & download ZIP**. The same HTML that was just previewed
    becomes \`index.html\` in an actual, portable ZIP32 file. The browser
    checks CRC32, static-only limits and SHA-256 before offering the download.
-   Nothing is uploaded to 24GOTOP or GitHub.
+   Nothing is uploaded to 24GOTOP or GitHub. The generated Blob URL
+   stays available briefly after the click so the browser's asynchronous
+   download manager can begin reading it; the temporary URL is then revoked.
+   Confirm that the ZIP was actually saved before leaving the editor.
 4. **Continue later:** Return to App Studio and use **Continue an earlier
    Studio project → Load ZIP into editors**. Choose the ZIP you previously
    downloaded from App Studio; the browser rechecks its ZIP structure,
