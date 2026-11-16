@@ -3,7 +3,8 @@ import {parseArenaSession,MAX_ARENA_BYTES} from './arena-core.mjs';
 const $=id=>document.getElementById(id);
 const source=$('arena-file'),clear=$('arena-clear'),status=$('arena-status');
 const view=$('arena-results'),roundSelect=$('arena-round');
-let session=null,epoch=0,preferences=new Map();
+const reveal=$('arena-reveal'),identityStatus=$('arena-identity-status');
+let session=null,epoch=0,preferences=new Map(),revealedRounds=new Set();
 const voteButtons=[...document.querySelectorAll('[data-arena-vote]')];
 function showStatus(message,error=false){
  status.textContent=message;
@@ -11,7 +12,7 @@ function showStatus(message,error=false){
 }
 function reset(){
  epoch++;
- session=null;preferences=new Map();
+ session=null;preferences=new Map();revealedRounds=new Set();
  source.value='';roundSelect.replaceChildren();view.hidden=true;
  clear.disabled=true;
  showStatus('No session loaded. Choose a locally produced Arena JSON file.');
@@ -21,13 +22,23 @@ function render(){
  if(!session)return;
  const number=currentRound();
  const round=session.rounds[number-1]||session.rounds[0];
+ const revealed=revealedRounds.has(round.number);
  roundSelect.value=String(round.number);
+ reveal.setAttribute('aria-pressed',String(revealed));
+ reveal.textContent=revealed?'Hide model identities for this round':
+  'Reveal model identities for this round';
+ identityStatus.textContent=revealed?
+  'Declared agent and model identities are visible for round '+round.number+'.':
+  'Blind review: model names and timing are hidden for round '+round.number+'.';
  $('arena-round-count').textContent='Round '+round.number+' of '+session.rounds.length;
  for(const [index,id] of ['a','b'].entries()){
   const agent=session.agents[index],answer=round.responses[index];
-  $( 'arena-'+id+'-name').textContent=agent.name;
-  $( 'arena-'+id+'-model').textContent=agent.model;
-  $( 'arena-'+id+'-meta').textContent='Response time: '+answer.durationMs+' ms · '+[...answer.text].length+' characters';
+  $( 'arena-'+id+'-name').textContent=revealed?agent.name:'Response '+id.toUpperCase();
+  $( 'arena-'+id+'-model').textContent=revealed?agent.model:
+   'Declared model identity hidden until revealed';
+  $( 'arena-'+id+'-meta').textContent=revealed?
+   'Response time: '+answer.durationMs+' ms · '+[...answer.text].length+' characters':
+   'Timing hidden until revealed';
   $( 'arena-'+id+'-text').textContent=answer.text;
  }
  const choice=preferences.get(number)||'';
@@ -37,7 +48,7 @@ function render(){
   'No preference selected for this round.';
 }
 function showSession(parsed){
- session=parsed;preferences.clear();
+ session=parsed;preferences.clear();revealedRounds.clear();
  $('arena-question').textContent=parsed.prompt;
  roundSelect.replaceChildren();
  for(const round of parsed.rounds){
@@ -68,6 +79,14 @@ source.addEventListener('change',async()=>{
 });
 clear.addEventListener('click',reset);
 roundSelect.addEventListener('change',render);
+reveal.addEventListener('click',()=>{
+ if(!session)return;
+ const round=currentRound();
+ if(!Number.isInteger(round)||round<1||round>session.rounds.length)return;
+ if(revealedRounds.has(round))revealedRounds.delete(round);
+ else revealedRounds.add(round);
+ render();
+});
 for(const button of voteButtons){
  button.addEventListener('click',()=>{
   if(!session)return;
