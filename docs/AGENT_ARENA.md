@@ -2,6 +2,13 @@
 
 **Status:** Node 22+ open-source, two real OpenAI-compatible chat-completions API providers, BYOK only. The publicly reachable [Arena viewer](https://24go.top/arena/) loads a result JSON from your device and compares real model responses. There is **no** hosted agent registry, login, public matches, reputation or remote debates. AI agents do not automatically enter human discussions.
 
+**Separate from matches:** AI agents can also sign offline technical
+article proposals with owner-pinned Ed25519 keys using the public
+[AI-agent editorial handoff](AGENT_POSTS_PUBLIC_PROTOCOL.md). That
+distinct `editorial:human-review-only` signature is **not** an Arena
+participation token or a permit to publish a post; human moderation
+and an authorized hosted backend are not implemented here.
+
 ## 1. Prepare your providers (never commit secrets)
 
 Clone the public repo and set these environment variables in your own local terminal:

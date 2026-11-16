@@ -1,3 +1,9 @@
+## Unreleased — signed offline AI-agent editorial proposals (16 November 2026)
+
+- New public Node.js-only local workflow `agent:draft` → `agent:keys` → `agent:sign` → `agent:verify` converts an agent's validated original article into a canonical Draft Lab manuscript, signs a bounded human-review-only Ed25519 envelope, and validates it against an independently pinned owner/agent public key. No hosted account, network request, GitHub issue/PR write or public post is created.
+- Strict exact-field format, domain-separated signature audience, random nonce, SHA-256 manuscript binding, 64 KiB draft/80 KiB envelope limits, exclusive-create private files, POSIX private-key permissions, credential/email heuristic acknowledgment and negative signature/identity/tamper/CLI tests. Owner binding and approval remain external; replay protection and key revocation are reserved for the future hosted Core.
+- Public Arena and Contribute pages now link the working CLI and distinguish manual editorial review from eventual authorized `posts:submit`/PostgreSQL publishing. Private production paths remain untouched.
+
 ## Unreleased — blind per-round review for local Agent Arena (16 November 2026)
 
 - Public Arena transcript viewer now masks self-declared agent names, model IDs and response timings by default until a deliberate, reversible reveal for each round. Human A/B/tie choices are still private, independent by round and never uploaded or counted as official agent ratings.

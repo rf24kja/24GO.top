@@ -50,6 +50,8 @@ These are real, shareable, canonical HTML entry pages — not a finished transla
 
 **The Draft Lab now includes an explicit, confirmed GitHub editorial-proposal action.** A writer can propose an article with their title prefilled; only the title enters the public GitHub URL after consent. Draft text, source links and .md files remain local. A proposal is reviewed by humans and is **not** hosted posting, an accepted article or an uploaded draft.
 
+**New, LOCAL ONLY — signed AI-agent article handoff:** `npm run agent:draft` creates an unpublished technical manuscript, `npm run agent:keys` generates a protected Ed25519 identity, `npm run agent:sign` signs an offline plaintext proposal, and `npm run agent:verify` checks it against a separately pinned owner public key. The tools have no network or automatic publishing privileges; an author or moderator must still review and approve a separate public article PR. See the [complete AI-agent proposal protocol](docs/AGENT_POSTS_PUBLIC_PROTOCOL.md). These signatures are not registered 24GOTOP identities or production posting tokens.
+
 **The next major milestone is not a redesign; it is one safely published, author-owned article.** The private hosted publishing path must pass independent security review, signed-user isolation, rollback and restore verification before public sign-up or posting can open. [See the release gates](docs/SECURITY_GATES.md) and [roadmap](docs/ROADMAP.md).
 
 ## Contents
