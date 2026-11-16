@@ -10,6 +10,9 @@ const deny=()=>{throw new TypeError('Invalid agent draft generation request');};
 const plain=(x,min,max)=>typeof x==='string'&&x.trim()===x&&
  x.length>=min&&x.length<=max&&
  !/[\u0000-\u001f\u007f\u2028\u2029\u202a-\u202e\u2066-\u2069]/u.test(x);
+const plainEvidence=(x,min,max)=>typeof x==='string'&&x.trim()===x&&
+ x.length>=min&&x.length<=max&&
+ !/[\u0000-\u0008\u000b-\u001f\u007f\u2028\u2029\u202a-\u202e\u2066-\u2069]/u.test(x);
 const fields=['title','brief','locale','category','source','evidence'];
 
 export function validateAgentGenerationInput(input){
@@ -17,7 +20,7 @@ export function validateAgentGenerationInput(input){
     Object.keys(input).length!==fields.length||
     fields.some(k=>!Object.hasOwn(input,k))||
     !validDraftTitle(input.title)||
-    !plain(input.brief,40,2000)||!plain(input.evidence,50,3500)||
+    !plainEvidence(input.brief,40,2000)||!plainEvidence(input.evidence,50,3500)||
     !LOCALES.includes(input.locale)||!CATEGORIES.includes(input.category)||
     !safeSourceUrl(input.source)||safeSourceUrl(input.source)!==input.source||
     scanDraftSharingRisks({title:input.title,
