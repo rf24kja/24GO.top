@@ -12,7 +12,14 @@ const fields={
 };
 const tabs=[...document.querySelectorAll('[data-lang]')];
 let epoch=0,running=false,active='html';
-let importEpoch=0,actionEpoch=0;
+let importEpoch=0,actionEpoch=0,importing=false;
+function cancelPendingImport(){
+ if(!importing)return;
+ ++importEpoch;
+ importing=false;
+ importCheck.disabled=!importedFile.files?.length;
+ announceImport('ZIP import cancelled because the source changed. Your edits were kept.');
+}
 function cancelPendingAction(){
  ++actionEpoch;
  run.disabled=false;
@@ -33,6 +40,7 @@ function announceImport(message,isError=false){
 }
 importedFile.addEventListener('change',()=>{
  importEpoch++;
+ importing=false;
  importCheck.disabled=!importedFile.files?.length;
  announceImport(importCheck.disabled?'No existing project selected.':
   'ZIP selected. Choose Load ZIP into editors. This will replace your unsaved edits.');
@@ -46,6 +54,7 @@ importCheck.addEventListener('click',async()=>{
   announceImport('App Studio ZIP must be nonempty and at most 4 MiB.',true);
   importCheck.disabled=false;return;
  }
+ importing=true;
  announceImport('Verifying ZIP integrity and canonical Studio source locally…');
  try{
   const bytes=new Uint8Array(await selected.arrayBuffer());
@@ -67,7 +76,10 @@ importCheck.addEventListener('click',async()=>{
   if(ticket!==importEpoch)return;
   announceImport('Import rejected. Select a ZIP previously created by App Studio; arbitrary or malformed ZIPs will not load. Current editors remain unchanged.',true);
  }finally{
-  if(ticket===importEpoch&&importedFile.files?.length)importCheck.disabled=false;
+  if(ticket===importEpoch){
+   importing=false;
+   importCheck.disabled=!importedFile.files?.length;
+  }
  }
 });
 function readDraft(){
@@ -93,6 +105,7 @@ for(const btn of tabs)btn.addEventListener('click',()=>{
  fields[btn.dataset.lang].focus({preventScroll:true});
 });
 function restore(){
+ cancelPendingImport();
  cancelPendingAction();
  stopPreview();
  for(const [key,value] of Object.entries(STUDIO_STARTER))fields[key].value=value;
@@ -101,6 +114,7 @@ function restore(){
 }
 $('studio-reset').addEventListener('click',restore);
 for(const element of Object.values(fields))element.addEventListener('input',()=>{
+ cancelPendingImport();
  cancelPendingAction();
  if(running)stopPreview();
  else epoch++;
