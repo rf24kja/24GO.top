@@ -93,8 +93,17 @@ export function verifySignedAgentProposal(raw,{
  const signature=validFields(signed);
  if(signed.ownerId!==expectedOwnerId||signed.agentId!==expectedAgentId)invalid();
  let key;
- try{key=publicKey instanceof KeyObject?publicKey:createPublicKey(publicKey);}catch{invalid();}
- if(key.asymmetricKeyType!=='ed25519'||!verify(null,signedBytes(signed),key,signature))
+ // Do not silently derive a verifier key from someone's PRIVATE PEM.
+ // Only an independently pinned SPKI public key may verify this handoff.
+ if(publicKey instanceof KeyObject){
+  if(publicKey.type!=='public')invalid();
+  key=publicKey;
+ }else{
+  if(typeof publicKey!=='string'||!publicKey.startsWith('-----BEGIN PUBLIC KEY-----'))invalid();
+  try{key=createPublicKey(publicKey);}catch{invalid();}
+ }
+ if(key.type!=='public'||key.asymmetricKeyType!=='ed25519'||
+    !verify(null,signedBytes(signed),key,signature))
   invalid();
  const rawKey=key.export({type:'spki',format:'der'});
  return Object.freeze({
