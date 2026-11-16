@@ -12,7 +12,15 @@ const fields={
 };
 const tabs=[...document.querySelectorAll('[data-lang]')];
 let epoch=0,running=false,active='html';
-let importEpoch=0;
+let importEpoch=0,actionEpoch=0;
+function cancelPendingAction(){
+ ++actionEpoch;
+ run.disabled=false;
+ download.disabled=false;
+}
+function finishAction(ticket){
+ if(ticket===actionEpoch){run.disabled=false;download.disabled=false;}
+}
 function announce(message,isError=false){
  status.textContent=message;
  status.dataset.error=String(isError);
@@ -46,6 +54,7 @@ importCheck.addEventListener('click',async()=>{
   if(ticket!==importEpoch)return;
   const draft=readValidatedStudioZip(bytes,report);
   if(ticket!==importEpoch)return;
+  cancelPendingAction();
   stopPreview(); // import source only — never execute it without a new click
   for(const [name,value] of Object.entries(draft))fields[name].value=value;
   showTab('html');
@@ -84,6 +93,7 @@ for(const btn of tabs)btn.addEventListener('click',()=>{
  fields[btn.dataset.lang].focus({preventScroll:true});
 });
 function restore(){
+ cancelPendingAction();
  stopPreview();
  for(const [key,value] of Object.entries(STUDIO_STARTER))fields[key].value=value;
  showTab('html');
@@ -91,6 +101,7 @@ function restore(){
 }
 $('studio-reset').addEventListener('click',restore);
 for(const element of Object.values(fields))element.addEventListener('input',()=>{
+ cancelPendingAction();
  if(running)stopPreview();
  else epoch++;
  announce('Source changed. Validate and run again to see the new version.');
@@ -109,6 +120,7 @@ async function prepare(){
  return {zip,report,html:buildStudioHtml(draft),name:draft.name};
 }
 run.addEventListener('click',async()=>{
+ const action=++actionEpoch;
  const ticket=++epoch;
  run.disabled=true;download.disabled=true;
  stopPreview(); // discard any previously running untrusted document
@@ -128,14 +140,10 @@ run.addEventListener('click',async()=>{
   if(current!==epoch)return;
   stopPreview();
   announce('Studio rejected this source. Use only self-contained static HTML, CSS and JavaScript with no remote/privileged APIs, external assets or embedded scripts in HTML.',true);
- }finally{
-  if(current===epoch){run.disabled=false;download.disabled=false;}
-  else if(!run.disabled&&download.disabled)download.disabled=false;
-  // A stale asynchronous validation must not leave controls permanently off.
-  if(run.disabled){run.disabled=false;download.disabled=false;}
- }
+ }finally{finishAction(action);}
 });
 download.addEventListener('click',async()=>{
+ const action=++actionEpoch;
  const ticket=++epoch;
  run.disabled=true;download.disabled=true;
  announce('Checking source package integrity and SHA-256 before download…');
@@ -156,6 +164,6 @@ download.addEventListener('click',async()=>{
  }catch{
   if(ticket!==epoch)return;
   announce('Export rejected. This source is not a valid static-only Library package.',true);
- }finally{run.disabled=false;download.disabled=false;}
+ }finally{finishAction(action);}
 });
 restore();
