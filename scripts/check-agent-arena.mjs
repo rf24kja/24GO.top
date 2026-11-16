@@ -170,21 +170,57 @@ async function exerciseTournament(){
   }
   return false;
  }
- const first=JSON.stringify(make('A initial real model answer','B initial real model answer','14'));
+ const attacker='<script>window.tournamentXss=true</script>';
+ const first=JSON.stringify(make('A initial real model answer '+attacker,
+  'B initial real model answer','14'));
  const second=JSON.stringify(make('A corrected answer','B corrected answer','15'));
  const before=exportBtn.disabled&&clear.disabled&&
   status.textContent.includes('Choose two to eight');
  choose([first,second]);
  const loaded=await until(()=>document.querySelectorAll('.arena-tournament-match').length===2);
  const nodes=[...document.querySelectorAll('.arena-tournament-match')];
+ const firstDetails=nodes[0].querySelector('.arena-tournament-review');
+ const initiallyBlind=nodes.every(node=>
+  node.querySelector('h4')?.textContent.includes('Response A vs Response B')&&
+  !node.querySelector('h4')?.textContent.includes('Model Alpha'))&&
+  [...document.querySelectorAll('.arena-tournament-table tbody th')]
+    .every(x=>x.textContent.startsWith('Participant '));
+ firstDetails.open=true;
+ const originalAnswer=nodes[0].querySelector('.arena-tournament-answer');
+ const readable=firstDetails.open&&
+  nodes[0].querySelector('.arena-tournament-question')?.textContent.includes('Real locally produced comparison')&&
+  originalAnswer?.textContent.includes(attacker)&&
+  !originalAnswer.querySelector('script')&&window.tournamentXss!==true&&
+  nodes[0].querySelectorAll('.arena-tournament-response').length===2;
  const one=nodes[0].querySelectorAll('button');
  one[0].focus();one[0].click();
  const firstVote=document.querySelectorAll('.arena-tournament-match')[0]
   .querySelectorAll('button')[0].getAttribute('aria-pressed')==='true';
+ const reviewStaysOpen=document.querySelectorAll('.arena-tournament-match')[0]
+  .querySelector('.arena-tournament-review')?.open===true;
  const secondRow=document.querySelectorAll('.arena-tournament-match')[1];
  secondRow.querySelectorAll('button')[1].click();
  const secondVote=document.querySelectorAll('.arena-tournament-match')[1]
   .querySelectorAll('button')[1].getAttribute('aria-pressed')==='true';
+ const firstMatch=document.querySelectorAll('.arena-tournament-match')[0];
+ const reveal=firstMatch.querySelector('.arena-tournament-reveal');
+ reveal.focus();reveal.click();
+ const matchRevealed=document.querySelectorAll('.arena-tournament-match')[0]
+  .querySelector('h4')?.textContent.includes('Model Alpha')&&
+  document.activeElement?.classList.contains('arena-tournament-reveal')&&
+  document.querySelectorAll('.arena-tournament-match')[1]
+   .querySelector('h4')?.textContent.includes('Response A vs Response B');
+ const aliasStaysBlind=[...document.querySelectorAll('.arena-tournament-table tbody th')]
+  .every(x=>x.textContent.startsWith('Participant '));
+ const scoreReveal=document.getElementById('arena-tournament-score-reveal');
+ scoreReveal.click();
+ const namesShown=scoreReveal.getAttribute('aria-pressed')==='true'&&
+  [...document.querySelectorAll('.arena-tournament-table tbody th')]
+   .some(x=>x.textContent.includes('Model Alpha'));
+ scoreReveal.click();
+ const scoreRehidden=scoreReveal.getAttribute('aria-pressed')==='false'&&
+  [...document.querySelectorAll('.arena-tournament-table tbody th')]
+   .every(x=>x.textContent.startsWith('Participant '));
  const scoreboard=document.querySelector('.arena-tournament-table');
  const scored=scoreboard?.querySelectorAll('tbody tr').length===2&&
   status.textContent.includes('Human decisions: 2')&&
@@ -216,8 +252,9 @@ async function exerciseTournament(){
  const duplicates=await until(()=>status.dataset.error==='true'&&
   document.querySelectorAll('.arena-tournament-match').length===0);
  const storage=localStorage.length===oldStorage;
- return {before,loaded,firstVote,secondVote,scored,exported,touch,duplicates,
-  storage,width,scroll};
+ return {before,loaded,initiallyBlind,readable,reviewStaysOpen,
+  firstVote,secondVote,matchRevealed,aliasStaysBlind,namesShown,scoreRehidden,
+  scored,exported,touch,duplicates,storage,width,scroll};
 }
 
 async function main(){
@@ -243,7 +280,9 @@ async function main(){
    const got=await c.evaluate(examine,sessionId);
    const tournament=await c.evaluate(exerciseTournament,sessionId);
    if(!tournament||Object.entries(tournament).some(([k,v])=>
-      ['before','loaded','firstVote','secondVote','scored','exported',
+      ['before','loaded','initiallyBlind','readable','reviewStaysOpen',
+       'firstVote','secondVote','matchRevealed','aliasStaysBlind',
+       'namesShown','scoreRehidden','scored','exported',
        'touch','duplicates','storage'].includes(k)&&!v)||
       tournament.scroll>tournament.width+1)
     throw Error('Arena local tournament browser E2E '+width+': '+JSON.stringify(tournament));
@@ -257,7 +296,7 @@ async function main(){
   }
   if(c.errors.length||c.external.length)
    throw Error('Browser errors or external requests: '+c.errors.join(';')+'; '+c.external.join(';'));
-  console.log('PASS Arena Chromium: 280/390/844/1440px, blind round review and per-round reveal, individual bouts and local two-match tournament, private votes, scoreboard, Markdown export, duplicate rejection, no upload');
+  console.log('PASS Arena Chromium: 280/390/844/1440px, blind round review and per-round reveal, individual bouts and blind inline two-match tournament with source responses, private votes, scoreboard, Markdown export, duplicate rejection, no upload');
  }finally{
   if(ws)ws.close();
   if(browser){
