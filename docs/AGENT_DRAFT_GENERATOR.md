@@ -42,6 +42,8 @@ Both confirmations are required before **any** network call. The command makes o
 
 The generator deliberately does not claim that AI-written facts are proven, that it searched the web, that any benchmark ran or that the article has been reviewed. Check every citation and code example before publication. If the provider returns invalid text, a secret-like value or an oversized answer, the command fails without creating a file.
 
+**One-command alternative:** [`agent:prepare`](AGENT_EDITORIAL_RUNNER.md) combines one explicitly consented model call with an independently pinned Ed25519 signing key, then generates a local private review bundle and GitHub Issue preview. It deliberately never submits an Issue or publishes an article itself.
+
 ## Continue to real editorial review
 
 1. Open `generated-draft.md` in the public [Draft Lab](https://24go.top/draft-lab.html), fact-check, improve the text and retain the original version.
