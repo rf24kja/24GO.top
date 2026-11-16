@@ -8,6 +8,13 @@ export const STUDIO_STARTER=Object.freeze({
  css:':root{color-scheme:dark;font-family:system-ui,Arial,sans-serif}\n*{box-sizing:border-box}\nbody{margin:0;min-height:100vh;background:#0b1713;color:#ebf9f0;display:grid;place-items:center;padding:20px}\n.app{max-width:600px;width:100%;background:#17271f;padding:26px;border:1px solid #325746;border-radius:16px}\n.eyebrow{letter-spacing:.12em;color:#4fe1a0;font-size:11px;font-weight:800}\nh1{font-size:clamp(30px,7vw,52px);margin:10px 0}\np{line-height:1.6}\n.count{font-size:70px;font-weight:850;color:#4fe1a0;margin:20px 0}\nbutton{min-height:46px;padding:12px 18px;border:0;border-radius:10px;font:inherit;font-weight:800;background:#4fe1a0;color:#092219;cursor:pointer}\nbutton:focus-visible{outline:3px solid #fff;outline-offset:3px}',
  js:"let count = 0;\nconst output = document.getElementById('count');\ndocument.getElementById('increase').addEventListener('click', () => {\n  count += 1;\n  output.textContent = String(count);\n});"
 });
+/** An original no-JavaScript starter: useful for static guides and resources. */
+export const STUDIO_STATIC_STARTER=Object.freeze({
+ name:'Static Resource Card',
+ html:'<main class="card">\n  <p class="eyebrow">STATIC PAGE</p>\n  <h1>Useful resources</h1>\n  <p>A readable page with HTML and CSS only. No JavaScript is necessary.</p>\n  <ul><li>Describe a tool</li><li>List practical steps</li><li>Share an offline reference</li></ul>\n</main>',
+ css:'body{margin:0;min-height:100vh;padding:24px;display:grid;place-items:center;background:#10221b;color:#f0fff8;font-family:system-ui,sans-serif} .card{max-width:560px;padding:30px;border:1px solid #3f7e60;border-radius:14px;background:#193628} .eyebrow{color:#6cedae;font-weight:800;letter-spacing:.1em} h1{font-size:clamp(28px,6vw,46px)} li{margin:12px 0} p{line-height:1.6}',
+ js:''
+});
 const fail=()=>{throw new TypeError('Unsafe or unsupported Studio source');};
 const htmlForbidden=/<(?:iframe|object|embed|form|base|meta|script|style|link|svg|math)\b|<\/?(?:html|head|body)\b|\son[a-z]+\s*=|\b(?:src|href|srcset|action|formaction)\s*=/i;
 const codeForbidden=[
@@ -19,9 +26,9 @@ const codeForbidden=[
  /\bimport\s*\(|\bimport\s+.*\s+from\s+|\bexport\s+default\b/i
 ];
 const csp="default-src 'none'; base-uri 'none'; connect-src 'none'; form-action 'none'; frame-src 'none'; worker-src 'none'; object-src 'none'; img-src data:; font-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'";
-const safeString=(value,max)=>typeof value==='string'&&
- value.length>0&&value.length<=max&&
+const safeSource=(value,max)=>typeof value==='string'&&value.length<=max&&
  !/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/u.test(value);
+const safeString=(value,max)=>safeSource(value,max)&&value.length>0;
 export function validateStudioDraft(draft){
  if(!draft||typeof draft!=='object'||Array.isArray(draft)||
     Object.keys(draft).sort().join(',')!=='css,html,js,name')fail();
@@ -29,8 +36,8 @@ export function validateStudioDraft(draft){
  if(!safeString(name,STUDIO_LIMITS.name)||
     !/^[a-zA-Z0-9][a-zA-Z0-9 ._-]{2,59}$/.test(name)||
     !safeString(html,STUDIO_LIMITS.html)||!html.trim()||
-    !safeString(css,STUDIO_LIMITS.css)||!css.trim()||
-    !safeString(js,STUDIO_LIMITS.js)||!js.trim()||
+    !safeSource(css,STUDIO_LIMITS.css)||
+    !safeSource(js,STUDIO_LIMITS.js)||
     htmlForbidden.test(html)||
     /<\s*\/\s*(?:script|style)\b/i.test(html)||
     /<\/style\b/i.test(css)||
