@@ -39,11 +39,11 @@ test('only explicit bounded plain strings are accepted; no external calls or bro
  for(const bad of [null,[],{},draft('x',{source:3}),draft('x'.repeat(16001)),draft('x',{title:{secret:'foo'}})])
   assert.throws(()=>scanDraftSharingRisks(bad),TypeError);
  const source=readFileSync(new URL('../site/draft-lab-privacy.js',import.meta.url),'utf8');
- assert.doesNotMatch(source,/\\bfetch\\s*\\(|XMLHttpRequest|localStorage|sessionStorage|indexedDB|sendBeacon|innerHTML|console\\./);
+ for(const forbidden of ['fetch(','XMLHttpRequest','localStorage','sessionStorage','indexedDB','sendBeacon','innerHTML','console.'])assert.equal(source.includes(forbidden),false);
  const ui=readFileSync(new URL('../site/draft-lab.js',import.meta.url),'utf8');
  const html=readFileSync(new URL('../site/draft-lab.html',import.meta.url),'utf8');
- assert.match(ui,/scanDraftSharingRisks\\(currentDraft\\(\\)\\)/);
- assert.match(ui,/field\\('checkDraftPrivacy'\\)\\.addEventListener\\('click'/);
+ assert.ok(ui.includes('scanDraftSharingRisks(currentDraft())'));
+ assert.ok(ui.includes("field('checkDraftPrivacy').addEventListener('click'"));
  assert.match(html,/id="checkDraftPrivacy"/);
  assert.match(html,/id="draftPrivacyStatus" role="status" aria-live="polite"/);
 });
