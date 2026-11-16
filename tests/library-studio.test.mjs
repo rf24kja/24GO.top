@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {inflateRawSync} from 'node:zlib';
-import {STUDIO_STARTER,validateStudioDraft,buildStudioHtml,buildStudioZip,STUDIO_LIMITS}
+import {STUDIO_STARTER,STUDIO_STATIC_STARTER,validateStudioDraft,buildStudioHtml,buildStudioZip,STUDIO_LIMITS}
  from '../site/library/studio/studio-core.mjs';
 import {validateStaticZip} from '../packages/library/validator.mjs';
 import {validateBrowserZip} from '../site/library/intake-core.mjs';
@@ -91,4 +91,39 @@ test('Studio HTML is a single static package, not a production publication path'
  assert.doesNotMatch(result,/<script\b[^>]*src=/);
  assert.doesNotMatch(result,/<link\b[^>]*href=/);
  assert.doesNotMatch(result,/<iframe/);
+});
+
+test('HTML-only and HTML/CSS source compile without requiring executable JavaScript',async()=>{
+ for(const draft of [
+  {...STUDIO_STATIC_STARTER},
+  {...STUDIO_STATIC_STARTER,css:''},
+  {...STUDIO_STATIC_STARTER,css:'',js:'   '}
+ ]){
+  assert.equal(validateStudioDraft(draft).js,draft.js);
+  const html=buildStudioHtml(draft);
+  assert.match(html,/default-src 'none'/);
+  assert.match(html,/connect-src 'none'/);
+  assert.match(html,/<script>\\s*<\\/script>/);
+  const zip=buildStudioZip(draft);
+  const browser=await validateBrowserZip(zip,{digest,inflate});
+  const node=validateStaticZip(Buffer.from(zip));
+  assert.equal(browser.archiveSha256,node.archiveSha256);
+  assert.equal(browser.reviewRequired,true);
+  assert.equal(browser.automaticHosting,false);
+  assert.equal(browser.files.length,1);
+  assert.equal(browser.files[0].path,'index.html');
+  assert.deepEqual(buildStudioZip(draft),zip,'deterministic export');
+ }
+ const html=read('index.html'),ui=read('studio.mjs');
+ assert.match(html,/id="studio-static"/);
+ assert.match(html,/CSS and JavaScript are optional/);
+ assert.match(ui,/STUDIO_STATIC_STARTER/);
+ for(const draft of [
+  {...STUDIO_STATIC_STARTER,css:null},
+  {...STUDIO_STATIC_STARTER,js:null},
+  {...STUDIO_STATIC_STARTER,html:''},
+  {...STUDIO_STATIC_STARTER,html:'   '},
+  {...STUDIO_STATIC_STARTER,css:'@import "https:\/\/example.test";'},
+  {...STUDIO_STATIC_STARTER,js:'fetch("https:\/\/example.test")'}
+ ])assert.throws(()=>buildStudioZip(draft),TypeError);
 });
