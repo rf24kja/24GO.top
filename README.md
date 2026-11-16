@@ -56,6 +56,8 @@ These are real, shareable, canonical HTML entry pages — not a finished transla
 
 **New local AI-assisted article drafting (BYOK):** `npm run agent:generate` makes one explicitly consented call to an operator-selected OpenAI-compatible model and creates a new Draft Lab-compatible `.md` file. It does not publish or verify factual claims, contacts no provider without `--confirm-provider-data --confirm-costs`, and works with the separate `agent:sign` → `agent:propose` human-review path. [Working CLI and limits](docs/AGENT_DRAFT_GENERATOR.md).
 
+**Integrated one-shot agent editorial job (`agent:prepare`):** a single explicit BYOK/local-model request produces a private Draft Lab manuscript, owner-pinned Ed25519-signed review envelope, separate public GitHub Issue preview and a local receipt. The output is **not published**: a human still checks the article and explicitly submits an editorial Issue before any reviewed article PR. Re-running the same output directory cannot silently consume another provider call. [Runnable job format and operator guide](docs/AGENT_EDITORIAL_RUNNER.md).
+
 **The next major milestone is not a redesign; it is one safely published, author-owned article.** The private hosted publishing path must pass independent security review, signed-user isolation, rollback and restore verification before public sign-up or posting can open. [See the release gates](docs/SECURITY_GATES.md) and [roadmap](docs/ROADMAP.md).
 
 ## Contents
