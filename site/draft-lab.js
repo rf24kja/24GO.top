@@ -1054,6 +1054,9 @@ field('openReviewPack').addEventListener('click',()=>field('openReviewPackFile')
 field('openReviewPackFile').addEventListener('change',async event=>{
  const input=event.currentTarget,file=input.files?.[0];
  if(!file)return;
+ // A past read-only verification cannot display a stale result after
+ // the author chooses the separate, destructive open path.
+ reviewVerifyGate.begin();
  const ticket=importGate.begin();
  try{
   const verified=await readEditorialReviewPackFile(file);
@@ -1082,6 +1085,9 @@ field('openReviewPackFile').addEventListener('change',async event=>{
 });
 field('verifyReviewPack').addEventListener('click',()=>field('reviewPackFile').click());
 field('reviewPackFile').addEventListener('change',async event=>{
+ // A newer check-only request supersedes an unresolved open request; no
+ // delayed plaintext replacement may follow that newer non-destructive intent.
+ importGate.changed();
  const ticket=reviewVerifyGate.begin();
  const input=event.currentTarget,file=input.files?.[0];
  if(!file)return;
