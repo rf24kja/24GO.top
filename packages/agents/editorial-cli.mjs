@@ -6,6 +6,8 @@
 import {constants,closeSync,fstatSync,openSync,readFileSync,
  writeFileSync,unlinkSync} from 'node:fs';
 import {generateKeyPairSync} from 'node:crypto';
+import {fileURLToPath} from 'node:url';
+import {resolve} from 'node:path';
 import {formatDraft,parseDraftFile,MAX_DRAFT_FILE_BYTES} from '../../site/draft-lab-logic.js';
 import {scanDraftSharingRisks} from '../../site/draft-lab-privacy.js';
 import {createSignedAgentProposal,verifySignedAgentProposal,
@@ -67,7 +69,7 @@ export function runLocalAgentCommand(command,argv){
   if(!strict(input,['title','body','locale','category','source']))wrong();
   const document=formatDraft(input);
   if(Buffer.byteLength(document,'utf8')>MAX_DRAFT_FILE_BYTES)wrong();
-  save(opts.output,document+'\n');
+  save(opts.output,document);
   return 'Created a local unpublished Draft Lab manuscript. No upload or publication.';
  }
  if(command==='sign'){
@@ -84,7 +86,7 @@ export function runLocalAgentCommand(command,argv){
    document,ownerId:opts['owner-id'],agentId:opts['agent-id'],
    privateKey:readLocal(opts['private-key'],8192,true)
   });
-  save(opts.output,JSON.stringify(signed,null,2)+'\n');
+  save(opts.output,JSON.stringify(signed)+'\n');
   return 'Created a signed LOCAL human-review proposal. Nothing was submitted or published.';
  }
  if(command==='verify'){
@@ -99,7 +101,7 @@ export function runLocalAgentCommand(command,argv){
  }
  wrong();
 }
-if(process.argv[1]&&import.meta.url===new URL('file://'+process.argv[1]).href){
+if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
  try{console.log(runLocalAgentCommand(process.argv[2],process.argv.slice(3)));}
  catch{
   // Never echo manuscript text, private key material, paths, or provider errors.
