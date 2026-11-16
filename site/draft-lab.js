@@ -104,10 +104,10 @@ function clearFindSelection(){
  field('draftFindReplace').disabled=true;
 }
 function editorChanged(){
- field('draftPrivacyStatus').textContent='';
  revisionRestoreGate.changed();
  importGate.changed();
  reviewExportGate.changed();
+ field('draftPrivacyStatus').textContent='';
  clearBulkUndo();
  clearFindSelection();
  field('draftFindStatus').textContent='';
