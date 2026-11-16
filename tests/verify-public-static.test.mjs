@@ -105,6 +105,47 @@ test('accepts byte-identical HTTPS responses with no credentials or redirects',a
  assert.equal(result.verified,true);assert.equal(result.checked,seen.size);
 });
 
+test('one transient Pages CDN failure retries once, but only byte-exact source passes',async()=>{
+ const attempts=new Map();
+ const result=await verifyPublicStatic({
+  sitemap:SAMPLE,concurrency:1,
+  readSource:async route=>utf8('asset:'+route),
+  fetchImpl:async url=>{
+   const uri=new URL(url),route=uri.pathname;
+   const number=(attempts.get(route)||0)+1;
+   attempts.set(route,number);
+   if(route==='/engineering/x.html'&&number===1){
+    assert.equal(uri.searchParams.get('release_audit'),'1');
+    return text('temporary stale edge',503);
+   }
+   assert.equal(uri.searchParams.get('release_audit'),String(number));
+   return text('asset:'+route);
+  }
+ });
+ assert.equal(result.verified,true);
+ assert.equal(attempts.get('/engineering/x.html'),2);
+ for(const [route,count] of attempts){
+  if(route!=='/engineering/x.html')assert.equal(count,1,route);
+ }
+});
+
+test('permanently stale article cannot pass two finite, cache-busted requests',async()=>{
+ const attempts=[];
+ await assert.rejects(verifyPublicStatic({
+  sitemap:SAMPLE,concurrency:1,
+  readSource:async route=>utf8('asset:'+route),
+  fetchImpl:async url=>{
+   const uri=new URL(url);
+   if(uri.pathname==='/engineering/x.html'){
+    attempts.push(uri.searchParams.get('release_audit'));
+    return text('wrong article bytes');
+   }
+   return text('asset:'+uri.pathname);
+  }
+ }),/Public HTTPS release is missing or stale at \/engineering\/x.html/);
+ assert.deepEqual(attempts,['1','2']);
+});
+
 test('fails closed on changed assets, redirects, missing resources and network errors',async()=>{
  const base={sitemap:SAMPLE,concurrency:1,readSource:async route=>utf8('asset:'+route)};
  for(const fetchImpl of [async()=>text('different'),async()=>text('missing',404),

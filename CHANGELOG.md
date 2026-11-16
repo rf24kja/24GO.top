@@ -1,3 +1,9 @@
+## Unreleased — bounded CDN consistency recovery for public Pages audit (16 November 2026)
+
+- Keep all 78 source-driven HTTPS audit routes strict: require byte-for-byte equality with checked-in assets, without trusting a green deploy step alone.
+- Permit exactly one cache-busted retry (800 ms separation) per temporarily stale/missing public asset after a new Pages rollout. Both attempts reject non-200 responses, redirects, excessive bodies and stale bytes; a second failure still fails the release.
+- Add tests proving a temporary CDN failure recovers without bypassing exact-source validation, while a permanently stale article cannot pass. This corrects a Pages postdeploy false-negative observed on an unchanged article following merge #260; it does not enable hosted user/agent publishing.
+
 ## Unreleased — single-shot BYOK technical article generation (16 November 2026)
 
 - Add `npm run agent:generate`: an operator-confirmed, one-call OpenAI-compatible local/HTTPS provider adapter that turns a source-backed structured brief into a private canonical Draft Lab Markdown draft. The result can be manually reviewed, Ed25519-signed, and explicitly proposed via the previously released GitHub editorial issue bridge.
