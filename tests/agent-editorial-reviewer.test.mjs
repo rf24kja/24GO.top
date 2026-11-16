@@ -10,6 +10,7 @@ import {formatDraft} from '../site/draft-lab-logic.js';
 import {createSignedAgentProposal} from '../packages/agents/editorial-proposal.mjs';
 import {reviewSignedAgentArticle,MAX_REVIEW_TOKENS} from '../packages/agents/editorial-reviewer.mjs';
 import {runAgentPeerReviewCommand,parseAgentReviewOptions} from '../packages/agents/editorial-reviewer-cli.mjs';
+import {runAgentPrepareCommand} from '../packages/agents/editorial-runner.mjs';
 
 const article={
  title:'Review a technical AI-generated article without silently publishing it',
@@ -175,4 +176,54 @@ test('arguments and environment must not request public writes or remote insecur
  assert.throws(()=>parseAgentReviewOptions(['--submit']));
  assert.throws(()=>parseAgentReviewOptions(['--package','file']));
  assert.throws(()=>parseAgentReviewOptions(['--confirm-costs','--confirm-costs']));
+});
+
+
+test('two distinct models complete writer -> signed manuscript -> private critic handoff',async()=>{
+ const f=fixture();
+ try{
+  const jobFile=join(f.directory,'job.json');
+  const keyFile=join(f.directory,'identity.private.pem');
+  const generated=join(f.directory,'review-bundle');
+  writeFileSync(keyFile,privateKey,{mode:0o600});
+  writeFileSync(jobFile,JSON.stringify({
+   article:{
+    title:article.title,locale:article.locale,category:article.category,
+    source:article.source,
+    brief:'Create a technical explanation of signed agent review and public HTTPS source verification without any invented deployment evidence.',
+    evidence:'Signed article packages bind reviewed Markdown to an owner-pinned Ed25519 key, but cannot authorize publication. A human must verify source citations and rights.'
+   },
+   publicSummary:'A public proposal for an original source-backed guide to signed agent article handoff. It explains limitations of cryptographic identity, and describes a human-reviewed deployment workflow.'
+  }),{mode:0o600});
+  const writerEnv={
+   AGENT_DRAFT_ENDPOINT:'https://writer.example/v1/chat/completions',
+   AGENT_DRAFT_MODEL:'first-writer-model',
+   AGENT_DRAFT_KEY:'mock-writer-provider-key-placeholder'
+  };
+  let writerCalls=0,reviewCalls=0;
+  await runAgentPrepareCommand([
+   '--job',jobFile,'--output-dir',generated,
+   '--private-key',keyFile,'--public-key',f.pinned,
+   '--owner-id','publisher-owner','--agent-id','writer-agent',
+   '--confirm-costs','--confirm-provider-data'
+  ],{env:writerEnv,fetchImpl:async()=>{
+   writerCalls++;return response(article.body);
+  }});
+  const prepared=JSON.parse(readFileSync(join(generated,'receipt.json'),'utf8'));
+  const reviewPath=join(f.directory,'peer-advice.json');
+  await runAgentPeerReviewCommand([
+   '--package',join(generated,'signed-proposal.json'),
+   '--public-key',f.pinned,
+   '--owner-id','publisher-owner','--agent-id','writer-agent',
+   '--output',reviewPath,'--confirm-costs','--confirm-provider-data'
+  ],{env,fetchImpl:async()=>{reviewCalls++;return response();}});
+  const review=JSON.parse(readFileSync(reviewPath,'utf8'));
+  assert.equal(writerCalls,1);
+  assert.equal(reviewCalls,1);
+  assert.equal(review.manuscriptSha256,prepared.draftSha256);
+  assert.equal(review.state,'advisory-only-human-editor-required');
+  assert.equal(prepared.published,false);
+  assert.equal(prepared.submitted,false);
+  assert.ok(!review.findings.includes(article.body));
+ }finally{rmSync(f.directory,{recursive:true,force:true});}
 });
