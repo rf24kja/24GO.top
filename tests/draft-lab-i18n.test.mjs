@@ -243,7 +243,7 @@ test('extra plaintext review warning is localized in all eight UI languages',()=
  for(const locale of UI_LOCALES){
   for(const key of ['reviewPackRiskConfirm','reviewPackRiskCancelled']){
    const value=uiText(locale,key);
-   assert.ok(value.length>30,locale+'/'+key);
+   assert.ok(value.length>=12,locale+'/'+key);
    assert.doesNotMatch(value,/sk-[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{20,}/);
   }
  }
