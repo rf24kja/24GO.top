@@ -67,3 +67,15 @@ test('import UI requires explicit file selection and never automatically execute
  assert.match(code,/stopPreview\(\); \/\/ import source only/);
  assert.doesNotMatch(code,/innerHTML|localStorage|sessionStorage|sendBeacon/);
 });
+
+test('Studio async controls are guarded against stale validation completion',()=>{
+ const source=readFileSync(new URL('../site/library/studio/studio.mjs',import.meta.url),'utf8');
+ assert.match(source,/function finishAction\(ticket\)\{\s*if\(ticket===actionEpoch\)/);
+ assert.match(source,/function cancelPendingAction\(\)\{\s*\+\+actionEpoch/);
+ assert.match(source,/run\.addEventListener\('click',async\(\)=>\{\s*const action=\+\+actionEpoch/);
+ assert.match(source,/download\.addEventListener\('click',async\(\)=>\{\s*const action=\+\+actionEpoch/);
+ assert.equal((source.match(/finally\{finishAction\(action\);\}/g)||[]).length,2);
+ assert.match(source,/addEventListener\('input',\(\)=>\{\s*cancelPendingAction\(\)/);
+ assert.match(source,/function restore\(\)\{\s*cancelPendingAction\(\)/);
+ assert.doesNotMatch(source,/if\(run\.disabled\)\{run\.disabled=false/);
+});
