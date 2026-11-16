@@ -20,6 +20,7 @@ export const FIXED_ROUTES=Object.freeze([
  '/engineering/search.js', '/engineering/reading-paths/',
  '/engineering/paths.js', '/arena/', '/arena/arena.css',
  '/arena/arena.mjs', '/arena/arena-core.mjs',
+ '/arena/tournament.mjs', '/arena/tournament-core.mjs',
  '/library/', '/library/catalog.json', '/library/library.css',
  '/library/library.mjs', '/library/library-core.mjs',
  '/library/intake.mjs', '/library/intake-core.mjs',
