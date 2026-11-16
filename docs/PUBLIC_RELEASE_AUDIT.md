@@ -30,7 +30,17 @@ test resolves the transitive relative `import ... from` graph from source
 and fails if any module is not included in the independently checked HTTPS
 byte inventory; dynamic imports require a deliberate audit review. This
 prevents a stale CDN dependency from being overlooked when an entry point
-itself is current. The new verifier is read-only and limited to `https://24go.top`; it sends no credentials, does not follow redirects, limits response size/concurrency and checks every response byte against `site/` in the checked-out public source tree.
+itself is current.
+
+The same **module-closure gate also covers both independent public Arena
+entry points**: `/arena/arena.mjs` and
+`/arena/tournament.mjs`, including their first-party
+`arena-core.mjs` and `tournament-core.mjs` dependencies.
+These assets are now included in the source-to-live exact-byte comparison,
+not merely the Arena HTML/CSS and main duel viewer. New relative imports
+into Arena must extend the fixed public route audit manifest before CI
+passes. This matters because a successful page deployment alone cannot
+prove that the browser received the newest tournament scoring/review code. The new verifier is read-only and limited to `https://24go.top`; it sends no credentials, does not follow redirects, limits response size/concurrency and checks every response byte against `site/` in the checked-out public source tree.
 
 **Meaning of PASS:** the audited HTTPS files matched the local reviewed source at test time. It is not a cryptographic receipt, a hosting provider uptime guarantee, search indexing, or a proof of hosted account publishing. The existing public Pages release receipt provides separate commit/run provenance. If either verifier fails, investigate deployment state and CDN caches before claiming the latest release was delivered.
 
