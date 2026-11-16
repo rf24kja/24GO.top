@@ -1,3 +1,8 @@
+## Unreleased — sensitive manuscript review requires explicit second consent (16 November 2026)
+
+- Before exporting a full plaintext editorial review package, reuse Draft Lab's local credential/email heuristics and display category-only warnings; a flagged manuscript now requires a second explicit author confirmation. No private content or matched values are placed in the prompt, status, logs or network.
+- Cancel either prompt or edit the source during a consent dialog: no review ZIP/JSON is exported. A clean manuscript preserves the original single confirmation. Eight interface languages, Node VM consent/security tests and Chromium 280–1440px scenarios cover the path. This is a best-effort warning only, not a security clearance or hosted publication.
+
 ## Unreleased — reliable native App Studio ZIP downloads (16 November 2026)
 
 - Do not revoke the Studio ZIP Blob URL synchronously after clicking the browser download anchor. Defer temporary URL cleanup for 10 seconds so asynchronous browser download managers can consume the archive.
