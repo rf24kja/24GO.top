@@ -84,3 +84,24 @@ touch controls are checked in Chromium; `npm run check && npm test` covers
 the pure source scanning and UI guards. The existing preview outline continues
 to navigate the rendered preview; this new control navigates the **source**
 text, where the author can edit it.
+
+## Optional local sharing privacy preflight (16 November 2026)
+
+The **Check draft for private information** action in the editorial proposal
+panel examines only the current title, article text and source field on the
+device. It checks a bounded set of common credential signatures (selected
+private-key headers, provider key shapes, Bearer tokens, basic authenticated
+URLs and password/key assignments) and email-address patterns. The UI shows
+**categories only**, never the matched values or their positions. Editing the
+draft or changing the interface language clears a prior result. No network,
+account, logging, clipboard copy, upload, persistence or change to the
+submission link is involved. All eight UI languages provide localized
+messages; browser checks cover mobile, landscape and desktop viewports.
+
+This is a *best-effort warning*, not a secret scanner, PII compliance check,
+publication moderation, malware scan or guarantee that a document is safe to
+share. False positives and false negatives are possible. Authors must always
+read and sanitize any material they intentionally send to a reviewer. Public
+GitHub editorial proposals continue to send only the explicitly confirmed
+headline; review packages still require a separate explicit plaintext-export
+confirmation. Neither workflow publishes an article without human review.
