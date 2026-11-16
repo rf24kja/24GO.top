@@ -592,6 +592,24 @@ field('importDraft').addEventListener('click', () => {
   field('importDraftFile').click();
 });
 
+// All author-selected and verified local manuscript formats use the same
+// editor reset, undo baseline, preview and revision bookkeeping. Neither
+// validation nor a mere review-pack check calls this destructive helper.
+function commitOpenedDraft(reopened){
+ title.value = reopened.title;
+ body.value = reopened.body;
+ locale.value = reopened.locale;
+ category.value = reopened.category;
+ source.value = reopened.source;
+ clearImageInsertInputs();
+ reopenedFileBaseline = { ...reopened };
+ revisionCapture(reopened);
+ resetSavedSlot();
+ clearFieldErrors();
+ editorChanged();
+ preview();
+ refreshBrowserDrafts();
+}
 // Same race-safe, confirmation-gated import for the native picker and desktop
 // drag-and-drop. Both stay on this device; neither path uploads data.
 async function openLocalDraft(file,input=null) {
@@ -618,19 +636,7 @@ async function openLocalDraft(file,input=null) {
         return;
       }
     }
-    title.value = reopened.title;
-    body.value = reopened.body;
-    locale.value = reopened.locale;
-    category.value = reopened.category;
-    source.value = reopened.source;
-    clearImageInsertInputs();
-    reopenedFileBaseline = { ...reopened };
-    revisionCapture(reopened);
-    resetSavedSlot();
-    clearFieldErrors();
-    editorChanged();
-    preview();
-    refreshBrowserDrafts();
+    commitOpenedDraft(reopened);
     message(ui('opened'));
   } catch {
     if (importGate.isLatest(ticket)) message(ui('openError'),true);
@@ -1040,6 +1046,39 @@ field('downloadReviewPack').addEventListener('click',async()=>{
   }finally{setTimeout(()=>URL.revokeObjectURL(url),10000);}
   message(ui('reviewPackExported'));
  }catch{message(ui('reviewPackError'),true);}
+});
+// Deliberate, separate action: checking a package NEVER opens it. Only
+// integrity-verified canonical Draft Lab contents may replace the editor.
+// Use the same author-intent race gate as ordinary .md imports.
+field('openReviewPack').addEventListener('click',()=>field('openReviewPackFile').click());
+field('openReviewPackFile').addEventListener('change',async event=>{
+ const input=event.currentTarget,file=input.files?.[0];
+ if(!file)return;
+ const ticket=importGate.begin();
+ try{
+  const verified=await readEditorialReviewPackFile(file);
+  if(!importGate.canApply(ticket)){
+   if(importGate.isLatest(ticket))message(ui('reviewPackOpenInterrupted'),true);
+   return;
+  }
+  if(hasDraftContent(currentDraft())){
+   const confirmed=window.confirm(ui('reviewPackOpenReplaceConfirm'));
+   if(!importGate.canApply(ticket)){
+    if(importGate.isLatest(ticket))message(ui('reviewPackOpenInterrupted'),true);
+    return;
+   }
+   if(!confirmed){
+    message(ui('reviewPackOpenCanceled'));
+    return;
+   }
+  }
+  commitOpenedDraft(verified.draft);
+  message(ui('reviewPackOpened'));
+ }catch{
+  if(importGate.isLatest(ticket))message(ui('reviewPackOpenInvalid'),true);
+ }finally{
+  if(importGate.isLatest(ticket))input.value='';
+ }
 });
 field('verifyReviewPack').addEventListener('click',()=>field('reviewPackFile').click());
 field('reviewPackFile').addEventListener('change',async event=>{
