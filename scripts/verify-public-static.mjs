@@ -113,22 +113,33 @@ export async function verifyPublicStatic({
    const index=next++;
    if(index>=routes.length)return;
    const route=routes[index];
-   const url=ORIGIN+route+(route.includes('?')?'&':'?')+'release_audit=1';
-   let response;
-   try{
-    response=await fetchImpl(url,{
-     method:'GET',redirect:'error',cache:'no-store',credentials:'omit',
-     referrerPolicy:'no-referrer',headers:{'cache-control':'no-cache'},
-     signal:AbortSignal.timeout(15000)
-    });
-    const actual=await readBoundedBody(response);
-    const source=expected.get(route);
-    if(actual.byteLength!==source.byteLength||
-       !actual.every((byte,i)=>byte===source[i]))
-     throw new Error('Content differs from reviewed source');
-   }catch{
-    throw new Error('Public HTTPS release is missing or stale at '+route);
+   // Pages CDN nodes can briefly disagree after a deployment. Never accept
+   // status-only success: allow just one bounded, cache-busted retry, and
+   // require exact source bytes on the final response as on the first.
+   let verified=false;
+   for(let attempt=1;attempt<=2;attempt++){
+    const url=ORIGIN+route+(route.includes('?')?'&':'?')+
+     'release_audit='+attempt;
+    try{
+     const response=await fetchImpl(url,{
+      method:'GET',redirect:'error',cache:'no-store',credentials:'omit',
+      referrerPolicy:'no-referrer',headers:{'cache-control':'no-cache'},
+      signal:AbortSignal.timeout(15000)
+     });
+     const actual=await readBoundedBody(response);
+     const source=expected.get(route);
+     if(actual.byteLength!==source.byteLength||
+        !actual.every((byte,i)=>byte===source[i]))
+      throw new Error('Content differs from reviewed source');
+     verified=true;
+     break;
+    }catch{
+     if(attempt===2)break;
+     await new Promise(resolve=>setTimeout(resolve,800));
+    }
    }
+   if(!verified)
+    throw new Error('Public HTTPS release is missing or stale at '+route);
   }
  }
  await Promise.all(Array.from({length:Math.min(concurrency,routes.length)},worker));
