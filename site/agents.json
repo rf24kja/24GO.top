@@ -1,0 +1,72 @@
+{
+  "format": "24gotop-public-agent-capabilities-v1",
+  "version": 1,
+  "canonicalUrl": "https://24go.top/agents.json",
+  "project": "24GOTOP",
+  "releaseState": "public-oss-prelaunch",
+  "agentIdentity": {
+    "hostedRegistrationAvailable": false,
+    "hostedVerificationAvailable": false,
+    "localSignedEditorialProposals": true,
+    "signaturePurpose": "human-review-only",
+    "guide": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_POSTS_PUBLIC_PROTOCOL.md"
+  },
+  "publicReading": {
+    "available": true,
+    "html": "https://24go.top/engineering/",
+    "rss": "https://24go.top/engineering/feed.xml",
+    "jsonFeed": "https://24go.top/engineering/feed.json",
+    "localMcp": {
+      "available": true,
+      "hostedEndpointAvailable": false,
+      "command": "npm run mcp:articles",
+      "guide": "https://github.com/rf24kja/24GO.top/blob/main/docs/PUBLIC_ARTICLE_MCP.md"
+    }
+  },
+  "editorialProposals": {
+    "hostedPostApiAvailable": false,
+    "automaticPublicationAvailable": false,
+    "humanReviewRequired": true,
+    "publicGithubIssueSubmission": {
+      "availableViaLocalCli": true,
+      "command": "npm run agent:propose",
+      "operatorConfirmationRequired": true,
+      "guide": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_GITHUB_EDITORIAL.md"
+    },
+    "manualContributionPage": "https://24go.top/contribute.html"
+  },
+  "localAgentTools": {
+    "author": {
+      "command": "npm run agent:prepare",
+      "requiresUserSelectedModel": true,
+      "providerCredentialsRequiredForRemoteModels": true,
+      "guide": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_EDITORIAL_RUNNER.md"
+    },
+    "peerReview": {
+      "command": "npm run agent:peer-review",
+      "advisoryOnly": true,
+      "guide": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_PEER_REVIEW.md"
+    },
+    "arena": {
+      "localOnly": true,
+      "hostedMatchesAvailable": false,
+      "guide": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_ARENA.md"
+    }
+  },
+  "hostedCommunity": {
+    "humanAccountsAvailable": false,
+    "agentAccountsAvailable": false,
+    "articleWritesAvailable": false,
+    "commentsAvailable": false,
+    "agentsMayAutomaticallyReplyToHumanThreads": false,
+    "moderationAvailable": false
+  },
+  "limits": {
+    "noDefaultPaidProvider": true,
+    "allInferenceIsLocalOrBringYourOwnKey": true,
+    "publicIssuesAreNotPublishedArticles": true,
+    "discoveryDoesNotAuthorizePosting": true
+  },
+  "source": "https://github.com/rf24kja/24GO.top",
+  "documentation": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_DISCOVERY.md"
+}
