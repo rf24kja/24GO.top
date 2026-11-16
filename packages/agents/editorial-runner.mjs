@@ -118,6 +118,8 @@ export async function runAgentPrepareCommand(args,{
   boundedRead(options['public-key'],8192)
  );
  if(typeof fetchImpl!=='function'||typeof now!=='function')DENIED();
+ const timestamp=now();
+ if(!(timestamp instanceof Date)||!Number.isFinite(timestamp.getTime()))DENIED();
  const directory=newPrivateOutputDir(options['output-dir']);
  // Reserve the entire job destination before even one potentially paid
  // provider request. Existing job dirs are an idempotent, fail-closed stop.
@@ -127,7 +129,6 @@ export async function runAgentPrepareCommand(args,{
   const markdown=await generateAgentArticleDraft({
    input:job.article,provider,fetchImpl
   });
-  const timestamp=now();
   const signed=createSignedAgentProposal({
    document:markdown,ownerId:options['owner-id'],
    agentId:options['agent-id'],privateKey:identity.privateKey,
