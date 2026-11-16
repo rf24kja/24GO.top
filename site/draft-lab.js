@@ -1001,9 +1001,27 @@ field('downloadDraft').addEventListener('click', () => {
 // Deliberate editorial hand-off; a package can expose the entire private
 // manuscript. Hash integrity is not a signature or editorial approval.
 field('downloadReviewPack').addEventListener('click',async()=>{
- if(!readyToExport()||!window.confirm(ui('reviewPackConfirm')))return;
+ if(!readyToExport())return;
  const draft=currentDraft();
+ // Begin before any native consent dialog: event handlers can be re-entrant.
  const ticket=reviewExportGate.begin();
+ const unchanged=()=>reviewExportGate.canApply(ticket)&&
+  matchesDraftExportSnapshot(draft,currentDraft());
+ let report;
+ try{report=scanDraftSharingRisks(draft);}
+ catch{message(ui('privacyCheckUnavailable'),true);return;}
+ if(report.flagged)renderDraftPrivacyReport(report);
+ if(!window.confirm(ui('reviewPackConfirm')))return;
+ if(!unchanged()){message(ui('reviewPackInterrupted'),true);return;}
+ // This package contains the *entire* plaintext article; a separate,
+ // explicit warning is required for commonly recognizable private data.
+ // The warning contains categories only, never a matched value.
+ if(report.flagged){
+  if(!window.confirm(ui('reviewPackRiskConfirm'))){
+   message(ui('reviewPackRiskCancelled'));return;
+  }
+  if(!unchanged()){message(ui('reviewPackInterrupted'),true);return;}
+ }
  try{
   const pack=await createEditorialReviewPack(draft);
   // A change followed by Undo, an editor Clear, or a second export request
@@ -1056,21 +1074,23 @@ document.addEventListener('keydown',event=>{
 
 // Optional local sharing preflight: only category labels reach the UI.
 // It never copies or submits a manuscript and cannot certify that text is safe.
-field('checkDraftPrivacy').addEventListener('click',()=>{
+function renderDraftPrivacyReport(report){
  const resultNode=field('draftPrivacyStatus');
- try{
-  const report=scanDraftSharingRisks(currentDraft());
-  resultNode.dataset.risk=String(report.flagged);
-  if(!report.flagged){
-   resultNode.textContent=ui('privacyCheckClear');
-   return;
-  }
-  const kinds=[];
-  if(report.credential)kinds.push(ui('privacyCheckCredential'));
-  if(report.email)kinds.push(ui('privacyCheckEmail'));
-  resultNode.textContent=ui('privacyCheckWarning')+
-   kinds.join(', ')+ui('privacyCheckSuffix');
- }catch{
+ resultNode.dataset.risk=String(report.flagged);
+ if(!report.flagged){
+  resultNode.textContent=ui('privacyCheckClear');
+  return;
+ }
+ const kinds=[];
+ if(report.credential)kinds.push(ui('privacyCheckCredential'));
+ if(report.email)kinds.push(ui('privacyCheckEmail'));
+ resultNode.textContent=ui('privacyCheckWarning')+
+  kinds.join(', ')+ui('privacyCheckSuffix');
+}
+field('checkDraftPrivacy').addEventListener('click',()=>{
+ try{renderDraftPrivacyReport(scanDraftSharingRisks(currentDraft()));}
+ catch{
+  const resultNode=field('draftPrivacyStatus');
   resultNode.dataset.risk='true';
   resultNode.textContent=ui('privacyCheckUnavailable');
  }
