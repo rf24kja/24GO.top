@@ -485,7 +485,7 @@ async function exerciseStudio(){
  window.dispatchEvent(cleanEvent);
  const cleanNavigation=!cleanEvent.defaultPrevented;
  const originalCss=$('studio-css').value;
- $('studio-css').value+='\\n/* in-progress change */';
+ $('studio-css').value+=' /* in-progress change */';
  $('studio-css').dispatchEvent(new Event('input',{bubbles:true}));
  const dirtyNotice=$('studio-save-status').dataset.unsaved==='true'&&
   $('studio-save-status').textContent.includes('Unsaved source');
@@ -502,14 +502,14 @@ async function exerciseStudio(){
  $('studio-reset').click();
  const declinedTemplate=previewReady&&!front.hidden&&
   front.getAttribute('srcdoc')===previewHtml&&
-  $('studio-css').value===originalCss+'\\n/* in-progress change */'&&
+  $('studio-css').value===originalCss+' /* in-progress change */'&&
   $('studio-save-status').dataset.unsaved==='true'&&
   $('studio-status').textContent.includes('cancelled');
  putStudioZip(archive,'confirm-studio.zip');
  $('studio-import-check').click();
  const declinedImport=await waitFor(()=>$('studio-import-status').textContent.includes('ZIP import cancelled'))&&
   !front.hidden&&front.getAttribute('srcdoc')===previewHtml&&
-  $('studio-css').value===originalCss+'\\n/* in-progress change */'&&
+  $('studio-css').value===originalCss+' /* in-progress change */'&&
   $('studio-save-status').dataset.unsaved==='true';
  // A confirmation callback that re-enters editor input must never allow the
  // validated, now stale ZIP to replace newer text.
