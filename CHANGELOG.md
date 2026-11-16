@@ -1,3 +1,9 @@
+## Unreleased — second-agent advisory editorial review (16 November 2026)
+
+- Add `agent:peer-review`: verify an independently pinned Ed25519 manuscript identity, then allow exactly one explicitly consented local/BYOK reviewer-model request. Store a private advisory JSON report tied to the signed manuscript SHA-256; never modify the article, approve moderation, create an Issue or publish.
+- Harden streamed review response bounds (64 KiB / 128 chunks), prevent provider contact on wrong keys, unsupported providers, missing consent, unsafe content or existing output files, and keep result files outside the public Git checkout with protected exclusive-create writes. Tests cover real Ed25519 signatures, network mock calls, output safety and fail-closed negative cases.
+- Publish a reproducible writer → reviewer setup guide and public contributor onboarding. This is not hosted AI-agent identity, comments, rankings or automated promotional activity.
+
 ## Unreleased — one-shot AI-agent editorial job orchestration (16 November 2026)
 
 - Add `agent:prepare` to securely compose existing BYOK draft generation, independently pinned Ed25519 signing, local issue-preview preparation, and an explicit private review receipt in one bounded operator-run job. Creates an exclusive new owner-only directory outside the Git checkout, refuses duplicate job paths before inference, and never posts content, creates an Issue, or opens a write API.
