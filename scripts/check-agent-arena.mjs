@@ -88,9 +88,16 @@ async function examine(){
  const storageBefore=localStorage.length;
  choose(JSON.stringify(session));
  const loaded=await pause(()=>!results.hidden);
+ const reveal=document.getElementById('arena-reveal');
+ const blind=loaded&&document.getElementById('arena-a-name').textContent==='Response A'&&
+  document.getElementById('arena-a-model').textContent.includes('hidden')&&
+  document.getElementById('arena-a-meta').textContent.includes('hidden')&&
+  document.getElementById('arena-b-name').textContent==='Response B'&&
+  reveal.getAttribute('aria-pressed')==='false'&&
+  document.getElementById('arena-identity-status').textContent.includes('hidden');
  const safe=loaded&&document.getElementById('arena-a-text').textContent===answerA&&
   !document.getElementById('arena-a-text').querySelector('script')&&
-  window.hacked!==true&&document.getElementById('arena-a-name').textContent==='Agent Zero';
+  window.hacked!==true&&document.getElementById('arena-a-name').textContent==='Response A';
  const select=document.getElementById('arena-round');
  select.value='2';select.dispatchEvent(new Event('change',{bubbles:true}));
  const next=document.getElementById('arena-a-text').textContent===
@@ -104,15 +111,33 @@ async function examine(){
  const isolated=document.querySelector('[data-arena-vote="b"]').getAttribute('aria-pressed')==='false';
  select.value='2';select.dispatchEvent(new Event('change',{bubbles:true}));
  const remembered=document.querySelector('[data-arena-vote="b"]').getAttribute('aria-pressed')==='true';
+ reveal.focus();reveal.click();
+ const revealed=reveal.getAttribute('aria-pressed')==='true'&&
+  document.activeElement===reveal&&
+  document.getElementById('arena-a-name').textContent==='Agent Zero'&&
+  document.getElementById('arena-a-model').textContent==='test-model-A'&&
+  document.getElementById('arena-a-meta').textContent.includes('201 ms')&&
+  document.getElementById('arena-b-name').textContent==='Agent One';
+ select.value='1';select.dispatchEvent(new Event('change',{bubbles:true}));
+ const independentBlind=document.getElementById('arena-a-name').textContent==='Response A'&&
+  reveal.getAttribute('aria-pressed')==='false';
+ select.value='2';select.dispatchEvent(new Event('change',{bubbles:true}));
+ const rememberedReveal=document.getElementById('arena-a-name').textContent==='Agent Zero';
+ reveal.click();
+ const reblinded=document.getElementById('arena-a-name').textContent==='Response A'&&
+  document.getElementById('arena-a-meta').textContent.includes('hidden')&&
+  reveal.getAttribute('aria-pressed')==='false';
  const actionHeight=button.getBoundingClientRect().height;
+ const revealHeight=reveal.getBoundingClientRect().height;
  const inputHeight=file.getBoundingClientRect().height;
  const width=document.documentElement.clientWidth;
  const overflow=Math.max(document.documentElement.scrollWidth,document.body.scrollWidth);
  choose('{"version":2,"verified":true}');
  const invalid=await pause(()=>results.hidden&&status.dataset.error==='true');
  const safeStorage=localStorage.length===storageBefore;
- return {before,loaded,safe,next,voted,isolated,remembered,
-  actionHeight,inputHeight,width,overflow,invalid,safeStorage};
+ return {before,loaded,safe,blind,next,voted,isolated,remembered,
+  revealed,independentBlind,rememberedReveal,reblinded,
+  actionHeight,revealHeight,inputHeight,width,overflow,invalid,safeStorage};
 }
 async function exerciseTournament(){
  const source=document.getElementById('arena-tournament-files');
@@ -223,13 +248,16 @@ async function main(){
       tournament.scroll>tournament.width+1)
     throw Error('Arena local tournament browser E2E '+width+': '+JSON.stringify(tournament));
    if(!got||Object.entries(got).some(([k,v])=>
-      ['before','loaded','safe','next','voted','isolated','remembered','invalid','safeStorage'].includes(k)&&!v)||
-      got.overflow>got.width+1||got.actionHeight<43.5||got.inputHeight<43.5)
+      ['before','loaded','safe','blind','next','voted','isolated',
+       'remembered','revealed','independentBlind','rememberedReveal',
+       'reblinded','invalid','safeStorage'].includes(k)&&!v)||
+      got.overflow>got.width+1||got.actionHeight<43.5||
+      got.revealHeight<43.5||got.inputHeight<43.5)
     throw Error('Arena browser E2E '+width+': '+JSON.stringify(got));
   }
   if(c.errors.length||c.external.length)
    throw Error('Browser errors or external requests: '+c.errors.join(';')+'; '+c.external.join(';'));
-  console.log('PASS Arena Chromium: 280/390/844/1440px, individual bouts and local two-match tournament, private votes, scoreboard, Markdown export, duplicate rejection, no upload');
+  console.log('PASS Arena Chromium: 280/390/844/1440px, blind round review and per-round reveal, individual bouts and local two-match tournament, private votes, scoreboard, Markdown export, duplicate rejection, no upload');
  }finally{
   if(ws)ws.close();
   if(browser){

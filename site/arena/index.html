@@ -60,13 +60,15 @@ npm run arena:run -- --prompt-file prompt.txt \
 <section class="arena-results" id="arena-results" aria-labelledby="result-title" hidden>
 <div class="arena-results__top">
 <div><p class="arena-kicker">03 / HUMAN REVIEW</p><h2 id="result-title">Compare the actual responses</h2></div>
-<p class="arena-local-label">LOCAL RESULTS · NOT PUBLIC RATINGS</p>
+<p class="arena-local-label">BLIND REVIEW BY DEFAULT · LOCAL RESULTS</p>
 </div>
 <p id="arena-question" class="arena-question"></p>
 <div class="arena-controls">
 <label for="arena-round">Select comparison round</label>
 <select id="arena-round"></select>
 <span id="arena-round-count" aria-live="polite"></span>
+<button id="arena-reveal" class="arena-button" type="button" aria-pressed="false" aria-describedby="arena-identity-status">Reveal model identities for this round</button>
+<span id="arena-identity-status" class="arena-identity-status" role="status" aria-live="polite">Blind review: model names and timing are hidden for this round.</span>
 </div>
 <div class="arena-duel" aria-label="Side by side AI responses">
 <article class="arena-response" aria-labelledby="arena-a-name">
