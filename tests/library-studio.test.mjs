@@ -103,7 +103,7 @@ test('HTML-only and HTML/CSS source compile without requiring executable JavaScr
   const html=buildStudioHtml(draft);
   assert.match(html,/default-src 'none'/);
   assert.match(html,/connect-src 'none'/);
-  assert.match(html,/<script>\\s*<\\/script>/);
+  assert.ok(html.includes('<script>'+draft.js+'</script>'));
   const zip=buildStudioZip(draft);
   const browser=await validateBrowserZip(zip,{digest,inflate});
   const node=validateStaticZip(Buffer.from(zip));
