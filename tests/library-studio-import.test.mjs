@@ -76,7 +76,7 @@ test('Studio async controls are guarded against stale validation completion',()=
  assert.match(source,/download\.addEventListener\('click',async\(\)=>\{\s*const action=\+\+actionEpoch/);
  assert.equal((source.match(/finally\{finishAction\(action\);\}/g)||[]).length,2);
  assert.match(source,/addEventListener\('input',\(\)=>\{\s*cancelPendingImport\(\);\s*cancelPendingAction\(\)/);
- assert.match(source,/function loadTemplate\\(template,label\\)\\{\\s*cancelPendingImport\\(\\);\\s*cancelPendingAction\\(\\)/);
+ assert.ok(source.includes('function loadTemplate(template,label){\\n cancelPendingImport();\\n cancelPendingAction();'));
  assert.doesNotMatch(source,/if\(run\.disabled\)\{run\.disabled=false/);
 });
 
