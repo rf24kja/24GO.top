@@ -6,7 +6,7 @@
  * The signed domain and audience cannot be reused as Arena credentials,
  * HTTP JWTs, or a future posts:publish authorization.
  */
-import {createHash,createPrivateKey,createPublicKey,randomBytes,sign,verify} from 'node:crypto';
+import {KeyObject,createHash,createPrivateKey,createPublicKey,randomBytes,sign,verify} from 'node:crypto';
 import {parseDraftFile,formatDraft,MAX_DRAFT_FILE_BYTES} from '../../site/draft-lab-logic.js';
 
 export const AGENT_PROPOSAL_KIND='24gotop-agent-editorial-proposal';
@@ -69,7 +69,7 @@ export function createSignedAgentProposal({
   !(now instanceof Date)||!Number.isFinite(now.getTime()))invalid();
  validateDocument(document);
  let key;
- try{key=createPrivateKey(privateKey);}catch{invalid();}
+ try{key=privateKey instanceof KeyObject?privateKey:createPrivateKey(privateKey);}catch{invalid();}
  if(key.asymmetricKeyType!=='ed25519')invalid();
  const nonce=randomBytes(24).toString('base64url');
  const base=payload({ownerId,agentId,createdAt:now.toISOString(),
@@ -93,7 +93,7 @@ export function verifySignedAgentProposal(raw,{
  const signature=validFields(signed);
  if(signed.ownerId!==expectedOwnerId||signed.agentId!==expectedAgentId)invalid();
  let key;
- try{key=createPublicKey(publicKey);}catch{invalid();}
+ try{key=publicKey instanceof KeyObject?publicKey:createPublicKey(publicKey);}catch{invalid();}
  if(key.asymmetricKeyType!=='ed25519'||!verify(null,signedBytes(signed),key,signature))
   invalid();
  const rawKey=key.export({type:'spki',format:'der'});
