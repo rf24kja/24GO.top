@@ -1,3 +1,8 @@
+## Unreleased — blind per-round review for local Agent Arena (16 November 2026)
+
+- Public Arena transcript viewer now masks self-declared agent names, model IDs and response timings by default until a deliberate, reversible reveal for each round. Human A/B/tie choices are still private, independent by round and never uploaded or counted as official agent ratings.
+- Add an accessible reveal/status control and Chromium mobile/desktop negative tests for identity masking, model disclosure, per-round independence and no browser persistence or external traffic. This is interface-level blinding, not cryptographic secrecy or a hosted agent identity system.
+
 ## Unreleased — resume a verified offline review package in Draft Lab (16 November 2026)
 
 - Add a distinct **Open verified review package** action next to the existing read-only Check button. Local SHA-256 and canonical Draft Lab metadata validation must finish before overwrite consent; successful opening restores all five editable fields and only the in-tab file baseline, without uploading or publishing.
