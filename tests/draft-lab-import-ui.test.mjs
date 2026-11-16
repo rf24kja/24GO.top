@@ -44,7 +44,7 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
     'previewHeading','previewBody','previewLocale','previewCategory','bodyCount','bodyWordCount','draftReadingTime','guidanceScore',
     'guideTitleState','guideBodyState','guideHeadingsState','guideStepsState','guideSourceState','guideCompleteState','draftTemplate','insertTemplate',
     'revisionCapture','revisionCompare','revisionRestore','revisionCopy','revisionClear','revisionStatus','revisionFields','revisionLines',
-    'downloadReviewPack','verifyReviewPack','reviewPackFile','insertExternalMarkdown','externalMarkdownFile','printDraft',
+    'downloadReviewPack','verifyReviewPack','reviewPackFile','openReviewPack','openReviewPackFile','insertExternalMarkdown','externalMarkdownFile','printDraft',
     'previewSource','draftSafety','articleOutline','articleOutlineSection','downloadDraft','copyDraft','clearDraft','importDraft','importDraftFile','draftForm',
     'draftSectionPicker','draftSectionJump','draftSectionStatus','draftFindQuery','draftFindNext','draftFindPrevious','draftFindStatus','draftReplaceText','draftFindReplace','draftFindReplaceAll','draftFindUndoAll',
     'formatBold','formatItalic','formatInlineCode','formatHeading','formatList','formatOrderedList','formatQuote','formatCode','formatTable','formatLink','insertImage','imageUrl','imageAlt','uiLocale','draftDropZone','homeBrandLink','homeNavLink','proposeDraft','checkDraftPrivacy','draftPrivacyStatus',
@@ -2029,5 +2029,142 @@ test('editing in either review export confirmation invalidates full-text consent
   assert.equal(app.downloads.length,0);
   assert.match(app.elements.formStatus.textContent,/changed during export/i);
   assert.ok(app.elements.postBody.value.includes('New author content'));
+ }
+});
+
+function reviewFileFromText(text,name='review.json'){
+ const bytes=new TextEncoder().encode(text);
+ return {name,size:bytes.byteLength,async arrayBuffer(){return Uint8Array.from(bytes).buffer;}};
+}
+async function chooseReviewPack(app,text,name='review.json'){
+ const input=app.elements.openReviewPackFile;
+ input.files=[reviewFileFromText(text,name)];
+ return input.listeners.change({currentTarget:input});
+}
+
+test('verified review packages reopen in Draft Lab only after explicit action',async()=>{
+ const app=build(),el=app.elements;
+ const pack=await createEditorialReviewPack(sample);
+ el.openReviewPack.listeners.click();
+ assert.equal(el.openReviewPackFile.clicked,true);
+ assert.equal(el.postTitle.value,'');
+ assert.equal(app.localStorage.getItem(VAULT_KEY),null);
+ await chooseReviewPack(app,pack);
+ for(const [id,key] of [['postTitle','title'],['postBody','body'],
+   ['postLocale','locale'],['postCategory','category'],['postSource','source']])
+  assert.equal(el[id].value,sample[key],key);
+ assert.equal(el.previewHeading.textContent,sample.title);
+ assert.equal(el.openReviewPackFile.value,'');
+ assert.equal(app.beforeUnload().prevented,false,
+  'verified user-selected local package establishes source baseline');
+ assert.match(el.formStatus.textContent,/opened locally/i);
+ assert.equal(app.localStorage.getItem(VAULT_KEY),null);
+ el.postBody.value+=' edited after review';
+ el.postBody.listeners.input();
+ assert.equal(app.beforeUnload().prevented,true);
+});
+
+test('declined review package replacement preserves title, source, preview, baseline and draft',async()=>{
+ const app=build(),el=app.elements;
+ await app.import(formatDraft(sample));
+ el.postTitle.value='Unsaved private manuscript';
+ el.postBody.value='Never overwrite this unsaved private author text!';
+ el.postBody.listeners.input();
+ const original=el.postBody.value,shown=el.previewHeading.textContent;
+ app.setConfirm(false);
+ await chooseReviewPack(app,await createEditorialReviewPack(sample));
+ assert.equal(el.postTitle.value,'Unsaved private manuscript');
+ assert.equal(el.postBody.value,original);
+ assert.equal(el.previewHeading.textContent,shown);
+ assert.match(el.formStatus.textContent,/cancelled/i);
+ assert.equal(app.beforeUnload().prevented,true);
+ assert.equal(el.openReviewPackFile.value,'');
+});
+
+test('tampered, malformed and oversized review packages cannot replace current editor',async()=>{
+ const app=build(),el=app.elements;
+ el.postTitle.value='My unfinished original work';
+ el.postBody.value='Keep my private draft and never open corrupt review packages.';
+ const original=el.postBody.value;
+ const pack=JSON.parse(await createEditorialReviewPack(sample));
+ pack.document=pack.document.replace('first paragraph','malicious substituted paragraph');
+ for(const [raw,name] of [[JSON.stringify(pack),'tampered.json'],['not a package','bad.json']]){
+  await chooseReviewPack(app,raw,name);
+  assert.equal(el.postBody.value,original);
+  assert.equal(el.postTitle.value,'My unfinished original work');
+  assert.equal(el.formStatus.dataset.error,'true');
+  assert.equal(el.openReviewPackFile.value,'');
+ }
+ const oversized=reviewFileFromText('x'.repeat(65537),'oversized.json');
+ el.openReviewPackFile.files=[oversized];
+ await el.openReviewPackFile.listeners.change({currentTarget:el.openReviewPackFile});
+ assert.equal(el.postBody.value,original);
+ assert.equal(app.localStorage.getItem(VAULT_KEY),null);
+});
+
+test('editor mutation during review package read or confirmation cannot replace newer text',async()=>{
+ let finishRead;
+ const app=build({reviewPackReader:()=>new Promise(resolve=>{finishRead=resolve;})}),el=app.elements;
+ const pending=chooseReviewPack(app,'unused');
+ el.postBody.value='New author text entered after review selection.';
+ el.postBody.listeners.input();
+ finishRead({draft:sample,sha256:'0'.repeat(64),bytes:100});
+ await pending;
+ assert.equal(el.postBody.value,'New author text entered after review selection.');
+ assert.equal(el.formStatus.dataset.error,'true');
+
+ const safe=build(),control=safe.elements;
+ control.postTitle.value='Current author draft';
+ control.postBody.value='Original content that must not be replaced on reentrant edits';
+ safe.setConfirmHook(()=>{
+  control.postBody.value+=' newer text';
+  control.postBody.listeners.input();
+ });
+ await chooseReviewPack(safe,await createEditorialReviewPack(sample));
+ assert.equal(control.postTitle.value,'Current author draft');
+ assert.ok(control.postBody.value.endsWith(' newer text'));
+ assert.equal(safe.downloads.length,0);
+ assert.equal(safe.localStorage.getItem(VAULT_KEY),null);
+});
+
+test('a newer review package or ordinary Markdown selection supersedes an older review read',async()=>{
+ const callbacks=new Map();
+ const app=build({reviewPackReader:file=>new Promise(resolve=>callbacks.set(file.name,resolve))}),el=app.elements;
+ const input=el.openReviewPackFile;
+ input.files=[{name:'older.json'}];
+ const older=input.listeners.change({currentTarget:input});
+ input.files=[{name:'newer.json'}];
+ input.value='selected-new';
+ const newer=input.listeners.change({currentTarget:input});
+ callbacks.get('older.json')({draft:{...sample,title:'Older validated review'},bytes:10});
+ await older;
+ assert.equal(input.value,'selected-new');
+ assert.equal(el.postTitle.value,'');
+ callbacks.get('newer.json')({draft:sample,bytes:10});
+ await newer;
+ assert.equal(el.postTitle.value,sample.title);
+ assert.equal(input.value,'');
+
+ const second=build({reviewPackReader:file=>new Promise(resolve=>callbacks.set('pending',resolve))});
+ const review=second.elements.openReviewPackFile;
+ review.files=[{name:'unresolved.json'}];
+ const waiting=review.listeners.change({currentTarget:review});
+ await second.import(formatDraft(sample));
+ callbacks.get('pending')({draft:{...sample,title:'Older review must not replace new markdown'},bytes:10});
+ await waiting;
+ assert.equal(second.elements.postTitle.value,sample.title);
+});
+
+test('verification remains read-only, with separate explicit open controls and translations',async()=>{
+ const html=readFileSync(new URL('../site/draft-lab.html',import.meta.url),'utf8');
+ const editor=readFileSync(new URL('../site/draft-lab.js',import.meta.url),'utf8');
+ assert.match(html,/id="verifyReviewPack"/);
+ assert.match(html,/id="openReviewPack"/);
+ assert.match(html,/id="openReviewPackFile"/);
+ assert.match(editor,/commitOpenedDraft\(verified\.draft\)/);
+ for(const locale of ['en','ru','th','es','fr','de','pt','zh']){
+  for(const key of ['reviewPackOpenButton','reviewPackOpenHint','reviewPackOpenReplaceConfirm',
+   'reviewPackOpenCanceled','reviewPackOpened','reviewPackOpenInvalid','reviewPackOpenInterrupted'])
+   assert.ok(uiText(locale,key).trim().length>=8,locale+'/'+key);
  }
 });
