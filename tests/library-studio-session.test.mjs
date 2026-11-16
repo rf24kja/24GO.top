@@ -29,6 +29,9 @@ test('Studio browser wiring protects cancel, verified import, unchanged exit and
  const page=readFileSync(new URL('../site/library/studio/index.html',import.meta.url),'utf8');
  const css=readFileSync(new URL('../site/library/studio/studio.css',import.meta.url),'utf8');
  assert.match(ui,/function loadTemplate\(template,label,initial=false\)/);
+ assert.ok(ui.includes("function restore(initial=false){return loadTemplate(STUDIO_STARTER,'Counter example',initial===true);}"));
+ assert.ok(ui.includes("addEventListener('click',()=>restore())"),
+  'click Event must never be forwarded as the initial setup permission');
  assert.match(ui,/hasUnsavedChanges\(\)/);
  assert.match(ui,/window\.confirm\('Replace your unsaved Studio source/);
  assert.match(ui,/window\.confirm\('This verified ZIP will replace unsaved Studio source/);
