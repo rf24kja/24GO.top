@@ -12,6 +12,9 @@ const credentialPatterns=[
 const emailPattern=/\b[A-Z0-9._%+-]{1,64}@[A-Z0-9.-]{1,250}\.[A-Z]{2,20}\b/i;
 export function scanDraftSharingRisks(draft){
  if(!draft||typeof draft!=='object'||Array.isArray(draft))throw new TypeError('Invalid draft');
+ if(typeof draft.title!=='string'||typeof draft.body!=='string'||
+    (draft.source!==undefined&&typeof draft.source!=='string'))
+  throw new TypeError('Invalid draft fields');
  const fields=['title','body','source'].map(key=>draft[key]??'');
  if(fields.some(value=>typeof value!=='string')||
     fields.reduce((length,value)=>length+value.length,0)>16000)
