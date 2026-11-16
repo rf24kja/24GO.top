@@ -21,7 +21,16 @@ After the PUBLIC Pages deployment of that exact checkout has completed:
 npm run release:audit
 ```
 
-The public Pages workflow additionally runs `node scripts/verify-pages-delivery.mjs` for an exact commit + workflow-run receipt and critical source bytes, then `npm run release:audit` for all canonical sitemap URLs, eight critical mobile/layout CSS files and fixed Draft Lab/editorial/reader assets. The new verifier is read-only and limited to `https://24go.top`; it sends no credentials, does not follow redirects, limits response size/concurrency and checks every response byte against `site/` in the checked-out public source tree.
+The public Pages workflow additionally runs `node scripts/verify-pages-delivery.mjs` for an exact commit + workflow-run receipt and critical source bytes, then `npm run release:audit` for all canonical sitemap URLs, eight critical mobile/layout CSS files and fixed Draft Lab/editorial/reader assets.
+The fixed manifest now includes **all static module dependencies** of the two
+public authoring entry points (`/draft-lab.js` and
+`/library/studio/studio.mjs`), including translated editor strings, local
+review-package construction, privacy checks and ZIP/session helpers. A CI
+test resolves the transitive relative `import ... from` graph from source
+and fails if any module is not included in the independently checked HTTPS
+byte inventory; dynamic imports require a deliberate audit review. This
+prevents a stale CDN dependency from being overlooked when an entry point
+itself is current. The new verifier is read-only and limited to `https://24go.top`; it sends no credentials, does not follow redirects, limits response size/concurrency and checks every response byte against `site/` in the checked-out public source tree.
 
 **Meaning of PASS:** the audited HTTPS files matched the local reviewed source at test time. It is not a cryptographic receipt, a hosting provider uptime guarantee, search indexing, or a proof of hosted account publishing. The existing public Pages release receipt provides separate commit/run provenance. If either verifier fails, investigate deployment state and CDN caches before claiming the latest release was delivered.
 

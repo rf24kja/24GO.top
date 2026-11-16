@@ -1,3 +1,8 @@
+## Unreleased — verify the whole public authoring module graph (16 November 2026)
+
+- Extend the independent read-only `https://24go.top` byte-for-byte release audit to all static Draft Lab dependencies (i18n, guidance, revisions, review package, proposal, encrypted backup), not only the entry JS file. The App Studio session, ZIP and intake dependencies remain covered.
+- Add a dependency-closure CI test that traverses relative static imports from both authoring entry points; future modules cannot ship without inclusion in the external HTTPS audit. The test rejects unreviewed dynamic imports. No upload, GitHub write action, private repository, production credentials or external API introduced.
+
 ## Unreleased — sensitive manuscript review requires explicit second consent (16 November 2026)
 
 - Before exporting a full plaintext editorial review package, reuse Draft Lab's local credential/email heuristics and display category-only warnings; a flagged manuscript now requires a second explicit author confirmation. No private content or matched values are placed in the prompt, status, logs or network.
