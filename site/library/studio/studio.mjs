@@ -209,7 +209,13 @@ download.addEventListener('click',async()=>{
    .replace(/^-+|-+$/g,'').slice(0,50)||'static-app';
   link.href=url;link.download=slug+'.zip';link.hidden=true;
   document.body.append(link);
-  try{link.click();}finally{link.remove();URL.revokeObjectURL(url);}
+  // Browsers may begin a download asynchronously after the click returns.
+  // Releasing the blob URL immediately can race the native download manager.
+  // This request is NOT proof the user has a durable saved copy.
+  try{link.click();}finally{
+   link.remove();
+   setTimeout(()=>URL.revokeObjectURL(url),10000);
+  }
   announce('Validated ZIP download requested: '+ready.report.files.length+
    ' file · '+ready.report.totalBytes+' expanded bytes · SHA-256: '+
    ready.report.archiveSha256+'. Confirm the download in your browser.');
