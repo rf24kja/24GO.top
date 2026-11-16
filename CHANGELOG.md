@@ -1,3 +1,9 @@
+## Unreleased — Draft Lab local privacy preflight (16 November 2026)
+
+- Add an optional, eight-language **Check draft for private information** action immediately before the human-review proposal path. It scans only current in-tab title/body/source for common credential and email patterns and displays generic warning categories, never matching values.
+- New edits clear prior warnings. This is an incomplete best-effort indicator, not a guarantee of safe sharing, authorization or publication; no writing is sent to GitHub or to a backend by the check.
+- Add bounded, negative-case Node tests and real Chromium mobile/desktop checks for warning/clear states, no leaked values, no browser storage or external requests.
+
 ## Unreleased — static-only App Studio pages (16 November 2026)
 
 - Author HTML-only and HTML/CSS static resources without mandatory JavaScript; load a purpose-built **Static Resource Card** example in the browser and edit or export it without executing custom code.
