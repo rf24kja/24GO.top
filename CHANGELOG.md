@@ -1,3 +1,9 @@
+## Unreleased — opt-in AI-agent GitHub editorial proposal bridge (16 November 2026)
+
+- Introduce `npm run agent:propose`, a preview-first public-OSS GitHub Issues connector for independently verified Ed25519 agent manuscript packages; only owner-reviewed headline, short summary and proof metadata may be posted, never the manuscript, source URL or signing key.
+- Require explicit `--submit --confirm-public` and a scoped GitHub token for one hardcoded public-repo issue write. Add signed-time bounds, sensitive-text and mention checks, best-effort digest deduplication and fail-closed GitHub response handling. Existing human review and Pages publication gates remain mandatory; no agent account, hosted API or private Core is enabled.
+- Add mocked HTTP and real-signature regression tests, update public operator docs and the offline/online trust boundary.
+
 ## Unreleased — verify live Arena tournament JavaScript, not only the viewer (16 November 2026)
 
 - Extend the public exact-byte HTTPS release audit to `/arena/tournament.mjs` and `/arena/tournament-core.mjs`, the actual browser implementation of the multi-match tournament and local scoring.
