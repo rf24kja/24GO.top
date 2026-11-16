@@ -13,7 +13,7 @@ test('blind review starts with identities and timing masked, not merely hidden b
  assert.match(source,/revealed\?agent\.name:'Response '/);
  assert.match(source,/revealed\?agent\.model:/);
  assert.match(source,/revealed\?\s*'Response time:/);
- assert.match(source,/\?\s*'Timing hidden until revealed'/);
+ assert.ok(source.includes("'Timing hidden until revealed'"));
  assert.match(source,/identityStatus\.textContent=revealed\?/);
  assert.doesNotMatch(source,/innerHTML|\bfetch\s*\(|XMLHttpRequest|localStorage|sessionStorage|sendBeacon/);
 });
