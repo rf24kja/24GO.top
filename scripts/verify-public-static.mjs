@@ -29,7 +29,7 @@ export const FIXED_ROUTES=Object.freeze([
  '/library/studio/studio-session.mjs', '/library/studio/studio.css',
  '/library/apps/json-inspector/', '/library/apps/contrast-checker/',
  '/library/apps/text-diff/',
- '/sitemap.xml', '/robots.txt'
+ '/sitemap.xml', '/robots.txt', '/llms.txt'
 ]);
 const SAFE_ROUTE=/^\/(?:[a-z0-9-]+\/)*(?:[a-z0-9-]+\.(?:html|css|js|mjs|xml|json|txt))?$/;
 const MAX_ASSET_BYTES=512*1024;
