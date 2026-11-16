@@ -147,8 +147,8 @@ function loadTemplate(template,label,initial=false){
  announce(label+' loaded. Nothing runs until you click Run isolated preview.');
  return true;
 }
-function restore(initial=false){return loadTemplate(STUDIO_STARTER,'Counter example',initial);}
-$('studio-reset').addEventListener('click',restore);
+function restore(initial=false){return loadTemplate(STUDIO_STARTER,'Counter example',initial===true);}
+$('studio-reset').addEventListener('click',()=>restore());
 $('studio-static').addEventListener('click',()=>loadTemplate(STUDIO_STATIC_STARTER,'Static HTML/CSS example'));
 for(const element of Object.values(fields))element.addEventListener('input',()=>{
  updateSaveNotice();
