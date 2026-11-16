@@ -1,3 +1,8 @@
+## Unreleased — reliable native App Studio ZIP downloads (16 November 2026)
+
+- Do not revoke the Studio ZIP Blob URL synchronously after clicking the browser download anchor. Defer temporary URL cleanup for 10 seconds so asynchronous browser download managers can consume the archive.
+- Keep the explicit-download/unsaved-work semantics unchanged; triggering a download does not guarantee durable storage or clear the leave warning. Chromium E2E verifies both interactive and no-JavaScript ZIPs keep their temporary URL until cleanup, with no network uploads or persistent storage.
+
 ## Unreleased — App Studio protects unsaved source before replacements (16 November 2026)
 
 - Added local source-difference status and best-effort browser leave warning. ZIP download requests do not silently mark editor work as saved.
