@@ -8,6 +8,13 @@ const SAMPLE='<?xml version="1.0"?><urlset xmlns="http://www.sitemaps.org/schema
 const utf8=x=>new TextEncoder().encode(x);
 const text=(data,status=200)=>new Response(data,{status});
 
+test('new author-protection modules are included in byte-for-byte public HTTPS audit',()=>{
+ for(const asset of ['/library/studio/studio-session.mjs','/draft-lab-privacy.js']){
+  assert.ok(FIXED_ROUTES.includes(asset),asset+' must be independently verified');
+  assert.ok(sourcePath(asset).pathname.endsWith('/site'+asset));
+ }
+});
+
 test('builds fixed + sitemap inventory with no accidental duplicates',()=>{
  const routes=releaseRoutes(SAMPLE);
  assert.equal(routes.length,new Set([...FIXED_ROUTES,...sitemapRoutes(SAMPLE)]).size);

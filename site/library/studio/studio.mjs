@@ -1,6 +1,7 @@
 import {STUDIO_STARTER,STUDIO_STATIC_STARTER,buildStudioHtml,buildStudioZip} from './studio-core.mjs';
 import {validateBrowserZip} from '../intake-core.mjs';
 import {readValidatedStudioZip} from './studio-import.mjs';
+import {sameStudioSource,hasUnsavedStudioSource} from './studio-session.mjs';
 
 const $=id=>document.getElementById(id);
 const frame=$('studio-frame'),placeholder=$('studio-preview-placeholder');
@@ -13,6 +14,19 @@ const fields={
 const tabs=[...document.querySelectorAll('[data-lang]')];
 let epoch=0,running=false,active='html';
 let importEpoch=0,actionEpoch=0,importing=false;
+// Only a known built-in example or a verified imported file is a baseline.
+// Preview, export, or attempting a download never counts as a saved copy.
+let sourceBaseline=STUDIO_STARTER;
+const saveNotice=$('studio-save-status');
+function hasUnsavedChanges(){return hasUnsavedStudioSource(readDraft(),sourceBaseline);}
+function updateSaveNotice(){
+ const changed=hasUnsavedChanges();
+ saveNotice.dataset.unsaved=String(changed);
+ const next=changed?
+  'Unsaved source changes in this tab. Download and confirm your ZIP before leaving.':
+  'Current source matches a built-in example or verified imported ZIP.';
+ if(saveNotice.textContent!==next)saveNotice.textContent=next;
+}
 function cancelPendingImport(){
  if(!importing)return;
  ++importEpoch;
@@ -63,9 +77,21 @@ importCheck.addEventListener('click',async()=>{
   if(ticket!==importEpoch)return;
   const draft=readValidatedStudioZip(bytes,report);
   if(ticket!==importEpoch)return;
+  // Confirm only AFTER integrity validation and BEFORE replacing any source.
+  // A native dialog can re-enter editor code: recheck the ticket and source.
+  const previous=readDraft();
+  if(hasUnsavedChanges()){
+   if(!window.confirm('This verified ZIP will replace unsaved Studio source. Download your work first if needed. Continue?')){
+    announceImport('ZIP import cancelled. Your current source and preview were kept.');
+    return;
+   }
+   if(ticket!==importEpoch||!sameStudioSource(previous,readDraft()))return;
+  }
   cancelPendingAction();
   stopPreview(); // import source only — never execute it without a new click
   for(const [name,value] of Object.entries(draft))fields[name].value=value;
+  sourceBaseline={...draft};
+  updateSaveNotice();
   showTab('html');
   announce('Imported previously validated App Studio source. Preview is stopped; click Run isolated preview to execute it.');
   announceImport('Imported '+draft.name+' · ZIP SHA-256: '+report.archiveSha256+
@@ -104,18 +130,28 @@ for(const btn of tabs)btn.addEventListener('click',()=>{
  showTab(btn.dataset.lang);
  fields[btn.dataset.lang].focus({preventScroll:true});
 });
-function loadTemplate(template,label){
+function loadTemplate(template,label,initial=false){
+ const previous=readDraft();
+ if(!initial&&hasUnsavedChanges()&&!sameStudioSource(previous,template)&&
+    !window.confirm('Replace your unsaved Studio source with this example? Download your ZIP first if needed.')){
+  announce('Example change cancelled. Your current source and preview were kept.');
+  return false;
+ }
  cancelPendingImport();
  cancelPendingAction();
  stopPreview();
  for(const [key,value] of Object.entries(template))fields[key].value=value;
+ sourceBaseline=template;
+ updateSaveNotice();
  showTab('html');
- announce(label+' loaded. Previous unsaved editor content was replaced. Nothing runs until you click Run isolated preview.');
+ announce(label+' loaded. Nothing runs until you click Run isolated preview.');
+ return true;
 }
-function restore(){loadTemplate(STUDIO_STARTER,'Counter example');}
-$('studio-reset').addEventListener('click',restore);
+function restore(initial=false){return loadTemplate(STUDIO_STARTER,'Counter example',initial===true);}
+$('studio-reset').addEventListener('click',()=>restore());
 $('studio-static').addEventListener('click',()=>loadTemplate(STUDIO_STATIC_STARTER,'Static HTML/CSS example'));
 for(const element of Object.values(fields))element.addEventListener('input',()=>{
+ updateSaveNotice();
  cancelPendingImport();
  cancelPendingAction();
  if(running)stopPreview();
@@ -182,4 +218,11 @@ download.addEventListener('click',async()=>{
   announce('Export rejected. This source is not a valid static-only Library package.',true);
  }finally{finishAction(action);}
 });
-restore();
+// Browser-native leave warning is best-effort: the browser chooses whether
+// and how to show it. A ZIP download request does not disable the guard.
+window.addEventListener('beforeunload',event=>{
+ if(!hasUnsavedChanges())return;
+ event.preventDefault();
+ event.returnValue='';
+});
+restore(true);

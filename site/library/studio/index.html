@@ -28,7 +28,7 @@
 <p class="studio-kicker">24GOTOP / LIBRARY V1 / CREATE YOUR OWN APP</p>
 <h1>Make it. <span>Test it.</span> Share it.</h1>
 <p class="studio-lead">Write HTML, CSS and JavaScript. Run your project in a locked-down preview, validate the static package, then download a real ZIP for source review.</p>
-<p class="studio-note"><strong>Your work stays on your device.</strong> No account, upload, analytics, external code execution or remote save. Your draft exists only in this browser tab. Copy your source or download the ZIP before closing. Previously downloaded Studio ZIPs can be imported back into these editors.</p>
+<p class="studio-note"><strong>Your work stays on your device.</strong> No account, upload, analytics, external code execution or remote save. Your draft exists only in this browser tab. Download and confirm a saved ZIP before closing. The browser may warn about leaving with unsaved edits; template replacement and verified ZIP import also request confirmation. These prompts cannot recover a lost tab. Previously downloaded Studio ZIPs can be imported back into these editors.</p>
 </header>
 <section class="studio-workspace" aria-labelledby="editor-title">
 <div class="studio-editor">
@@ -73,6 +73,7 @@
 <button type="button" id="studio-close" class="studio-button studio-button--quiet" disabled>Stop preview</button>
 </div>
 <p id="studio-status" role="status" aria-live="polite">The starter project is ready. Code runs only after you choose Run isolated preview.</p>
+<p id="studio-save-status" class="studio-hint studio-save-notice" data-unsaved="false" role="status" aria-live="polite" aria-atomic="true">Current source matches a built-in example or verified imported ZIP.</p>
 </div>
 <div class="studio-runtime" aria-labelledby="preview-title">
 <div class="studio-section-head">

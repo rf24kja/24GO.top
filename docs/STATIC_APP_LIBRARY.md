@@ -59,9 +59,9 @@ API key, existing ZIP or public account is required to start:
    for a real no-JavaScript HTML/CSS resource page. The CSS and JavaScript
    fields are **optional** (HTML body remains required): both can be empty,
    including when previewing, exporting and reimporting a ZIP. The editors
-   can be changed to create an original tool. Switching examples replaces
-   the current unsaved editor text: download your ZIP first. The Studio
-   supports one self-contained page;
+   can be changed to create an original tool. Switching examples now
+   **asks before replacing modified source**; declining leaves the editors
+   and running preview unchanged. The Studio supports one self-contained page;
    no npm, imports, remote scripts, external assets, backend processes
    or separate app files in this first release.
 2. Click **Run isolated preview**. The Studio first compiles one HTML file
@@ -79,8 +79,11 @@ API key, existing ZIP or public account is required to start:
 4. **Continue later:** Return to App Studio and use **Continue an earlier
    Studio project → Load ZIP into editors**. Choose the ZIP you previously
    downloaded from App Studio; the browser rechecks its ZIP structure,
-   hash and original canonical Studio envelope, then restores the name,
-   HTML, CSS and JavaScript without running any imported code. External,
+   hash and original canonical Studio envelope, then asks before
+   overwriting any modified source. Cancelling keeps the source and preview
+   untouched; an import that becomes stale while confirming is discarded.
+   Accepted imports restore the name, HTML, CSS and JavaScript without
+   running any imported code. External,
    multi-file or modified non-Studio archives fail closed. Only after
    an explicit **Run isolated preview** click does the restored project
    execute in the opaque sandbox. Editing and re-exporting creates a new
@@ -102,6 +105,14 @@ otherwise gain the main origin's ambient privileges.
 **Data lifecycle:** Editor text and local app output remain in the current
 tab, without upload, cookies, analytics, account storage or background save.
 Download the ZIP or save your source **before closing or reloading** the tab.
+The status under the editor shows whether source differs from its built-in or
+verified-import baseline; any subsequent edit, even after pressing Download,
+remains marked as unsaved. When leaving, browsers can display their standard,
+best-effort unsaved-change warning (some browsers suppress it). Switching
+templates or applying a verified ZIP requires confirmation before discarding
+unsaved changes. A request to download a ZIP is not proof the browser saved it.
+An accepted template or validated imported ZIP resets the comparison baseline;
+a cancelled replacement cannot stop the preview or alter the manuscript.
 No one can restore a closed-tab draft through 24GOTOP's servers.
 
 ## Contributor submission: ZIP or GitHub checked-out source

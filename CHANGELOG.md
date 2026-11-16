@@ -1,3 +1,9 @@
+## Unreleased — App Studio protects unsaved source before replacements (16 November 2026)
+
+- Added local source-difference status and best-effort browser leave warning. ZIP download requests do not silently mark editor work as saved.
+- Replacing edited work with either built-in example or an integrity-verified Studio ZIP now requires an explicit confirmation. Cancel keeps all editor fields, running isolated preview and import safety state intact. Import confirmation rechecks the active import ticket and exact source against re-entrant edits before writing.
+- Added pure source-baseline tests and real Chromium 280/390/844/1440 negative and recovery cases covering cancellation, original-content restoration, and download/leave behavior. No cloud persistence, public upload, login, network access or backend changes.
+
 ## Unreleased — Draft Lab local privacy preflight (16 November 2026)
 
 - Add an optional, eight-language **Check draft for private information** action immediately before the human-review proposal path. It scans only current in-tab title/body/source for common credential and email patterns and displays generic warning categories, never matching values.
