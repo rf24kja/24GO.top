@@ -194,6 +194,95 @@ async function exerciseSensitiveReviewExport(){
   HTMLAnchorElement.prototype.click=originalClick;
  }
 }
+async function exerciseReviewPackReopen(){
+ const $=id=>document.getElementById(id);
+ const title=$('postTitle'),body=$('postBody');
+ const input=$('openReviewPackFile'),verify=$('reviewPackFile');
+ const originalCreate=URL.createObjectURL,originalRevoke=URL.revokeObjectURL;
+ const originalClick=HTMLAnchorElement.prototype.click,originalConfirm=window.confirm;
+ const storageBefore=localStorage.length;
+ let blob=null,downloads=0,confirmations=0;
+ const set=(id,value)=>{
+  const el=$(id);
+  el.value=value;el.dispatchEvent(new Event('input',{bubbles:true}));
+ };
+ const wait=async check=>{
+  for(let i=0;i<120;i++){
+   if(check())return true;
+   await new Promise(resolve=>setTimeout(resolve,25));
+  }
+  return false;
+ };
+ const select=(control,file)=>{
+  const transfer=new DataTransfer();
+  transfer.items.add(file);
+  control.files=transfer.files;
+  control.dispatchEvent(new Event('change',{bubbles:true}));
+ };
+ try{
+  set('postTitle','Offline reviewer package original article');
+  set('postBody','A real tutorial about offline review handoff with no passwords or tokens.');
+  set('postSource','');
+  $('postLocale').value='en';
+  $('postCategory').value='guides';
+  const originalBody=body.value,originalTitle=title.value;
+  URL.createObjectURL=value=>{downloads++;blob=value;return 'blob:local-review-e2e';};
+  URL.revokeObjectURL=()=>{};
+  HTMLAnchorElement.prototype.click=function(){};
+  window.confirm=()=>true;
+  $('downloadReviewPack').click();
+  const downloaded=await wait(()=>downloads===1&&blob?.size>100);
+  if(!downloaded)return {downloaded:false};
+  const file=new File([blob],'review-pack.json',{type:'application/json'});
+  set('postTitle','Keep this unpublished editor copy');
+  set('postBody','Unpublished changes which must not be overwritten by verification.');
+  // The existing non-destructive checker must not invoke the new open action.
+  select(verify,file);
+  const checkOnly=await wait(()=>$('formStatus').textContent.length>0)&&
+   title.value==='Keep this unpublished editor copy'&&
+   body.value.includes('Unpublished changes')&&!confirmations;
+  window.confirm=()=>{confirmations++;return false;};
+  select(input,file);
+  const refused=await wait(()=>$('formStatus').textContent.length>0)&&
+   confirmations===1&&title.value==='Keep this unpublished editor copy'&&
+   body.value.includes('Unpublished changes');
+  confirmations=0;
+  window.confirm=()=>{confirmations++;return true;};
+  select(input,file);
+  const opened=await wait(()=>title.value===originalTitle)&&
+   confirmations===1&&body.value===originalBody&&
+   $('previewHeading').textContent===originalTitle&&
+   $('draftSafety').textContent.length>10;
+  const tamperedText=(await blob.text()).replace('A real tutorial','An edited tutorial');
+  set('postBody','Author revisions must survive a tampered file.');
+  const afterEdit=body.value;
+  confirmations=0;
+  select(input,new File([tamperedText],'bad-review.json',{type:'application/json'}));
+  const tampered=await wait(()=>$('formStatus').dataset.error==='true')&&
+   confirmations===0&&body.value===afterEdit;
+  // A native confirmation can synchronously re-enter a newer editor change.
+  confirmations=0;
+  window.confirm=()=>{
+   confirmations++;
+   set('postBody','More recent author content during the confirmation.');
+   return true;
+  };
+  select(input,file);
+  const stale=await wait(()=>confirmations===1&&
+   body.value==='More recent author content during the confirmation.')&&
+   title.value===originalTitle;
+  return {downloaded,checkOnly,refused,opened,tampered,stale,
+   noStorage:localStorage.length===storageBefore,
+   buttonHeight:$('openReviewPack').getBoundingClientRect().height,
+   viewport:document.documentElement.clientWidth,
+   overflow:Math.max(document.documentElement.scrollWidth,document.body.scrollWidth)};
+ }finally{
+  URL.createObjectURL=originalCreate;
+  URL.revokeObjectURL=originalRevoke;
+  HTMLAnchorElement.prototype.click=originalClick;
+  window.confirm=originalConfirm;
+ }
+}
 function switchLanguage(locale){
  const $=id=>document.getElementById(id);
  $('uiLocale').value=locale;
@@ -1244,6 +1333,13 @@ async function main(){
       sensitiveExport.scroll>sensitiveExport.width+1)
     throw Error('Draft reviewer sensitive export consent '+profile.name+': '+
       JSON.stringify(sensitiveExport));
+   const reviewOpen=await c.call(exerciseReviewPackReopen,sessionId);
+   if(!reviewOpen.downloaded||!reviewOpen.checkOnly||!reviewOpen.refused||
+      !reviewOpen.opened||!reviewOpen.tampered||!reviewOpen.stale||
+      !reviewOpen.noStorage||reviewOpen.buttonHeight<43.5||
+      reviewOpen.overflow>reviewOpen.viewport+1)
+    throw Error('Verified review package author handoff '+profile.name+': '+
+      JSON.stringify(reviewOpen));
    const photo=await c.call(exerciseDraftImageGate,sessionId);
    if(!photo.before.noSrc||!photo.before.hidden||!photo.before.domain||
       photo.before.alt!=='Technical architecture'||!photo.before.anonymous||
