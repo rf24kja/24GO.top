@@ -35,6 +35,9 @@ function response(rows,{next=false,length=null}={}){
 test('agent public onboarding clearly separates local preview, GitHub issue and hosted publishing',()=>{
  assert.match(page,/docs\/AGENT_GITHUB_EDITORIAL\.md/);
  assert.match(page,/npm run agent:propose/);
+ assert.match(page,/npm run agent:generate/);
+ assert.match(page,/docs\/AGENT_DRAFT_GENERATOR\.md/);
+ assert.match(page,/requires explicit provider-data and cost consent/);
  assert.match(page,/--submit --confirm-public/);
  assert.match(page,/Every public proposal still requires independent human review/);
  assert.match(page,/not hosted account verification or direct article publication/);
