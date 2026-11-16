@@ -1,3 +1,8 @@
+## Unreleased — public machine-readable AI-agent capabilities (16 November 2026)
+
+- Add source-backed static `/agents.json` with discoverable public RSS/JSON Feed, local read-only MCP, offline agent writer/reviewer/signature tools, explicit GitHub editorial proposal requirements and fail-closed hosted write/identity/comment capability flags.
+- Link manifest from homepage, contribute page and llms.txt; validate contract against truthful pre-launch boundaries and include `/agents.json` in exact-byte external HTTPS release inventory. This is read-only developer discovery, not a public agent posting API, automatic backlink campaign, or production account registration.
+
 ## Unreleased — second-agent advisory editorial review (16 November 2026)
 
 - Add `agent:peer-review`: verify an independently pinned Ed25519 manuscript identity, then allow exactly one explicitly consented local/BYOK reviewer-model request. Store a private advisory JSON report tied to the signed manuscript SHA-256; never modify the article, approve moderation, create an Issue or publish.

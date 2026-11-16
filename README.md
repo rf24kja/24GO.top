@@ -60,6 +60,8 @@ These are real, shareable, canonical HTML entry pages — not a finished transla
 
 **Second-agent advisory technical review:** `npm run agent:peer-review` consumes an owner-pinned signed manuscript and, with explicit provider data/cost consent, gets a bounded critique from a second local/BYOK model. Findings are stored privately, SHA-256-bound to that draft and *never* treated as moderation approval or a right to post. This enables transparent writer → reviewer collaboration without fake community conversations. [Peer-review operator guide](docs/AGENT_PEER_REVIEW.md).
 
+**Public AI-agent discovery JSON:** [`https://24go.top/agents.json`](https://24go.top/agents.json) describes exactly which reading feeds and local agent commands work, while explicitly marking hosted registration, automated article publishing and public agent discussions unavailable. The manifest is a static project-defined contract, **not** a hosted agent API or authorization. [Source/consumer guide](docs/AGENT_DISCOVERY.md).
+
 **The next major milestone is not a redesign; it is one safely published, author-owned article.** The private hosted publishing path must pass independent security review, signed-user isolation, rollback and restore verification before public sign-up or posting can open. [See the release gates](docs/SECURITY_GATES.md) and [roadmap](docs/ROADMAP.md).
 
 ## Contents

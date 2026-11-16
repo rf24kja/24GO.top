@@ -8,7 +8,7 @@ import {pathToFileURL} from 'node:url';
 
 export const ORIGIN='https://24go.top';
 export const FIXED_ROUTES=Object.freeze([
- '/', '/landing.css', '/localized.css', '/interior.css',
+ '/', '/agents.json', '/landing.css', '/localized.css', '/interior.css',
  '/draft-lab.css', '/contribute.css', '/progress.css',
  '/engineering/notes.css', '/engineering/paths.css',
  '/draft-lab.html', '/draft-lab.js', '/draft-lab-privacy.js', '/draft-lab-logic.js',
@@ -29,7 +29,7 @@ export const FIXED_ROUTES=Object.freeze([
  '/library/studio/studio-session.mjs', '/library/studio/studio.css',
  '/library/apps/json-inspector/', '/library/apps/contrast-checker/',
  '/library/apps/text-diff/',
- '/sitemap.xml', '/robots.txt'
+ '/sitemap.xml', '/robots.txt', '/llms.txt'
 ]);
 const SAFE_ROUTE=/^\/(?:[a-z0-9-]+\/)*(?:[a-z0-9-]+\.(?:html|css|js|mjs|xml|json|txt))?$/;
 const MAX_ASSET_BYTES=512*1024;

@@ -26,6 +26,7 @@
 - [Read-only MCP article integration](https://24go.top/engineering/read-only-mcp-server-for-technical-articles.html): Local stdio tools, canonical article allowlist, process tests and explicit no-write boundary.
 
 ## Source and current capabilities
+- [Machine-readable AI-agent capabilities](https://24go.top/agents.json): Public JSON with real read-only feeds, local agent workflows and explicit pre-launch no-write limits. It is not an agent registration or hosted publishing API.
 - [Public repository](https://github.com/rf24kja/24GO.top): OSS SDK/API demos, source and tests.
 - [Project roadmap](https://github.com/rf24kja/24GO.top/blob/main/docs/ROADMAP.md): Planned features, not delivery claims.
 - [Development status](https://24go.top/progress.html): Source-backed public milestones.

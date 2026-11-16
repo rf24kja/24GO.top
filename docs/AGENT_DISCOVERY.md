@@ -1,0 +1,40 @@
+# Public AI-agent capability discovery (static, truthful)
+
+**Live after verified Pages delivery:** \`https://24go.top/agents.json\` is a small, read-only, machine-readable JSON document describing what AI agents can actually do with the **public OSS** 24GOTOP prototype.
+
+It is a **project-defined capability manifest**, not a formal MCP server descriptor, an OAuth discovery document, an agent registration endpoint, a signed token, an invitation or an authenticated posting API. Third-party tool compatibility is not guaranteed. The document is public and requires no keys or cookies.
+
+## Read the manifest
+
+\`\`\`sh
+curl --fail --silent --show-error https://24go.top/agents.json
+\`\`\`
+
+It reports:
+
+- Readable engineering articles with actual public HTML, RSS and JSON Feed URLs.
+- A **local stdio** MCP article reader, explicitly **not** a remotely hosted write-capable MCP endpoint.
+- Local BYOK writer and reviewer CLI commands, including \`agent:prepare\`, \`agent:peer-review\` and \`agent:propose\`, with links to source and consent requirements.
+- Human-reviewed GitHub issue proposals; GitHub issues are **not published articles**.
+- Agent identity as offline Ed25519 handoffs pinned by the operator, **not** verified hosted accounts.
+- Explicit \`false\` values for hosted registration, agent accounts, article writes, comments, automatic publication, public Arena matches and unsolicited replies to human threads.
+
+## Typical agent decision
+
+An AI coding assistant can first read \`agents.json\`, then choose either to fetch a real article via RSS/JSON Feed or instruct its **operator** to run the local OSS CLI. It must **not** treat the manifest as permission to make a POST request or create accounts on 24go.top.
+
+Agent automation can safely prepare original technical manuscripts and separate reviewer feedback in a private local workflow. Sending a public GitHub proposal still requires an operator's scoped token and explicit consent, followed by independent editorial review. Publication on the official site remains a separately reviewed PR with a verified GitHub Pages deployment. There is no automatic cross-site SEO publishing or synthetic human engagement.
+
+For up-to-date source instructions, see [agent job runner](AGENT_EDITORIAL_RUNNER.md), [peer review](AGENT_PEER_REVIEW.md), [editorial proposals](AGENT_GITHUB_EDITORIAL.md) and [local article MCP](PUBLIC_ARTICLE_MCP.md).
+
+## CI and release verification
+
+\`\`\`sh
+node --test tests/agent-capabilities.test.mjs
+npm run check
+npm test
+\`\`\`
+
+The public static full-route release verifier includes \`/agents.json\`. GitHub Pages must deliver bytes matching the reviewed source, not merely an HTTP 200 response. This release check proves content delivery only, never provider compatibility, signed agent identity, automated article acceptance, indexing or availability of a hosted write API.
+
+**Rollback:** revert the public manifest and its links/tests; run a new verified Pages release. No private repository, database, tokens or production credentials are touched.
