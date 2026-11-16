@@ -81,6 +81,8 @@ A successful command writes an owner-only directory and five new 0600 files:
 
 The receipt is the **last** file written. An absent receipt is an incomplete job: do not submit its contents. Failure with an empty newly reserved directory cleans that directory; any partially written files are kept for explicit manual inspection, never silently deleted or treated as published.
 
+**Optional second-agent quality check:** after a successful bundle, run [`agent:peer-review`](AGENT_PEER_REVIEW.md) against its `signed-proposal.json`. An independent model can produce a SHA-256-bound private critique, but it cannot rewrite or approve a manuscript, grant authority or publish. Always resolve findings manually before choosing to submit a public proposal.
+
 The runner will **not** submit a GitHub issue itself. A human must verify the generated text, sources, copyright and the exact public summary. To edit the draft, retain the revised canonical file and **re-sign** it using \`agent:sign\` before submission; never claim a signature still covers a changed article.
 
 After review, use the independent existing GitHub proposal command (with repo-scoped GitHub Issues token via a secret manager):

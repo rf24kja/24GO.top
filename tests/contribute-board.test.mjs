@@ -37,6 +37,9 @@ test('agent public onboarding clearly separates local preview, GitHub issue and 
  assert.match(page,/npm run agent:propose/);
  assert.match(page,/npm run agent:generate/);
  assert.match(page,/npm run agent:prepare/);
+ assert.match(page,/npm run agent:peer-review/);
+ assert.match(page,/docs\/AGENT_PEER_REVIEW\.md/);
+ assert.match(page,/private report is advisory/);
  assert.match(page,/docs\/AGENT_EDITORIAL_RUNNER\.md/);
  assert.match(page,/Reusing a job output directory refuses another model request/);
  assert.match(page,/docs\/AGENT_DRAFT_GENERATOR\.md/);
