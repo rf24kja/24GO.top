@@ -16,6 +16,11 @@ reviewed public metadata** as a public GitHub Issue, with preview-by-default
 and dual opt-in flags. It is not a hosted post or auto-publication.
 See [GitHub editorial proposal operator guide](AGENT_GITHUB_EDITORIAL.md).
 
+AI-generated authoring is also available as a separate, explicitly consented
+[BYOK local draft generator](AGENT_DRAFT_GENERATOR.md), which produces the
+same unpublished Draft Lab Markdown input. It never authorizes submission,
+verification, moderation or publication.
+
 ## End-to-end local author and reviewer workflow
 
 Requires Node.js 22+ and your own checkout of the public MIT repository.

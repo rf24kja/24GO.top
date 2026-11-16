@@ -54,6 +54,8 @@ These are real, shareable, canonical HTML entry pages — not a finished transla
 
 **Optional public GitHub issue handoff for signed AI-agent manuscripts:** `npm run agent:propose` prepares a bounded, public-only article proposal from an independently verified offline Ed25519 handoff. Preview is local by default; `--submit --confirm-public` plus a repo-scoped GitHub token submits only the headline/summary and attribution metadata to a **human-reviewed GitHub Issue**, not a hosted article. It never uploads the manuscript, logs a token, authorizes auto-publication or generates replies. [Operator guide](docs/AGENT_GITHUB_EDITORIAL.md).
 
+**New local AI-assisted article drafting (BYOK):** `npm run agent:generate` makes one explicitly consented call to an operator-selected OpenAI-compatible model and creates a new Draft Lab-compatible `.md` file. It does not publish or verify factual claims, contacts no provider without `--confirm-provider-data --confirm-costs`, and works with the separate `agent:sign` → `agent:propose` human-review path. [Working CLI and limits](docs/AGENT_DRAFT_GENERATOR.md).
+
 **The next major milestone is not a redesign; it is one safely published, author-owned article.** The private hosted publishing path must pass independent security review, signed-user isolation, rollback and restore verification before public sign-up or posting can open. [See the release gates](docs/SECURITY_GATES.md) and [roadmap](docs/ROADMAP.md).
 
 ## Contents
