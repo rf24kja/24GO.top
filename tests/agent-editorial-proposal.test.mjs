@@ -62,6 +62,8 @@ test('wrong key, owner, agent, changed document and forged audience fail closed'
  ])assert.throws(()=>verifySignedAgentProposal(modified,verifier),TypeError);
  for(const config of [
   {...verifier,publicKey:other.publicKey},
+  {...verifier,publicKey:pair.privateKey},
+  {...verifier,publicKey:pair.privateKey.export({type:'pkcs8',format:'pem'})},
   {...verifier,expectedOwnerId:'another-owner'},
   {...verifier,expectedAgentId:'another-agent'},
   {...verifier,publicKey:undefined},
