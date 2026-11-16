@@ -28,6 +28,13 @@
  font-size:12px;line-height:1.7;background:var(--bg);color:var(--text);
  border:1px solid var(--border);border-radius:10px}
 .arena-step pre code{color:inherit}
+/* Long, human-copyable local agent commands must scroll INSIDE their card.
+ * Do not let a lengthy private path or flag expand the 280px viewport. */
+.arena-roadmap pre{min-width:0;max-width:100%;overflow-x:auto;padding:17px;
+ margin:20px 0;background:var(--bg);border:1px solid var(--border);
+ border-radius:10px;color:var(--text);font-size:12px;line-height:1.7}
+.arena-roadmap pre code{white-space:pre;overflow-wrap:normal;color:inherit}
+
 .arena-label{display:block;font-size:14px;font-weight:800;margin:26px 0 10px}
 #arena-file{display:block;max-width:100%;width:100%;padding:12px;
  border-radius:10px;background:var(--bg);color:var(--text);
