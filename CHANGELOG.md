@@ -1,3 +1,9 @@
+## Unreleased — resume a verified offline review package in Draft Lab (16 November 2026)
+
+- Add a distinct **Open verified review package** action next to the existing read-only Check button. Local SHA-256 and canonical Draft Lab metadata validation must finish before overwrite consent; successful opening restores all five editable fields and only the in-tab file baseline, without uploading or publishing.
+- Deny/invalid/tampered packages leave current author work untouched. Async import tickets block stale selected files, edits during confirmation and cross-action check/open races; the ordinary .md import remains compatible. Eight localized accessible labels and instructions added.
+- Add Node integration and Chromium mobile/desktop E2E for valid reopens, cancellation, tamper rejection, stale reads, cross-import, source preservation and no browser storage writes. Integrity is not reviewer identity, license approval, or publication.
+
 ## Unreleased — verify the whole public authoring module graph (16 November 2026)
 
 - Extend the independent read-only `https://24go.top` byte-for-byte release audit to all static Draft Lab dependencies (i18n, guidance, revisions, review package, proposal, encrypted backup), not only the entry JS file. The App Studio session, ZIP and intake dependencies remain covered.
