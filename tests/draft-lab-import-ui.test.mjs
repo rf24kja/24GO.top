@@ -1964,3 +1964,70 @@ test('bulk replace affordances are local and translated in eight languages',()=>
  }
  assert.doesNotMatch(source,/fetch\(|sendBeacon|XMLHttpRequest|eval\(/);
 });
+
+
+test('full review package requires separate consent for detected private data',async()=>{
+ const app=build();
+ for(const [key,value] of Object.entries(sample)){
+  const id={title:'postTitle',body:'postBody',locale:'postLocale',category:'postCategory',source:'postSource'}[key];
+  app.elements[id].value=value;
+ }
+ const key='Bearer '+'R'.repeat(36);
+ app.elements.postBody.value=sample.body+'\\n'+key;
+ let prompts=0;
+ app.setConfirmHook(()=>{prompts++;app.setConfirm(prompts===1);});
+ await app.elements.downloadReviewPack.listeners.click();
+ assert.equal(prompts,2,'sensitive export asks both full-text and separate risk consent');
+ assert.equal(app.downloads.length,0,'cancelling second consent cannot download plaintext');
+ assert.match(app.elements.formStatus.textContent,/cancel/i);
+ assert.equal(app.elements.draftPrivacyStatus.dataset.risk,'true');
+ assert.ok(app.elements.draftPrivacyStatus.textContent.length>10);
+ assert.ok(!app.elements.draftPrivacyStatus.textContent.includes(key),
+  'never echo detected credential in warning');
+ // Explicitly accepting both questions may export a review package locally.
+ prompts=0;app.setConfirmHook(()=>{prompts++;app.setConfirm(true);});
+ await app.elements.downloadReviewPack.listeners.click();
+ assert.equal(prompts,2);
+ assert.equal(app.downloads.length,1);
+ assert.equal(app.downloads[0].name,'24gotop-editorial-review-pack.json');
+ assert.equal(app.elements.postBody.value,sample.body+'\\n'+key);
+});
+
+test('clean review package requires only existing one confirmation',async()=>{
+ const app=build();
+ app.elements.postTitle.value=sample.title;
+ app.elements.postBody.value=sample.body;
+ app.elements.postLocale.value=sample.locale;
+ app.elements.postCategory.value=sample.category;
+ app.elements.postSource.value=sample.source;
+ let prompts=0;
+ app.setConfirm(true);app.setConfirmHook(()=>prompts++);
+ await app.elements.downloadReviewPack.listeners.click();
+ assert.equal(prompts,1);
+ assert.equal(app.downloads.length,1);
+ assert.equal(app.elements.draftPrivacyStatus.textContent,'');
+});
+
+test('editing in either review export confirmation invalidates full-text consent',async()=>{
+ for(const mutateAfter of [1,2]){
+  const app=build();
+  app.elements.postTitle.value=sample.title;
+  app.elements.postBody.value=sample.body+'\\nBearer '+'T'.repeat(36);
+  app.elements.postLocale.value=sample.locale;
+  app.elements.postCategory.value=sample.category;
+  let prompts=0;
+  app.setConfirm(true);
+  app.setConfirmHook(()=>{
+   prompts++;
+   if(prompts===mutateAfter){
+    app.elements.postBody.value+='\\nNew author content';
+    app.elements.postBody.listeners.input();
+   }
+  });
+  await app.elements.downloadReviewPack.listeners.click();
+  assert.equal(prompts,mutateAfter);
+  assert.equal(app.downloads.length,0);
+  assert.match(app.elements.formStatus.textContent,/changed during export/i);
+  assert.ok(app.elements.postBody.value.includes('New author content'));
+ }
+});
