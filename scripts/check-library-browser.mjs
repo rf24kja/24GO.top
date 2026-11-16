@@ -355,22 +355,30 @@ async function exerciseStudio(){
    if(result){interactive=result.count==='1';childOrigin=result.origin;}
   }
  }
- let blob=null,filename='',revoked=false;
+ let blob=null,filename='',revoked=false,deferredCleanup=false;
+ let scheduledCleanup=null;
  const originalCreate=URL.createObjectURL,originalRevoke=URL.revokeObjectURL,
-  originalClick=HTMLAnchorElement.prototype.click;
+  originalClick=HTMLAnchorElement.prototype.click,originalTimeout=window.setTimeout;
  try{
   URL.createObjectURL=next=>{blob=next;return 'blob:studio-zip-test'};
   URL.revokeObjectURL=url=>{revoked=url==='blob:studio-zip-test'};
   HTMLAnchorElement.prototype.click=function(){filename=this.download;};
+  window.setTimeout=(callback,delay,...args)=>{
+   if(delay===10000){scheduledCleanup=callback;return -1;}
+   return originalTimeout(callback,delay,...args);
+  };
   $('studio-download').click();
   await waitFor(()=>$('studio-status').textContent.includes('download requested'));
+  deferredCleanup=!revoked&&typeof scheduledCleanup==='function';
+  if(scheduledCleanup)scheduledCleanup();
  }finally{
+  window.setTimeout=originalTimeout;
   URL.createObjectURL=originalCreate;
   URL.revokeObjectURL=originalRevoke;
   HTMLAnchorElement.prototype.click=originalClick;
  }
  const archive=blob?new Uint8Array(await blob.arrayBuffer()):null;
- const exported=filename==='counter-lab.zip'&&revoked&&
+ const exported=filename==='counter-lab.zip'&&revoked&&deferredCleanup&&
   blob.type==='application/zip'&&archive.length>100&&
   archive[0]===0x50&&archive[1]===0x4b&&archive[2]===0x03&&archive[3]===0x04&&
   $('studio-status').textContent.includes('SHA-256');
@@ -457,22 +465,30 @@ async function exerciseStudio(){
   front.getAttribute('srcdoc').includes('<script></script>')&&
   front.getAttribute('srcdoc').includes('Useful resources')&&
   front.getAttribute('srcdoc').includes("connect-src 'none'");
- let staticBlob=null,staticName='';
+ let staticBlob=null,staticName='',staticRevoked=false,staticDeferred=false;
+ let staticCleanup=null;
  const staticCreate=URL.createObjectURL,staticRevoke=URL.revokeObjectURL,
-  staticClick=HTMLAnchorElement.prototype.click;
+  staticClick=HTMLAnchorElement.prototype.click,staticTimeout=window.setTimeout;
  try{
   URL.createObjectURL=value=>{staticBlob=value;return 'blob:studio-static-e2e';};
-  URL.revokeObjectURL=()=>{};
+  URL.revokeObjectURL=url=>{staticRevoked=url==='blob:studio-static-e2e';};
   HTMLAnchorElement.prototype.click=function(){staticName=this.download;};
+  window.setTimeout=(callback,delay,...args)=>{
+   if(delay===10000){staticCleanup=callback;return -1;}
+   return staticTimeout(callback,delay,...args);
+  };
   $('studio-download').click();
   await waitFor(()=>$('studio-status').textContent.includes('download requested'));
+  staticDeferred=!staticRevoked&&typeof staticCleanup==='function';
+  if(staticCleanup)staticCleanup();
  }finally{
+  window.setTimeout=staticTimeout;
   URL.createObjectURL=staticCreate;
   URL.revokeObjectURL=staticRevoke;
   HTMLAnchorElement.prototype.click=staticClick;
  }
  const staticZip=staticBlob?new Uint8Array(await staticBlob.arrayBuffer()):null;
- const staticExported=staticName==='static-resource-card.zip'&&staticZip?.length>100&&
+ const staticExported=staticName==='static-resource-card.zip'&&staticRevoked&&staticDeferred&&staticZip?.length>100&&
   staticZip[0]===0x50&&staticZip[1]===0x4b;
  if(staticZip)putStudioZip(staticZip,'static-page.zip');
  $('studio-import-check').click();
