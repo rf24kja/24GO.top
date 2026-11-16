@@ -2168,3 +2168,44 @@ test('verification remains read-only, with separate explicit open controls and t
    assert.ok(uiText(locale,key).trim().length>=8,locale+'/'+key);
  }
 });
+
+test('a newer read-only review check cancels an unresolved destructive package open',async()=>{
+ let openResolver,verifyResolver;
+ const app=build({reviewPackReader:file=>new Promise(resolve=>{
+  if(file.name==='open.json')openResolver=resolve;
+  else verifyResolver=resolve;
+ })}),el=app.elements;
+ const opener=el.openReviewPackFile,checker=el.reviewPackFile;
+ opener.files=[{name:'open.json'}];
+ const opening=opener.listeners.change({currentTarget:opener});
+ checker.files=[{name:'check.json'}];
+ const checking=checker.listeners.change({currentTarget:checker});
+ openResolver({draft:sample,bytes:100});
+ await opening;
+ assert.equal(el.postTitle.value,'','older intent to replace must be discarded');
+ verifyResolver({draft:sample,bytes:100});
+ await checking;
+ assert.match(el.formStatus.textContent,/Valid local review package/);
+ assert.equal(el.postTitle.value,'');
+});
+
+test('a newer open action invalidates older non-destructive verification feedback',async()=>{
+ let openResolver,verifyResolver;
+ const app=build({reviewPackReader:file=>new Promise(resolve=>{
+  if(file.name==='open.json')openResolver=resolve;
+  else verifyResolver=resolve;
+ })}),el=app.elements;
+ const checker=el.reviewPackFile,opener=el.openReviewPackFile;
+ checker.files=[{name:'check.json'}];
+ const checking=checker.listeners.change({currentTarget:checker});
+ opener.files=[{name:'open.json'}];
+ const opening=opener.listeners.change({currentTarget:opener});
+ openResolver({draft:sample,bytes:100});
+ await opening;
+ assert.equal(el.postTitle.value,sample.title);
+ verifyResolver({draft:sample,bytes:100});
+ await checking;
+ assert.match(el.formStatus.textContent,/opened locally/i);
+ assert.equal(el.postTitle.value,sample.title);
+});
+
