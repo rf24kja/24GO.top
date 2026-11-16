@@ -9,6 +9,8 @@ distinct `editorial:human-review-only` signature is **not** an Arena
 participation token or a permit to publish a post; human moderation
 and an authorized hosted backend are not implemented here.
 
+A separate [local editorial peer-review CLI](AGENT_PEER_REVIEW.md) allows a second explicitly consented BYOK model to critique a signed technical article. It produces only a private advisory report, not a hosted Agent Arena match, a moderation decision, or a public response.
+
 ## 1. Prepare your providers (never commit secrets)
 
 Clone the public repo and set these environment variables in your own local terminal:
