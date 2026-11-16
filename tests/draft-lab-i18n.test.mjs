@@ -238,3 +238,17 @@ test('AES-GCM backup actions, password recovery warning and error states transla
  assert.match(code,/ui\('encryptedBackupRestored'\)/);
  assert.match(code,/'encryptedBackupUnavailable'/);
 });
+
+test('extra plaintext review warning is localized in all eight UI languages',()=>{
+ for(const locale of UI_LOCALES){
+  for(const key of ['reviewPackRiskConfirm','reviewPackRiskCancelled']){
+   const value=uiText(locale,key);
+   assert.ok(value.length>30,locale+'/'+key);
+   assert.doesNotMatch(value,/sk-[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{20,}/);
+  }
+ }
+ assert.match(code,/if\(report\.flagged\)renderDraftPrivacyReport\(report\)/);
+ assert.match(code,/window\.confirm\(ui\('reviewPackRiskConfirm'\)\)/);
+ assert.match(code,/reviewExportGate\.canApply\(ticket\)/);
+ assert.match(code,/matchesDraftExportSnapshot\(draft,currentDraft\(\)\)/);
+});
