@@ -8,3 +8,7 @@ coverage/
 .vscode/
 data/*.json
 !data/.gitkeep
+
+# Keep newly generated local signing keys and unpublished work off GitHub.
+*.private.pem
+/local-agent-work/
