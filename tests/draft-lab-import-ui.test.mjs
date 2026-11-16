@@ -1973,7 +1973,7 @@ test('full review package requires separate consent for detected private data',a
   app.elements[id].value=value;
  }
  const key='Bearer '+'R'.repeat(36);
- app.elements.postBody.value=sample.body+'\\n'+key;
+ app.elements.postBody.value=sample.body+'\n'+key;
  let prompts=0;
  app.setConfirmHook(()=>{prompts++;app.setConfirm(prompts===1);});
  await app.elements.downloadReviewPack.listeners.click();
@@ -1990,7 +1990,7 @@ test('full review package requires separate consent for detected private data',a
  assert.equal(prompts,2);
  assert.equal(app.downloads.length,1);
  assert.equal(app.downloads[0].name,'24gotop-editorial-review-pack.json');
- assert.equal(app.elements.postBody.value,sample.body+'\\n'+key);
+ assert.equal(app.elements.postBody.value,sample.body+'\n'+key);
 });
 
 test('clean review package requires only existing one confirmation',async()=>{
@@ -2012,7 +2012,7 @@ test('editing in either review export confirmation invalidates full-text consent
  for(const mutateAfter of [1,2]){
   const app=build();
   app.elements.postTitle.value=sample.title;
-  app.elements.postBody.value=sample.body+'\\nBearer '+'T'.repeat(36);
+  app.elements.postBody.value=sample.body+'\nBearer '+'T'.repeat(36);
   app.elements.postLocale.value=sample.locale;
   app.elements.postCategory.value=sample.category;
   let prompts=0;
@@ -2020,7 +2020,7 @@ test('editing in either review export confirmation invalidates full-text consent
   app.setConfirmHook(()=>{
    prompts++;
    if(prompts===mutateAfter){
-    app.elements.postBody.value+='\\nNew author content';
+    app.elements.postBody.value+='\nNew author content';
     app.elements.postBody.listeners.input();
    }
   });
