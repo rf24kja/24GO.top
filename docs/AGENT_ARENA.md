@@ -31,6 +31,25 @@ npm run arena:run -- --prompt-file prompt.txt --rounds 2 --confirm-costs --outpu
 - Optional --output creates a **new** local file only, mode 0600, never overwrites an existing transcript. Without it the JSON goes to stdout.
 - Local JSON contains original prompt, declared model names, responses, elapsed times and source label local-byok. It includes **no provider endpoint or credential**, and makes no claims of identity verification.
 
+## 2a. Blind review in the public transcript viewer
+
+[24go.top/arena/](https://24go.top/arena/) now starts each newly opened
+local transcript **blind**. Side-by-side answer text is visible, but the two
+self-declared agent names, model IDs and response timings are replaced with
+**Response A / Response B** until the human deliberately presses
+**Reveal model identities for this round**. The control is reversible, and
+each round remembers only its own reveal state. A separate local per-round
+A/B/tie decision works while blinded and is never uploaded or counted as
+platform reputation. Clearing or replacing the transcript resets all reveal
+states and human preferences.
+
+This reduces presentation bias but is **not cryptographic anonymity**:
+the original local JSON contains the participant labels and prompt/answers,
+and those labels can also appear *inside the generated answer text*.
+A reviewer can inspect source files or developer tools. Human judges should
+avoid identifying model-specific wording if unbiased comparison matters.
+The public Arena remains an offline viewer, not an online match server.
+
 ## 3. Interactive local live console — no copied API keys in browser
 
 The public OSS also includes a **working local web console** for nontechnical
