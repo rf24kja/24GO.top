@@ -374,6 +374,7 @@ async function exerciseStudio(){
   blob.type==='application/zip'&&archive.length>100&&
   archive[0]===0x50&&archive[1]===0x4b&&archive[2]===0x03&&archive[3]===0x04&&
   $('studio-status').textContent.includes('SHA-256');
+ const downloadedStillDirty=$('studio-save-status').dataset.unsaved==='true';
  const width=document.documentElement.clientWidth;
  const overflow=Math.max(document.documentElement.scrollWidth,document.body.scrollWidth);
  const touch=$('studio-preview-run').getBoundingClientRect().height>=43.5&&
@@ -510,6 +511,19 @@ async function exerciseStudio(){
   !front.hidden&&front.getAttribute('srcdoc')===previewHtml&&
   $('studio-css').value===originalCss+'\\n/* in-progress change */'&&
   $('studio-save-status').dataset.unsaved==='true';
+ // A confirmation callback that re-enters editor input must never allow the
+ // validated, now stale ZIP to replace newer text.
+ window.confirm=()=>{
+  $('studio-css').value+=' /* newest author change */';
+  $('studio-css').dispatchEvent(new Event('input',{bubbles:true}));
+  return true;
+ };
+ putStudioZip(archive,'reentrant-studio.zip');
+ $('studio-import-check').click();
+ const reentrantProtected=await waitFor(()=>
+  $('studio-import-status').textContent.includes('import cancelled'))&&
+  $('studio-css').value.includes('newest author change')&&front.hidden&&
+  $('studio-name').value==='Static Resource Card';
  // Reverting the exact changed field restores the imported-file baseline.
  $('studio-css').value=originalCss;
  $('studio-css').dispatchEvent(new Event('input',{bubbles:true}));
@@ -529,7 +543,7 @@ async function exerciseStudio(){
   importEnabled,imported,corruptRejected,importRaceEdit,importRaceReset,
   staticReady,staticPreview,staticExported,staticImported,
   cleanImport,cleanNavigation,dirtyNotice,dirtyNavigation,declinedTemplate,
-  declinedImport,reverted,revertNavigation,resetClean,
+  declinedImport,reentrantProtected,downloadedStillDirty,reverted,revertNavigation,resetClean,
   consentInvoked:confirmations>0&&denies===2,staticButtonHeight,importButtonHeight,
   noStorage:localStorage.length===beforeStorage,
   width,overflow};
@@ -578,8 +592,8 @@ async function main(){
        'importEnabled','imported','corruptRejected','importRaceEdit','importRaceReset',
        'staticReady','staticPreview','staticExported','staticImported',
        'cleanImport','cleanNavigation','dirtyNotice','dirtyNavigation',
-       'declinedTemplate','declinedImport','reverted','revertNavigation',
-       'resetClean','consentInvoked'].includes(key)&&!value)||
+       'declinedTemplate','declinedImport','reentrantProtected','downloadedStillDirty',
+       'reverted','revertNavigation','resetClean','consentInvoked'].includes(key)&&!value)||
       studio.childOrigin!=='null'||studio.staticButtonHeight<43.5||studio.importButtonHeight<43.5||studio.overflow>studio.width+1)
     throw Error('Library App Studio Chromium '+width+': '+JSON.stringify(studio));
   }
