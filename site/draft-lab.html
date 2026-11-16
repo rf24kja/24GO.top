@@ -175,6 +175,11 @@
           <span class="eyebrow" data-ui="proposalTag">03 / CONTRIBUTE</span>
           <h3 id="proposal-heading" data-ui="proposalHeading">Propose this article for human review</h3>
           <p data-ui="proposalDescription">Open the public GitHub editorial proposal form with your headline prefilled. Only the title is transferred when you confirm; your article text, sources and local file stay here.</p>
+          <div class="proposal-privacy-check">
+            <button id="checkDraftPrivacy" type="button" class="secondary" data-ui="privacyCheckButton">Check draft for private information</button>
+            <p class="tiny" data-ui="privacyCheckHint">Optional on-device pattern check before sharing a review package. No draft leaves this tab. It can miss secrets and is not a safety guarantee.</p>
+            <p id="draftPrivacyStatus" role="status" aria-live="polite" aria-atomic="true"></p>
+          </div>
           <a id="proposeDraft" class="proposal-bridge__link" href="https://github.com/rf24kja/24GO.top/issues/new?template=article_proposal.yml" target="_blank" rel="noopener noreferrer" data-ui="proposalCta">Propose on GitHub ↗</a>
           <p class="tiny" data-ui="proposalPrivacy">GitHub proposals are public and need a GitHub account. Download your .md first. Human review is not hosted publishing and does not guarantee publication.</p>
         </aside>

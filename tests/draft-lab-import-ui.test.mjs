@@ -14,6 +14,7 @@ import {appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS} from '../site/dr
 import {captureDraftRevision,compareDraftRevisions,revisionSummary} from '../site/draft-lab-revisions.js';
 import {createEditorialReviewPack,readEditorialReviewPackFile,verifyEditorialReviewPack} from '../site/draft-lab-review-pack.js';
 import {buildArticleProposalUrl} from '../site/draft-lab-proposal.js';
+import {scanDraftSharingRisks} from '../site/draft-lab-privacy.js';
 import {createDraftVault,MAX_SAVED_DRAFTS,MAX_VAULT_BACKUP_BYTES,VAULT_KEY} from '../site/draft-lab-vault.js';
 
 const source = readFileSync(fileURLToPath(new URL('../site/draft-lab.js', import.meta.url)), 'utf8')
@@ -24,6 +25,7 @@ const source = readFileSync(fileURLToPath(new URL('../site/draft-lab.js', import
   .replace(/^import .* from '.\/draft-lab-review-pack\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-i18n\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-proposal\.js';\n/m, '')
+  .replace(/^import .* from '.\/draft-lab-privacy\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-vault\.js';\n/m, '')
   .replace(/^import .* from '.\/draft-lab-encrypted-backup\.js';\n/m, '');
 
@@ -45,7 +47,7 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
     'downloadReviewPack','verifyReviewPack','reviewPackFile','insertExternalMarkdown','externalMarkdownFile','printDraft',
     'previewSource','draftSafety','articleOutline','articleOutlineSection','downloadDraft','copyDraft','clearDraft','importDraft','importDraftFile','draftForm',
     'draftSectionPicker','draftSectionJump','draftSectionStatus','draftFindQuery','draftFindNext','draftFindPrevious','draftFindStatus','draftReplaceText','draftFindReplace','draftFindReplaceAll','draftFindUndoAll',
-    'formatBold','formatItalic','formatInlineCode','formatHeading','formatList','formatOrderedList','formatQuote','formatCode','formatTable','formatLink','insertImage','imageUrl','imageAlt','uiLocale','draftDropZone','homeBrandLink','homeNavLink','proposeDraft',
+    'formatBold','formatItalic','formatInlineCode','formatHeading','formatList','formatOrderedList','formatQuote','formatCode','formatTable','formatLink','insertImage','imageUrl','imageAlt','uiLocale','draftDropZone','homeBrandLink','homeNavLink','proposeDraft','checkDraftPrivacy','draftPrivacyStatus',
     'saveBrowserDraft','savedBrowserDraft','openBrowserDraft','deleteBrowserDraft','vaultCount','exportDraftLibrary','restoreDraftLibrary','draftLibraryFile','vaultBackupPassword','exportEncryptedDraftLibrary','restoreEncryptedDraftLibrary','encryptedBackupFile'
   ];
   const elements = Object.fromEntries(ids.map(id => {
@@ -106,7 +108,7 @@ function build({uiHref='https://24go.top/draft-lab.html',allowClipboard=false,
     document, window, navigator, URL:BrowserURL, Blob, setTimeout,
     safeSourceUrl,validateDraft,formatDraft,draftFilename,hasDraftContent,
     parseDraftFile,readDraftFileStrict,MAX_DRAFT_FILE_BYTES,hasUnexportedChanges,formatDraftSelection,formatDraftImageSelection,readExternalMarkdownStrict,formatExternalMarkdownInsertion,countDraftWords,createDraftImportGate,matchesDraftExportSnapshot,invalidDraftField,findDraftText,replaceDraftFindMatch,replaceAllDraftMatches,locateDraftSections,
-    uiText,applyUiLanguage,appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS,captureDraftRevision,compareDraftRevisions,revisionSummary,createEditorialReviewPack:reviewPackGenerator,readEditorialReviewPackFile:reviewPackReader,buildArticleProposalUrl,
+    uiText,applyUiLanguage,appendDraftTemplate,analyzeDraftGuidance,GUIDANCE_KEYS,captureDraftRevision,compareDraftRevisions,revisionSummary,createEditorialReviewPack:reviewPackGenerator,readEditorialReviewPackFile:reviewPackReader,buildArticleProposalUrl,scanDraftSharingRisks,
     createDraftVault,MAX_SAVED_DRAFTS,MAX_VAULT_BACKUP_BYTES,VAULT_KEY,TextDecoder,
     encryptDraftLibraryBackup:(text,password)=>encryptDraftLibraryBackup(text,password,{cryptoImpl:webcrypto}),
     decryptDraftLibraryBackup:(text,password)=>decryptDraftLibraryBackup(text,password,{cryptoImpl:webcrypto}),

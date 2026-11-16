@@ -7,6 +7,7 @@ import {captureDraftRevision,compareDraftRevisions,revisionSummary} from './draf
 import {createEditorialReviewPack,readEditorialReviewPackFile} from './draft-lab-review-pack.js';
 import { applyUiLanguage,uiText } from './draft-lab-i18n.js';
 import { buildArticleProposalUrl } from './draft-lab-proposal.js';
+import {scanDraftSharingRisks} from './draft-lab-privacy.js';
 import {createDraftVault,MAX_SAVED_DRAFTS,MAX_VAULT_BACKUP_BYTES,VAULT_KEY} from './draft-lab-vault.js';
 import {encryptDraftLibraryBackup,decryptDraftLibraryBackup,ENCRYPTED_BACKUP_MAX_BYTES} from './draft-lab-encrypted-backup.js';
 
@@ -46,6 +47,8 @@ function refreshInterface(){
   preview();
   updateValidationNotice();
   refreshBrowserDrafts();
+  // A previous check must not imply that later edits or a UI locale were checked.
+  field('draftPrivacyStatus').textContent='';
 }
 uiLocale.addEventListener('change',refreshInterface);
 // A file selected by the user provides an authoritative in-tab baseline only.
@@ -104,6 +107,7 @@ function editorChanged(){
  revisionRestoreGate.changed();
  importGate.changed();
  reviewExportGate.changed();
+ field('draftPrivacyStatus').textContent='';
  clearBulkUndo();
  clearFindSelection();
  field('draftFindStatus').textContent='';
@@ -1048,6 +1052,28 @@ document.addEventListener('keydown',event=>{
      event.altKey||event.shiftKey||Boolean(event.ctrlKey)===Boolean(event.metaKey))return;
   event.preventDefault();
   field('downloadDraft').click();
+});
+
+// Optional local sharing preflight: only category labels reach the UI.
+// It never copies or submits a manuscript and cannot certify that text is safe.
+field('checkDraftPrivacy').addEventListener('click',()=>{
+ const resultNode=field('draftPrivacyStatus');
+ try{
+  const report=scanDraftSharingRisks(currentDraft());
+  resultNode.dataset.risk=String(report.flagged);
+  if(!report.flagged){
+   resultNode.textContent=ui('privacyCheckClear');
+   return;
+  }
+  const kinds=[];
+  if(report.credential)kinds.push(ui('privacyCheckCredential'));
+  if(report.email)kinds.push(ui('privacyCheckEmail'));
+  resultNode.textContent=ui('privacyCheckWarning')+
+   kinds.join(', ')+ui('privacyCheckSuffix');
+ }catch{
+  resultNode.dataset.risk='true';
+  resultNode.textContent=ui('privacyCheckUnavailable');
+ }
 });
 
 // The author explicitly decides whether the headline may become public.
