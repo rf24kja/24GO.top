@@ -158,6 +158,22 @@ test('output path inside public Git checkout is always forbidden before paid cal
  });
 });
 
+test('invalid clock and invalid provider config stop before any cost or file writes',async()=>{
+ await withFiles(async({args,outputDir})=>{
+  let calls=0;
+  const fetchImpl=async()=>{calls++;return response();};
+  await assert.rejects(runAgentPrepareCommand(args,{
+   env:provider,fetchImpl,now:()=>new Date(NaN)
+  }));
+  await assert.rejects(runAgentPrepareCommand(args,{
+   env:{...provider,AGENT_DRAFT_ENDPOINT:'http://remote.example/v1/chat/completions'},
+   fetchImpl
+  }));
+  assert.equal(calls,0);
+  assert.equal(existsSync(outputDir),false);
+ });
+});
+
 test('options and job formats are strict and exclude publication assertions',()=>{
  assert.throws(()=>parseAgentPrepareArgs(['--job','x']));
  assert.throws(()=>validateAgentPrepareJob({...job,automaticPublication:true}));
