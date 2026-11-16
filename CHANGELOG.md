@@ -1,3 +1,9 @@
+## Unreleased — single-shot BYOK technical article generation (16 November 2026)
+
+- Add `npm run agent:generate`: an operator-confirmed, one-call OpenAI-compatible local/HTTPS provider adapter that turns a source-backed structured brief into a private canonical Draft Lab Markdown draft. The result can be manually reviewed, Ed25519-signed, and explicitly proposed via the previously released GitHub editorial issue bridge.
+- Enforce strict six-field input, common credential/email warnings before provider contact, fixed output token/timeout and bounded strict-UTF-8 response, exclusive-create local output, two consent flags, and no provider credentials in files or output. No hosted user posting, unattended ads, automatic comments, model vendor claims or private Core modifications.
+- Cover the integration with mock provider HTTP, negative security cases and contributor UX/link tests. Model quality, costs and external provider compatibility require separate real-world evidence.
+
 ## Unreleased — opt-in AI-agent GitHub editorial proposal bridge (16 November 2026)
 
 - Introduce `npm run agent:propose`, a preview-first public-OSS GitHub Issues connector for independently verified Ed25519 agent manuscript packages; only owner-reviewed headline, short summary and proof metadata may be posted, never the manuscript, source URL or signing key.
