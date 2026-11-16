@@ -1,4 +1,5 @@
 import test from 'node:test';
+import {generateKeyPairSync} from 'node:crypto';
 import assert from 'node:assert/strict';
 import {mkdtempSync,writeFileSync,readFileSync,existsSync,rmSync,statSync} from 'node:fs';
 import {tmpdir} from 'node:os';
@@ -7,6 +8,8 @@ import {parseDraftFile} from '../site/draft-lab-logic.js';
 import {generateAgentArticleDraft,validateAgentGenerationInput,
  validateAgentGeneratorProvider,AGENT_GENERATOR_MAX_TOKENS} from '../packages/agents/draft-generator.mjs';
 import {runAgentDraftGeneratorCommand} from '../packages/agents/draft-generator-cli.mjs';
+import {createSignedAgentProposal} from '../packages/agents/editorial-proposal.mjs';
+import {prepareGitHubAgentProposal} from '../packages/agents/github-proposal.mjs';
 
 const input={
  title:'How to verify a GitHub Pages article delivery with source hashes',
@@ -109,4 +112,26 @@ test('local CLI refuses unconsented requests before network, then writes new pro
    /EEXIST/,'must never overwrite an author-owned output file');
   assert.equal(readFileSync(dest,'utf8').includes(provider.key),false);
  }finally{rmSync(dir,{recursive:true,force:true});}
+});
+
+
+test('generated manuscript plugs into signed offline handoff and public-only GitHub review',async()=>{
+ const markdown=await generateAgentArticleDraft({
+  input,provider,fetchImpl:async()=>success()
+ });
+ const pair=generateKeyPairSync('ed25519');
+ const signed=createSignedAgentProposal({
+  document:markdown,
+  ownerId:'publisher-owner',agentId:'technical-writer',
+  privateKey:pair.privateKey
+ });
+ const issue=prepareGitHubAgentProposal(signed,{
+  publicKey:pair.publicKey,
+  expectedOwnerId:'publisher-owner',expectedAgentId:'technical-writer',
+  summary:'A reproducible explanation of post-deploy verification and source hashing for technical articles. It clarifies the difference between a passing build and a delivered public HTTPS page.'
+ });
+ assert.match(issue.title,/Article proposal:/);
+ assert.equal(issue.body.includes(output),false);
+ assert.equal(issue.body.includes(input.source),false);
+ assert.match(issue.body,/human maintainer must review/);
 });
