@@ -55,8 +55,13 @@ authoring experience for beginning contributors. No Node.js installation,
 API key, existing ZIP or public account is required to start:
 
 1. Open the Studio and edit the **HTML**, **CSS** and **JavaScript** tabs.
-   A working counter app is supplied, but the editors can be changed to
-   create an original tool. The Studio supports one self-contained page;
+   A working counter app is supplied, or choose **Load static page example**
+   for a real no-JavaScript HTML/CSS resource page. The CSS and JavaScript
+   fields are **optional** (HTML body remains required): both can be empty,
+   including when previewing, exporting and reimporting a ZIP. The editors
+   can be changed to create an original tool. Switching examples replaces
+   the current unsaved editor text: download your ZIP first. The Studio
+   supports one self-contained page;
    no npm, imports, remote scripts, external assets, backend processes
    or separate app files in this first release.
 2. Click **Run isolated preview**. The Studio first compiles one HTML file
@@ -162,3 +167,11 @@ and independent security checks.
 The publication transaction for the **current first-party OSS catalogue** is a reviewed Git commit → required CI → merge → GitHub Pages static deployment → exact CDN source check → stable public URL. A failed review/CI blocks release; rollback is reverting the app and its catalog entry. There is no user-upload endpoint, public package registry or automatic cloud deployment.
 
 Planned hosted publishing is a separate state machine: verified app owner → server-side upload/storage/quarantine → authorization and review → isolated origin creation → published version/URL → rating/compare and abuse controls. Do not represent it as already available. The public validator and comparison UI are building blocks, not a shortcut around that security model.
+
+**No-JavaScript validation evidence (2026-11-16):** The static page uses the
+same network-denying CSP, opaque preview and independent ZIP32/CRC32/SHA-256
+validation as interactive Studio apps. Both validators must accept an archive
+with empty CSS and/or JavaScript; reimport must reproduce the exact source
+without auto-running anything. Actual Chromium covers the new starter,
+preview, ZIP export and reimport at four viewport sizes. Passing this
+validation still does not approve publication on 24go.top.

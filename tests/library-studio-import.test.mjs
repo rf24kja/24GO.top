@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
-import {STUDIO_STARTER,buildStudioZip,buildStudioHtml}
+import {STUDIO_STARTER,STUDIO_STATIC_STARTER,buildStudioZip,buildStudioHtml}
  from '../site/library/studio/studio-core.mjs';
 import {parseStudioHtml,readValidatedStudioZip}
  from '../site/library/studio/studio-import.mjs';
@@ -76,6 +76,21 @@ test('Studio async controls are guarded against stale validation completion',()=
  assert.match(source,/download\.addEventListener\('click',async\(\)=>\{\s*const action=\+\+actionEpoch/);
  assert.equal((source.match(/finally\{finishAction\(action\);\}/g)||[]).length,2);
  assert.match(source,/addEventListener\('input',\(\)=>\{\s*cancelPendingImport\(\);\s*cancelPendingAction\(\)/);
- assert.match(source,/function restore\(\)\{\s*cancelPendingImport\(\);\s*cancelPendingAction\(\)/);
+ assert.ok(source.includes('function loadTemplate(template,label){'));
+ assert.ok(source.includes('cancelPendingImport();'));
+ assert.ok(source.includes('cancelPendingAction();'));
  assert.doesNotMatch(source,/if\(run\.disabled\)\{run\.disabled=false/);
+});
+
+test('validated no-JavaScript static page ZIP reopens and roundtrips without auto-execution',async()=>{
+ for(const draft of [STUDIO_STATIC_STARTER,{...STUDIO_STATIC_STARTER,css:''}]){
+  const html=buildStudioHtml(draft);
+  assert.deepEqual(parseStudioHtml(html),draft);
+  const zip=buildStudioZip(draft),report=await validate(zip);
+  assert.equal(report.files.length,1);
+  const restored=readValidatedStudioZip(zip,report);
+  assert.deepEqual(restored,draft);
+  assert.deepEqual(buildStudioZip(restored),zip);
+  assert.equal(validateStaticZip(Buffer.from(zip)).archiveSha256,report.archiveSha256);
+ }
 });

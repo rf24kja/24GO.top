@@ -438,10 +438,47 @@ async function exerciseStudio(){
    else importRaceReset=safe;
   }
  }finally{File.prototype.arrayBuffer=originalRead;}
+ // The no-JavaScript static example is a real author path, not just a unit fixture.
+ $('studio-static').click();
+ const staticReady=$('studio-name').value==='Static Resource Card'&&
+  $('studio-js').value===''&&$('studio-css').value.length>0&&
+  $('studio-html').value.includes('Useful resources')&&front.hidden;
+ $('studio-preview-run').click();
+ const staticRunning=await waitFor(()=>$('studio-status').textContent.includes('Isolated preview running'));
+ const staticPreview=staticRunning&&!front.hidden&&front.sandbox.length===1&&
+  front.sandbox.contains('allow-scripts')&&
+  !front.sandbox.contains('allow-same-origin')&&
+  front.getAttribute('srcdoc').includes('<script></script>')&&
+  front.getAttribute('srcdoc').includes('Useful resources')&&
+  front.getAttribute('srcdoc').includes("connect-src 'none'");
+ let staticBlob=null,staticName='';
+ const staticCreate=URL.createObjectURL,staticRevoke=URL.revokeObjectURL,
+  staticClick=HTMLAnchorElement.prototype.click;
+ try{
+  URL.createObjectURL=value=>{staticBlob=value;return 'blob:studio-static-e2e';};
+  URL.revokeObjectURL=()=>{};
+  HTMLAnchorElement.prototype.click=function(){staticName=this.download;};
+  $('studio-download').click();
+  await waitFor(()=>$('studio-status').textContent.includes('download requested'));
+ }finally{
+  URL.createObjectURL=staticCreate;
+  URL.revokeObjectURL=staticRevoke;
+  HTMLAnchorElement.prototype.click=staticClick;
+ }
+ const staticZip=staticBlob?new Uint8Array(await staticBlob.arrayBuffer()):null;
+ const staticExported=staticName==='static-resource-card.zip'&&staticZip?.length>100&&
+  staticZip[0]===0x50&&staticZip[1]===0x4b;
+ if(staticZip)putStudioZip(staticZip,'static-page.zip');
+ $('studio-import-check').click();
+ const staticImported=await waitFor(()=>$('studio-import-status').textContent.includes('Imported Static Resource Card'))&&
+  $('studio-js').value===''&&$('studio-css').value.length>0&&
+  front.hidden&&$('studio-close').disabled;
+ const staticButtonHeight=$('studio-static').getBoundingClientRect().height;
  const importButtonHeight=$('studio-import-check').getBoundingClientRect().height;
  return {initial,tab,running,sandbox,opaque,interactive,
   childOrigin,exported,touch,stopped,rejected,restored,
-  importEnabled,imported,corruptRejected,importRaceEdit,importRaceReset,importButtonHeight,
+  importEnabled,imported,corruptRejected,importRaceEdit,importRaceReset,
+  staticReady,staticPreview,staticExported,staticImported,staticButtonHeight,importButtonHeight,
   noStorage:localStorage.length===beforeStorage,
   width,overflow};
 }
@@ -486,8 +523,9 @@ async function main(){
    if(!studio||Object.entries(studio).some(([key,value])=>
       ['initial','tab','running','sandbox','opaque','interactive',
        'exported','touch','stopped','rejected','restored','noStorage',
-       'importEnabled','imported','corruptRejected','importRaceEdit','importRaceReset'].includes(key)&&!value)||
-      studio.childOrigin!=='null'||studio.importButtonHeight<43.5||studio.overflow>studio.width+1)
+       'importEnabled','imported','corruptRejected','importRaceEdit','importRaceReset',
+       'staticReady','staticPreview','staticExported','staticImported'].includes(key)&&!value)||
+      studio.childOrigin!=='null'||studio.staticButtonHeight<43.5||studio.importButtonHeight<43.5||studio.overflow>studio.width+1)
     throw Error('Library App Studio Chromium '+width+': '+JSON.stringify(studio));
   }
   for(const width of [280,390,844,1440]){
@@ -513,7 +551,7 @@ async function main(){
   }
   if(c.errors.length||c.external.length)
    throw Error('Browser errors or external requests: '+c.errors.join(';')+'; '+c.external.join(';'));
-  console.log('PASS Library Chromium: catalog, three real apps and App Studio at 280/390/844/1440; actual opaque iframe counter execution, ZIP32 export/reimport, cancelled stale imports on edits/reset, CRC corruption rejection, and no uploads');
+  console.log('PASS Library Chromium: catalog, three real apps and App Studio at 280/390/844/1440; actual opaque iframe counter execution, ZIP32 export/reimport, no-JavaScript static page, cancelled stale imports on edits/reset, CRC corruption rejection, and no uploads');
  }finally{
   if(ws)ws.close();
   if(browser){

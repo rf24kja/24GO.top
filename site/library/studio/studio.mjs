@@ -1,4 +1,4 @@
-import {STUDIO_STARTER,buildStudioHtml,buildStudioZip} from './studio-core.mjs';
+import {STUDIO_STARTER,STUDIO_STATIC_STARTER,buildStudioHtml,buildStudioZip} from './studio-core.mjs';
 import {validateBrowserZip} from '../intake-core.mjs';
 import {readValidatedStudioZip} from './studio-import.mjs';
 
@@ -104,15 +104,17 @@ for(const btn of tabs)btn.addEventListener('click',()=>{
  showTab(btn.dataset.lang);
  fields[btn.dataset.lang].focus({preventScroll:true});
 });
-function restore(){
+function loadTemplate(template,label){
  cancelPendingImport();
  cancelPendingAction();
  stopPreview();
- for(const [key,value] of Object.entries(STUDIO_STARTER))fields[key].value=value;
+ for(const [key,value] of Object.entries(template))fields[key].value=value;
  showTab('html');
- announce('Starter project loaded. Nothing runs until you click Run isolated preview.');
+ announce(label+' loaded. Previous unsaved editor content was replaced. Nothing runs until you click Run isolated preview.');
 }
+function restore(){loadTemplate(STUDIO_STARTER,'Counter example');}
 $('studio-reset').addEventListener('click',restore);
+$('studio-static').addEventListener('click',()=>loadTemplate(STUDIO_STATIC_STARTER,'Static HTML/CSS example'));
 for(const element of Object.values(fields))element.addEventListener('input',()=>{
  cancelPendingImport();
  cancelPendingAction();
