@@ -15,6 +15,34 @@ test('new author-protection modules are included in byte-for-byte public HTTPS a
  }
 });
 
+test('every first-party static import of authoring editors is covered by the HTTPS release audit',async()=>{
+ // A green entry-point audit must never mask a stale imported translator,
+ // validator or review-package module on the public CDN.
+ const pending=['/draft-lab.js','/library/studio/studio.mjs'];
+ const visited=new Set();
+ const imports=/^import\s+(?:[^;\n]*?\s+from\s+)?['"](\.{1,2}\/[^'"]+)['"];?\s*$/gm;
+ while(pending.length){
+  const route=pending.shift();
+  if(visited.has(route))continue;
+  assert.ok(FIXED_ROUTES.includes(route),'Module missing from byte-for-byte HTTPS audit: '+route);
+  visited.add(route);
+  const source=await readFile(sourcePath(route),'utf8');
+  assert.doesNotMatch(source,/\bimport\s*\(/,'Dynamic import requires explicit audit review: '+route);
+  imports.lastIndex=0;
+  for(const match of source.matchAll(imports)){
+   const uri=new URL(match[1],'https://24go.top'+route);
+   assert.equal(uri.origin,'https://24go.top');
+   assert.match(uri.pathname,/\.(?:js|mjs)$/);
+   pending.push(uri.pathname);
+  }
+ }
+ assert.ok(visited.size>=12,'Both authoring editor dependency graphs must be audited');
+ assert.ok(visited.has('/draft-lab-i18n.js'));
+ assert.ok(visited.has('/draft-lab-review-pack.js'));
+ assert.ok(visited.has('/draft-lab-privacy.js'));
+ assert.ok(visited.has('/library/studio/studio-session.mjs'));
+});
+
 test('builds fixed + sitemap inventory with no accidental duplicates',()=>{
  const routes=releaseRoutes(SAMPLE);
  assert.equal(routes.length,new Set([...FIXED_ROUTES,...sitemapRoutes(SAMPLE)]).size);
