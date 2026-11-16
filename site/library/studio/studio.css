@@ -42,6 +42,8 @@
 #studio-status{padding:13px;border:1px solid var(--border);border-radius:9px;background:var(--bg);
  color:var(--muted);font-size:13px;line-height:1.65;min-height:44px;overflow-wrap:anywhere}
 #studio-status[data-error="true"]{border-color:#cd7575;color:#edb7ad}
+.studio-save-notice{padding:10px 13px;border:1px solid var(--border);border-radius:9px;background:var(--bg);color:var(--muted)}
+.studio-save-notice[data-unsaved="true"]{border-left:3px solid #dcad62;color:var(--text)}
 .studio-privacy-marker{font-size:10px;font-weight:850;letter-spacing:.1em;color:var(--accent)}
 #studio-frame{width:100%;height:550px;min-height:370px;display:block;border:2px solid var(--accent);
  border-radius:11px;background:var(--bg);max-width:100%}
