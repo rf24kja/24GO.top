@@ -43,6 +43,33 @@ test('every first-party static import of authoring editors is covered by the HTT
  assert.ok(visited.has('/library/studio/studio-session.mjs'));
 });
 
+test('full Arena viewer and tournament import graphs are independently checked on public HTTPS',async()=>{
+ const routes=['/arena/arena.mjs','/arena/tournament.mjs'];
+ const seen=new Set();
+ const imports=/^import\s+(?:[^;\n]*?\s+from\s+)?['"](\.{1,2}\/[^'"]+)['"];?\s*$/gm;
+ while(routes.length){
+  const route=routes.shift();
+  if(seen.has(route))continue;
+  assert.ok(FIXED_ROUTES.includes(route),'Missing public Arena asset audit: '+route);
+  seen.add(route);
+  const source=await readFile(sourcePath(route),'utf8');
+  assert.doesNotMatch(source,/\bimport\s*\(/,'Unreviewed dynamic Arena module: '+route);
+  imports.lastIndex=0;
+  for(const match of source.matchAll(imports)){
+   const imported=new URL(match[1],'https://24go.top'+route);
+   assert.equal(imported.origin,'https://24go.top');
+   assert.match(imported.pathname,/\.mjs$/);
+   routes.push(imported.pathname);
+  }
+ }
+ for(const required of ['/arena/arena.mjs','/arena/arena-core.mjs',
+  '/arena/tournament.mjs','/arena/tournament-core.mjs']){
+  assert.ok(seen.has(required),required);
+  assert.ok(sourcePath(required).pathname.endsWith('/site'+required));
+ }
+ assert.equal(seen.size,4,'Every current first-party Arena module is verified');
+});
+
 test('builds fixed + sitemap inventory with no accidental duplicates',()=>{
  const routes=releaseRoutes(SAMPLE);
  assert.equal(routes.length,new Set([...FIXED_ROUTES,...sitemapRoutes(SAMPLE)]).size);
