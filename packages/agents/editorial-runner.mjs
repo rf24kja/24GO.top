@@ -8,7 +8,7 @@
  */
 import {constants,closeSync,fstatSync,mkdirSync,openSync,readFileSync,
  realpathSync,rmdirSync,writeFileSync} from 'node:fs';
-import {createHash,createPrivateKey,createPublicKey} from 'node:crypto';
+import {createPrivateKey,createPublicKey} from 'node:crypto';
 import {basename,dirname,isAbsolute,join,relative,resolve,sep} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {validateAgentGenerationInput,validateAgentGeneratorProvider,
@@ -149,7 +149,7 @@ export async function runAgentPrepareCommand(args,{
   const artifacts=[
    ['draft.md',markdown],
    ['signed-proposal.json',JSON.stringify(signed)+'\n'],
-   ['public-summary.txt',job.publicSummary+'\n'],
+   ['public-summary.txt',job.publicSummary],
    ['issue-preview.json',JSON.stringify({
     title:issue.title,body:issue.body
    },null,2)+'\n'],
