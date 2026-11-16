@@ -34,7 +34,7 @@
 <div class="studio-editor">
 <div class="studio-section-head">
 <div><p class="studio-kicker">01 / SOURCE</p><h2 id="editor-title">Your application</h2></div>
-<button type="button" id="studio-reset" class="studio-button studio-button--quiet">Restore example</button>
+<div class="studio-template-actions"><button type="button" id="studio-static" class="studio-button studio-button--quiet">Load static page example</button><button type="button" id="studio-reset" class="studio-button studio-button--quiet">Restore counter example</button></div>
 </div>
 <div class="studio-import" aria-labelledby="studio-import-heading">
 <h3 id="studio-import-heading">Continue an earlier Studio project</h3>
@@ -59,14 +59,14 @@
 <textarea id="studio-html" rows="18" maxlength="16000" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
 </div>
 <div class="studio-source" id="studio-source-css" hidden>
-<label for="studio-css">CSS <span>(local styles only, max 16,000 characters)</span></label>
+<label for="studio-css">CSS <span>(optional local styles, max 16,000 characters)</span></label>
 <textarea id="studio-css" rows="18" maxlength="16000" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
 </div>
 <div class="studio-source" id="studio-source-js" hidden>
-<label for="studio-js">JavaScript <span>(no network APIs or privileged browser capabilities)</span></label>
+<label for="studio-js">JavaScript <span>(optional; no network APIs or privileged browser capabilities)</span></label>
 <textarea id="studio-js" rows="18" maxlength="16000" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
 </div>
-<p class="studio-hint">Use element IDs to connect HTML buttons to JavaScript. This conservative studio supports one self-contained HTML page with inline CSS and JavaScript. No npm, external APIs, backend, remote assets or application secrets.</p>
+<p class="studio-hint">Use element IDs to connect HTML buttons to JavaScript. This conservative studio supports one self-contained HTML page; CSS and JavaScript are optional. Use the static example for a page that works without code execution. No npm, external APIs, backend, remote assets or application secrets.</p>
 <div class="studio-actions">
 <button type="button" id="studio-preview-run" class="studio-button">Run isolated preview</button>
 <button type="button" id="studio-download" class="studio-button studio-button--quiet">Validate &amp; download ZIP</button>
