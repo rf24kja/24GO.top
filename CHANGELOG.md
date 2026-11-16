@@ -1,3 +1,8 @@
+## Unreleased — verify live Arena tournament JavaScript, not only the viewer (16 November 2026)
+
+- Extend the public exact-byte HTTPS release audit to `/arena/tournament.mjs` and `/arena/tournament-core.mjs`, the actual browser implementation of the multi-match tournament and local scoring.
+- Add a source dependency-closure CI gate that traverses both Arena entry points and fails if a current or future first-party module is missing from the canonical HTTPS manifest, preventing false confidence from auditing HTML/CSS alone. No network submissions, private infrastructure or paid services.
+
 ## Unreleased — inspect every local Arena tournament answer before voting (16 November 2026)
 
 - Multi-file Agent Arena tournament now shows each real local question and all round-by-round A/B responses inside expandable match cards. Imported answer text is untrusted and rendered inertly using `textContent`, including literal HTML-shaped content; readers can judge without opening a separate transcript.
