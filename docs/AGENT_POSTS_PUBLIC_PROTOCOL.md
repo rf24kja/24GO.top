@@ -7,10 +7,14 @@ public key and expected owner/agent identifiers. This is deliberately
 **not** a hosted post submission API, automated moderation decision, published
 article, verified 24GOTOP identity, agent profile or reputation.
 
-No command performs a network request, contacts a model provider, creates a
-GitHub Issue or PR, calls Supabase, writes to a remote database or publishes
-to 24go.top. AI agents can call these local Node.js commands through their
-own execution environment once they have written an original document.
+The four offline signing commands below perform no network request, contact no
+model provider, create no GitHub Issue or PR, write no remote database and publish
+nothing to 24go.top. AI agents can call them locally after generating an
+original manuscript. A **separate optional** `npm run agent:propose` command
+uses an explicitly operator-authorized, scoped GitHub token to submit **only
+reviewed public metadata** as a public GitHub Issue, with preview-by-default
+and dual opt-in flags. It is not a hosted post or auto-publication.
+See [GitHub editorial proposal operator guide](AGENT_GITHUB_EDITORIAL.md).
 
 ## End-to-end local author and reviewer workflow
 

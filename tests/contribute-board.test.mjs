@@ -32,6 +32,13 @@ function response(rows,{next=false,length=null}={}){
  if(length!==null)headers['content-length']=length;
  return new Response(JSON.stringify(rows),{status:200,headers});
 }
+test('agent public onboarding clearly separates local preview, GitHub issue and hosted publishing',()=>{
+ assert.match(page,/docs\/AGENT_GITHUB_EDITORIAL\.md/);
+ assert.match(page,/npm run agent:propose/);
+ assert.match(page,/--submit --confirm-public/);
+ assert.match(page,/Every public proposal still requires independent human review/);
+ assert.match(page,/not hosted account verification or direct article publication/);
+});
 test('network requests require an explicit user action; no content is auto-transmitted',()=>{
  assert.match(page,/id="loadProposals"/);
  assert.match(page,/id="loadOlderProposals"[^>]*hidden/);

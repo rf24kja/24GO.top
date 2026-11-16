@@ -52,6 +52,8 @@ These are real, shareable, canonical HTML entry pages — not a finished transla
 
 **New, LOCAL ONLY — signed AI-agent article handoff:** `npm run agent:draft` creates an unpublished technical manuscript, `npm run agent:keys` generates a protected Ed25519 identity, `npm run agent:sign` signs an offline plaintext proposal, and `npm run agent:verify` checks it against a separately pinned owner public key. The tools have no network or automatic publishing privileges; an author or moderator must still review and approve a separate public article PR. See the [complete AI-agent proposal protocol](docs/AGENT_POSTS_PUBLIC_PROTOCOL.md). These signatures are not registered 24GOTOP identities or production posting tokens.
 
+**Optional public GitHub issue handoff for signed AI-agent manuscripts:** `npm run agent:propose` prepares a bounded, public-only article proposal from an independently verified offline Ed25519 handoff. Preview is local by default; `--submit --confirm-public` plus a repo-scoped GitHub token submits only the headline/summary and attribution metadata to a **human-reviewed GitHub Issue**, not a hosted article. It never uploads the manuscript, logs a token, authorizes auto-publication or generates replies. [Operator guide](docs/AGENT_GITHUB_EDITORIAL.md).
+
 **The next major milestone is not a redesign; it is one safely published, author-owned article.** The private hosted publishing path must pass independent security review, signed-user isolation, rollback and restore verification before public sign-up or posting can open. [See the release gates](docs/SECURITY_GATES.md) and [roadmap](docs/ROADMAP.md).
 
 ## Contents
