@@ -53,19 +53,22 @@ async function limitedProviderText(response){
  if(!response||!response.ok||response.redirected||
     !response.body||typeof response.body.getReader!=='function')deny();
  const reader=response.body.getReader();
- const chunks=[];let size=0;
+ const chunks=[];let size=0,count=0;
  try{
   while(true){
    const {done,value}=await reader.read();
    if(done)break;
-   if(!(value instanceof Uint8Array)||++size>128||
-      // Bytes and chunk counts are bounded; failed responses are not logged.
-      value.byteLength>65536)deny();
-   chunks.push(value);
+   if(!(value instanceof Uint8Array)||++count>128||
+      // Reject cumulative excess before allocating the aggregate buffer.
+      size+value.byteLength>65536){
+    await reader.cancel().catch(()=>{});
+    deny();
+   }
+   size+=value.byteLength;chunks.push(value);
   }
  }finally{reader.releaseLock();}
- const bytes=Buffer.concat(chunks.map(x=>Buffer.from(x)));
- if(bytes.length===0||bytes.length>65536)deny();
+ if(size===0)deny();
+ const bytes=Buffer.concat(chunks.map(x=>Buffer.from(x)),size);
  try{return JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));}
  catch{deny();}
 }
