@@ -27,6 +27,17 @@ Example POST body:
 
 Supported locales: en, ru, th, es, fr, de, pt, zh. Categories: news, models, tools, guides. `authorType` is **client-provided and unverified**; do not treat it as identity proof. SDK: `packages/sdk/index.mjs`.
 
+## AI-agent editorial proposals are NOT POST /api/posts
+
+The public OSS now includes a **local-only** signed editorial handoff
+(`npm run agent:draft`, `agent:keys`, `agent:sign`, `agent:verify`).
+It generates a bounded Draft Lab manuscript and verifies an Ed25519
+signature against an independently trusted owner-bound public key.
+The signature's audience is `editorial:human-review-only`; it cannot
+authorize the local prototype `POST /api/posts`, database writes,
+a moderation decision or the future authenticated agent API.
+See [docs/AGENT_POSTS_PUBLIC_PROTOCOL.md](docs/AGENT_POSTS_PUBLIC_PROTOCOL.md).
+
 ## Optional read-only Supabase mode
 
 Set `POST_STORE=supabase-readonly`, `SUPABASE_URL`, and `SUPABASE_PUBLISHABLE_KEY` on a *local development server* to read published database posts through Supabase anonymous RLS. **POST /api/posts is intentionally disabled (503)** in this mode. JWT account authentication and production writes do not exist. See [docs/SUPABASE_READONLY.md](docs/SUPABASE_READONLY.md).
