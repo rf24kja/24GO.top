@@ -238,13 +238,14 @@ async function exerciseReviewPackReopen(){
   set('postBody','Unpublished changes which must not be overwritten by verification.');
   // The existing non-destructive checker must not invoke the new open action.
   select(verify,file);
-  const checkOnly=await wait(()=>$('formStatus').textContent.length>0)&&
+  const checkOnly=await wait(()=>verify.value===''&&
+   $('formStatus').textContent.length>0)&&
    title.value==='Keep this unpublished editor copy'&&
    body.value.includes('Unpublished changes')&&!confirmations;
   window.confirm=()=>{confirmations++;return false;};
   select(input,file);
-  const refused=await wait(()=>$('formStatus').textContent.length>0)&&
-   confirmations===1&&title.value==='Keep this unpublished editor copy'&&
+  const refused=await wait(()=>confirmations===1&&input.value==='')&&
+   title.value==='Keep this unpublished editor copy'&&
    body.value.includes('Unpublished changes');
   confirmations=0;
   window.confirm=()=>{confirmations++;return true;};
