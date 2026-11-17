@@ -37,13 +37,13 @@ function privateOutputRoot(path){
   (process.platform!=='win32'&&(info.mode&0o077)!==0))reject();
  return assertOutsideRepo(path);
 }
-function boundedPrivateFile(path,max){
+function boundedLocalFile(path,max,privateOnly=false){
  assertOutsideRepo(path);
  const fd=openSync(path,constants.O_RDONLY|(constants.O_NOFOLLOW||0));
  try{
   const info=fstatSync(fd);
   if(!info.isFile()||info.size<1||info.size>max||
-   (process.platform!=='win32'&&(info.mode&0o077)!==0))reject();
+   (privateOnly&&process.platform!=='win32'&&(info.mode&0o077)!==0))reject();
   const bytes=readFileSync(fd);
   if(bytes.length<1||bytes.length>max)reject();
   return new TextDecoder('utf-8',{fatal:true}).decode(bytes);
@@ -102,10 +102,10 @@ export function createAgentAuthoringSession({
     const publicSummaryPath=join(outputDir,'public-summary.txt');
     const receiptPath=join(outputDir,'receipt.json');
     const publication=prepareAgentArticlePublication({
-     raw:boundedPrivateFile(signedProposalPath,81920),
-     publicKey:boundedPrivateFile(publicKeyPath,8192),
+     raw:boundedLocalFile(signedProposalPath,81920,true),
+     publicKey:boundedLocalFile(publicKeyPath,8192),
      expectedOwnerId:ownerId,expectedAgentId:agentId,
-     summary:boundedPrivateFile(publicSummaryPath,2048),
+     summary:boundedLocalFile(publicSummaryPath,2048,true),
      publicationTime,now:timestamp
     });
     unlinkSync(jobPath);
