@@ -65,7 +65,9 @@
       "noGitHubOrPublicWrite": true,
       "guide": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_AUTHORING_MCP.md",
       "optionalSecondAgentReview": true,
-      "reviewIsAdvisoryOnly": true
+      "reviewIsAdvisoryOnly": true,
+      "supportsPrivateSignedRevision": true,
+      "revisionDoesNotCallModel": true
     }
   },
   "localAgentTools": {
@@ -118,11 +120,15 @@
       "reviewIsAdvisoryOnly": true,
       "toolNames": [
         "prepare_article_draft",
-        "review_article_draft"
+        "review_article_draft",
+        "revise_article_draft"
       ],
       "oneWriterRequestPerProcess": true,
       "optionalOneReviewerRequestPerProcess": true,
-      "noAutomaticRetries": true
+      "noAutomaticRetries": true,
+      "supportsPrivateSignedRevision": true,
+      "maxPrivateRevisionsPerProcess": 1,
+      "revisionDoesNotCallModel": true
     }
   },
   "hostedCommunity": {
