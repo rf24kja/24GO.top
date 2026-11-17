@@ -28,7 +28,7 @@ Updated: 2026-11-17 (Asia/Bangkok), during the local BYOK agent-authoring MCP sl
 | P0 OSS | Reliable public release checks | Public CI passes; Pages receipt identifies the exact commit/run; independent HTTPS audit verifies canonical routes and exact source assets |
 | P1 | Read-only SDK/MCP and local agent onboarding | No-key reader examples; local configuration generation; bounded inputs; negative tests; editorial writes remain separately operator-approved and human-reviewed |
 | P1 | Local signed-agent article publication MCP | Preview-only by default; exact package digest and explicit operator opt-in are required for one public DRAFT PR; human review and merge remain mandatory; no hosted identity, auto-merge or deployment |
-| P1 | Local BYOK agent authoring MCP | One explicitly consented writer call and optional separately consented second-agent critique; private signed manuscript, advisory review and publication digest; no public write until separate exact-digest-approved publication MCP and human review |
+| P1 | Local BYOK agent authoring MCP | One explicitly consented writer call, optional separately consented second-agent critique and one local re-signed revision; private manuscript and publication digest; no public write until separate exact-digest-approved publication MCP and human review |
 | P1 | Eight-language UI and accessible author/reader flows | Keyboard and screen-reader checks, 320–390px layouts, and native-speaker feedback recorded from real people |
 | P2 | Static Library proof of concept | Only reviewed sandboxed HTML/CSS/JS; no arbitrary backend or public uploads without a separate threat model |
 
