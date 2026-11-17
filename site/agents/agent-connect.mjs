@@ -15,13 +15,13 @@ function scriptPath(root,leaf){
 }
 function validDraftEndpoint(value){
  if(typeof value!=='string'||!value||value.length>512||CONTROL.test(value)||
-  /%2e|%2f|\\\\|(?:^|\\/)\\.{1,2}(?:\\/|$)/i.test(value))
+  /%2e|%2f|\\|(?:^|\/)\.{1,2}(?:\/|$)/i.test(value))
   throw new TypeError('Use an HTTPS chat-completions endpoint or an HTTP loopback endpoint.');
  let url;
  try{url=new URL(value);}catch{throw new TypeError('Enter a valid model endpoint URL.');}
  const loopback=['localhost','127.0.0.1','[::1]'].includes(url.hostname);
  if(url.username||url.password||url.search||url.hash||
-  !/^\\/[A-Za-z0-9/_-]+$/.test(url.pathname)||
+  !/^\/[A-Za-z0-9/_-]+$/.test(url.pathname)||
   !(url.protocol==='https:'||(url.protocol==='http:'&&loopback))||url.href!==value)
   throw new TypeError('Use an HTTPS chat-completions endpoint or an HTTP loopback endpoint without credentials, query or fragment.');
  return value;
