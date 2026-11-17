@@ -9,7 +9,7 @@ import {isIP} from 'node:net';
 import {isAbsolute,join,relative,sep} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {
- formatDraft,parseDraftFile,validateDraft,safeSourceUrl
+ formatDraft,parseDraftFile,validateDraft
 } from '../../site/draft-lab-logic.js';
 import {scanDraftSharingRisks} from '../../site/draft-lab-privacy.js';
 import {
@@ -23,6 +23,7 @@ import {
 const ROOT=realpathSync(fileURLToPath(new URL('../../',import.meta.url)));
 const FORMAT='24gotop-local-agent-campaign-workspace';
 const ID=/^[a-z][a-z0-9-]{2,63}$/;
+const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const HASH=/^[a-f0-9]{64}$/;
 const GIT_SHA=/^[a-f0-9]{40}$/;
 const CONTROL=/[\u0000-\u001f\u007f\u2028\u2029\u202a-\u202e\u2066-\u2069]/u;
@@ -43,6 +44,7 @@ const validText=(value,min,max)=>typeof value==='string'&&value.trim()===value&&
 const isoNow=date=>date.toISOString().replace('.000Z','Z');
 const hash=value=>createHash('sha256').update(value,'utf8').digest('hex');
 const cleanAgentId=value=>typeof value==='string'&&ID.test(value);
+const cleanUuid=value=>typeof value==='string'&&UUID.test(value);
 
 function outsideRepo(path){
  if(typeof path!=='string'||!isAbsolute(path)||path.length>4096)reject();
@@ -160,7 +162,6 @@ function validateDraftResult(result,campaign,topic,previous){
  const document=formatDraft(draft);
  const parsed=parseDraftFile(document);
  if(parsed.body!==result.body)reject();
- if(previous&&formatDraft(previous.result.draft)!==document){} // handled below for normalized stored results
  return Object.freeze({...result,draft,document});
 }
 function validateStageResult(stage,result,campaign,topic){
@@ -259,8 +260,10 @@ function readState(directory){
 function writeState(directory,state){
  const target=join(directory,'campaigns.json');
  const temp=join(directory,'.campaigns-'+randomUUID()+'.tmp');
+ const serialized=JSON.stringify(state)+'\n';
+ if(Buffer.byteLength(serialized,'utf8')>MAX_STATE_BYTES)reject();
  try{
-  writeFileSync(temp,JSON.stringify(state)+'\n',{flag:'wx',mode:0o600});
+  writeFileSync(temp,serialized,{flag:'wx',mode:0o600});
   renameSync(temp,target);
  }finally{
   try{unlinkSync(temp);}catch{}
@@ -324,7 +327,7 @@ export function createAgentCampaignWorkspace({
      item.targetUrl===data.targetUrl&&
      item.topic.workingTitle.normalize('NFC').toLocaleLowerCase()===
       data.topic.workingTitle.normalize('NFC').toLocaleLowerCase()&&
-     !['awaiting-human-publication','archived'].includes(item.status));
+     item.status!=='archived');
     if(duplicate)reject();
     const campaign={
      id:randomUUID(),name:data.campaignName,targetSiteName:data.targetSiteName,
@@ -341,7 +344,7 @@ export function createAgentCampaignWorkspace({
    });
   },
   claimTask({campaignId,role,agentId}={}){
-   if(!cleanAgentId(campaignId)||!ROLES.includes(role)||!cleanAgentId(agentId))reject();
+   if(!cleanUuid(campaignId)||!ROLES.includes(role)||!cleanAgentId(agentId))reject();
    const date=timestamp(),time=date.getTime();
    return withLock(directory,state=>{
     const campaign=campaignById(state,campaignId);
@@ -377,7 +380,7 @@ export function createAgentCampaignWorkspace({
    });
   },
   submitTaskResult({campaignId,taskId,agentId,leaseToken,result}={}){
-   if(!cleanAgentId(campaignId)||!cleanAgentId(taskId)||!cleanAgentId(agentId)||
+   if(!cleanUuid(campaignId)||!cleanUuid(taskId)||!cleanAgentId(agentId)||
     typeof leaseToken!=='string'||leaseToken.length<20||leaseToken.length>100)reject();
    const date=timestamp(),time=date.getTime();
    return withLock(directory,state=>{
@@ -411,7 +414,7 @@ export function createAgentCampaignWorkspace({
    });
   },
   releaseTask({campaignId,taskId,agentId,leaseToken,reason}={}){
-   if(!cleanAgentId(campaignId)||!cleanAgentId(taskId)||!cleanAgentId(agentId)||
+   if(!cleanUuid(campaignId)||!cleanUuid(taskId)||!cleanAgentId(agentId)||
     typeof leaseToken!=='string'||leaseToken.length<20||!validText(reason,10,500))reject();
    const date=timestamp();
    return withLock(directory,state=>{
@@ -420,6 +423,9 @@ export function createAgentCampaignWorkspace({
      task.lease.agentId!==agentId||task.lease.tokenHash!==hash(leaseToken))reject();
     task.state=task.attempts>=MAX_ATTEMPTS?'needs-operator':'queued';
     task.lease=null;task.updatedAt=isoNow(date);
+    if(state.messages.length>=MAX_MESSAGES||
+     state.messages.filter(item=>item.campaignId===campaignId).length>=MAX_CAMPAIGN_MESSAGES)reject();
+    safeTextBundle('Task release reason',reason);
     state.messages.push({id:randomUUID(),campaignId,taskId,fromAgent:agentId,toAgent:null,
      kind:'blocker',body:reason,identity:'local-self-asserted',createdAt:isoNow(date)});
     if(task.state==='needs-operator'){campaign.status='needs-operator';campaign.topic.status='needs-operator';}
@@ -428,7 +434,7 @@ export function createAgentCampaignWorkspace({
    });
   },
   sendMessage({campaignId,taskId=null,fromAgent,toAgent=null,kind,body}={}){
-   if(!cleanAgentId(campaignId)||!cleanAgentId(fromAgent)||
+   if(!cleanUuid(campaignId)||!cleanAgentId(fromAgent)||
     (toAgent!==null&&!cleanAgentId(toAgent))||
     !['handoff','question','finding','blocker'].includes(kind)||
     !validText(body,10,4000))reject();
@@ -449,8 +455,8 @@ export function createAgentCampaignWorkspace({
    });
   },
   readMessages({campaignId,agentId=null,afterMessageId=null}={}){
-   if(!cleanAgentId(campaignId)||(agentId!==null&&!cleanAgentId(agentId))||
-    (afterMessageId!==null&&!cleanAgentId(afterMessageId)))reject();
+   if(!cleanUuid(campaignId)||(agentId!==null&&!cleanAgentId(agentId))||
+    (afterMessageId!==null&&!cleanUuid(afterMessageId)))reject();
    return withLock(directory,state=>{
     campaignById(state,campaignId);
     let messages=state.messages.filter(item=>item.campaignId===campaignId);
@@ -464,7 +470,7 @@ export function createAgentCampaignWorkspace({
    });
   },
   getStatus({campaignId}={}){
-   if(!cleanAgentId(campaignId))reject();
+   if(!cleanUuid(campaignId))reject();
    return withLock(directory,state=>{
     const campaign=campaignById(state,campaignId);
     const tasks=state.tasks.filter(item=>item.campaignId===campaignId);
@@ -482,7 +488,7 @@ export function createAgentCampaignWorkspace({
    });
   },
   finalizeArticle({campaignId,publicationTime,confirmPrivateFinalization}={}){
-   if(!cleanAgentId(campaignId)||confirmPrivateFinalization!==true||
+   if(!cleanUuid(campaignId)||confirmPrivateFinalization!==true||
     typeof publicationTime!=='string'||!/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$/.test(publicationTime))reject();
    const date=timestamp();
    return withLock(directory,state=>{
