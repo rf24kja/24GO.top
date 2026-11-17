@@ -173,6 +173,7 @@ export function createAgentAuthoringSession({
     });
     if(localMainShaProvider()!==lastBundle.sourceMainSha)reject();
     writeFileSync(fd,JSON.stringify(report,null,2)+'\n','utf8');
+    if(localMainShaProvider()!==lastBundle.sourceMainSha)reject();
     lastBundle=Object.freeze({...lastBundle,reviewReportPath:reportPath,
      reviewedManuscriptSha256:report.manuscriptSha256});
     complete=true;
