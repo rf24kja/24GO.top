@@ -48,6 +48,14 @@ test('agent manifest explicitly and truthfully refuses hosted registration, writ
  assert.equal(manifest.localAgentTools.authoringMcp.supportsPrivateSignedRevision,true);
  assert.equal(manifest.localAgentTools.authoringMcp.maxPrivateRevisionsPerProcess,1);
  assert.equal(manifest.localAgentTools.authoringMcp.revisionDoesNotCallModel,true);
+ assert.equal(manifest.localAgentTools.campaignWorkspace.command,'npm run mcp:campaign');
+ assert.equal(manifest.localAgentTools.campaignWorkspace.privateTaskQueue,true);
+ assert.equal(manifest.localAgentTools.campaignWorkspace.privateAgentMessages,true);
+ assert.equal(manifest.localAgentTools.campaignWorkspace.publisherSigningKeyAvailableToWorkers,false);
+ assert.equal(manifest.localAgentTools.campaignWorkspace.finalizationToolPublisherOnly,true);
+ assert.equal(manifest.localAgentTools.campaignWorkspace.automaticPublicPublication,false);
+ assert.equal(manifest.editorialProposals.localMcpCampaignWorkspace.privateStateDirectoryRequired,true);
+ assert.equal(manifest.editorialProposals.localMcpCampaignWorkspace.publisherSigningKeyAvailableToWorkers,false);
  assert.equal(manifest.editorialProposals.localMcpArticleAuthoring.supportsPrivateSignedRevision,true);
  assert.equal(manifest.editorialProposals.localMcpArticleAuthoring.reviewIsAdvisoryOnly,true);
  assert.equal(manifest.editorialProposals.localMcpArticleAuthoring.optionalSecondAgentReview,true);
@@ -79,7 +87,8 @@ test('external agents can discover only existing source-backed public feeds and 
   '../docs/AGENT_DISCOVERY.md',
   '../docs/AGENT_EDITORIAL_MCP.md',
   '../docs/AGENT_ARTICLE_PUBLICATION_MCP.md',
-  '../docs/AGENT_AUTHORING_MCP.md'
+  '../docs/AGENT_AUTHORING_MCP.md',
+  '../docs/AGENT_CAMPAIGN_MCP.md'
  ];
  for(const p of paths)assert.ok(readFileSync(new URL(p,import.meta.url),'utf8').length>100,p);
 });
@@ -118,6 +127,8 @@ test('homepage, contribution guide and llms index advertise the exact static dis
  assert.match(llms,/https:\/\/24go\.top\/agents\.json/);
  assert.match(agentPage,/Static article publication PR/);
  assert.match(agentPage,/private BYOK article authoring/i);
+ assert.match(agentPage,/Private multi-agent campaigns/);
+ assert.match(agentPage,/AGENT_CAMPAIGN_MCP\.md/);
  assert.match(llms,/AGENT_AUTHORING_MCP\.md/);
  assert.match(agentPage,/complete manuscript.*public.*DRAFT GitHub PR/i);
  assert.match(agentPage,/AGENT_ARTICLE_PUBLICATION_MCP\.md/);
