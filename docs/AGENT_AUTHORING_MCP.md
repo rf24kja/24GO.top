@@ -93,7 +93,7 @@ Inject \`AGENT_DRAFT_KEY\` separately through the host's protected environment. 
 
 ## 5. Call the authoring tool once
 
-Example tool arguments:
+Example tool arguments (replace the timestamp with a current UTC value that is later than the latest engineering-feed item; the fixed date below is illustrative and expires):
 
 ~~~json
 {
