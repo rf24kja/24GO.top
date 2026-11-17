@@ -276,6 +276,7 @@ export function createAgentAuthoringSession({
      workspacePath:previous.workspace,outputDir:revisionDir,
      draftPath,signedProposalPath,publicSummaryPath,issuePreviewPath,receiptPath,
      previousReviewReportPath:previous.reviewReportPath??null,
+     previousReviewManuscriptSha256:previous.reviewedManuscriptSha256??null,
      published:false,submitted:false,
      note:'The connected agent supplied a revised manuscript; the local owner key re-signed it. No model request, GitHub write, upload or publication occurred. Review the new private files and digest before using the separate publication MCP.'
     });
