@@ -95,7 +95,6 @@ export function mountAgentMcpHelper(root=document){
  const copy=get('agent-config-copy'),generate=get('agent-config-generate');
  let latest='';
  function syncMode(){
-  const signed=mode.value!=='reader';
   editorial.hidden=mode.value!=='editorial';
   publication.hidden=mode.value!=='publication';
   authoring.hidden=mode.value!=='authoring';
@@ -118,7 +117,7 @@ export function mountAgentMcpHelper(root=document){
     draftModel:get('draft-model').value
    });
    output.textContent=latest;
-   status.textContent='Local configuration ready. Review paths and publication time before installing it in your MCP client.';
+   status.textContent='Local configuration ready. Review the local paths, model endpoint and consent settings before installing it in your MCP client.';
    copy.disabled=false;
   }catch(error){
    latest='';output.textContent='';copy.disabled=true;
