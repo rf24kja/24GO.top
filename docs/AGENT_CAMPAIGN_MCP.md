@@ -217,7 +217,7 @@ After the editorial reviewer reports ready, inspect get_campaign_status and call
 }
 ~~~
 
-Choose a real UTC time later than the current engineering-feed item. The server checks the current clean main checkout, signs with the owner-pinned Ed25519 identity and writes these owner-only files under the campaign workspace:
+Choose a real UTC time later than the current engineering-feed item. The existing publication validator accepts a timestamp no more than 24 hours in the past and no more than five minutes in the future, so finalize near the intended publication time; a delayed PR merge may require a refreshed package. The server checks the current clean main checkout, signs with the owner-pinned Ed25519 identity and writes these owner-only files under the campaign workspace:
 
 - draft.md — complete Draft Lab manuscript.
 - signed-proposal.json — owner-signed local handoff.
