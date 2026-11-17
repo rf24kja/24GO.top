@@ -187,7 +187,7 @@ function validateStageResult(stage,result,campaign,topic){
  }
  if(stage==='fact_check'){
   if(!exact(result,['decision','findings','unsupportedClaims','agentReportedVerifiedSourceUrls'])||
-   !validDecision(result.decision)||!validText(result.findings,80,3000)||
+   !validDecision(result.decision)||!validMultilineText(result.findings,80,3000)||
    !Array.isArray(result.unsupportedClaims)||result.unsupportedClaims.length>20||
    result.unsupportedClaims.some(value=>!validText(value,5,400))||
    !Array.isArray(result.agentReportedVerifiedSourceUrls)||
@@ -201,7 +201,7 @@ function validateStageResult(stage,result,campaign,topic){
  }
  if(stage==='editorial_review'){
   if(!exact(result,['decision','findings','rightsReviewed','privacyReviewed','sourceAttributionReviewed'])||
-   !validDecision(result.decision)||!validText(result.findings,80,3000)||
+   !validDecision(result.decision)||!validMultilineText(result.findings,80,3000)||
    typeof result.rightsReviewed!=='boolean'||typeof result.privacyReviewed!=='boolean'||
    typeof result.sourceAttributionReviewed!=='boolean'||
    result.decision==='ready'&&
