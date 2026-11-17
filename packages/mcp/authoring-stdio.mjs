@@ -114,6 +114,7 @@ export function createAgentAuthoringSession({
     const signedProposalPath=join(outputDir,'signed-proposal.json');
     const draftPath=join(outputDir,'draft.md');
     const publicSummaryPath=join(outputDir,'public-summary.txt');
+    const issuePreviewPath=join(outputDir,'issue-preview.json');
     const receiptPath=join(outputDir,'receipt.json');
     const publication=prepareAgentArticlePublication({
      raw:boundedLocalFile(signedProposalPath,81920,true),
@@ -125,7 +126,7 @@ export function createAgentAuthoringSession({
     if(localMainShaProvider()!==sourceMainSha)reject();
     unlinkSync(jobPath);
     lastBundle=Object.freeze({
-     sourceMainSha,workspace,outputDir,signedProposalPath,publicSummaryPath,draftPath,
+     sourceMainSha,workspace,outputDir,signedProposalPath,publicSummaryPath,draftPath,issuePreviewPath,
      article:job.article,publicationTime,summary:job.publicSummary,
      manuscriptSha256:publication.manuscriptSha256,publicationSha256:publication.publicationSha256,
      revision:0,reviewReportPath:null
@@ -141,7 +142,7 @@ export function createAgentAuthoringSession({
      keyFingerprint:publication.keyFingerprint,
      files:publication.filePaths,
      workspacePath:workspace,outputDir,draftPath,signedProposalPath,
-     publicSummaryPath,receiptPath,
+     publicSummaryPath,issuePreviewPath,receiptPath,
      published:false,submitted:false,
      note:'One BYOK model request completed. The full manuscript and signed package remain in the private local output directory. Inspect the files, verify claims and rights, then use the separate publication MCP only after explicit owner approval. No GitHub or public write occurred.'
     });
