@@ -42,13 +42,15 @@ function validPublicationTime(value){
 }
 export function buildAgentMcpConfig({
  mode,repoPath,packagePath,publicKeyPath,summaryPath,ownerId,agentId,publicationTime,
- outputRoot,privateKeyPath,draftEndpoint,draftModel,reviewEndpoint,reviewModel
+ outputRoot,privateKeyPath,draftEndpoint,draftModel,reviewEndpoint,reviewModel,
+ campaignStateDir,campaignPrivateKeyPath,campaignPublicKeyPath
 }={}){
- if(!['reader','editorial','publication','authoring'].includes(mode))
+ if(!['reader','editorial','publication','authoring','campaign'].includes(mode))
   throw new TypeError('Choose a supported local agent workflow.');
  const leaf=mode==='reader'?'packages/mcp/stdio.mjs':
   mode==='editorial'?'packages/mcp/editorial-stdio.mjs':
-  mode==='publication'?'packages/mcp/publication-stdio.mjs':'packages/mcp/authoring-stdio.mjs';
+  mode==='publication'?'packages/mcp/publication-stdio.mjs':
+  mode==='authoring'?'packages/mcp/authoring-stdio.mjs':'packages/mcp/campaign-stdio.mjs';
  const settings={command:'node',args:[scriptPath(repoPath,leaf)]};
  if(mode==='editorial'||mode==='publication'){
   if(!ID.test(ownerId??'')||!ID.test(agentId??''))
@@ -59,6 +61,17 @@ export function buildAgentMcpConfig({
    MCP_AGENT_PUBLIC_SUMMARY:absolutePath(summaryPath),
    MCP_AGENT_OWNER_ID:ownerId,
    MCP_AGENT_ID:agentId
+  };
+ }
+ if(mode==='campaign'){
+  if(!ID.test(ownerId??'')||!ID.test(agentId??''))
+   throw new TypeError('Owner and publisher-agent IDs must be 3–64 lowercase letters, digits or hyphens, starting with a letter.');
+  settings.env={
+   MCP_CAMPAIGN_STATE_DIR:absolutePath(campaignStateDir),
+   MCP_CAMPAIGN_PRIVATE_KEY:absolutePath(campaignPrivateKeyPath),
+   MCP_CAMPAIGN_PUBLIC_KEY:absolutePath(campaignPublicKeyPath),
+   MCP_CAMPAIGN_OWNER_ID:ownerId,
+   MCP_CAMPAIGN_PUBLISHER_AGENT_ID:agentId
   };
  }
  if(mode==='authoring'){
@@ -85,7 +98,8 @@ export function buildAgentMcpConfig({
  }
  const name=mode==='reader'?'24gotop-public-articles':
   mode==='editorial'?'24gotop-reviewed-editorial':
-  mode==='publication'?'24gotop-static-article-publication':'24gotop-local-agent-authoring';
+  mode==='publication'?'24gotop-static-article-publication':
+  mode==='authoring'?'24gotop-local-agent-authoring':'24gotop-local-campaigns';
  return JSON.stringify({mcpServers:{[name]:settings}},null,2);
 }
 export function mountAgentMcpHelper(root=document){
@@ -95,6 +109,7 @@ export function mountAgentMcpHelper(root=document){
  const mode=get('agent-mode'),editorial=get('editorial-fields');
  const publication=get('publication-fields');
  const authoring=get('authoring-fields');
+ const campaign=get('campaign-fields');
  const output=get('agent-config-output'),status=get('agent-config-status');
  const copy=get('agent-config-copy'),generate=get('agent-config-generate');
  let latest='';
@@ -102,6 +117,7 @@ export function mountAgentMcpHelper(root=document){
   editorial.hidden=mode.value!=='editorial';
   publication.hidden=mode.value!=='publication';
   authoring.hidden=mode.value!=='authoring';
+  campaign.hidden=mode.value!=='campaign';
   latest='';output.textContent='';
   status.textContent='No configuration generated or sent.';copy.disabled=true;
  }
@@ -110,17 +126,23 @@ export function mountAgentMcpHelper(root=document){
    latest=buildAgentMcpConfig({
     mode:mode.value,repoPath:get('repo-path').value,
     packagePath:get('package-path').value,
-    publicKeyPath:mode.value==='authoring'?get('authoring-public-key-path').value:get('public-key-path').value,
+    publicKeyPath:mode.value==='authoring'?get('authoring-public-key-path').value:
+     mode.value==='campaign'?get('campaign-public-key-path').value:get('public-key-path').value,
     summaryPath:get('summary-path').value,
-    ownerId:mode.value==='authoring'?get('authoring-owner-id').value:get('owner-id').value,
-    agentId:mode.value==='authoring'?get('authoring-agent-id').value:get('agent-id').value,
+    ownerId:mode.value==='authoring'?get('authoring-owner-id').value:
+     mode.value==='campaign'?get('campaign-owner-id').value:get('owner-id').value,
+    agentId:mode.value==='authoring'?get('authoring-agent-id').value:
+     mode.value==='campaign'?get('campaign-publisher-agent-id').value:get('agent-id').value,
     publicationTime:get('publication-time').value,
     outputRoot:get('authoring-output-root').value,
     privateKeyPath:get('authoring-private-key-path').value,
     draftEndpoint:get('draft-endpoint').value,
     draftModel:get('draft-model').value,
     reviewEndpoint:get('review-endpoint').value,
-    reviewModel:get('review-model').value
+    reviewModel:get('review-model').value,
+    campaignStateDir:get('campaign-state-dir').value,
+    campaignPrivateKeyPath:get('campaign-private-key-path').value,
+    campaignPublicKeyPath:get('campaign-public-key-path').value
    });
    output.textContent=latest;
    status.textContent='Local configuration ready. Review the local paths, model endpoint and consent settings before installing it in your MCP client.';
