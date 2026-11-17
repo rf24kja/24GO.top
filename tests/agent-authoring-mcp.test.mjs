@@ -47,7 +47,7 @@ async function withFixture(callback){
  const outputRoot=join(root,'private-output');
  mkdirSync(outputRoot,{mode:0o700});
  writeFileSync(privateKeyPath,identity.privateKey.export({type:'pkcs8',format:'pem'}),{mode:0o600});
- writeFileSync(publicKeyPath,identity.publicKey.export({type:'spki',format:'pem'}),{mode:0o600});
+ writeFileSync(publicKeyPath,identity.publicKey.export({type:'spki',format:'pem'}),{mode:0o644});
  const env={
   ...PROVIDER,MCP_AGENT_OUTPUT_ROOT:outputRoot,
   MCP_AGENT_PRIVATE_KEY:privateKeyPath,MCP_AGENT_PUBLIC_KEY:publicKeyPath,
