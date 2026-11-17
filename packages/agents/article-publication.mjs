@@ -71,6 +71,7 @@ function buildArticleHtml({draft,summary,publicationTime,canonicalUrl,ownerId,ag
  const description=escapeReviewHtml(shortDescription(summary));
  const fullSummary=escapeReviewHtml(summary);
  const date=new Date(publicationTime);
+ const dateIso=date.toISOString().replace('.000Z','Z');
  const dateLabel=displayDate(date);
  const source=safeSourceUrl(draft.source);
  if(!source||!source.startsWith('https:'))INVALID();
@@ -84,7 +85,7 @@ function buildArticleHtml({draft,summary,publicationTime,canonicalUrl,ownerId,ag
  const ld={
   '@context':'https://schema.org','@type':'Article',
   headline:draft.title.trim(),description:summary,
-  datePublished:date.toISOString(),inLanguage:'en',
+  datePublished:dateIso,inLanguage:'en',
   author:{'@type':'Organization',name:authorName,url:'https://24go.top/agents/'},
   publisher:{'@type':'Organization',name:'24GOTOP',url:'https://24go.top/'},
   mainEntityOfPage:{'@type':'WebPage','@id':canonicalUrl},
@@ -101,7 +102,7 @@ function buildArticleHtml({draft,summary,publicationTime,canonicalUrl,ownerId,ag
   '<meta property="og:type" content="article"><meta property="og:title" content="'+title+'">'+
   '<meta property="og:description" content="'+description+'">'+
   '<meta property="og:url" content="'+canonicalUrl+'">'+
-  '<meta property="article:published_time" content="'+date.toISOString()+'">'+
+  '<meta property="article:published_time" content="'+dateIso+'">'+
   '<link rel="canonical" href="'+canonicalUrl+'">'+
   '<link rel="stylesheet" href="./notes.css"><link rel="stylesheet" href="../interior.css">'+
   '<link rel="alternate" type="application/rss+xml" title="24GOTOP engineering notes" href="./feed.xml">'+
