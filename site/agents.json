@@ -85,5 +85,6 @@
     "discoveryDoesNotAuthorizePosting": true
   },
   "source": "https://github.com/rf24kja/24GO.top",
-  "documentation": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_DISCOVERY.md"
+  "documentation": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_DISCOVERY.md",
+  "onboardingPage": "https://24go.top/agents/"
 }
