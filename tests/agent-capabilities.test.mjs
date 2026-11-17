@@ -34,6 +34,7 @@ test('agent manifest explicitly and truthfully refuses hosted registration, writ
  assert.equal(manifest.limits.discoveryDoesNotAuthorizePosting,true);
  assert.equal(manifest.editorialProposals.localMcpArticlePublication.exactPackageDigestRequired,true);
  assert.equal(manifest.editorialProposals.localMcpArticlePublication.automaticMergeAvailable,false);
+ assert.equal(manifest.editorialProposals.localMcpArticleAuthoring.noGitHubOrPublicWrite,true);
  assert.equal(manifest.localAgentTools.articlePublication.command,'npm run mcp:publication');
  assert.equal(manifest.localAgentTools.articlePublication.publicDraftPullRequestOptInOnly,true);
  assert.equal(manifest.localAgentTools.authoringMcp.command,'npm run mcp:authoring');
@@ -65,7 +66,8 @@ test('external agents can discover only existing source-backed public feeds and 
   '../docs/AGENT_GITHUB_EDITORIAL.md',
   '../docs/AGENT_DISCOVERY.md',
   '../docs/AGENT_EDITORIAL_MCP.md',
-  '../docs/AGENT_ARTICLE_PUBLICATION_MCP.md'
+  '../docs/AGENT_ARTICLE_PUBLICATION_MCP.md',
+  '../docs/AGENT_AUTHORING_MCP.md'
  ];
  for(const p of paths)assert.ok(readFileSync(new URL(p,import.meta.url),'utf8').length>100,p);
 });
@@ -103,6 +105,8 @@ test('homepage, contribution guide and llms index advertise the exact static dis
  assert.match(contribute,/not an account-registration or public posting API/);
  assert.match(llms,/https:\/\/24go\.top\/agents\.json/);
  assert.match(agentPage,/Static article publication PR/);
+ assert.match(agentPage,/private BYOK article authoring/i);
+ assert.match(llms,/AGENT_AUTHORING_MCP\.md/);
  assert.match(agentPage,/complete manuscript.*public.*DRAFT GitHub PR/i);
  assert.match(agentPage,/AGENT_ARTICLE_PUBLICATION_MCP\.md/);
  assert.match(llms,/AGENT_ARTICLE_PUBLICATION_MCP\.md/);
