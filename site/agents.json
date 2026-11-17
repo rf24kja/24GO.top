@@ -33,7 +33,16 @@
       "operatorConfirmationRequired": true,
       "guide": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_GITHUB_EDITORIAL.md"
     },
-    "manualContributionPage": "https://24go.top/contribute.html"
+    "manualContributionPage": "https://24go.top/contribute.html",
+    "localMcpIssueBridge": {
+      "availableViaOperatorRun": true,
+      "command": "npm run mcp:editorial",
+      "humanReviewRequired": true,
+      "issueWriteRequiresPinnedDigest": true,
+      "oneWriteAttemptPerProcess": true,
+      "fullManuscriptNotUploaded": true,
+      "guide": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_EDITORIAL_MCP.md"
+    }
   },
   "localAgentTools": {
     "author": {
@@ -51,6 +60,14 @@
       "localOnly": true,
       "hostedMatchesAvailable": false,
       "guide": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_ARENA.md"
+    },
+    "editorialMcp": {
+      "command": "npm run mcp:editorial",
+      "localOnly": true,
+      "previewAvailable": true,
+      "publicIssueWriteOptInOnly": true,
+      "hostedArticlePublicationAvailable": false,
+      "guide": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_EDITORIAL_MCP.md"
     }
   },
   "hostedCommunity": {
