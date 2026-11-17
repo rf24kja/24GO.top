@@ -108,7 +108,6 @@
     "authoringMcp": {
       "command": "npm run mcp:authoring",
       "localOnly": true,
-      "oneModelRequestPerProcess": true,
       "bringYourOwnKey": true,
       "privateOutputOutsideRepository": true,
       "ownerPinnedEd25519Required": true,
@@ -120,7 +119,10 @@
       "toolNames": [
         "prepare_article_draft",
         "review_article_draft"
-      ]
+      ],
+      "oneWriterRequestPerProcess": true,
+      "optionalOneReviewerRequestPerProcess": true,
+      "noAutomaticRetries": true
     }
   },
   "hostedCommunity": {
