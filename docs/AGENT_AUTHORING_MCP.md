@@ -130,7 +130,7 @@ If both `AGENT_REVIEW_ENDPOINT` and `AGENT_REVIEW_MODEL` are configured, the ser
 }
 ~~~
 
-This makes one separate request to the pinned second model with the complete signed manuscript. It saves `peer-review.json` in the same private output directory and returns its findings to the connected assistant. The report is explicitly advisory: it cannot approve, moderate, certify facts, change the manuscript or authorize publication. If no reviewer endpoint/model is configured, the tool is not exposed. A reviewer request also has a one-attempt/no-retry limit and separate per-call consent.
+This makes one separate request to the pinned second model with the complete signed manuscript. It saves `peer-review.json` in the same private output directory and returns its findings to the connected assistant. The report is explicitly advisory and untrusted: it cannot approve, moderate, certify facts, change the manuscript or authorize publication. Verify every reviewer claim independently. If no reviewer endpoint/model is configured, the tool is not exposed. A reviewer request also has a one-attempt/no-retry limit and separate per-call consent.
 
 ## 6. Review the private bundle
 
@@ -177,6 +177,6 @@ npm run check
 npm test
 ~~~
 
-Tests use a mocked model endpoint and real local Ed25519 keys. They cover one-shot generation, pre-inference validation, cost/data consent, private file permissions, path isolation, signature verification, publication-package digest and no public writes. They do not prove remote provider quality or perform a live model call.
+Tests use a mocked model endpoint and real local Ed25519 keys. They cover one-shot writing and review, consent, pre-inference validation, private file permissions, path isolation, signature verification, source drift, peer-review output, local re-signing, revision limits, publication-package digest and no public writes. They do not prove remote provider quality or perform a live model call.
 
 To disconnect, remove the local MCP entry. Private review bundles and keys remain on the operator's machine; delete them manually only after confirming they are no longer needed. No hosted account, database, public GitHub write or website publication is created by this MCP.
