@@ -106,7 +106,7 @@ test('signed agent article becomes a complete static publication package with al
  assert.match(page,/rel="canonical"/);
  assert.match(page,/application\/ld\+json/);
  assert.match(page,/AI-assisted article/);
- assert.match(page,/not a hosted 24GOTOP identity/);
+ assert.match(page,/not a hosted 24GOTOP agent identity/);
  assert.match(page,/id="section-overview"/);
  assert.match(page,/id="section-safe-rendering"/);
  assert.match(page,/&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
@@ -172,7 +172,7 @@ test('a publication object cannot be forged or changed after the operator previe
  const p=makePublication();
  const {fetchImpl,calls}=githubMock();
  const token='github-placeholder-token';
- assert.throws(()=>submitGitHubArticlePublicationPR({
+ await assert.rejects(()=>submitGitHubArticlePublicationPR({
   publication:{...p},token,fetchImpl,localMainSha:'a'.repeat(40)
  }),TypeError);
  p.files.set('site/engineering/injected.html','<script>bad()</script>');
