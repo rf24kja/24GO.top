@@ -43,6 +43,13 @@ const tools=[
    'relationshipDisclosure','productFacts','prohibitedClaims','topic'],additionalProperties:false}
  },
  {
+  name:'list_campaigns',
+  description:'List recent campaigns in the shared private workspace so agents can resume work after a client restart.',
+  inputSchema:{type:'object',properties:{
+   limit:{type:'integer',minimum:1,maximum:50}
+  },additionalProperties:false}
+ },
+ {
   name:'claim_campaign_task',
   description:'Claim the next queued task for one role. Returns the campaign brief and prior agent artifacts. Claims expire after 15 minutes; expired or abandoned tasks can be reclaimed up to three attempts.',
   inputSchema:{type:'object',properties:{
@@ -123,6 +130,7 @@ export function handleAgentCampaignMcpRequest(req,session){
   const name=req.params?.name,args=req.params?.arguments??{};
   try{
    if(name==='create_promotion_campaign')return {result:response(session.createCampaign(args))};
+   if(name==='list_campaigns')return {result:response(session.listCampaigns(args))};
    if(name==='claim_campaign_task')return {result:response(session.claimTask(args))};
    if(name==='submit_campaign_task_result')return {result:response(session.submitTaskResult(args))};
    if(name==='release_campaign_task')return {result:response(session.releaseTask(args))};
