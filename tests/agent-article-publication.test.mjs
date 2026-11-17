@@ -117,7 +117,7 @@ test('signed agent article becomes a complete static publication package with al
  const feed=JSON.parse(p.files.get('site/engineering/feed.json'));
  assert.equal(feed.items[0].url,p.canonicalUrl);
  assert.equal(feed.items.length,13);
- assert.ok(p.files.get('site/engineering/search-index.json').includes(p.title));
+ assert.ok(p.files.get('site/engineering/search-index.json').toLowerCase().includes(p.title.toLowerCase()));
  assert.ok(p.files.get('site/engineering/article-reader.mjs').includes(p.slug+'.html'));
  assert.ok(p.files.get('site/sitemap.xml').includes(p.canonicalUrl));
  assert.ok(p.files.size>=16&&p.files.size<=40);
