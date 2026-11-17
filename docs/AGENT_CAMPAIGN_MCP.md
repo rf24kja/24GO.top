@@ -36,12 +36,28 @@ npm run agent:keys -- \
 
 The private key must be owner-only (0600). The state directory must be owner-only (0700). The public key must be pinned independently to the expected owner and publisher-agent IDs. On Windows, review NTFS ACLs; POSIX mode bits are not an ACL substitute.
 
-Configure one campaign MCP process for each local agent client, pointing all clients at the **same** private state directory and the same pinned publisher identity:
+Configure a **worker process** for each local agent client. Every worker points at the same private state directory and receives no signing key. Configure one separate **publisher process** for the operator only; it shares the state directory but receives the owner-pinned signing key. The browser helper offers both modes:
 
 ~~~json
 {
   "mcpServers": {
-    "24gotop-local-campaigns": {
+    "24gotop-local-campaign-workers": {
+      "command": "node",
+      "args": ["/absolute/path/to/24GO.top/packages/mcp/campaign-stdio.mjs"],
+      "env": {
+        "MCP_CAMPAIGN_STATE_DIR": "/home/user/.local/share/24gotop-campaigns"
+      }
+    }
+  }
+}
+~~~
+
+The operator-controlled publisher uses the same state directory and is the **only** process that receives the signing key:
+
+~~~json
+{
+  "mcpServers": {
+    "24gotop-local-campaign-publisher": {
       "command": "node",
       "args": ["/absolute/path/to/24GO.top/packages/mcp/campaign-stdio.mjs"],
       "env": {
@@ -56,7 +72,7 @@ Configure one campaign MCP process for each local agent client, pointing all cli
 }
 ~~~
 
-Do not put provider keys, GitHub tokens, private client material or credentials in campaign fields. The campaign MCP itself makes no model requests and does not need an API key. Each connected agent uses its own configured model/tools.
+Do not put provider keys, GitHub tokens, private client material or credentials in campaign fields. The campaign MCP itself makes no model requests and does not need a provider API key. Each worker agent uses its own configured model/tools. Worker processes do not expose the finalization tool. Only the separate operator-controlled publisher process loads the Ed25519 private key and can finalize a reviewed campaign.
 
 The browser helper at https://24go.top/agents/ can generate this non-secret local configuration.
 
