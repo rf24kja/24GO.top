@@ -12,7 +12,7 @@ import {
 } from '../agents/editorial-runner.mjs';
 import {validateAgentGeneratorProvider} from '../agents/draft-generator.mjs';
 import {
- prepareAgentArticlePublication,validateAgentArticlePublicationTime
+ prepareAgentArticlePublication,validateAgentArticlePublicationTime,getLocalMainCheckout
 } from '../agents/article-publication.mjs';
 import {runStdio} from './stdio.mjs';
 
@@ -63,9 +63,11 @@ function validateRequest(input,now){
 }
 
 export function createAgentAuthoringSession({
- env=process.env,fetchImpl=globalThis.fetch,now=()=>new Date()
+ env=process.env,fetchImpl=globalThis.fetch,now=()=>new Date(),
+ localMainShaProvider=getLocalMainCheckout
 }={}){
- if(!env||typeof env!=='object'||typeof fetchImpl!=='function'||typeof now!=='function')reject();
+ if(!env||typeof env!=='object'||typeof fetchImpl!=='function'||typeof now!=='function'||
+  typeof localMainShaProvider!=='function')reject();
  const outputRoot=privateOutputRoot(env.MCP_AGENT_OUTPUT_ROOT);
  const privateKeyPath=assertOutsideRepo(env.MCP_AGENT_PRIVATE_KEY);
  const publicKeyPath=assertOutsideRepo(env.MCP_AGENT_PUBLIC_KEY);
@@ -82,6 +84,8 @@ export function createAgentAuthoringSession({
    const timestamp=now();
    if(!(timestamp instanceof Date)||!Number.isFinite(timestamp.getTime()))reject();
    const {job,publicationTime}=validateRequest(input,timestamp);
+   const sourceMainSha=localMainShaProvider();
+   if(!/^[a-f0-9]{40}$/.test(sourceMainSha||''))reject();
    // Consume the process before creating files or contacting a model. An
    // ambiguous timeout must never cause an automatic paid retry.
    attempted=true;
@@ -108,13 +112,14 @@ export function createAgentAuthoringSession({
      summary:boundedLocalFile(publicSummaryPath,2048,true),
      publicationTime,now:timestamp
     });
+    if(localMainShaProvider()!==sourceMainSha)reject();
     unlinkSync(jobPath);
     complete=true;
     return Object.freeze({
      state:'private-draft-awaiting-human-review',
      title:publication.title,summary:publication.summary,
      canonicalUrl:publication.canonicalUrl,
-     publicationTime:publication.publicationTime,
+     publicationTime:publication.publicationTime,sourceMainSha,
      manuscriptSha256:publication.manuscriptSha256,
      publicationSha256:publication.publicationSha256,
      keyFingerprint:publication.keyFingerprint,
