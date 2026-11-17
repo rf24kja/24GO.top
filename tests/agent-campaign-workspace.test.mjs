@@ -121,6 +121,7 @@ test('campaign pipeline coordinates researcher, strategist, writer, SEO, fact-ch
   assert.equal(created.status,'active');
   assert.equal(created.nextRole,'researcher');
   let task=claim(workspace,created.campaignId,'researcher','research-agent');
+  assert.match(task.instructions,/2–8 original public HTTPS sources/);
   const strategy=submit(workspace,task,RESEARCH);
   assert.equal(strategy.nextRole,'strategist');
   task=claim(workspace,created.campaignId,'strategist','strategy-agent');
@@ -128,6 +129,7 @@ test('campaign pipeline coordinates researcher, strategist, writer, SEO, fact-ch
   const draft=submit(workspace,task,STRATEGY);
   assert.equal(draft.nextRole,'writer');
   task=claim(workspace,created.campaignId,'writer','writer-agent');
+  assert.match(task.instructions,/target URL exactly once/);
   assert.equal(task.priorArtifacts.length,2);
   const seo=submit(workspace,task,DRAFT);
   assert.equal(seo.nextRole,'seo-editor');
