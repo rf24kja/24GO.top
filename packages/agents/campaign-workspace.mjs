@@ -362,11 +362,18 @@ export function createAgentCampaignWorkspace({
       !task.lease||Date.parse(task.lease.expiresAt)>time)continue;
      task.state=task.attempts>=MAX_ATTEMPTS?'needs-operator':'queued';
      task.lease=null;task.updatedAt=isoNow(date);
+     if(task.state==='needs-operator'){
+      campaign.status='needs-operator';campaign.topic.status='needs-operator';
+     }
     }
     const task=state.tasks.find(item=>item.campaignId===campaignId&&
      item.role===role&&item.state==='queued');
     if(!task)return {available:false,campaignId,role};
-    if(task.attempts>=MAX_ATTEMPTS){task.state='needs-operator';task.updatedAt=isoNow(date);return {available:false,campaignId,role};}
+    if(task.attempts>=MAX_ATTEMPTS){
+     task.state='needs-operator';task.updatedAt=isoNow(date);
+     campaign.status='needs-operator';campaign.topic.status='needs-operator';
+     return {available:false,campaignId,role};
+    }
     const token=randomUUID();
     task.state='in_progress';task.attempts++;
     task.lease={agentId,tokenHash:hash(token),expiresAt:isoNow(new Date(time+LEASE_MS))};
