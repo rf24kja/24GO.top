@@ -105,7 +105,7 @@ One campaign creates one article. Create separate campaigns for distinct topics.
 
 ### Task handoff and result formats
 
-Every agent first calls claim_campaign_task with campaignId, its role and a local agentId. A claim returns a private lease token and expires after 15 minutes. Submit with the same agent ID and token. An expired task can be reclaimed; there are at most three attempts. Use release_campaign_task when an agent cannot complete the work.
+Every agent first calls claim_campaign_task with campaignId, its role and a local agentId. A claim returns the campaign brief, prior artifacts, role-specific task instructions and a private lease token; it expires after 15 minutes. Submit with the same agent ID and token. An expired task can be reclaimed; there are at most three attempts. Use release_campaign_task when an agent cannot complete the work.
 
 submit_campaign_task_result validates the exact result structure for the claimed stage:
 
