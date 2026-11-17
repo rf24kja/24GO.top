@@ -14,6 +14,7 @@ import {validateAgentGeneratorProvider} from '../agents/draft-generator.mjs';
 import {
  prepareAgentArticlePublication,validateAgentArticlePublicationTime,getLocalMainCheckout
 } from '../agents/article-publication.mjs';
+import {reviewSignedAgentArticle} from '../agents/editorial-reviewer.mjs';
 import {runStdio} from './stdio.mjs';
 
 const ROOT=realpathSync(fileURLToPath(new URL('../../',import.meta.url)));
@@ -77,8 +78,13 @@ export function createAgentAuthoringSession({
  validateAgentGeneratorProvider({
   endpoint:env.AGENT_DRAFT_ENDPOINT,model:env.AGENT_DRAFT_MODEL,key:env.AGENT_DRAFT_KEY
  });
- let attempted=false;
+ const reviewConfigured=Boolean(env.AGENT_REVIEW_ENDPOINT||env.AGENT_REVIEW_MODEL||env.AGENT_REVIEW_KEY);
+ const reviewProvider=reviewConfigured?validateAgentGeneratorProvider({
+  endpoint:env.AGENT_REVIEW_ENDPOINT,model:env.AGENT_REVIEW_MODEL,key:env.AGENT_REVIEW_KEY
+ }):null;
+ let attempted=false,reviewAttempted=false,lastBundle=null;
  return Object.freeze({
+  reviewAvailable:Boolean(reviewProvider),
   async prepare(input){
    if(attempted)reject();
    const timestamp=now();
@@ -114,6 +120,7 @@ export function createAgentAuthoringSession({
     });
     if(localMainShaProvider()!==sourceMainSha)reject();
     unlinkSync(jobPath);
+    lastBundle=Object.freeze({sourceMainSha,outputDir,signedProposalPath,publicSummaryPath,draftPath});
     complete=true;
     return Object.freeze({
      state:'private-draft-awaiting-human-review',
@@ -135,9 +142,53 @@ export function createAgentAuthoringSession({
      try{rmdirSync(workspace);}catch{/* preserve partial artifacts for inspection */}
     }
    }
+  },
+  async review(input){
+   if(!reviewProvider||!lastBundle||reviewAttempted||
+    !exact(input,['confirmCosts','confirmProviderData'])||
+    input.confirmCosts!==true||input.confirmProviderData!==true)reject();
+   if(localMainShaProvider()!==lastBundle.sourceMainSha)reject();
+   const timestamp=now();
+   if(!(timestamp instanceof Date)||!Number.isFinite(timestamp.getTime()))reject();
+   reviewAttempted=true;
+   const reportPath=join(lastBundle.outputDir,'peer-review.json');
+   const fd=openSync(reportPath,
+    constants.O_CREAT|constants.O_EXCL|constants.O_WRONLY|(constants.O_NOFOLLOW||0),0o600);
+   let complete=false;
+   try{
+    const report=await reviewSignedAgentArticle({
+     proposal:boundedLocalFile(lastBundle.signedProposalPath,81920,true),
+     publicKey:boundedLocalFile(publicKeyPath,8192),
+     ownerId,agentId,provider:reviewProvider,fetchImpl,now:()=>timestamp
+    });
+    if(localMainShaProvider()!==lastBundle.sourceMainSha)reject();
+    writeFileSync(fd,JSON.stringify(report,null,2)+'\\n','utf8');
+    complete=true;
+    return Object.freeze({
+     state:report.state,manuscriptSha256:report.manuscriptSha256,
+     reviewerModel:report.reviewerModel,reviewerIdentity:report.reviewerIdentity,
+     reviewedAt:report.reviewedAt,reportPath,findings:report.findings,
+     approved:false,publicationAllowed:false,
+     note:'Second-model feedback is advisory only. It is not factual verification, moderation approval or permission to publish.'
+    });
+   }finally{
+    let empty=false;
+    try{empty=fstatSync(fd).size===0;}catch{/* fail closed */}
+    closeSync(fd);
+    if(!complete&&empty){try{unlinkSync(reportPath);}catch{/* preserve unexpected files */}}
+   }
   }
  });
 }
+
+const reviewTool={
+ name:'review_article_draft',
+ description:'Ask a separately configured second BYOK model to critique the most recently prepared signed manuscript. Requires separate per-call cost and provider-data consent. Findings are advisory only and never approve publication.',
+ inputSchema:{type:'object',properties:{
+  confirmCosts:{type:'boolean',const:true},
+  confirmProviderData:{type:'boolean',const:true}
+ },required:['confirmCosts','confirmProviderData'],additionalProperties:false}
+};
 
 const prepareTool={
  name:'prepare_article_draft',
@@ -170,13 +221,16 @@ export function handleAgentAuthoringMcpRequest(req,session){
    instructions:'One configured BYOK article-generation request per process. Private local files only; no GitHub or website publication. Review the complete local manuscript and rights before using the separate publication MCP.'
   }};
  case 'ping':return {result:{}};
- case 'tools/list':return {result:{tools:[prepareTool]}};
+ case 'tools/list':return {result:{tools:session.reviewAvailable?[prepareTool,reviewTool]:[prepareTool]}};
  case 'tools/call':{
-  if(req.params?.name!=='prepare_article_draft')return {result:errorResponse()};
-  return session.prepare(req.params?.arguments??{}).then(
-   value=>({result:response(value)}),
-   ()=>({result:errorResponse()})
+  const name=req.params?.name,args=req.params?.arguments??{};
+  if(name==='prepare_article_draft')return session.prepare(args).then(
+   value=>({result:response(value)}),()=>({result:errorResponse()})
   );
+  if(name==='review_article_draft'&&session.reviewAvailable)return session.review(args).then(
+   value=>({result:response(value)}),()=>({result:errorResponse()})
+  );
+  return {result:errorResponse()};
  }
  default:return {error:{code:-32601,message:'Method not found'}};
  }
