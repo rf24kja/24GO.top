@@ -286,8 +286,9 @@ test('campaign input, task leases and local state fail closed on unsafe data or 
 });
 
 test('campaign list supports resuming a private workspace after an agent restart',async()=>{
- await fixture(async({workspace})=>{
+ await fixture(async({workspace,setNow})=>{
   const first=create(workspace);
+  setNow('2026-11-17T17:03:00.000Z');
   const second=workspace.createCampaign({
    ...CAMPAIGN,
    campaignName:'Second educational campaign',
