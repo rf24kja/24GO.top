@@ -55,9 +55,9 @@ The authoring server reads these variables from its protected local process envi
 | \`AGENT_DRAFT_ENDPOINT\` | Exact OpenAI-compatible chat-completions URL. HTTPS is required except for HTTP loopback inference. |
 | \`AGENT_DRAFT_MODEL\` | Exact model identifier supported by that endpoint. |
 | \`AGENT_DRAFT_KEY\` | Provider credential, optional only for a keyless loopback endpoint. |
-| \\`AGENT_REVIEW_ENDPOINT\\` | Optional second model endpoint; when set, the reviewer tool is enabled. |
-| \\`AGENT_REVIEW_MODEL\\` | Exact second-agent reviewer model identifier. |
-| \\`AGENT_REVIEW_KEY\\` | Optional only for a keyless loopback reviewer endpoint; inject it through the protected secret manager. |
+| \`AGENT_REVIEW_ENDPOINT\` | Optional second model endpoint; when set, the reviewer tool is enabled. |
+| \`AGENT_REVIEW_MODEL\` | Exact second-agent reviewer model identifier. |
+| \`AGENT_REVIEW_KEY\` | Optional only for a keyless loopback reviewer endpoint; inject it through the protected secret manager. |
 | \`MCP_AGENT_OUTPUT_ROOT\` | Existing private output directory outside the repository; POSIX mode 0700. |
 | \`MCP_AGENT_PRIVATE_KEY\` | Absolute path to the local Ed25519 private PEM (0600). |
 | \`MCP_AGENT_PUBLIC_KEY\` | Absolute path to the independently pinned public PEM. |
@@ -143,7 +143,7 @@ The private output directory contains:
 | \`public-summary.txt\` | Reviewed public-only summary. |
 | \`issue-preview.json\` | Local-only editorial preview. |
 | \`receipt.json\` | Identity fingerprint, manuscript digest and private pending-review state. |
-| \\`peer-review.json\\` | Optional second-model critique, advisory only. |
+| \`peer-review.json\` | Optional second-model critique, advisory only. |
 
 Open and inspect the complete \`draft.md\` yourself. Verify every technical claim and source, test code examples, check originality, copyright, privacy and publication rights. The optional `review_article_draft` MCP tool sends the manuscript to a separately configured second model and returns specific findings; `npm run agent:peer-review` remains available as a CLI alternative. Its findings are not approval or factual certification. The connected writer agent may use the critique in a later revision, but the tool does not modify or re-sign the draft.
 
