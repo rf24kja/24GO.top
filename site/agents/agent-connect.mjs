@@ -45,7 +45,7 @@ export function buildAgentMcpConfig({
  outputRoot,privateKeyPath,draftEndpoint,draftModel,reviewEndpoint,reviewModel,
  campaignStateDir,campaignPrivateKeyPath,campaignPublicKeyPath
 }={}){
- if(!['reader','editorial','publication','authoring','campaign'].includes(mode))
+ if(!['reader','editorial','publication','authoring','campaign','campaign-publisher'].includes(mode))
   throw new TypeError('Choose a supported local agent workflow.');
  const leaf=mode==='reader'?'packages/mcp/stdio.mjs':
   mode==='editorial'?'packages/mcp/editorial-stdio.mjs':
@@ -64,6 +64,9 @@ export function buildAgentMcpConfig({
   };
  }
  if(mode==='campaign'){
+  settings.env={MCP_CAMPAIGN_STATE_DIR:absolutePath(campaignStateDir)};
+ }
+ if(mode==='campaign-publisher'){
   if(!ID.test(ownerId??'')||!ID.test(agentId??''))
    throw new TypeError('Owner and publisher-agent IDs must be 3–64 lowercase letters, digits or hyphens, starting with a letter.');
   settings.env={
@@ -99,7 +102,8 @@ export function buildAgentMcpConfig({
  const name=mode==='reader'?'24gotop-public-articles':
   mode==='editorial'?'24gotop-reviewed-editorial':
   mode==='publication'?'24gotop-static-article-publication':
-  mode==='authoring'?'24gotop-local-agent-authoring':'24gotop-local-campaigns';
+  mode==='authoring'?'24gotop-local-agent-authoring':
+  mode==='campaign'?'24gotop-local-campaign-workers':'24gotop-local-campaign-publisher';
  return JSON.stringify({mcpServers:{[name]:settings}},null,2);
 }
 export function mountAgentMcpHelper(root=document){
@@ -110,6 +114,7 @@ export function mountAgentMcpHelper(root=document){
  const publication=get('publication-fields');
  const authoring=get('authoring-fields');
  const campaign=get('campaign-fields');
+ const campaignPublisher=get('campaign-publisher-fields');
  const output=get('agent-config-output'),status=get('agent-config-status');
  const copy=get('agent-config-copy'),generate=get('agent-config-generate');
  let latest='';
@@ -117,7 +122,8 @@ export function mountAgentMcpHelper(root=document){
   editorial.hidden=mode.value!=='editorial';
   publication.hidden=mode.value!=='publication';
   authoring.hidden=mode.value!=='authoring';
-  campaign.hidden=mode.value!=='campaign';
+  campaign.hidden=!['campaign','campaign-publisher'].includes(mode.value);
+  campaignPublisher.hidden=mode.value!=='campaign-publisher';
   latest='';output.textContent='';
   status.textContent='No configuration generated or sent.';copy.disabled=true;
  }
@@ -127,12 +133,12 @@ export function mountAgentMcpHelper(root=document){
     mode:mode.value,repoPath:get('repo-path').value,
     packagePath:get('package-path').value,
     publicKeyPath:mode.value==='authoring'?get('authoring-public-key-path').value:
-     mode.value==='campaign'?get('campaign-public-key-path').value:get('public-key-path').value,
+     mode.value==='campaign-publisher'?get('campaign-public-key-path').value:get('public-key-path').value,
     summaryPath:get('summary-path').value,
     ownerId:mode.value==='authoring'?get('authoring-owner-id').value:
-     mode.value==='campaign'?get('campaign-owner-id').value:get('owner-id').value,
+     mode.value==='campaign-publisher'?get('campaign-owner-id').value:get('owner-id').value,
     agentId:mode.value==='authoring'?get('authoring-agent-id').value:
-     mode.value==='campaign'?get('campaign-publisher-agent-id').value:get('agent-id').value,
+     mode.value==='campaign-publisher'?get('campaign-publisher-agent-id').value:get('agent-id').value,
     publicationTime:get('publication-time').value,
     outputRoot:get('authoring-output-root').value,
     privateKeyPath:get('authoring-private-key-path').value,
