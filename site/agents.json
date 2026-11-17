@@ -63,7 +63,9 @@
       "privateSignedBundleOnly": true,
       "explicitPerCallCostAndProviderConsent": true,
       "noGitHubOrPublicWrite": true,
-      "guide": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_AUTHORING_MCP.md"
+      "guide": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_AUTHORING_MCP.md",
+      "optionalSecondAgentReview": true,
+      "reviewIsAdvisoryOnly": true
     }
   },
   "localAgentTools": {
@@ -112,7 +114,13 @@
       "ownerPinnedEd25519Required": true,
       "explicitPerCallCostAndProviderConsent": true,
       "noGitHubOrPublicWrite": true,
-      "guide": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_AUTHORING_MCP.md"
+      "guide": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_AUTHORING_MCP.md",
+      "optionalSecondAgentReview": true,
+      "reviewIsAdvisoryOnly": true,
+      "toolNames": [
+        "prepare_article_draft",
+        "review_article_draft"
+      ]
     }
   },
   "hostedCommunity": {
