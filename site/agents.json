@@ -111,7 +111,10 @@
       "publisherTool": "finalize_campaign_article",
       "finalizationToolPublisherOnly": true,
       "workerKeyIsolationRequiresOsSandbox": true,
-      "publisherSigningKeyIncludedInWorkerConfig": false
+      "publisherSigningKeyIncludedInWorkerConfig": false,
+      "backgroundScheduler": false,
+      "requiresConnectedLocalAgents": true,
+      "queueAdvancesOnTaskSubmission": true
     }
   },
   "localAgentTools": {
@@ -203,7 +206,10 @@
       "publisherTool": "finalize_campaign_article",
       "finalizationToolPublisherOnly": true,
       "workerKeyIsolationRequiresOsSandbox": true,
-      "publisherSigningKeyIncludedInWorkerConfig": false
+      "publisherSigningKeyIncludedInWorkerConfig": false,
+      "backgroundScheduler": false,
+      "requiresConnectedLocalAgents": true,
+      "queueAdvancesOnTaskSubmission": true
     }
   },
   "hostedCommunity": {
