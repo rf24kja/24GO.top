@@ -41,6 +41,9 @@ test('agent manifest explicitly and truthfully refuses hosted registration, writ
  assert.equal(manifest.localAgentTools.authoringMcp.noGitHubOrPublicWrite,true);
  assert.equal(manifest.localAgentTools.authoringMcp.optionalSecondAgentReview,true);
  assert.equal(manifest.localAgentTools.authoringMcp.reviewIsAdvisoryOnly,true);
+ assert.equal(manifest.localAgentTools.authoringMcp.oneWriterRequestPerProcess,true);
+ assert.equal(manifest.localAgentTools.authoringMcp.optionalOneReviewerRequestPerProcess,true);
+ assert.equal(manifest.localAgentTools.authoringMcp.noAutomaticRetries,true);
  assert.deepEqual(manifest.localAgentTools.authoringMcp.toolNames,['prepare_article_draft','review_article_draft']);
  assert.equal(manifest.editorialProposals.localMcpArticleAuthoring.reviewIsAdvisoryOnly,true);
  assert.equal(manifest.editorialProposals.localMcpArticleAuthoring.optionalSecondAgentReview,true);
