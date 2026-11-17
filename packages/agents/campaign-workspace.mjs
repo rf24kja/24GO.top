@@ -317,7 +317,7 @@ export function createAgentCampaignWorkspace({
    document:formatDraft({
     title:'Campaign workspace identity check',
     body:'## Local identity check\n\nThis private check validates the configured Ed25519 identity before a campaign can be finalized.',
-    locale:'en',category:'guides',source:''
+    locale:'en',category:'guides',source:'https://24go.top/agents/'
    }),ownerId,agentId:publisherAgentId,privateKey,now:now()
   });
   verifySignedAgentProposal(check,{publicKey,expectedOwnerId:ownerId,expectedAgentId:publisherAgentId});
