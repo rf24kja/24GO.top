@@ -110,7 +110,8 @@
       ],
       "publisherTool": "finalize_campaign_article",
       "publisherSigningKeyAvailableToWorkers": false,
-      "finalizationToolPublisherOnly": true
+      "finalizationToolPublisherOnly": true,
+      "workerKeyIsolationRequiresOsSandbox": true
     }
   },
   "localAgentTools": {
@@ -201,7 +202,8 @@
       ],
       "publisherTool": "finalize_campaign_article",
       "publisherSigningKeyAvailableToWorkers": false,
-      "finalizationToolPublisherOnly": true
+      "finalizationToolPublisherOnly": true,
+      "workerKeyIsolationRequiresOsSandbox": true
     }
   },
   "hostedCommunity": {
