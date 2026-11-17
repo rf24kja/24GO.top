@@ -60,7 +60,8 @@ test('agent manifest explicitly and truthfully refuses hosted registration, writ
  ]);
  assert.equal(manifest.localAgentTools.campaignWorkspace.automaticPublicPublication,false);
  assert.equal(manifest.editorialProposals.localMcpCampaignWorkspace.privateSharedStateRequired,true);
- assert.equal(manifest.editorialProposals.localMcpCampaignWorkspace.publisherSigningKeyAvailableToWorkers,false);
+ assert.equal(manifest.editorialProposals.localMcpCampaignWorkspace.publisherSigningKeyIncludedInWorkerConfig,false);
+ assert.equal(manifest.editorialProposals.localMcpCampaignWorkspace.workerKeyIsolationRequiresOsSandbox,true);
  assert.equal(manifest.editorialProposals.localMcpArticleAuthoring.supportsPrivateSignedRevision,true);
  assert.equal(manifest.editorialProposals.localMcpArticleAuthoring.reviewIsAdvisoryOnly,true);
  assert.equal(manifest.editorialProposals.localMcpArticleAuthoring.optionalSecondAgentReview,true);
