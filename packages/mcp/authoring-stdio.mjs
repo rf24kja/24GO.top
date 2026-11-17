@@ -333,7 +333,7 @@ export function handleAgentAuthoringMcpRequest(req,session){
    protocolVersion:req.params?.protocolVersion==='2025-11-25'?'2025-11-25':'2025-06-18',
    capabilities:{tools:{}},
    serverInfo:{name:'24gotop-local-agent-authoring',version:'1.0.0'},
-   instructions:'One configured BYOK article-generation request per process. Private local files only; no GitHub or website publication. Review the complete local manuscript and rights before using the separate publication MCP.'
+   instructions:'One configured BYOK writer request, at most one separately consented reviewer request, and one local signed revision per process. Private local files only; no GitHub or website publication. Review the complete local manuscript and rights before using the separate publication MCP.'
   }};
  case 'ping':return {result:{}};
  case 'tools/list':return {result:{tools:session.reviewAvailable?[prepareTool,reviewTool,revisionTool]:[prepareTool,revisionTool]}};
