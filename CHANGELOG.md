@@ -5,6 +5,7 @@
 - Keep the complete manuscript and signing material local. The authoring server has no GitHub token or public write tool; public submission remains a separate exact-digest-approved DRAFT PR and mandatory human merge.
 - Pin the clean local `main` source SHA before inference and recheck it after preview generation; return the exact source revision with the publication digest and fail closed on checkout drift.
 - Add MCP onboarding configuration, capability discovery, operator runbook, and mocked-provider tests for key pinning, private files, consent, output isolation, no public writes and one-shot behavior.
+- Optionally expose `review_article_draft` to a separately pinned second BYOK model. It requires independent per-call cost/data consent, writes a private SHA-bound advisory report and never approves or modifies the manuscript.
 
 ## Unreleased — operator-approved static article publication MCP (17 November 2026)
 
