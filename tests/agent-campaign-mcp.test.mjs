@@ -41,7 +41,7 @@ test('campaign MCP exposes private multi-agent tools and creates a campaign over
   const listed=handleAgentCampaignMcpRequest({jsonrpc:'2.0',id:1,method:'tools/list'},session);
   const names=listed.result.tools.map(item=>item.name);
   assert.deepEqual(names,[
-   'create_promotion_campaign','claim_campaign_task','submit_campaign_task_result',
+   'create_promotion_campaign','list_campaigns','claim_campaign_task','submit_campaign_task_result',
    'release_campaign_task','send_campaign_message','read_campaign_messages',
    'get_campaign_status','finalize_campaign_article'
   ]);
@@ -93,7 +93,7 @@ test('worker agents do not receive the owner signing key or finalization tool',a
   assert.equal(session.finalizeAvailable,false);
   const listed=handleAgentCampaignMcpRequest({jsonrpc:'2.0',id:1,method:'tools/list'},session);
   assert.deepEqual(listed.result.tools.map(item=>item.name),[
-   'create_promotion_campaign','claim_campaign_task','submit_campaign_task_result',
+   'create_promotion_campaign','list_campaigns','claim_campaign_task','submit_campaign_task_result',
    'release_campaign_task','send_campaign_message','read_campaign_messages','get_campaign_status'
   ]);
   const denied=handleAgentCampaignMcpRequest({
