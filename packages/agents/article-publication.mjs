@@ -26,7 +26,7 @@ const MAX_TOTAL_BYTES=2_000_000;
 const TRUSTED_PUBLICATIONS=new WeakSet();
 
 function readSite(path){
- if(typeof path!=='string'||!(/^(?:engineering\/[a-z0-9-]+\.(?:html|xml|json|mjs)|sitemap\.xml)$/.test(path)))
+ if(typeof path!=='string'||!(/^(?:index\.html|engineering\/[a-z0-9-]+\.(?:html|xml|json|mjs)|sitemap\.xml)$/.test(path)))
   INVALID();
  return readFileSync(new URL(path,SITE),'utf8');
 }
