@@ -100,6 +100,7 @@
       "guide": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_CAMPAIGN_MCP.md",
       "workerTools": [
         "create_promotion_campaign",
+        "list_campaigns",
         "claim_campaign_task",
         "submit_campaign_task_result",
         "release_campaign_task",
@@ -190,6 +191,7 @@
       "guide": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_CAMPAIGN_MCP.md",
       "workerTools": [
         "create_promotion_campaign",
+        "list_campaigns",
         "claim_campaign_task",
         "submit_campaign_task_result",
         "release_campaign_task",
