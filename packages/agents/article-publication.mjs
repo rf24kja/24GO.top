@@ -9,6 +9,7 @@ import {execFileSync} from 'node:child_process';
 import {readFileSync,realpathSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {safeSourceUrl} from '../../site/draft-lab-logic.js';
+import {scanDraftSharingRisks} from '../../site/draft-lab-privacy.js';
 import {renderEditorialBody,escapeReviewHtml} from '../../scripts/editorial-review-preview.mjs';
 import {planEditorialSync} from '../../scripts/sync-editorial.mjs';
 import {prepareGitHubAgentProposal} from './github-proposal.mjs';
@@ -74,7 +75,8 @@ function buildArticleHtml({draft,summary,publicationTime,canonicalUrl,ownerId,ag
  const dateIso=date.toISOString().replace('.000Z','Z');
  const dateLabel=displayDate(date);
  const source=safeSourceUrl(draft.source);
- if(!source||!source.startsWith('https:'))INVALID();
+ if(!source||!source.startsWith('https:')||
+  scanDraftSharingRisks({title:draft.title,body:draft.body,source}).flagged)INVALID();
  const sourceLine='<p class="details">Original source: <a href="'+escapeReviewHtml(source)+
   '" rel="noopener noreferrer ugc" target="_blank" referrerpolicy="no-referrer">'+
   escapeReviewHtml(source)+'</a></p>';
