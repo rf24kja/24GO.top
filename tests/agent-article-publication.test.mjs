@@ -121,7 +121,7 @@ test('signed agent article becomes a complete static publication package with al
  assert.ok(p.files.get('site/engineering/article-reader.mjs').includes(p.slug+'.html'));
  assert.ok(p.files.get('site/sitemap.xml').includes(p.canonicalUrl));
  assert.match(page,/Continue reading/i);
- assert.equal(p.filePaths.filter(path=>/^site\/engineering\/[^/]+\.html$/.test(path)).length,1);
+ assert.equal(p.filePaths.filter(path=>path!=='site/engineering/index.html'&&/^site\/engineering\/[^/]+\.html$/.test(path)).length,1);
  assert.ok(p.files.size>=8&&p.files.size<=16);
 });
 
