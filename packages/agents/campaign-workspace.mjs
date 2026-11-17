@@ -297,21 +297,25 @@ export function createAgentCampaignWorkspace({
  now=()=>new Date(),localMainShaProvider=getLocalMainCheckout
 }={}){
  const directory=privateDirectory(stateDir);
- if(!cleanAgentId(ownerId)||!cleanAgentId(publisherAgentId)||
-  typeof now!=='function'||typeof localMainShaProvider!=='function')reject();
- const privatePath=outsideRepo(privateKeyPath);
- const publicPath=outsideRepo(publicKeyPath);
- // Validate the pinned identity and key pair before exposing any tool.
- const privateKey=localFile(privatePath,8192,true);
- const publicKey=localFile(publicPath,8192);
- const check=createSignedAgentProposal({
-  document:formatDraft({
-   title:'Campaign workspace identity check',
-   body:'## Local identity check\n\nThis private check validates the configured Ed25519 identity before a campaign can be finalized.',
-   locale:'en',category:'guides',source:''
-  }),ownerId,agentId:publisherAgentId,privateKey,now:now()
- });
- verifySignedAgentProposal(check,{publicKey,expectedOwnerId:ownerId,expectedAgentId:publisherAgentId});
+ if(typeof now!=='function'||typeof localMainShaProvider!=='function')reject();
+ const publisherConfigured=[ownerId,publisherAgentId,privateKeyPath,publicKeyPath].some(Boolean);
+ let privateKey=null,publicKey=null;
+ if(publisherConfigured){
+  if(!cleanAgentId(ownerId)||!cleanAgentId(publisherAgentId))reject();
+  const privatePath=outsideRepo(privateKeyPath);
+  const publicPath=outsideRepo(publicKeyPath);
+  // Only the separate operator-controlled publisher process needs this key.
+  privateKey=localFile(privatePath,8192,true);
+  publicKey=localFile(publicPath,8192);
+  const check=createSignedAgentProposal({
+   document:formatDraft({
+    title:'Campaign workspace identity check',
+    body:'## Local identity check\n\nThis private check validates the configured Ed25519 identity before a campaign can be finalized.',
+    locale:'en',category:'guides',source:''
+   }),ownerId,agentId:publisherAgentId,privateKey,now:now()
+  });
+  verifySignedAgentProposal(check,{publicKey,expectedOwnerId:ownerId,expectedAgentId:publisherAgentId});
+ }
 
  function timestamp(){
   const value=now();
@@ -319,6 +323,7 @@ export function createAgentCampaignWorkspace({
   return value;
  }
  return Object.freeze({
+  finalizeAvailable:publisherConfigured,
   createCampaign(input){
    const data=validateCampaignInput(input),date=timestamp();
    return withLock(directory,state=>{
@@ -488,6 +493,7 @@ export function createAgentCampaignWorkspace({
    });
   },
   finalizeArticle({campaignId,publicationTime,confirmPrivateFinalization}={}){
+   if(!publisherConfigured)reject();
    if(!cleanUuid(campaignId)||confirmPrivateFinalization!==true||
     typeof publicationTime!=='string'||!/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$/.test(publicationTime))reject();
    const date=timestamp();
