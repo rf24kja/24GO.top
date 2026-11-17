@@ -42,7 +42,7 @@ function validPublicationTime(value){
 }
 export function buildAgentMcpConfig({
  mode,repoPath,packagePath,publicKeyPath,summaryPath,ownerId,agentId,publicationTime,
- outputRoot,privateKeyPath,draftEndpoint,draftModel
+ outputRoot,privateKeyPath,draftEndpoint,draftModel,reviewEndpoint,reviewModel
 }={}){
  if(!['reader','editorial','publication','authoring'].includes(mode))
   throw new TypeError('Choose a supported local agent workflow.');
@@ -72,6 +72,10 @@ export function buildAgentMcpConfig({
    AGENT_DRAFT_ENDPOINT:validDraftEndpoint(draftEndpoint),
    AGENT_DRAFT_MODEL:validModel(draftModel)
   };
+  if(reviewEndpoint||reviewModel){
+   settings.env.AGENT_REVIEW_ENDPOINT=validDraftEndpoint(reviewEndpoint);
+   settings.env.AGENT_REVIEW_MODEL=validModel(reviewModel);
+  }
  }
   if(mode==='editorial')settings.env.MCP_AGENT_ALLOW_PUBLIC_ISSUE='0';
  if(mode==='publication'){
@@ -114,7 +118,9 @@ export function mountAgentMcpHelper(root=document){
     outputRoot:get('authoring-output-root').value,
     privateKeyPath:get('authoring-private-key-path').value,
     draftEndpoint:get('draft-endpoint').value,
-    draftModel:get('draft-model').value
+    draftModel:get('draft-model').value,
+    reviewEndpoint:get('review-endpoint').value,
+    reviewModel:get('review-model').value
    });
    output.textContent=latest;
    status.textContent='Local configuration ready. Review the local paths, model endpoint and consent settings before installing it in your MCP client.';
