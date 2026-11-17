@@ -51,6 +51,12 @@ function renderBlock(block){
   default:throw new TypeError('Unknown restricted Markdown block');
  }
 }
+export function renderEditorialBody(draft){
+ // Revalidate via the exact exported Draft Lab grammar, even for direct callers.
+ const validated=parseDraftFile(formatDraft(draft));
+ return parsePreviewBlocks(validated.body).map(renderBlock).join('\\n');
+}
+
 export function renderEditorialReviewPreview(draft){
  // Revalidate via the exact exported Draft Lab grammar, even for direct callers.
  const validated=parseDraftFile(formatDraft(draft));
