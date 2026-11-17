@@ -52,7 +52,9 @@ test('BYOK authoring MCP config contains only local identity paths and non-secre
   publicKeyPath:'/home/dev/.config/24gotop/writer.public.pem',
   ownerId:'team-owner',agentId:'technical-writer',
   draftEndpoint:'https://api.example.com/v1/chat/completions',
-  draftModel:'frontier-model'
+  draftModel:'frontier-model',
+  reviewEndpoint:'https://review.example.com/v1/chat/completions',
+  reviewModel:'critic-model'
  }));
  const settings=config.mcpServers['24gotop-local-agent-authoring'];
  assert.equal(settings.args[0],'/home/dev/24GO.top/packages/mcp/authoring-stdio.mjs');
@@ -61,9 +63,21 @@ test('BYOK authoring MCP config contains only local identity paths and non-secre
  assert.equal(settings.env.MCP_AGENT_PUBLIC_KEY,'/home/dev/.config/24gotop/writer.public.pem');
  assert.equal(settings.env.AGENT_DRAFT_ENDPOINT,'https://api.example.com/v1/chat/completions');
  assert.equal(settings.env.AGENT_DRAFT_MODEL,'frontier-model');
+ assert.equal(settings.env.AGENT_REVIEW_ENDPOINT,'https://review.example.com/v1/chat/completions');
+ assert.equal(settings.env.AGENT_REVIEW_MODEL,'critic-model');
+ assert.equal(settings.env.AGENT_REVIEW_KEY,undefined);
  assert.equal(settings.env.AGENT_DRAFT_KEY,undefined);
  assert.equal(settings.env.GITHUB_TOKEN,undefined);
  assert.equal(settings.env.MCP_AGENT_PACKAGE,undefined);
+ assert.throws(()=>buildAgentMcpConfig({
+  mode:'authoring',repoPath:'/home/dev/24GO.top',
+  outputRoot:'/home/dev/.local/share/24gotop-private',
+  privateKeyPath:'/home/dev/.config/24gotop/writer.private.pem',
+  publicKeyPath:'/home/dev/.config/24gotop/writer.public.pem',
+  ownerId:'team-owner',agentId:'technical-writer',
+  draftEndpoint:'https://api.example.com/v1/chat/completions',draftModel:'frontier-model',
+  reviewEndpoint:'https://review.example.com/v1/chat/completions'
+ }),TypeError);
  for(const draftEndpoint of ['http://remote.example/v1/chat/completions',
   'https://user:pass@example.com/v1/chat/completions',
   'https://api.example.com/v1/chat/completions?key=secret']){
