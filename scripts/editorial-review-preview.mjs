@@ -51,6 +51,29 @@ function renderBlock(block){
   default:throw new TypeError('Unknown restricted Markdown block');
  }
 }
+export function renderEditorialBody(draft){
+ // Revalidate via the exact exported Draft Lab grammar, even for direct callers.
+ const validated=parseDraftFile(formatDraft(draft));
+ const blocks=parsePreviewBlocks(validated.body);
+ let headingCount=0;
+ const used=new Set();
+ const headingId=text=>{
+  const base=text.normalize('NFKD').replace(/[\u0300-\u036f]/g,'')
+   .toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')
+   .slice(0,64).replace(/-+$/g,'')||'heading';
+  let id='section-'+base,index=2;
+  while(used.has(id)){id='section-'+base+'-'+index++; }
+  used.add(id);return id;
+ };
+ return blocks.map(block=>{
+  if(block.type!=='heading')return renderBlock(block);
+  if(++headingCount>50)throw new TypeError('Article has too many headings');
+  const level=Math.min(3,block.level+1),tag='h'+level;
+  return '<'+tag+' id="'+headingId(block.text)+'">'+
+   inlineReviewHtml(block.text)+'</'+tag+'>';
+ }).join('\n');
+}
+
 export function renderEditorialReviewPreview(draft){
  // Revalidate via the exact exported Draft Lab grammar, even for direct callers.
  const validated=parseDraftFile(formatDraft(draft));

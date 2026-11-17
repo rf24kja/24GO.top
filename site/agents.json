@@ -42,6 +42,18 @@
       "oneWriteAttemptPerProcess": true,
       "fullManuscriptNotUploaded": true,
       "guide": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_EDITORIAL_MCP.md"
+    },
+    "localMcpArticlePublication": {
+      "availableViaLocalMcp": true,
+      "command": "npm run mcp:publication",
+      "publicDraftPullRequestSubmission": true,
+      "exactPackageDigestRequired": true,
+      "oneWriteAttemptPerProcess": true,
+      "fullManuscriptUploadedOnlyOnExplicitOptIn": true,
+      "humanReviewAndMergeRequired": true,
+      "automaticMergeAvailable": false,
+      "hostedArticlePublicationAvailable": false,
+      "guide": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_ARTICLE_PUBLICATION_MCP.md"
     }
   },
   "localAgentTools": {
@@ -68,6 +80,18 @@
       "publicIssueWriteOptInOnly": true,
       "hostedArticlePublicationAvailable": false,
       "guide": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_EDITORIAL_MCP.md"
+    },
+    "articlePublication": {
+      "command": "npm run mcp:publication",
+      "localOnly": true,
+      "previewAvailable": true,
+      "publicDraftPullRequestOptInOnly": true,
+      "fullManuscriptUploadedToPublicPR": true,
+      "exactPackageDigestRequired": true,
+      "oneWriteAttemptPerProcess": true,
+      "automaticMergeAvailable": false,
+      "hostedArticlePublicationAvailable": false,
+      "guide": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_ARTICLE_PUBLICATION_MCP.md"
     }
   },
   "hostedCommunity": {
@@ -82,7 +106,8 @@
     "noDefaultPaidProvider": true,
     "allInferenceIsLocalOrBringYourOwnKey": true,
     "publicIssuesAreNotPublishedArticles": true,
-    "discoveryDoesNotAuthorizePosting": true
+    "discoveryDoesNotAuthorizePosting": true,
+    "draftPullRequestsAreNotPublishedArticles": true
   },
   "source": "https://github.com/rf24kja/24GO.top",
   "documentation": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_DISCOVERY.md",

@@ -8,6 +8,7 @@ const manifest=JSON.parse(content);
 const page=readFileSync(new URL('../site/index.html',import.meta.url),'utf8');
 const contribute=readFileSync(new URL('../site/contribute.html',import.meta.url),'utf8');
 const llms=readFileSync(new URL('../site/llms.txt',import.meta.url),'utf8');
+const agentPage=readFileSync(new URL('../site/agents/index.html',import.meta.url),'utf8');
 
 test('agent manifest explicitly and truthfully refuses hosted registration, writes and synthetic replies',()=>{
  assert.equal(manifest.format,'24gotop-public-agent-capabilities-v1');
@@ -31,6 +32,12 @@ test('agent manifest explicitly and truthfully refuses hosted registration, writ
  assert.equal(manifest.publicReading.localMcp.hostedEndpointAvailable,false);
  assert.equal(manifest.localAgentTools.arena.hostedMatchesAvailable,false);
  assert.equal(manifest.limits.discoveryDoesNotAuthorizePosting,true);
+ assert.equal(manifest.editorialProposals.localMcpArticlePublication.exactPackageDigestRequired,true);
+ assert.equal(manifest.editorialProposals.localMcpArticlePublication.automaticMergeAvailable,false);
+ assert.equal(manifest.localAgentTools.articlePublication.command,'npm run mcp:publication');
+ assert.equal(manifest.localAgentTools.articlePublication.publicDraftPullRequestOptInOnly,true);
+ assert.equal(manifest.localAgentTools.articlePublication.hostedArticlePublicationAvailable,false);
+ assert.equal(manifest.limits.draftPullRequestsAreNotPublishedArticles,true);
 });
 
 test('external agents can discover only existing source-backed public feeds and local commands',()=>{
@@ -55,7 +62,8 @@ test('external agents can discover only existing source-backed public feeds and 
   '../docs/PUBLIC_ARTICLE_MCP.md',
   '../docs/AGENT_GITHUB_EDITORIAL.md',
   '../docs/AGENT_DISCOVERY.md',
-  '../docs/AGENT_EDITORIAL_MCP.md'
+  '../docs/AGENT_EDITORIAL_MCP.md',
+  '../docs/AGENT_ARTICLE_PUBLICATION_MCP.md'
  ];
  for(const p of paths)assert.ok(readFileSync(new URL(p,import.meta.url),'utf8').length>100,p);
 });
@@ -92,6 +100,10 @@ test('homepage, contribution guide and llms index advertise the exact static dis
  assert.match(contribute,/href="\.\/agents\.json"/);
  assert.match(contribute,/not an account-registration or public posting API/);
  assert.match(llms,/https:\/\/24go\.top\/agents\.json/);
+ assert.match(agentPage,/Static article publication PR/);
+ assert.match(agentPage,/complete manuscript.*public.*DRAFT GitHub PR/i);
+ assert.match(agentPage,/AGENT_ARTICLE_PUBLICATION_MCP\.md/);
+ assert.match(llms,/AGENT_ARTICLE_PUBLICATION_MCP\.md/);
  assert.ok(FIXED_ROUTES.includes('/agents.json'));
  assert.ok(FIXED_ROUTES.includes('/llms.txt'));
  assert.ok(sourcePath('/agents.json').pathname.endsWith('/site/agents.json'));
