@@ -157,7 +157,10 @@ function validateDraftResult(result,campaign,topic,previous){
  const targetCount=result.body.split(campaign.targetUrl).length-1;
  const disclosureCount=result.body.toLocaleLowerCase().split(
   campaign.relationshipDisclosure.toLocaleLowerCase()).length-1;
- if(targetCount!==1||disclosureCount!==1)reject();
+ const markdownTargetLink=']('+campaign.targetUrl+')';
+ if(targetCount!==1||!result.body.includes(markdownTargetLink)||
+  !result.body.toLocaleLowerCase().includes(campaign.targetSiteName.toLocaleLowerCase())||
+  disclosureCount!==1)reject();
  for(const claim of campaign.prohibitedClaims){
   if(result.body.toLocaleLowerCase().includes(claim.toLocaleLowerCase()))reject();
  }
