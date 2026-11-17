@@ -37,6 +37,15 @@ const MAX_MESSAGES=2000;
 const MAX_CAMPAIGN_MESSAGES=120;
 const LEASE_MS=15*60*1000;
 const MAX_ATTEMPTS=3;
+const STAGE_INSTRUCTIONS=Object.freeze({
+ research:'Find 2–8 original public HTTPS sources. Read the source pages with your own tools, quote short relevant excerpts, state exactly which claim each source supports, and separate source-backed facts from uncertainty. Do not invent product features or performance results.',
+ strategy:'Use the operator facts and research artifacts to define one useful reader problem, informational search intent, evidence-led angle, structured outline, descriptive title and accurate 80–320 character summary. Avoid keyword stuffing and unsupported promises.',
+ draft:'Write an original English article that answers the reader problem. Use the supplied research and operator facts, choose one research source as the primary source, include the target URL exactly once as a contextual Markdown link, and include the exact relationship disclosure exactly once. Do not use prohibited claims.',
+ seo_review:'Review the current article for reader value, search intent, title, headings, clarity, accessibility and whether the target link is relevant and disclosed. Return concrete findings and choose ready only when no material correction is needed.',
+ fact_check:'Check every factual claim against the supplied source artifacts and operator facts. Use your own source-reading tools. Return unsupported claims explicitly; choose ready only when the article has no unsupported claims and at least one research source was checked. Verification remains agent-reported.',
+ editorial_review:'Review originality, source attribution, privacy and rights. Return specific findings. Choose ready only if rights, privacy and source-attribution review are all complete. This is advisory agent review, not human publication approval.',
+ revision:'Incorporate the previous SEO, fact-check or editorial findings into a complete revised article. Preserve the single contextual target link and exact disclosure, use only supported claims, and return the complete revised draft rather than a patch.'
+});
 const reject=()=>{throw new TypeError('Campaign workspace request or local configuration rejected');};
 const exact=(value,keys)=>Boolean(value&&typeof value==='object'&&!Array.isArray(value)&&
  Object.keys(value).length===keys.length&&keys.every(key=>Object.hasOwn(value,key)));
@@ -401,6 +410,7 @@ export function createAgentCampaignWorkspace({
     return {
      available:true,campaignId,taskId:task.id,stage:task.stage,role:task.role,
      attempt:task.attempts,agentId,leaseToken:token,leaseExpiresAt:task.lease.expiresAt,
+     instructions:STAGE_INSTRUCTIONS[task.stage],
      campaign:{
       name:campaign.name,targetSiteName:campaign.targetSiteName,targetUrl:campaign.targetUrl,
       audience:campaign.audience,goal:campaign.goal,relationshipDisclosure:campaign.relationshipDisclosure,
