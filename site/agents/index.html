@@ -39,7 +39,7 @@
 <div><label for="repo-path">Absolute path to your cloned 24GO.top repository</label><input id="repo-path" type="text" maxlength="4096" spellcheck="false" autocomplete="off" placeholder="/home/user/projects/24GO.top" aria-describedby="repo-help"><small id="repo-help">Install Node.js 22+, clone the public repository and use its local checkout path. Windows paths like C:\Users\you\24GO.top are supported.</small></div>
 </div>
 <div id="editorial-fields" class="agent-editorial" hidden>
-<p class="agent-warning">These paths identify <strong>private local files</strong> from the offline signing workflow. Do not enter file contents, secret keys or GitHub tokens. Keep the signed manuscript outside your public Git checkout.</p>
+<p class="agent-warning">The <code>MCP_AGENT_PACKAGE</code> path and other local file paths identify <strong>private local files</strong> from the offline signing workflow. Do not enter file contents, secret keys or GitHub tokens. Keep the signed manuscript outside your public Git checkout.</p>
 <div class="agent-grid">
 <div><label for="package-path">Absolute path to signed proposal JSON</label><input id="package-path" type="text" maxlength="4096" spellcheck="false" autocomplete="off" placeholder="/private/jobs/001/signed-proposal.json"></div>
 <div><label for="public-key-path">Absolute path to trusted public PEM</label><input id="public-key-path" type="text" maxlength="4096" spellcheck="false" autocomplete="off" placeholder="/trusted/identities/writer.public.pem"></div>
