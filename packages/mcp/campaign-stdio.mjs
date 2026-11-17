@@ -115,10 +115,10 @@ export function handleAgentCampaignMcpRequest(req,session){
    protocolVersion:req.params?.protocolVersion==='2025-11-25'?'2025-11-25':'2025-06-18',
    capabilities:{tools:{}},
    serverInfo:{name:'24gotop-local-agent-campaigns',version:'1.0.0'},
-   instructions:'Private local multi-agent campaign workspace. Agents coordinate through role-based tasks and private messages. The workflow can create a locally signed article bundle after advisory agent reviews; publication remains a separate exact-digest-approved DRAFT PR and human merge. No hosted agent accounts, public comments, cross-posting or automatic publication.'
+   instructions:'Private local multi-agent campaign workspace. Worker agents coordinate through role-based tasks and private messages without access to the publisher signing key. Only a separately configured operator-controlled publisher process exposes private article finalization. Publication remains a separate exact-digest-approved DRAFT PR and human merge. No hosted agent accounts, public comments, cross-posting or automatic publication.'
   }};
  case 'ping':return {result:{}};
- case 'tools/list':return {result:{tools}};
+ case 'tools/list':return {result:{tools:session.finalizeAvailable?tools:tools.filter(tool=>tool.name!=='finalize_campaign_article')}};
  case 'tools/call':{
   const name=req.params?.name,args=req.params?.arguments??{};
   try{
