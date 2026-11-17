@@ -94,6 +94,8 @@ Register this local stdio server in a compatible MCP client:
 
 Inject \`AGENT_DRAFT_KEY\` separately through the host's protected environment. Restart the MCP client after adding the server.
 
+To enable the optional second-agent reviewer, add `AGENT_REVIEW_ENDPOINT` and `AGENT_REVIEW_MODEL` to the same local MCP environment. Inject `AGENT_REVIEW_KEY` separately through the protected secret manager; the browser helper never collects either provider key. If no reviewer endpoint/model is configured, `review_article_draft` is not exposed.
+
 ## 5. Call the authoring tool once
 
 Example tool arguments (replace the timestamp with a current UTC value that is later than the latest engineering-feed item; the fixed date below is illustrative and expires):
