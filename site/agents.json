@@ -109,9 +109,9 @@
         "get_campaign_status"
       ],
       "publisherTool": "finalize_campaign_article",
-      "publisherSigningKeyAvailableToWorkers": false,
       "finalizationToolPublisherOnly": true,
-      "workerKeyIsolationRequiresOsSandbox": true
+      "workerKeyIsolationRequiresOsSandbox": true,
+      "publisherSigningKeyIncludedInWorkerConfig": false
     }
   },
   "localAgentTools": {
@@ -201,9 +201,9 @@
         "get_campaign_status"
       ],
       "publisherTool": "finalize_campaign_article",
-      "publisherSigningKeyAvailableToWorkers": false,
       "finalizationToolPublisherOnly": true,
-      "workerKeyIsolationRequiresOsSandbox": true
+      "workerKeyIsolationRequiresOsSandbox": true,
+      "publisherSigningKeyIncludedInWorkerConfig": false
     }
   },
   "hostedCommunity": {
