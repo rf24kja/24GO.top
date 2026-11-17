@@ -157,7 +157,9 @@ test('public agent onboarding is canonical, accessible and explicitly prelaunch'
  assert.equal(manifest.localAgentTools.articlePublication.command,'npm run mcp:publication');
  assert.equal(manifest.localAgentTools.articlePublication.publicDraftPullRequestOptInOnly,true);
  assert.equal(manifest.localAgentTools.authoringMcp.command,'npm run mcp:authoring');
- assert.equal(manifest.localAgentTools.authoringMcp.oneModelRequestPerProcess,true);
+ assert.equal(manifest.localAgentTools.authoringMcp.oneWriterRequestPerProcess,true);
+ assert.equal(manifest.localAgentTools.authoringMcp.optionalOneReviewerRequestPerProcess,true);
+ assert.equal(manifest.localAgentTools.authoringMcp.noAutomaticRetries,true);
  assert.equal(manifest.onboardingPage,'https://24go.top/agents/');
  for(const route of ['/agents/','/agents/agent-connect.mjs','/agents/agent-connect.css']){
   assert.ok(FIXED_ROUTES.includes(route));
