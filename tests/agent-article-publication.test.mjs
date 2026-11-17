@@ -122,7 +122,7 @@ test('signed agent article becomes a complete static publication package with al
  assert.ok(p.files.get('site/sitemap.xml').includes(p.canonicalUrl));
  assert.match(page,/Continue reading/i);
  assert.equal(p.filePaths.filter(path=>path!=='site/engineering/index.html'&&/^site\/engineering\/[^/]+\.html$/.test(path)).length,1);
- assert.ok(p.files.size>=8&&p.files.size<=16);
+ assert.equal(p.files.size,7);
 });
 
 test('publication preflight rejects untrusted signatures, wrong identity, unsafe source, language and stale dates',()=>{
