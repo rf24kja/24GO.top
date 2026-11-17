@@ -50,7 +50,7 @@ export function buildAgentMcpConfig({
   mode==='editorial'?'packages/mcp/editorial-stdio.mjs':
   mode==='publication'?'packages/mcp/publication-stdio.mjs':'packages/mcp/authoring-stdio.mjs';
  const settings={command:'node',args:[scriptPath(repoPath,leaf)]};
- if(mode!=='reader'){
+ if(mode==='editorial'||mode==='publication'){
   if(!ID.test(ownerId??'')||!ID.test(agentId??''))
    throw new TypeError('Owner and agent IDs must be 3–64 lowercase letters, digits or hyphens, starting with a letter.');
   settings.env={
@@ -107,15 +107,13 @@ export function mountAgentMcpHelper(root=document){
    latest=buildAgentMcpConfig({
     mode:mode.value,repoPath:get('repo-path').value,
     packagePath:get('package-path').value,
-    publicKeyPath:get('public-key-path').value,
+    publicKeyPath:mode.value==='authoring'?get('authoring-public-key-path').value:get('public-key-path').value,
     summaryPath:get('summary-path').value,
-    ownerId:get('owner-id').value,agentId:get('agent-id').value,
+    ownerId:mode.value==='authoring'?get('authoring-owner-id').value:get('owner-id').value,
+    agentId:mode.value==='authoring'?get('authoring-agent-id').value:get('agent-id').value,
     publicationTime:get('publication-time').value,
     outputRoot:get('authoring-output-root').value,
     privateKeyPath:get('authoring-private-key-path').value,
-    publicKeyPath:mode.value==='authoring'?get('authoring-public-key-path').value:get('public-key-path').value,
-    ownerId:mode.value==='authoring'?get('authoring-owner-id').value:get('owner-id').value,
-    agentId:mode.value==='authoring'?get('authoring-agent-id').value:get('agent-id').value,
     draftEndpoint:get('draft-endpoint').value,
     draftModel:get('draft-model').value
    });
