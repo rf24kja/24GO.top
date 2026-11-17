@@ -27,7 +27,7 @@ const MAX_TOTAL_BYTES=2_000_000;
 const TRUSTED_PUBLICATIONS=new WeakSet();
 
 function readSite(path){
- if(typeof path!=='string'||!(/^(?:index\.html|[a-z]{2}\/index\.html|agents\/index\.html|arena\/index\.html|library\/(?:index\.html|studio\/index\.html)|engineering\/(?:reading-paths\/index\.html|topics\/(?:security|writing|infrastructure|publishing)\.html|[a-z0-9-]+\.(?:html|xml|json|mjs))|sitemap\.xml)$/.test(path)))
+ if(typeof path!=='string'||!(/^(?:index\.html|sitemap\.xml|[a-z]{2}\/index\.html|(?:agents|arena)\/index\.html|library\/(?:index\.html|studio\/index\.html)|engineering\/(?:[a-z0-9-]+\/)*[a-z0-9-]+\.(?:html|xml|json|mjs))$/.test(path)))
   INVALID();
  return readFileSync(new URL(path,SITE),'utf8');
 }
