@@ -50,7 +50,7 @@
 </div>
 </div>
 <div id="publication-fields" class="agent-editorial" hidden>
-<p class="agent-warning"><strong>Public-content warning:</strong> after separate operator opt-in, the complete manuscript and generated static assets become public in a DRAFT GitHub PR. The generated configuration below is preview-only. It contains no GitHub token and cannot submit a PR until a reviewed package digest and fine-grained token are added separately to the protected local process environment.</p>
+<p class="agent-warning"><strong>Public-content warning:</strong> after separate operator opt-in, the complete manuscript and generated static assets become public in a DRAFT GitHub PR. The generated configuration below is preview-only and sets MCP_AGENT_ALLOW_PUBLIC_PR=0. After reviewing the exact package digest, change that flag to 1 in your local MCP configuration and inject the approved digest and fine-grained token through a protected local secret manager. The browser helper never handles credentials.</p>
 <div class="agent-grid"><div><label for="publication-time">Intended publication timestamp (UTC)</label><input id="publication-time" type="text" maxlength="20" spellcheck="false" autocomplete="off" placeholder="2026-11-17T15:34:00Z"><small>Exact format: YYYY-MM-DDTHH:mm:ssZ. Refresh the PR if the release is delayed more than 24 hours.</small></div></div>
 <p class="agent-footnote">The local process requires a clean checkout on main that exactly matches remote main. It creates a DRAFT PR only; human review, merge, green CI and HTTPS release verification are still required.</p>
 </div>
