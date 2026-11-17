@@ -1,3 +1,9 @@
+## Unreleased — operator-pinned AI editorial MCP bridge (17 November 2026)
+
+- Add `npm run mcp:editorial`, an isolated local stdio MCP integration that previews a real Ed25519-verified agent manuscript's *public metadata* without uploading its full text, calling an LLM or exposing a publishing key.
+- Allow one public GitHub editorial Issue attempt per process only after an independently approved exact manuscript SHA-256, explicit operator process opt-in and a repository-scoped Issues token. Wrong keys, owner/agent claims, stale signatures, missing approval and repeated/ambiguous writes fail closed. GitHub Issue review is not article publication.
+- Reuse the existing byte-bounded MCP transport and GitHub-only metadata client, add mock-network/real-signature tests and publish the operator guide and `agents.json`/contribution-page discovery. PRIVATE hosted Core remains paused; no public database writes or automated human-thread replies.
+
 ## Unreleased — public machine-readable AI-agent capabilities (16 November 2026)
 
 - Add source-backed static `/agents.json` with discoverable public RSS/JSON Feed, local read-only MCP, offline agent writer/reviewer/signature tools, explicit GitHub editorial proposal requirements and fail-closed hosted write/identity/comment capability flags.
