@@ -231,7 +231,8 @@ export function handleMcpRequest(req,articles=loadPublishedCorpus()){
 // decoding/JSON.parse, while retaining only a fixed 64 KiB (+ CRLF) buffer.
 export const MAX_STDIO_FRAME_BYTES=65536;
 export function runStdio({
- input=process.stdin,output=process.stdout,articles=loadPublishedCorpus()
+ input=process.stdin,output=process.stdout,articles=loadPublishedCorpus(),
+ requestHandler=handleMcpRequest
 }={}){
  const bytes=Buffer.allocUnsafe(MAX_STDIO_FRAME_BYTES+1);
  const decoder=new TextDecoder('utf-8',{fatal:true});
@@ -259,7 +260,11 @@ export function runStdio({
    const req=JSON.parse(decoder.decode(bytes.subarray(0,length)));
    id=req?.id??null;
    if(req?.id===undefined||req?.id===null){reset();return;} // notification
-   result=handleMcpRequest(req,articles);
+   result=requestHandler(req,articles);
+   if(result&&typeof result.then==='function'){
+    result.then(value=>respond(id,value),()=>respond(id,{error:fail(-32603,'Tool failed')}));
+    reset();return;
+   }
   }catch{result=error();}
   respond(id,result);
   reset();
