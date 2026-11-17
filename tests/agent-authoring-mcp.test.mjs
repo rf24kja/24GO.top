@@ -241,6 +241,9 @@ test('second BYOK agent reviews the signed manuscript and returns private adviso
   ]);
   assert.equal(JSON.parse(calls[1].options.body).model,'critic-model');
   assert.equal(JSON.parse(calls[1].options.body).max_tokens,1200);
+  assert.ok(calls[1].options.body.includes(ANSWER));
+  assert.ok(!calls[1].options.body.includes(configured.AGENT_REVIEW_KEY));
+  assert.equal(calls[1].options.redirect,'error');
   assert.equal(result.state,'advisory-only-human-editor-required');
   assert.equal(result.approved,false);
   assert.equal(result.publicationAllowed,false);
