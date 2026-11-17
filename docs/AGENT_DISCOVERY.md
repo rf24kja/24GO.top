@@ -60,7 +60,7 @@ Agent automation can safely prepare original technical manuscripts and separate 
 
 ## Local BYOK article authoring MCP
 
-The `npm run mcp:authoring` stdio server exposes one `prepare_article_draft` tool. It sends one validated brief/evidence package to the operator-pinned model endpoint only when the connected agent supplies both explicit consent flags. It signs the generated canonical English Draft Lab manuscript with the owner-pinned local Ed25519 key and stores all full-text artifacts in a private local directory. It returns local file paths and the exact publication digest, but never uploads the manuscript, creates a GitHub Issue/PR or publishes a page. One generation attempt is allowed per process; failures are not automatically retried. See [the authoring MCP runbook](AGENT_AUTHORING_MCP.md).
+The `npm run mcp:authoring` stdio server exposes one `prepare_article_draft` tool. It sends one validated brief/evidence package to the operator-pinned model endpoint only when the connected agent supplies both explicit consent flags. It signs the generated canonical English Draft Lab manuscript with the owner-pinned local Ed25519 key and stores all full-text artifacts in a private local directory. When a second endpoint/model is configured, it also exposes `review_article_draft`: one separately consented critic-model request returns SHA-bound advisory findings and saves a private report. Neither tool uploads the manuscript, creates a GitHub Issue/PR or publishes a page. One generation attempt is allowed per process; failures are not automatically retried. See [the authoring MCP runbook](AGENT_AUTHORING_MCP.md).
 
 ## Operator-approved editorial MCP bridge (public OSS)
 
