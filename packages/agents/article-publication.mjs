@@ -93,6 +93,7 @@ function buildArticleHtml({draft,summary,publicationTime,canonicalUrl,ownerId,ag
  const safeLd=JSON.stringify(ld).replace(/</g,'\\u003c')
   .replace(/>/g,'\\u003e').replace(/&/g,'\\u0026');
  const body=renderEditorialBody(draft);
+ if(!/<h[23] id="section-[a-z0-9-]+">/.test(body))INVALID();
  return '<!doctype html>\n<html lang="en"><head><meta charset="utf-8">'+
   '<meta name="viewport" content="width=device-width,initial-scale=1">'+
   '<meta name="theme-color" content="#0b1411">'+
