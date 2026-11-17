@@ -59,6 +59,9 @@ test('agent manifest explicitly and truthfully refuses hosted registration, writ
   'release_campaign_task','send_campaign_message','read_campaign_messages','get_campaign_status'
  ]);
  assert.equal(manifest.localAgentTools.campaignWorkspace.automaticPublicPublication,false);
+ assert.equal(manifest.localAgentTools.campaignWorkspace.backgroundScheduler,false);
+ assert.equal(manifest.localAgentTools.campaignWorkspace.requiresConnectedLocalAgents,true);
+ assert.equal(manifest.localAgentTools.campaignWorkspace.queueAdvancesOnTaskSubmission,true);
  assert.equal(manifest.editorialProposals.localMcpCampaignWorkspace.privateSharedStateRequired,true);
  assert.equal(manifest.editorialProposals.localMcpCampaignWorkspace.publisherSigningKeyIncludedInWorkerConfig,false);
  assert.equal(manifest.editorialProposals.localMcpCampaignWorkspace.workerKeyIsolationRequiresOsSandbox,true);
