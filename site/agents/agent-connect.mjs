@@ -40,6 +40,7 @@ export function buildAgentMcpConfig({
    MCP_AGENT_ID:agentId
   };
  }
+ if(mode==='editorial')settings.env.MCP_AGENT_ALLOW_PUBLIC_ISSUE='0';
  if(mode==='publication'){
   settings.env.MCP_AGENT_PUBLICATION_TIME=validPublicationTime(publicationTime);
   // The browser helper can create preview-only config, never a write-enabled token setup.
