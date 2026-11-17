@@ -1,4 +1,4 @@
-## Unreleased — private multi-agent campaign workspace MCP (18 November 2026)
+## 2026-11-18 — private multi-agent campaign workspace MCP
 
 - Add `npm run mcp:campaign`, a local persistent task queue and private agent-to-agent message board for researcher, strategist, writer, SEO editor, fact-checker and editorial reviewer roles.
 - Require operator-supplied target-site facts, prohibited claims and an exact relationship disclosure. Research tasks collect at least two public source references; article drafts require one contextual target link and the disclosure exactly once.
