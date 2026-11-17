@@ -44,7 +44,11 @@ test('agent manifest explicitly and truthfully refuses hosted registration, writ
  assert.equal(manifest.localAgentTools.authoringMcp.oneWriterRequestPerProcess,true);
  assert.equal(manifest.localAgentTools.authoringMcp.optionalOneReviewerRequestPerProcess,true);
  assert.equal(manifest.localAgentTools.authoringMcp.noAutomaticRetries,true);
- assert.deepEqual(manifest.localAgentTools.authoringMcp.toolNames,['prepare_article_draft','review_article_draft']);
+ assert.deepEqual(manifest.localAgentTools.authoringMcp.toolNames,['prepare_article_draft','review_article_draft','revise_article_draft']);
+ assert.equal(manifest.localAgentTools.authoringMcp.supportsPrivateSignedRevision,true);
+ assert.equal(manifest.localAgentTools.authoringMcp.maxPrivateRevisionsPerProcess,1);
+ assert.equal(manifest.localAgentTools.authoringMcp.revisionDoesNotCallModel,true);
+ assert.equal(manifest.editorialProposals.localMcpArticleAuthoring.supportsPrivateSignedRevision,true);
  assert.equal(manifest.editorialProposals.localMcpArticleAuthoring.reviewIsAdvisoryOnly,true);
  assert.equal(manifest.editorialProposals.localMcpArticleAuthoring.optionalSecondAgentReview,true);
  assert.equal(manifest.localAgentTools.articlePublication.hostedArticlePublicationAvailable,false);
