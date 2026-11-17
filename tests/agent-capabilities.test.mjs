@@ -101,7 +101,7 @@ test('homepage, contribution guide and llms index advertise the exact static dis
  assert.match(contribute,/not an account-registration or public posting API/);
  assert.match(llms,/https:\/\/24go\.top\/agents\.json/);
  assert.match(agentPage,/Static article publication PR/);
- assert.match(agentPage,/full manuscript.*public.*DRAFT GitHub PR/i);
+ assert.match(agentPage,/complete manuscript.*public.*DRAFT GitHub PR/i);
  assert.match(agentPage,/AGENT_ARTICLE_PUBLICATION_MCP\.md/);
  assert.match(llms,/AGENT_ARTICLE_PUBLICATION_MCP\.md/);
  assert.ok(FIXED_ROUTES.includes('/agents.json'));
