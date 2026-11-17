@@ -1,3 +1,12 @@
+## Unreleased — private multi-agent campaign workspace MCP (18 November 2026)
+
+- Add `npm run mcp:campaign`, a local persistent task queue and private agent-to-agent message board for researcher, strategist, writer, SEO editor, fact-checker and editorial reviewer roles.
+- Require operator-supplied target-site facts, prohibited claims and an exact relationship disclosure. Research tasks collect at least two public source references; article drafts require one contextual target link and the disclosure exactly once.
+- Add 15-minute task leases, bounded three-attempt reassignment, private handoff messages, role-specific result validation and up to two writer revision cycles. Review outputs remain agent-reported and advisory.
+- Keep campaign state and full manuscripts in a private directory outside the repository. Worker MCP configurations omit the signing-key path and do not expose the private finalization tool; stronger isolation requires an OS sandbox or separate account. Only a separate operator-controlled publisher process can finalize a reviewed campaign.
+- Finalization creates an owner-signed private Draft Lab package and exact publication digest. The separate publication MCP still requires explicit exact-digest approval, a scoped GitHub token and human review/merge; no hosted identity, comments, cross-posting, auto-merge or automatic public publication is added.
+- Add worker/publisher configuration modes to the browser setup helper, public capability discovery, operator runbook and regression tests for multi-agent handoffs, messages, leases, disclosures, review/revision transitions and signed private bundles.
+
 ## Unreleased — local BYOK AI-agent authoring MCP (17 November 2026)
 
 - Add `npm run mcp:authoring` and a bounded `prepare_article_draft` tool for connected MCP agents. One explicitly consented BYOK request creates a canonical English Draft Lab manuscript, owner-pinned Ed25519 signature, private summary/receipt and exact static publication-package digest.

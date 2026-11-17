@@ -1,6 +1,6 @@
 # 24GOTOP public OSS delivery plan — temporary public-only focus
 
-Updated: 2026-11-17 (Asia/Bangkok), during the local BYOK agent-authoring MCP slice. Scope: **PUBLIC rf24kja/24GO.top and https://24go.top only.**
+Updated: 2026-11-18 (Asia/Bangkok), during the private multi-agent campaign workspace slice. Scope: **PUBLIC rf24kja/24GO.top and https://24go.top only.**
 
 ## Founder release and CI boundary
 
@@ -29,6 +29,7 @@ Updated: 2026-11-17 (Asia/Bangkok), during the local BYOK agent-authoring MCP sl
 | P1 | Read-only SDK/MCP and local agent onboarding | No-key reader examples; local configuration generation; bounded inputs; negative tests; editorial writes remain separately operator-approved and human-reviewed |
 | P1 | Local signed-agent article publication MCP | Preview-only by default; exact package digest and explicit operator opt-in are required for one public DRAFT PR; human review and merge remain mandatory; no hosted identity, auto-merge or deployment |
 | P1 | Local BYOK agent authoring MCP | One explicitly consented writer call, optional separately consented second-agent critique and one local re-signed revision; private manuscript and publication digest; no public write until separate exact-digest-approved publication MCP and human review |
+| P1 | Local multi-agent campaign workspace MCP | Separate local researcher/strategist/writer/SEO/fact-check/editor agents share a private task queue and message board; worker processes have no signing key; publisher-only private finalization; exact-digest publication MCP and human merge remain mandatory |
 | P1 | Eight-language UI and accessible author/reader flows | Keyboard and screen-reader checks, 320–390px layouts, and native-speaker feedback recorded from real people |
 | P2 | Static Library proof of concept | Only reviewed sandboxed HTML/CSS/JS; no arbitrary backend or public uploads without a separate threat model |
 
@@ -54,12 +55,13 @@ Public static Pages cannot implement verified accounts, hosted writer drafts, au
 
 ## Next evidence gates — do not simulate them
 
-1. **First authoring MCP smoke:** connect `npm run mcp:authoring` to a non-confidential sample brief and a model endpoint the owner has approved. Confirm one request, a private signed output bundle, correct publication digest and no GitHub/public write. No provider credentials or sample content are available to this public-only task, so this evidence is not yet claimed.
-2. **First operator validation of publication MCP:** run preview-only with a non-confidential signed sample. If a real public DRAFT PR is later required, the owner must inspect the complete package and authorize the exact digest and least-privilege token. A mocked API test is not evidence of a live GitHub write.
-3. **Issue #29 — five-author Draft Lab pilot:** recruit five independent, consenting volunteers. Observe whether they can create, preview, copy/download and reopen a draft without coaching. Record only anonymized opt-in feedback. At least four of five must understand that the editor is browser-only: it does not upload, autosave or publish their work. Link the three strongest UX needs to real follow-up issues. No volunteer sessions have been counted yet.
-4. **Issue #7 — manual accessibility:** complete keyboard-only walkthroughs and real VoiceOver, TalkBack or NVDA checks across desktop and mobile. Chromium automation is useful regression evidence, not a substitute for assistive-technology testing.
-5. **Issue #8 — localization:** obtain fluent Thai and Russian review of the scoped interface strings. Do not claim native-speaker approval without an actual reviewer.
-6. **Issue #94 — main-branch protection:** this is an owner-settings task, not a source-code task. The current GitHub branch response still reports `main` as unprotected. The connected integration cannot change repository protection settings; the owner must follow [BRANCH_PROTECTION_RUNBOOK.md](BRANCH_PROTECTION_RUNBOOK.md), require the public `test` check, block force pushes/deletion, and attach sanitized verification before closing the issue.
+1. **First campaign MCP smoke:** connect separate local worker agents to one private state directory, complete a non-confidential research → strategy → writing → review → revision/ready cycle, then use the separate publisher process to create a private signed bundle. Confirm worker tools do not expose finalization or read the publisher key. No provider credentials or non-confidential sample content are available to this public-only task, so this evidence is not yet claimed.
+2. **First authoring MCP smoke:** connect `npm run mcp:authoring` to a non-confidential sample brief and a model endpoint the owner has approved. Confirm one request, a private signed output bundle, correct publication digest and no GitHub/public write. No provider credentials or sample content are available to this public-only task, so this evidence is not yet claimed.
+3. **First operator validation of publication MCP:** run preview-only with a non-confidential signed sample. If a real public DRAFT PR is later required, the owner must inspect the complete package and authorize the exact digest and least-privilege token. A mocked API test is not evidence of a live GitHub write.
+4. **Issue #29 — five-author Draft Lab pilot:** recruit five independent, consenting volunteers. Observe whether they can create, preview, copy/download and reopen a draft without coaching. Record only anonymized opt-in feedback. At least four of five must understand that the editor is browser-only: it does not upload, autosave or publish their work. Link the three strongest UX needs to real follow-up issues. No volunteer sessions have been counted yet.
+5. **Issue #7 — manual accessibility:** complete keyboard-only walkthroughs and real VoiceOver, TalkBack or NVDA checks across desktop and mobile. Chromium automation is useful regression evidence, not a substitute for assistive-technology testing.
+6. **Issue #8 — localization:** obtain fluent Thai and Russian review of the scoped interface strings. Do not claim native-speaker approval without an actual reviewer.
+7. **Issue #94 — main-branch protection:** this is an owner-settings task, not a source-code task. The current GitHub branch response still reports `main` as unprotected. The connected integration cannot change repository protection settings; the owner must follow [BRANCH_PROTECTION_RUNBOOK.md](BRANCH_PROTECTION_RUNBOOK.md), require the public `test` check, block force pushes/deletion, and attach sanitized verification before closing the issue.
 
 The next highest-value progress is real operator validation and human evidence—not another cosmetic PR or an article published only to increase count. Continue a new SDK/MCP or editorial feature only when it solves an independently demonstrated problem and can be tested without private services.
 

@@ -58,7 +58,6 @@
     "localMcpArticleAuthoring": {
       "availableViaLocalMcp": true,
       "command": "npm run mcp:authoring",
-      "oneModelRequestPerProcess": true,
       "bringYourOwnKey": true,
       "privateSignedBundleOnly": true,
       "explicitPerCallCostAndProviderConsent": true,
@@ -67,7 +66,52 @@
       "optionalSecondAgentReview": true,
       "reviewIsAdvisoryOnly": true,
       "supportsPrivateSignedRevision": true,
-      "revisionDoesNotCallModel": true
+      "revisionDoesNotCallModel": true,
+      "oneWriterRequestPerProcess": true,
+      "optionalOneReviewerRequestPerProcess": true,
+      "noAutomaticRetries": true,
+      "maxPrivateRevisionsPerProcess": 1
+    },
+    "localMcpCampaignWorkspace": {
+      "availableViaLocalMcp": true,
+      "command": "npm run mcp:campaign",
+      "localOnly": true,
+      "privateSharedStateRequired": true,
+      "separateLocalAgentsCanCoordinate": true,
+      "privateTaskQueue": true,
+      "privateAgentMessages": true,
+      "roles": [
+        "researcher",
+        "strategist",
+        "writer",
+        "seo-editor",
+        "fact-checker",
+        "editorial-reviewer"
+      ],
+      "taskLeaseMinutes": 15,
+      "maxTaskAttempts": 3,
+      "maxWriterRevisions": 2,
+      "finalizationCreatesPrivateSignedBundle": true,
+      "noModelCallsOrExternalFetch": true,
+      "noGitHubOrPublicWrite": true,
+      "automaticPublicPublication": false,
+      "humanReviewAndMergeRequired": true,
+      "hostedAgentRegistrationAvailable": false,
+      "guide": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_CAMPAIGN_MCP.md",
+      "workerTools": [
+        "create_promotion_campaign",
+        "list_campaigns",
+        "claim_campaign_task",
+        "submit_campaign_task_result",
+        "release_campaign_task",
+        "send_campaign_message",
+        "read_campaign_messages",
+        "get_campaign_status"
+      ],
+      "publisherTool": "finalize_campaign_article",
+      "finalizationToolPublisherOnly": true,
+      "workerKeyIsolationRequiresOsSandbox": true,
+      "publisherSigningKeyIncludedInWorkerConfig": false
     }
   },
   "localAgentTools": {
@@ -129,6 +173,37 @@
       "supportsPrivateSignedRevision": true,
       "maxPrivateRevisionsPerProcess": 1,
       "revisionDoesNotCallModel": true
+    },
+    "campaignWorkspace": {
+      "command": "npm run mcp:campaign",
+      "localOnly": true,
+      "privateStateDirectoryRequired": true,
+      "privateTaskQueue": true,
+      "privateAgentMessages": true,
+      "selfAssertedLocalAgentIds": true,
+      "taskLeaseMinutes": 15,
+      "maxTaskAttempts": 3,
+      "maxWriterRevisions": 2,
+      "noModelCallsOrExternalFetch": true,
+      "noGitHubOrPublicWrite": true,
+      "finalizationCreatesPrivateSignedBundle": true,
+      "automaticPublicPublication": false,
+      "humanReviewRequired": true,
+      "guide": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_CAMPAIGN_MCP.md",
+      "workerTools": [
+        "create_promotion_campaign",
+        "list_campaigns",
+        "claim_campaign_task",
+        "submit_campaign_task_result",
+        "release_campaign_task",
+        "send_campaign_message",
+        "read_campaign_messages",
+        "get_campaign_status"
+      ],
+      "publisherTool": "finalize_campaign_article",
+      "finalizationToolPublisherOnly": true,
+      "workerKeyIsolationRequiresOsSandbox": true,
+      "publisherSigningKeyIncludedInWorkerConfig": false
     }
   },
   "hostedCommunity": {
