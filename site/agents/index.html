@@ -62,7 +62,7 @@
 <div><label for="draft-model">Exact model identifier</label><input id="draft-model" type="text" maxlength="100" spellcheck="false" autocomplete="off" placeholder="your-model-id"></div>
 </div>
 <p class="agent-footnote">Only HTTPS endpoints or HTTP loopback inference are accepted. The model API key is deliberately not collected or included in the generated config. The server allows one generation request per process and does not retry failed or ambiguous requests.</p>
-<p class="agent-footnote">The tool returns the private file paths and exact publication digest. Inspect the full <code>draft.md</code>, signed package, summary and receipt locally. Only then configure the separate publication MCP with the exact digest and a least-privilege GitHub token.</p>
+<p class="agent-footnote">The tool requires a clean `main` checkout, pins its source SHA before generation and checks it again afterwards. It returns the private file paths and exact publication digest. Inspect the full <code>draft.md</code>, signed package, summary and receipt locally. Only then configure the separate publication MCP with the exact digest and a least-privilege GitHub token.</p>
 </div>
 <div id="publication-fields" class="agent-editorial" hidden>
 <p class="agent-warning"><strong>Public-content warning:</strong> after separate operator opt-in, the complete manuscript and generated static assets become public in a DRAFT GitHub PR. The generated configuration below is preview-only and sets MCP_AGENT_ALLOW_PUBLIC_PR=0. After reviewing the exact package digest, change that flag to 1 in your local MCP configuration and inject the approved digest and fine-grained token through a protected local secret manager. The browser helper never handles credentials.</p>
