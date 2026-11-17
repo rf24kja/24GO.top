@@ -52,6 +52,7 @@ test('agent manifest explicitly and truthfully refuses hosted registration, writ
  assert.equal(manifest.localAgentTools.campaignWorkspace.privateTaskQueue,true);
  assert.equal(manifest.localAgentTools.campaignWorkspace.privateAgentMessages,true);
  assert.equal(manifest.localAgentTools.campaignWorkspace.publisherSigningKeyAvailableToWorkers,false);
+ assert.equal(manifest.localAgentTools.campaignWorkspace.workerKeyIsolationRequiresOsSandbox,true);
  assert.equal(manifest.localAgentTools.campaignWorkspace.finalizationToolPublisherOnly,true);
  assert.deepEqual(manifest.localAgentTools.campaignWorkspace.workerTools,[
   'create_promotion_campaign','list_campaigns','claim_campaign_task','submit_campaign_task_result',
