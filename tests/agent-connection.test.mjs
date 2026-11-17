@@ -115,15 +115,32 @@ test('article publication MCP config is local and preview-only with no write cre
  }),TypeError);
 });
 
-test('campaign MCP config connects separate local agents to one private shared workspace',()=>{
+test('campaign worker config shares private state without exposing the signing key',()=>{
  const config=JSON.parse(buildAgentMcpConfig({
   mode:'campaign',repoPath:'/home/dev/24GO.top',
+  campaignStateDir:'/home/dev/.local/share/24gotop-campaigns'
+ }));
+ const settings=config.mcpServers['24gotop-local-campaign-workers'];
+ assert.equal(settings.args[0],'/home/dev/24GO.top/packages/mcp/campaign-stdio.mjs');
+ assert.deepEqual(settings.env,{MCP_CAMPAIGN_STATE_DIR:'/home/dev/.local/share/24gotop-campaigns'});
+ assert.equal(settings.env.MCP_CAMPAIGN_PRIVATE_KEY,undefined);
+ assert.equal(settings.env.GITHUB_TOKEN,undefined);
+ assert.equal(settings.env.AGENT_DRAFT_KEY,undefined);
+ assert.equal(settings.env.MCP_AGENT_ALLOW_PUBLIC_PR,undefined);
+ assert.throws(()=>buildAgentMcpConfig({
+  mode:'campaign',repoPath:'/home/dev/24GO.top',campaignStateDir:'relative/state'
+ }),TypeError);
+});
+
+test('campaign publisher config is separate and contains only local signing paths',()=>{
+ const config=JSON.parse(buildAgentMcpConfig({
+  mode:'campaign-publisher',repoPath:'/home/dev/24GO.top',
   campaignStateDir:'/home/dev/.local/share/24gotop-campaigns',
   campaignPrivateKeyPath:'/home/dev/.config/24gotop/campaign-publisher.private.pem',
   campaignPublicKeyPath:'/home/dev/.config/24gotop/campaign-publisher.public.pem',
   ownerId:'founder-team',agentId:'campaign-publisher'
  }));
- const settings=config.mcpServers['24gotop-local-campaigns'];
+ const settings=config.mcpServers['24gotop-local-campaign-publisher'];
  assert.equal(settings.args[0],'/home/dev/24GO.top/packages/mcp/campaign-stdio.mjs');
  assert.equal(settings.env.MCP_CAMPAIGN_STATE_DIR,'/home/dev/.local/share/24gotop-campaigns');
  assert.equal(settings.env.MCP_CAMPAIGN_PRIVATE_KEY,'/home/dev/.config/24gotop/campaign-publisher.private.pem');
@@ -134,14 +151,7 @@ test('campaign MCP config connects separate local agents to one private shared w
  assert.equal(settings.env.AGENT_DRAFT_KEY,undefined);
  assert.equal(settings.env.MCP_AGENT_ALLOW_PUBLIC_PR,undefined);
  assert.throws(()=>buildAgentMcpConfig({
-  mode:'campaign',repoPath:'/home/dev/24GO.top',
-  campaignStateDir:'relative/state',
-  campaignPrivateKeyPath:'/home/dev/.config/24gotop/campaign-publisher.private.pem',
-  campaignPublicKeyPath:'/home/dev/.config/24gotop/campaign-publisher.public.pem',
-  ownerId:'founder-team',agentId:'campaign-publisher'
- }),TypeError);
- assert.throws(()=>buildAgentMcpConfig({
-  mode:'campaign',repoPath:'/home/dev/24GO.top',
+  mode:'campaign-publisher',repoPath:'/home/dev/24GO.top',
   campaignStateDir:'/home/dev/.local/share/24gotop-campaigns',
   campaignPrivateKeyPath:'/home/dev/.config/24gotop/campaign-publisher.private.pem',
   campaignPublicKeyPath:'/home/dev/.config/24gotop/campaign-publisher.public.pem',
@@ -177,6 +187,10 @@ test('public agent onboarding is canonical, accessible and explicitly prelaunch'
  assert.match(page,/Private multi-agent campaigns/);
  assert.match(page,/AGENT_CAMPAIGN_MCP\.md/);
  assert.match(page,/id="campaign-state-dir"/);
+ assert.match(page,/id="campaign-publisher-fields"/);
+ assert.match(page,/Publisher-only configuration/);
+ assert.match(page,/Campaign worker \(no signing key\)/);
+ assert.match(page,/Campaign publisher \(owner-signed finalization\)/);
  assert.match(page,/research, strategy, writing, SEO, fact-check and editorial tasks/i);
  assert.match(page,/public DRAFT GitHub PR/);
  assert.match(page,/AGENT_ARTICLE_PUBLICATION_MCP\.md/);
