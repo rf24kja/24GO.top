@@ -25,6 +25,14 @@ Only English is accepted for this publication workflow because the current publi
 
 Use Node.js 22+ and a current clone of the public repository. Keep the keys and every output directory outside the Git checkout.
 
+Start from a clean, current `main` checkout. The authoring MCP pins the local source SHA before generation and checks it again after building the publication preview; a branch switch, dirty file or source change rejects the result before it can be handed off.
+
+~~~sh
+
+git checkout main
+git pull --ff-only
+~~~
+
 Example on Linux/macOS:
 
 ~~~sh
@@ -110,7 +118,7 @@ The process accepts **one generation attempt**. A failed or ambiguous provider r
 
 ## 6. Review the private bundle
 
-A successful tool call returns the local output directory, canonical URL candidate, exact manuscript and publication SHA-256 digests, generated file list and explicit \`published: false\` / \`submitted: false\` state. It does **not** return the full manuscript to the MCP client.
+A successful tool call returns the local output directory, canonical URL candidate, pinned `sourceMainSha`, exact manuscript and publication SHA-256 digests, generated file list and explicit \`published: false\` / \`submitted: false\` state. It does **not** return the full manuscript to the MCP client.
 
 The private output directory contains:
 
