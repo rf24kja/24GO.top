@@ -80,7 +80,7 @@ export function createAgentArticlePublicationSessionFromEnv({
  return createAgentArticlePublicationSession({
   raw:boundedLocalFile(packagePath,MAX_AGENT_PROPOSAL_BYTES,true),
   publicKey:boundedLocalFile(publicKeyPath,8192),
-  summary:boundedLocalFile(summaryPath,400,true),
+  summary:boundedLocalFile(summaryPath,2048,true),
   expectedOwnerId:env.MCP_AGENT_OWNER_ID,
   expectedAgentId:env.MCP_AGENT_ID,
   publicationTime:env.MCP_AGENT_PUBLICATION_TIME,
