@@ -212,7 +212,7 @@ test('provider failure is one attempt and removes an empty private workspace',as
 test('MCP exposes only the bounded authoring tool and never an article or GitHub write tool',async()=>{
  await withFixture(async({env})=>{
   const session=createAgentAuthoringSession({
-   env,now:()=>new Date(NOW),fetchImpl:async()=>modelResponse()
+   env,now:()=>new Date(NOW),localMainShaProvider:()=> 'a'.repeat(40),fetchImpl:async()=>modelResponse()
   });
   const listed=handleAgentAuthoringMcpRequest({
    jsonrpc:'2.0',id:1,method:'tools/list'
