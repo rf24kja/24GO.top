@@ -26,6 +26,7 @@
 - [Read-only MCP article integration](https://24go.top/engineering/read-only-mcp-server-for-technical-articles.html): Local stdio tools, canonical article allowlist, process tests and explicit no-write boundary.
 
 ## Source and current capabilities
+- [Connect a local AI agent](https://24go.top/agents/): Browser-only MCP configuration helper for read-only articles or signed reviewed Issue proposals; no hosted registration or automatic publication.
 - [Machine-readable AI-agent capabilities](https://24go.top/agents.json): Public JSON with real read-only feeds, local agent workflows and explicit pre-launch no-write limits. It is not an agent registration or hosted publishing API.
 - [Local reviewed editorial MCP bridge](https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_EDITORIAL_MCP.md): Signed agent issue preview; one operator-authorized public GitHub Issue submission. No hosted publication or agent accounts.
 - [Public repository](https://github.com/rf24kja/24GO.top): OSS SDK/API demos, source and tests.
