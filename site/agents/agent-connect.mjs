@@ -13,15 +13,23 @@ function scriptPath(root,leaf){
  if(!path)throw new TypeError('Use a directory, not the filesystem root.');
  return path+(path.includes('\\')?'\\':'/')+leaf.replaceAll('/',path.includes('\\')?'\\':'/');
 }
+function validPublicationTime(value){
+ if(typeof value!=='string'||!/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$/.test(value))
+  throw new TypeError('Use an exact UTC timestamp such as 2026-11-17T15:34:00Z.');
+ const date=new Date(value);
+ if(!Number.isFinite(date.getTime())||date.toISOString().replace('.000Z','Z')!==value)
+  throw new TypeError('Publication time must be a real UTC date and time.');
+ return value;
+}
 export function buildAgentMcpConfig({
- mode,repoPath,packagePath,publicKeyPath,summaryPath,ownerId,agentId
+ mode,repoPath,packagePath,publicKeyPath,summaryPath,ownerId,agentId,publicationTime
 }={}){
- if(!['reader','editorial'].includes(mode))
+ if(!['reader','editorial','publication'].includes(mode))
   throw new TypeError('Choose a supported local agent workflow.');
- const script=scriptPath(repoPath,
-  mode==='reader'?'packages/mcp/stdio.mjs':'packages/mcp/editorial-stdio.mjs');
- const settings={command:'node',args:[script]};
- if(mode==='editorial'){
+ const leaf=mode==='reader'?'packages/mcp/stdio.mjs':
+  mode==='editorial'?'packages/mcp/editorial-stdio.mjs':'packages/mcp/publication-stdio.mjs';
+ const settings={command:'node',args:[scriptPath(repoPath,leaf)]};
+ if(mode!=='reader'){
   if(!ID.test(ownerId??'')||!ID.test(agentId??''))
    throw new TypeError('Owner and agent IDs must be 3–64 lowercase letters, digits or hyphens, starting with a letter.');
   settings.env={
@@ -32,21 +40,29 @@ export function buildAgentMcpConfig({
    MCP_AGENT_ID:agentId
   };
  }
- return JSON.stringify({mcpServers:{
-  [mode==='reader'?'24gotop-public-articles':'24gotop-reviewed-editorial']:settings
- }},null,2);
+ if(mode==='publication'){
+  settings.env.MCP_AGENT_PUBLICATION_TIME=validPublicationTime(publicationTime);
+  // The browser helper can create preview-only config, never a write-enabled token setup.
+  settings.env.MCP_AGENT_ALLOW_PUBLIC_PR='0';
+ }
+ const name=mode==='reader'?'24gotop-public-articles':
+  mode==='editorial'?'24gotop-reviewed-editorial':'24gotop-static-article-publication';
+ return JSON.stringify({mcpServers:{[name]:settings}},null,2);
 }
 export function mountAgentMcpHelper(root=document){
  const panel=root.querySelector('[data-agent-config]');
  if(!panel)return;
  const get=id=>panel.querySelector('#'+id);
  const mode=get('agent-mode'),editorial=get('editorial-fields');
+ const publication=get('publication-fields');
  const output=get('agent-config-output'),status=get('agent-config-status');
  const copy=get('agent-config-copy'),generate=get('agent-config-generate');
  let latest='';
  function syncMode(){
-  const enabled=mode.value==='editorial';
-  editorial.hidden=!enabled;latest='';output.textContent='';
+  const signed=mode.value!=='reader';
+  editorial.hidden=!signed;
+  publication.hidden=mode.value!=='publication';
+  latest='';output.textContent='';
   status.textContent='No configuration generated or sent.';copy.disabled=true;
  }
  function generateConfig(){
@@ -56,10 +72,11 @@ export function mountAgentMcpHelper(root=document){
     packagePath:get('package-path').value,
     publicKeyPath:get('public-key-path').value,
     summaryPath:get('summary-path').value,
-    ownerId:get('owner-id').value,agentId:get('agent-id').value
+    ownerId:get('owner-id').value,agentId:get('agent-id').value,
+    publicationTime:get('publication-time').value
    });
    output.textContent=latest;
-   status.textContent='Local configuration ready. Review paths before installing it in your MCP client.';
+   status.textContent='Local configuration ready. Review paths and publication time before installing it in your MCP client.';
    copy.disabled=false;
   }catch(error){
    latest='';output.textContent='';copy.disabled=true;
