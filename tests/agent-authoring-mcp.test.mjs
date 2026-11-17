@@ -404,6 +404,8 @@ test('MCP exposes only local authoring and revision tools without a public write
   assert.equal(definition.inputSchema.additionalProperties,false);
   assert.equal(definition.inputSchema.properties.confirmCosts.const,true);
   assert.equal(definition.inputSchema.properties.confirmProviderData.const,true);
+  const revision=listed.result.tools.find(tool=>tool.name==='revise_article_draft');
+  assert.equal(revision.inputSchema.properties.confirmPrivateWrite.const,true);
   const initialized=handleAgentAuthoringMcpRequest({
    jsonrpc:'2.0',id:2,method:'initialize',params:{protocolVersion:'2025-06-18'}
   },session);
