@@ -354,6 +354,22 @@ export function createAgentCampaignWorkspace({
      nextRole:task.role,identity:'local-private-workspace'};
    });
   },
+  listCampaigns({limit=20}={}){
+   if(!Number.isSafeInteger(limit)||limit<1||limit>50)reject();
+   return withLock(directory,state=>({
+    write:false,value:{
+     campaigns:[...state.campaigns].sort((a,b)=>b.createdAt.localeCompare(a.createdAt))
+      .slice(0,limit).map(campaign=>({
+       id:campaign.id,name:campaign.name,targetSiteName:campaign.targetSiteName,
+       targetUrl:campaign.targetUrl,topicTitle:campaign.topic.workingTitle,
+       status:campaign.status,createdAt:campaign.createdAt,updatedAt:campaign.updatedAt,
+       taskCount:state.tasks.filter(task=>task.campaignId===campaign.id).length,
+       openTaskCount:state.tasks.filter(task=>task.campaignId===campaign.id&&
+        ['queued','in_progress'].includes(task.state)).length
+      }))
+    }
+   }));
+  },
   claimTask({campaignId,role,agentId}={}){
    if(!cleanUuid(campaignId)||!ROLES.includes(role)||!cleanAgentId(agentId))reject();
    const date=timestamp(),time=date.getTime();
