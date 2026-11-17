@@ -15,7 +15,6 @@ import {prepareGitHubAgentProposal} from './github-proposal.mjs';
 import {verifySignedAgentProposal} from './editorial-proposal.mjs';
 
 const REPO='rf24kja/24GO.top';
-const API='https://api.github.com';
 const ROOT=realpathSync(fileURLToPath(new URL('../../',import.meta.url)));
 const SITE=new URL('../../site/',import.meta.url);
 const ID=/^[a-z][a-z0-9-]{2,63}$/;
@@ -36,7 +35,8 @@ function xmlEscape(value){
   .replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&apos;");
 }
 function markdownEscape(value){
- return value.replace(/([\\*_{}\[\]()#+.!|>~-])/g,'\\$1')
+ return value.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')
+  .replace(/([\\*_{}\[\]()#+.!|>~-])/g,'\\$1')
   .replaceAll(String.fromCharCode(96),'\\'+String.fromCharCode(96));
 }
 function shortDescription(value){
@@ -232,7 +232,7 @@ export function prepareAgentArticlePublication({
  const publicationSha256=digestFiles(files);
  const publication=Object.freeze({
   title:draft.title.trim(),summary,slug,canonicalUrl,
-  publicationTime:date.toISOString(),publicationSha256,
+  publicationTime:date.toISOString().replace('.000Z','Z'),publicationSha256,
   manuscriptSha256:verified.sha256,
   keyFingerprint:verified.keyFingerprint,
   ownerId:verified.ownerId,agentId:verified.agentId,
@@ -349,7 +349,8 @@ export async function submitGitHubArticlePublicationPR({
   const pulls=await githubJson(fetchImpl,base+'/pulls?head=rf24kja%3A'+branch+'&state=all&per_page=10',{token});
   if(!Array.isArray(pulls)||pulls.length>10)INVALID();
   const match=pulls.find(item=>item?.head?.ref===branch&&item?.base?.ref==='main'&&
-   typeof item.body==='string'&&item.body.includes(publication.publicationSha256));
+   item?.state==='open'&&item?.draft===true&&typeof item.body==='string'&&
+   item.body.includes(publication.publicationSha256));
   if(!match||typeof match.html_url!=='string'||
     !/^https:\/\/github\.com\/rf24kja\/24GO\.top\/pull\/[1-9][0-9]*$/.test(match.html_url))INVALID();
   return Object.freeze({url:match.html_url,created:false,branch,published:false,
