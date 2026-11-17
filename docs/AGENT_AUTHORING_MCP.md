@@ -55,6 +55,9 @@ The authoring server reads these variables from its protected local process envi
 | \`AGENT_DRAFT_ENDPOINT\` | Exact OpenAI-compatible chat-completions URL. HTTPS is required except for HTTP loopback inference. |
 | \`AGENT_DRAFT_MODEL\` | Exact model identifier supported by that endpoint. |
 | \`AGENT_DRAFT_KEY\` | Provider credential, optional only for a keyless loopback endpoint. |
+| \\`AGENT_REVIEW_ENDPOINT\\` | Optional second model endpoint; when set, the reviewer tool is enabled. |
+| \\`AGENT_REVIEW_MODEL\\` | Exact second-agent reviewer model identifier. |
+| \\`AGENT_REVIEW_KEY\\` | Optional only for a keyless loopback reviewer endpoint; inject it through the protected secret manager. |
 | \`MCP_AGENT_OUTPUT_ROOT\` | Existing private output directory outside the repository; POSIX mode 0700. |
 | \`MCP_AGENT_PRIVATE_KEY\` | Absolute path to the local Ed25519 private PEM (0600). |
 | \`MCP_AGENT_PUBLIC_KEY\` | Absolute path to the independently pinned public PEM. |
@@ -116,6 +119,17 @@ Only use \`confirmCosts: true\` after accepting possible provider charges. Only 
 
 The process accepts **one generation attempt**. A failed or ambiguous provider request is not retried. Restarting the same process cannot create a second request. Configure a hard provider-side spending limit; the token cap is not a dollar budget.
 
+If both `AGENT_REVIEW_ENDPOINT` and `AGENT_REVIEW_MODEL` are configured, the server also exposes `review_article_draft`. After `prepare_article_draft` succeeds, the connected assistant can call it with:
+
+~~~json
+{
+  "confirmCosts": true,
+  "confirmProviderData": true
+}
+~~~
+
+This makes one separate request to the pinned second model with the complete signed manuscript. It saves `peer-review.json` in the same private output directory and returns its findings to the connected assistant. The report is explicitly advisory: it cannot approve, moderate, certify facts, change the manuscript or authorize publication. If no reviewer endpoint/model is configured, the tool is not exposed. A reviewer request also has a one-attempt/no-retry limit and separate per-call consent.
+
 ## 6. Review the private bundle
 
 A successful tool call returns the local output directory, canonical URL candidate, pinned `sourceMainSha`, exact manuscript and publication SHA-256 digests, generated file list and explicit \`published: false\` / \`submitted: false\` state. It does **not** return the full manuscript to the MCP client.
@@ -129,8 +143,9 @@ The private output directory contains:
 | \`public-summary.txt\` | Reviewed public-only summary. |
 | \`issue-preview.json\` | Local-only editorial preview. |
 | \`receipt.json\` | Identity fingerprint, manuscript digest and private pending-review state. |
+| \\`peer-review.json\\` | Optional second-model critique, advisory only. |
 
-Open and inspect the complete \`draft.md\` yourself. Verify every technical claim and source, test code examples, check originality, copyright, privacy and publication rights. A second model can provide a separate advisory review with [\`npm run agent:peer-review\`](AGENT_PEER_REVIEW.md); its findings are not approval or factual certification.
+Open and inspect the complete \`draft.md\` yourself. Verify every technical claim and source, test code examples, check originality, copyright, privacy and publication rights. The optional `review_article_draft` MCP tool sends the manuscript to a separately configured second model and returns specific findings; `npm run agent:peer-review` remains available as a CLI alternative. Its findings are not approval or factual certification. The connected writer agent may use the critique in a later revision, but the tool does not modify or re-sign the draft.
 
 ## 7. Optional next step: separate human-approved publication MCP
 
