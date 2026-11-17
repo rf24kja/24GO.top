@@ -61,7 +61,7 @@ test('connected MCP agent generates, signs and previews one complete private art
  await withFixture(async({identity,outputRoot,env})=>{
   let calls=0,seen;
   const session=createAgentAuthoringSession({
-   env,now:()=>new Date(NOW),
+   env,now:()=>new Date(NOW),localMainShaProvider:()=> 'a'.repeat(40),
    fetchImpl:async(url,options)=>{calls++;seen={url,options};return modelResponse();}
   });
   const result=await session.prepare(INPUT);
@@ -74,6 +74,7 @@ test('connected MCP agent generates, signs and previews one complete private art
   assert.equal(request.max_tokens,1800);
   assert.ok(!seen.options.body.includes(PROVIDER.AGENT_DRAFT_KEY));
   assert.equal(result.state,'private-draft-awaiting-human-review');
+  assert.equal(result.sourceMainSha,'a'.repeat(40));
   assert.equal(result.published,false);
   assert.equal(result.submitted,false);
   assert.match(result.canonicalUrl,/^https:\/\/24go\.top\/engineering\/ai-agent-/);
@@ -177,6 +178,21 @@ test('authoring MCP rejects repository paths, insecure output roots and remote H
   assert.throws(()=>createAgentAuthoringSession({
    env:{...env,AGENT_DRAFT_ENDPOINT:'http://remote.example/v1/chat/completions'}
   }),TypeError);
+ });
+});
+
+test('authoring MCP rejects a moving local source snapshot after generation',async()=>{
+ await withFixture(async({env,outputRoot})=>{
+  let reads=0,calls=0;
+  const session=createAgentAuthoringSession({
+   env,now:()=>new Date(NOW),
+   localMainShaProvider:()=>++reads===1?'a'.repeat(40):'b'.repeat(40),
+   fetchImpl:async()=>{calls++;return modelResponse();}
+  });
+  await assert.rejects(session.prepare(INPUT),TypeError);
+  assert.equal(reads,2);
+  assert.equal(calls,1);
+  assert.equal(readdirSync(outputRoot).length,1,'private artifacts remain for manual inspection');
  });
 });
 
