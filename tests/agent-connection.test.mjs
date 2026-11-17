@@ -44,6 +44,54 @@ test('editorial preview pins local paths and agent owner without enabling public
  assert.equal(settings.env.MCP_AGENT_APPROVED_SHA256,undefined);
 });
 
+test('BYOK authoring MCP config contains only local identity paths and non-secret provider settings',()=>{
+ const config=JSON.parse(buildAgentMcpConfig({
+  mode:'authoring',repoPath:'/home/dev/24GO.top',
+  outputRoot:'/home/dev/.local/share/24gotop-private',
+  privateKeyPath:'/home/dev/.config/24gotop/writer.private.pem',
+  publicKeyPath:'/home/dev/.config/24gotop/writer.public.pem',
+  ownerId:'team-owner',agentId:'technical-writer',
+  draftEndpoint:'https://api.example.com/v1/chat/completions',
+  draftModel:'frontier-model',
+  reviewEndpoint:'https://review.example.com/v1/chat/completions',
+  reviewModel:'critic-model'
+ }));
+ const settings=config.mcpServers['24gotop-local-agent-authoring'];
+ assert.equal(settings.args[0],'/home/dev/24GO.top/packages/mcp/authoring-stdio.mjs');
+ assert.equal(settings.env.MCP_AGENT_OUTPUT_ROOT,'/home/dev/.local/share/24gotop-private');
+ assert.equal(settings.env.MCP_AGENT_PRIVATE_KEY,'/home/dev/.config/24gotop/writer.private.pem');
+ assert.equal(settings.env.MCP_AGENT_PUBLIC_KEY,'/home/dev/.config/24gotop/writer.public.pem');
+ assert.equal(settings.env.AGENT_DRAFT_ENDPOINT,'https://api.example.com/v1/chat/completions');
+ assert.equal(settings.env.AGENT_DRAFT_MODEL,'frontier-model');
+ assert.equal(settings.env.AGENT_REVIEW_ENDPOINT,'https://review.example.com/v1/chat/completions');
+ assert.equal(settings.env.AGENT_REVIEW_MODEL,'critic-model');
+ assert.equal(settings.env.AGENT_REVIEW_KEY,undefined);
+ assert.equal(settings.env.AGENT_DRAFT_KEY,undefined);
+ assert.equal(settings.env.GITHUB_TOKEN,undefined);
+ assert.equal(settings.env.MCP_AGENT_PACKAGE,undefined);
+ assert.throws(()=>buildAgentMcpConfig({
+  mode:'authoring',repoPath:'/home/dev/24GO.top',
+  outputRoot:'/home/dev/.local/share/24gotop-private',
+  privateKeyPath:'/home/dev/.config/24gotop/writer.private.pem',
+  publicKeyPath:'/home/dev/.config/24gotop/writer.public.pem',
+  ownerId:'team-owner',agentId:'technical-writer',
+  draftEndpoint:'https://api.example.com/v1/chat/completions',draftModel:'frontier-model',
+  reviewEndpoint:'https://review.example.com/v1/chat/completions'
+ }),TypeError);
+ for(const draftEndpoint of ['http://remote.example/v1/chat/completions',
+  'https://user:pass@example.com/v1/chat/completions',
+  'https://api.example.com/v1/chat/completions?key=secret']){
+  assert.throws(()=>buildAgentMcpConfig({
+   mode:'authoring',repoPath:'/home/dev/24GO.top',
+   outputRoot:'/home/dev/.local/share/24gotop-private',
+   privateKeyPath:'/home/dev/.config/24gotop/writer.private.pem',
+   publicKeyPath:'/home/dev/.config/24gotop/writer.public.pem',
+   ownerId:'team-owner',agentId:'technical-writer',
+   draftEndpoint,draftModel:'frontier-model'
+  }),TypeError);
+ }
+});
+
 test('article publication MCP config is local and preview-only with no write credential',()=>{
  const config=JSON.parse(buildAgentMcpConfig({
   mode:'publication',repoPath:'/home/dev/24GO.top',
@@ -94,8 +142,13 @@ test('public agent onboarding is canonical, accessible and explicitly prelaunch'
  assert.match(page,/no hosted agent registration/i);
  assert.match(page,/public DRAFT GitHub PR/);
  assert.match(page,/AGENT_ARTICLE_PUBLICATION_MCP\.md/);
+ assert.match(page,/AGENT_AUTHORING_MCP\.md/);
+ assert.match(page,/private BYOK article draft/i);
+ assert.match(page,/revise_article_draft/);
  assert.match(page,/human must review and merge/i);
  assert.match(page,/MCP_AGENT/);
+ assert.match(page,/id="review-endpoint"/);
+ assert.match(page,/id="review-model"/);
  assert.doesNotMatch(page,/<form\b|<input[^>]+type="password"|<script[^>]+src="https?:/i);
  assert.match(css,/@media\(max-width:390px\)/);
  assert.match(css,/:focus-visible/);
@@ -104,6 +157,10 @@ test('public agent onboarding is canonical, accessible and explicitly prelaunch'
  assert.equal(manifest.localAgentTools.editorialMcp.hostedArticlePublicationAvailable,false);
  assert.equal(manifest.localAgentTools.articlePublication.command,'npm run mcp:publication');
  assert.equal(manifest.localAgentTools.articlePublication.publicDraftPullRequestOptInOnly,true);
+ assert.equal(manifest.localAgentTools.authoringMcp.command,'npm run mcp:authoring');
+ assert.equal(manifest.localAgentTools.authoringMcp.oneWriterRequestPerProcess,true);
+ assert.equal(manifest.localAgentTools.authoringMcp.optionalOneReviewerRequestPerProcess,true);
+ assert.equal(manifest.localAgentTools.authoringMcp.noAutomaticRetries,true);
  assert.equal(manifest.onboardingPage,'https://24go.top/agents/');
  for(const route of ['/agents/','/agents/agent-connect.mjs','/agents/agent-connect.css']){
   assert.ok(FIXED_ROUTES.includes(route));

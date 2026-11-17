@@ -34,8 +34,23 @@ test('agent manifest explicitly and truthfully refuses hosted registration, writ
  assert.equal(manifest.limits.discoveryDoesNotAuthorizePosting,true);
  assert.equal(manifest.editorialProposals.localMcpArticlePublication.exactPackageDigestRequired,true);
  assert.equal(manifest.editorialProposals.localMcpArticlePublication.automaticMergeAvailable,false);
+ assert.equal(manifest.editorialProposals.localMcpArticleAuthoring.noGitHubOrPublicWrite,true);
  assert.equal(manifest.localAgentTools.articlePublication.command,'npm run mcp:publication');
  assert.equal(manifest.localAgentTools.articlePublication.publicDraftPullRequestOptInOnly,true);
+ assert.equal(manifest.localAgentTools.authoringMcp.command,'npm run mcp:authoring');
+ assert.equal(manifest.localAgentTools.authoringMcp.noGitHubOrPublicWrite,true);
+ assert.equal(manifest.localAgentTools.authoringMcp.optionalSecondAgentReview,true);
+ assert.equal(manifest.localAgentTools.authoringMcp.reviewIsAdvisoryOnly,true);
+ assert.equal(manifest.localAgentTools.authoringMcp.oneWriterRequestPerProcess,true);
+ assert.equal(manifest.localAgentTools.authoringMcp.optionalOneReviewerRequestPerProcess,true);
+ assert.equal(manifest.localAgentTools.authoringMcp.noAutomaticRetries,true);
+ assert.deepEqual(manifest.localAgentTools.authoringMcp.toolNames,['prepare_article_draft','review_article_draft','revise_article_draft']);
+ assert.equal(manifest.localAgentTools.authoringMcp.supportsPrivateSignedRevision,true);
+ assert.equal(manifest.localAgentTools.authoringMcp.maxPrivateRevisionsPerProcess,1);
+ assert.equal(manifest.localAgentTools.authoringMcp.revisionDoesNotCallModel,true);
+ assert.equal(manifest.editorialProposals.localMcpArticleAuthoring.supportsPrivateSignedRevision,true);
+ assert.equal(manifest.editorialProposals.localMcpArticleAuthoring.reviewIsAdvisoryOnly,true);
+ assert.equal(manifest.editorialProposals.localMcpArticleAuthoring.optionalSecondAgentReview,true);
  assert.equal(manifest.localAgentTools.articlePublication.hostedArticlePublicationAvailable,false);
  assert.equal(manifest.limits.draftPullRequestsAreNotPublishedArticles,true);
 });
@@ -63,7 +78,8 @@ test('external agents can discover only existing source-backed public feeds and 
   '../docs/AGENT_GITHUB_EDITORIAL.md',
   '../docs/AGENT_DISCOVERY.md',
   '../docs/AGENT_EDITORIAL_MCP.md',
-  '../docs/AGENT_ARTICLE_PUBLICATION_MCP.md'
+  '../docs/AGENT_ARTICLE_PUBLICATION_MCP.md',
+  '../docs/AGENT_AUTHORING_MCP.md'
  ];
  for(const p of paths)assert.ok(readFileSync(new URL(p,import.meta.url),'utf8').length>100,p);
 });
@@ -101,6 +117,8 @@ test('homepage, contribution guide and llms index advertise the exact static dis
  assert.match(contribute,/not an account-registration or public posting API/);
  assert.match(llms,/https:\/\/24go\.top\/agents\.json/);
  assert.match(agentPage,/Static article publication PR/);
+ assert.match(agentPage,/private BYOK article authoring/i);
+ assert.match(llms,/AGENT_AUTHORING_MCP\.md/);
  assert.match(agentPage,/complete manuscript.*public.*DRAFT GitHub PR/i);
  assert.match(agentPage,/AGENT_ARTICLE_PUBLICATION_MCP\.md/);
  assert.match(llms,/AGENT_ARTICLE_PUBLICATION_MCP\.md/);

@@ -63,6 +63,14 @@ function parsePublicationTime(value,now){
    date.getTime()<now.getTime()-24*60*60_000)INVALID();
  return date;
 }
+export function validateAgentArticlePublicationTime(value,now=new Date()){
+ const date=parsePublicationTime(value,now);
+ const rss=readSite('engineering/feed.xml');
+ const latest=rss.match(/<item>[\s\S]*?<pubDate>([^<]+)<\/pubDate>[\s\S]*?<\/item>/);
+ const latestTime=latest?Date.parse(latest[1]):NaN;
+ if(!Number.isFinite(latestTime)||date.getTime()<=latestTime)INVALID();
+ return date.toISOString().replace('.000Z','Z');
+}
 function displayDate(date){
  return date.toLocaleDateString('en-GB',{
   day:'numeric',month:'long',year:'numeric',timeZone:'UTC'
@@ -192,7 +200,7 @@ export function prepareAgentArticlePublication({
  if(draft.locale!=='en')INVALID();
  const source=safeSourceUrl(draft.source);
  if(!source||!source.startsWith('https:'))INVALID();
- const date=parsePublicationTime(publicationTime,now);
+ const date=new Date(validateAgentArticlePublicationTime(publicationTime,now));
  const slug=slugFor(draft.title,verified.sha256);
  const canonicalUrl='https://24go.top/engineering/'+slug+'.html';
  const articlePath='engineering/'+slug+'.html';
