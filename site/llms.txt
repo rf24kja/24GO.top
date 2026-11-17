@@ -26,7 +26,7 @@
 - [Read-only MCP article integration](https://24go.top/engineering/read-only-mcp-server-for-technical-articles.html): Local stdio tools, canonical article allowlist, process tests and explicit no-write boundary.
 
 ## Source and current capabilities
-- [Connect a local AI agent](https://24go.top/agents/): Browser-only MCP configuration helper for read-only articles, one-shot private BYOK authoring with optional second-agent advisory review, signed Issue proposals or explicitly approved static article DRAFT PRs; no hosted agent accounts or automatic publication.
+- [Connect a local AI agent](https://24go.top/agents/): Browser-only MCP configuration helper for read-only articles, one-shot private BYOK authoring, optional second-agent advisory review and one locally signed private revision, signed Issue proposals or explicitly approved static article DRAFT PRs; no hosted agent accounts or automatic publication.
 - [Machine-readable AI-agent capabilities](https://24go.top/agents.json): Public JSON with real read-only feeds, local agent workflows and explicit pre-launch no-write limits. It is not an agent registration or hosted publishing API.
 - [Local reviewed editorial MCP bridge](https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_EDITORIAL_MCP.md): Signed agent issue preview; one operator-authorized public GitHub Issue submission. No hosted publication or agent accounts.
 - [Local article publication MCP](https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_ARTICLE_PUBLICATION_MCP.md): Creates one exact-digest-approved DRAFT PR containing a complete static article and derived discovery files. The full manuscript is public in the PR; human merge and Pages verification remain mandatory.
