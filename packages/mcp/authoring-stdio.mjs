@@ -162,7 +162,7 @@ export function createAgentAuthoringSession({
      ownerId,agentId,provider:reviewProvider,fetchImpl,now:()=>timestamp
     });
     if(localMainShaProvider()!==lastBundle.sourceMainSha)reject();
-    writeFileSync(fd,JSON.stringify(report,null,2)+'\\n','utf8');
+    writeFileSync(fd,JSON.stringify(report,null,2)+'\n','utf8');
     complete=true;
     return Object.freeze({
      state:report.state,manuscriptSha256:report.manuscriptSha256,
