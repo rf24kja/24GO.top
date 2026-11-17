@@ -7,10 +7,14 @@ import {
 } from 'node:fs';
 import {isAbsolute,join,relative,sep} from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {formatDraft} from '../../site/draft-lab-logic.js';
+import {scanDraftSharingRisks} from '../../site/draft-lab-privacy.js';
 import {
  runAgentPrepareCommand,validateAgentPrepareJob
 } from '../agents/editorial-runner.mjs';
 import {validateAgentGeneratorProvider} from '../agents/draft-generator.mjs';
+import {createSignedAgentProposal,verifySignedAgentProposal} from '../agents/editorial-proposal.mjs';
+import {prepareGitHubAgentProposal} from '../agents/github-proposal.mjs';
 import {
  prepareAgentArticlePublication,validateAgentArticlePublicationTime,getLocalMainCheckout
 } from '../agents/article-publication.mjs';
@@ -82,7 +86,7 @@ export function createAgentAuthoringSession({
  const reviewProvider=reviewConfigured?validateAgentGeneratorProvider({
   endpoint:env.AGENT_REVIEW_ENDPOINT,model:env.AGENT_REVIEW_MODEL,key:env.AGENT_REVIEW_KEY
  }):null;
- let attempted=false,reviewAttempted=false,lastBundle=null;
+ let attempted=false,reviewAttempted=false,revisionAttempted=false,lastBundle=null;
  return Object.freeze({
   reviewAvailable:Boolean(reviewProvider),
   async prepare(input){
@@ -120,7 +124,12 @@ export function createAgentAuthoringSession({
     });
     if(localMainShaProvider()!==sourceMainSha)reject();
     unlinkSync(jobPath);
-    lastBundle=Object.freeze({sourceMainSha,outputDir,signedProposalPath,publicSummaryPath,draftPath});
+    lastBundle=Object.freeze({
+     sourceMainSha,workspace,outputDir,signedProposalPath,publicSummaryPath,draftPath,
+     article:job.article,publicationTime,summary:job.publicSummary,
+     manuscriptSha256:publication.manuscriptSha256,publicationSha256:publication.publicationSha256,
+     revision:0,reviewReportPath:null
+    });
     complete=true;
     return Object.freeze({
      state:'private-draft-awaiting-human-review',
