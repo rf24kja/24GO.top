@@ -51,7 +51,7 @@ test('agent manifest explicitly and truthfully refuses hosted registration, writ
  assert.equal(manifest.localAgentTools.campaignWorkspace.command,'npm run mcp:campaign');
  assert.equal(manifest.localAgentTools.campaignWorkspace.privateTaskQueue,true);
  assert.equal(manifest.localAgentTools.campaignWorkspace.privateAgentMessages,true);
- assert.equal(manifest.localAgentTools.campaignWorkspace.publisherSigningKeyAvailableToWorkers,false);
+ assert.equal(manifest.localAgentTools.campaignWorkspace.publisherSigningKeyIncludedInWorkerConfig,false);
  assert.equal(manifest.localAgentTools.campaignWorkspace.workerKeyIsolationRequiresOsSandbox,true);
  assert.equal(manifest.localAgentTools.campaignWorkspace.finalizationToolPublisherOnly,true);
  assert.deepEqual(manifest.localAgentTools.campaignWorkspace.workerTools,[
