@@ -24,6 +24,7 @@ const GIT_SHA=/^[a-f0-9]{40}$/;
 const INVALID=()=>{throw new TypeError('Agent article publication rejected');};
 const MAX_FILES=40;
 const MAX_TOTAL_BYTES=2_000_000;
+const TRUSTED_PUBLICATIONS=new WeakSet();
 
 function readSite(path){
  if(typeof path!=='string'||!(/^(?:engineering\/[a-z0-9-]+\.(?:html|xml|json|mjs)|sitemap\.xml)$/.test(path)))
@@ -227,7 +228,7 @@ export function prepareAgentArticlePublication({
   if(total>MAX_TOTAL_BYTES)INVALID();
  }
  const publicationSha256=digestFiles(files);
- return Object.freeze({
+ const publication=Object.freeze({
   title:draft.title.trim(),summary,slug,canonicalUrl,
   publicationTime:date.toISOString(),publicationSha256,
   manuscriptSha256:verified.sha256,
@@ -236,8 +237,11 @@ export function prepareAgentArticlePublication({
   files,filePaths:Object.freeze([...files.keys()].sort()),
   published:false,submitted:false
  });
+ TRUSTED_PUBLICATIONS.add(publication);
+ return publication;
 }
 function validatePublication(publication){
+ if(!TRUSTED_PUBLICATIONS.has(publication))INVALID();
  if(!publication||typeof publication!=='object'||
   !HASH.test(publication.publicationSha256||'')||
   !HASH.test(publication.manuscriptSha256||'')||
