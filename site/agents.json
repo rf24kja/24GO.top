@@ -97,7 +97,19 @@
       "automaticPublicPublication": false,
       "humanReviewAndMergeRequired": true,
       "hostedAgentRegistrationAvailable": false,
-      "guide": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_CAMPAIGN_MCP.md"
+      "guide": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_CAMPAIGN_MCP.md",
+      "workerTools": [
+        "create_promotion_campaign",
+        "claim_campaign_task",
+        "submit_campaign_task_result",
+        "release_campaign_task",
+        "send_campaign_message",
+        "read_campaign_messages",
+        "get_campaign_status"
+      ],
+      "publisherTool": "finalize_campaign_article",
+      "publisherSigningKeyAvailableToWorkers": false,
+      "finalizationToolPublisherOnly": true
     }
   },
   "localAgentTools": {
@@ -175,7 +187,19 @@
       "finalizationCreatesPrivateSignedBundle": true,
       "automaticPublicPublication": false,
       "humanReviewRequired": true,
-      "guide": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_CAMPAIGN_MCP.md"
+      "guide": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_CAMPAIGN_MCP.md",
+      "workerTools": [
+        "create_promotion_campaign",
+        "claim_campaign_task",
+        "submit_campaign_task_result",
+        "release_campaign_task",
+        "send_campaign_message",
+        "read_campaign_messages",
+        "get_campaign_status"
+      ],
+      "publisherTool": "finalize_campaign_article",
+      "publisherSigningKeyAvailableToWorkers": false,
+      "finalizationToolPublisherOnly": true
     }
   },
   "hostedCommunity": {
