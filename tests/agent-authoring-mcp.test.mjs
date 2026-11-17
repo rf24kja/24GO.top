@@ -385,7 +385,7 @@ test('second-agent provider failure is one attempt and leaves no empty private r
  });
 });
 
-test('MCP exposes only the bounded authoring tool and never an article or GitHub write tool',async()=>{
+test('MCP exposes only local authoring and revision tools without a public write tool',async()=>{
  await withFixture(async({env})=>{
   const session=createAgentAuthoringSession({
    env,now:()=>new Date(NOW),localMainShaProvider:()=> 'a'.repeat(40),fetchImpl:async()=>modelResponse()
