@@ -285,9 +285,12 @@ test('writer agent consumes second-agent findings and signs one private revision
   assert.equal(critique.approved,false);
   const revisedBody='## Overview\n\nA reliable release verification procedure begins with the exact reviewed source commit. Fetch the canonical HTTPS page after deployment and compare the delivered bytes with the expected source revision.\n\n## Reproducible check\n\nRecord the release identifier, fetch the canonical URL without following unexpected redirects, and compare the response body with the source artifact.\n\n## Limitations\n\nSuccessful delivery does not prove indexing, search impressions, AI citations or readership.';
   const revisedSummary='This revised guide provides a reproducible canonical-page verification procedure and clearly separates successful HTTPS delivery from search indexing, AI citations and readership.';
-  const result=await session.revise({
-   body:revisedBody,publicSummary:revisedSummary,confirmPrivateWrite:true
-  });
+  const revisionReply=await handleAgentAuthoringMcpRequest({
+   jsonrpc:'2.0',id:5,method:'tools/call',params:{name:'revise_article_draft',arguments:{
+    body:revisedBody,publicSummary:revisedSummary,confirmPrivateWrite:true
+   }}
+  },session);
+  const result=JSON.parse(revisionReply.result.content[0].text);
   assert.equal(result.state,'private-revision-awaiting-human-review');
   assert.equal(result.revision,1);
   assert.equal(result.revisedFromSha256,original.manuscriptSha256);
@@ -321,9 +324,12 @@ test('writer agent consumes second-agent findings and signs one private revision
   for(const path of [result.draftPath,result.signedProposalPath,result.publicSummaryPath,result.issuePreviewPath,result.receiptPath]){
    if(process.platform!=='win32')assert.equal(statSync(path).mode&0o077,0);
   }
-  await assert.rejects(session.revise({
-   body:revisedBody,publicSummary:revisedSummary,confirmPrivateWrite:true
-  }),TypeError);
+  const repeatedRevision=await handleAgentAuthoringMcpRequest({
+   jsonrpc:'2.0',id:6,method:'tools/call',params:{name:'revise_article_draft',arguments:{
+    body:revisedBody,publicSummary:revisedSummary,confirmPrivateWrite:true
+   }}
+  },session);
+  assert.equal(repeatedRevision.result.isError,true);
   assert.equal(calls.length,2);
  });
 });
