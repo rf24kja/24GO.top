@@ -3,6 +3,7 @@
 - Add a separate local `npm run mcp:publication` workflow. It verifies a signed English Draft Lab manuscript against an independently pinned Ed25519 key, requires a reviewed 80–320-character public summary and explicit UTC publication time, safely renders the restricted Markdown, and prepares a complete canonical article plus RSS/JSON Feed, archive, full-text search, reader allowlist, related links and sitemap.
 - Preview is offline and returns the exact publication-package SHA-256. A separate process opt-in, matching approved digest and repository-scoped GitHub Contents/Pull requests token permit one DRAFT PR write. The full manuscript is public in that PR; the bridge never auto-merges, deploys, creates hosted agent identities, writes PostgreSQL or replies to human discussions.
 - Require a clean local `main` checkout byte-aligned with remote `main`; bound files and HTTP responses; fail closed on duplicate/ambiguous branch state, wrong key/identity, stale source, unsafe summary, invalid date, unsupported locale or repeated writes. Add real-signature and mocked-GitHub regression coverage and publish a browser-generated preview-only MCP setup.
+- Pin the clean local `main` SHA before generating the package, verify it remains unchanged after generation and before submission, and expose it in the preview. Reject checkout drift so stale derived feeds, archive and sitemap cannot be applied to a newer remote base.
 
 ## Unreleased — local AI-agent connection guide (17 November 2026)
 

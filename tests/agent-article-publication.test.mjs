@@ -207,10 +207,36 @@ test('one explicit opt-in creates one DRAFT article PR from a fresh exact main c
  assert.equal(calls.length,7);
 });
 
+test('publication MCP pins the clean main snapshot and rejects checkout drift before any write',async()=>{
+ const params=fixture(),publication=prepareAgentArticlePublication(params);
+ let currentMainSha='a'.repeat(40);
+ const {fetchImpl,calls}=githubMock({mainSha:'a'.repeat(40)});
+ const session=createAgentArticlePublicationSession({
+  ...params,allowPublicPr:true,
+  approvedPublicationSha256:publication.publicationSha256,
+  token:'github-placeholder-token',fetchImpl,
+  localMainShaProvider:()=>currentMainSha
+ });
+ assert.equal(session.sourceMainSha,'a'.repeat(40));
+ currentMainSha='b'.repeat(40);
+ await assert.rejects(()=>session.submit(publication.publicationSha256,true),TypeError);
+ assert.equal(calls.length,0);
+});
+
+test('publication MCP rejects a moving checkout while the preview package is generated',()=>{
+ const params=fixture();let reads=0;
+ assert.throws(()=>createAgentArticlePublicationSession({
+  ...params,
+  localMainShaProvider:()=>++reads===1?'a'.repeat(40):'b'.repeat(40)
+ }),TypeError);
+ assert.equal(reads,2);
+});
+
 test('preview-only MCP exposes metadata but never uploads a manuscript or enables writes',()=>{
  const params=fixture();let network=0;
  const session=createAgentArticlePublicationSession({
-  ...params,fetchImpl:async()=>{network++;throw Error('network disabled');}
+  ...params,localMainShaProvider:()=> 'a'.repeat(40),
+  fetchImpl:async()=>{network++;throw Error('network disabled');}
  });
  const listed=handleAgentArticlePublicationMcpRequest({
   jsonrpc:'2.0',method:'tools/list'
@@ -223,6 +249,7 @@ test('preview-only MCP exposes metadata but never uploads a manuscript or enable
  const payload=JSON.parse(preview.result.content[0].text);
  assert.equal(payload.published,false);
  assert.equal(payload.submitted,false);
+ assert.equal(payload.sourceMainSha,'a'.repeat(40));
  assert.ok(payload.publicationSha256.length===64);
  assert.ok(payload.files.some(x=>x==='site/engineering/feed.xml'));
  assert.ok(!JSON.stringify(payload).includes(params.document));
