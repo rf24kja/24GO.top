@@ -146,6 +146,8 @@ test('public agent onboarding is canonical, accessible and explicitly prelaunch'
  assert.match(page,/private BYOK article draft/i);
  assert.match(page,/human must review and merge/i);
  assert.match(page,/MCP_AGENT/);
+ assert.match(page,/id="review-endpoint"/);
+ assert.match(page,/id="review-model"/);
  assert.doesNotMatch(page,/<form\b|<input[^>]+type="password"|<script[^>]+src="https?:/i);
  assert.match(css,/@media\(max-width:390px\)/);
  assert.match(css,/:focus-visible/);
