@@ -82,6 +82,31 @@ test('campaign MCP exposes private multi-agent tools and creates a campaign over
  }finally{rmSync(root,{recursive:true,force:true});}
 });
 
+test('worker agents do not receive the owner signing key or finalization tool',async()=>{
+ const root=mkdtempSync(join(tmpdir(),'24gotop-campaign-worker-'));
+ const stateDir=join(root,'state');mkdirSync(stateDir,{mode:0o700});
+ try{
+  const session=createAgentCampaignSessionFromEnv({
+   env:{MCP_CAMPAIGN_STATE_DIR:stateDir},
+   now:()=>new Date('2026-11-17T17:02:00Z')
+  });
+  assert.equal(session.finalizeAvailable,false);
+  const listed=handleAgentCampaignMcpRequest({jsonrpc:'2.0',id:1,method:'tools/list'},session);
+  assert.deepEqual(listed.result.tools.map(item=>item.name),[
+   'create_promotion_campaign','claim_campaign_task','submit_campaign_task_result',
+   'release_campaign_task','send_campaign_message','read_campaign_messages','get_campaign_status'
+  ]);
+  const denied=handleAgentCampaignMcpRequest({
+   jsonrpc:'2.0',id:2,method:'tools/call',
+   params:{name:'finalize_campaign_article',arguments:{
+    campaignId:'00000000-0000-4000-8000-000000000001',
+    publicationTime:'2026-11-17T17:00:00Z',confirmPrivateFinalization:true
+   }}
+  },session);
+  assert.equal(denied.result.isError,true);
+ }finally{rmSync(root,{recursive:true,force:true});}
+});
+
 test('campaign MCP rejects invalid JSON-RPC and does not expose a hosted endpoint',async()=>{
  const root=mkdtempSync(join(tmpdir(),'24gotop-campaign-mcp-invalid-'));
  const stateDir=join(root,'state');mkdirSync(stateDir,{mode:0o700});
