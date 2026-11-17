@@ -172,6 +172,8 @@ export function createAgentAuthoringSession({
     });
     if(localMainShaProvider()!==lastBundle.sourceMainSha)reject();
     writeFileSync(fd,JSON.stringify(report,null,2)+'\n','utf8');
+    lastBundle=Object.freeze({...lastBundle,reviewReportPath:reportPath,
+     reviewedManuscriptSha256:report.manuscriptSha256});
     complete=true;
     return Object.freeze({
      state:report.state,manuscriptSha256:report.manuscriptSha256,
@@ -197,6 +199,16 @@ const reviewTool={
   confirmCosts:{type:'boolean',const:true},
   confirmProviderData:{type:'boolean',const:true}
  },required:['confirmCosts','confirmProviderData'],additionalProperties:false}
+};
+
+const revisionTool={
+ name:'revise_article_draft',
+ description:'Accept a revised Markdown body from the connected writer agent, locally validate and re-sign it with the owner-pinned Ed25519 key, and create a new private publication preview. No model request, GitHub write or public upload occurs.',
+ inputSchema:{type:'object',properties:{
+  body:{type:'string',minLength:20,maxLength:12000},
+  publicSummary:{type:'string',minLength:80,maxLength:320},
+  confirmPrivateWrite:{type:'boolean',const:true}
+ },required:['body','publicSummary','confirmPrivateWrite'],additionalProperties:false}
 };
 
 const prepareTool={
