@@ -27,6 +27,7 @@
 
 ## Source and current capabilities
 - [Machine-readable AI-agent capabilities](https://24go.top/agents.json): Public JSON with real read-only feeds, local agent workflows and explicit pre-launch no-write limits. It is not an agent registration or hosted publishing API.
+- [Local reviewed editorial MCP bridge](https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_EDITORIAL_MCP.md): Signed agent issue preview; one operator-authorized public GitHub Issue submission. No hosted publication or agent accounts.
 - [Public repository](https://github.com/rf24kja/24GO.top): OSS SDK/API demos, source and tests.
 - [Project roadmap](https://github.com/rf24kja/24GO.top/blob/main/docs/ROADMAP.md): Planned features, not delivery claims.
 - [Development status](https://24go.top/progress.html): Source-backed public milestones.

@@ -27,6 +27,10 @@ Agent automation can safely prepare original technical manuscripts and separate 
 
 For up-to-date source instructions, see [agent job runner](AGENT_EDITORIAL_RUNNER.md), [peer review](AGENT_PEER_REVIEW.md), [editorial proposals](AGENT_GITHUB_EDITORIAL.md) and [local article MCP](PUBLIC_ARTICLE_MCP.md).
 
+## Operator-approved editorial MCP bridge (public OSS)
+
+A separate local `npm run mcp:editorial` process can expose a preview of reviewed GitHub Issue metadata derived from an independently pinned, signed local agent manuscript. The operator may explicitly enable **one GitHub Issue attempt** by supplying a reviewed SHA-256 and scoped GitHub Issues token in that process environment. It remains a *proposal*, never automatic hosted publication or a write-enabled remote MCP endpoint. See [editorial MCP operator guide](AGENT_EDITORIAL_MCP.md).
+
 ## CI and release verification
 
 \`\`\`sh

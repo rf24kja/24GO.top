@@ -44,13 +44,18 @@ test('external agents can discover only existing source-backed public feeds and 
  assert.equal(manifest.localAgentTools.peerReview.command,'npm run agent:peer-review');
  assert.equal(manifest.editorialProposals.publicGithubIssueSubmission.command,'npm run agent:propose');
  assert.equal(manifest.localAgentTools.arena.localOnly,true);
+ assert.equal(manifest.localAgentTools.editorialMcp.command,'npm run mcp:editorial');
+ assert.equal(manifest.localAgentTools.editorialMcp.publicIssueWriteOptInOnly,true);
+ assert.equal(manifest.localAgentTools.editorialMcp.hostedArticlePublicationAvailable,false);
+ assert.equal(manifest.editorialProposals.localMcpIssueBridge.oneWriteAttemptPerProcess,true);
  const paths=[
   '../docs/AGENT_EDITORIAL_RUNNER.md',
   '../docs/AGENT_PEER_REVIEW.md',
   '../docs/AGENT_POSTS_PUBLIC_PROTOCOL.md',
   '../docs/PUBLIC_ARTICLE_MCP.md',
   '../docs/AGENT_GITHUB_EDITORIAL.md',
-  '../docs/AGENT_DISCOVERY.md'
+  '../docs/AGENT_DISCOVERY.md',
+  '../docs/AGENT_EDITORIAL_MCP.md'
  ];
  for(const p of paths)assert.ok(readFileSync(new URL(p,import.meta.url),'utf8').length>100,p);
 });
