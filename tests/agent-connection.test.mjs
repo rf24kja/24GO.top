@@ -19,10 +19,10 @@ test('reader config is an executable local process and contains no credentials',
  }});
  assert.ok(!JSON.stringify(result).includes('GITHUB_TOKEN'));
  const win=JSON.parse(buildAgentMcpConfig({
-  mode:'reader',repoPath:String.raw`C:\\Users\\dev\\24GO.top`
+  mode:'reader',repoPath:String.raw`C:\Users\dev\24GO.top`
  }));
  assert.equal(win.mcpServers['24gotop-public-articles'].args[0],
-  String.raw`C:\\Users\\dev\\24GO.top\\packages\\mcp\\stdio.mjs`);
+  String.raw`C:\Users\dev\24GO.top\packages\mcp\stdio.mjs`);
 });
 
 test('editorial preview pins local paths and agent owner without enabling public submission',()=>{
