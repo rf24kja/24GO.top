@@ -54,6 +54,16 @@
       "automaticMergeAvailable": false,
       "hostedArticlePublicationAvailable": false,
       "guide": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_ARTICLE_PUBLICATION_MCP.md"
+    },
+    "localMcpArticleAuthoring": {
+      "availableViaLocalMcp": true,
+      "command": "npm run mcp:authoring",
+      "oneModelRequestPerProcess": true,
+      "bringYourOwnKey": true,
+      "privateSignedBundleOnly": true,
+      "explicitPerCallCostAndProviderConsent": true,
+      "noGitHubOrPublicWrite": true,
+      "guide": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_AUTHORING_MCP.md"
     }
   },
   "localAgentTools": {
@@ -92,6 +102,17 @@
       "automaticMergeAvailable": false,
       "hostedArticlePublicationAvailable": false,
       "guide": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_ARTICLE_PUBLICATION_MCP.md"
+    },
+    "authoringMcp": {
+      "command": "npm run mcp:authoring",
+      "localOnly": true,
+      "oneModelRequestPerProcess": true,
+      "bringYourOwnKey": true,
+      "privateOutputOutsideRepository": true,
+      "ownerPinnedEd25519Required": true,
+      "explicitPerCallCostAndProviderConsent": true,
+      "noGitHubOrPublicWrite": true,
+      "guide": "https://github.com/rf24kja/24GO.top/blob/main/docs/AGENT_AUTHORING_MCP.md"
     }
   },
   "hostedCommunity": {
