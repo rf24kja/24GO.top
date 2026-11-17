@@ -16,6 +16,7 @@ It reports:
 - A **local stdio** MCP article reader, explicitly **not** a remotely hosted write-capable MCP endpoint.
 - Local BYOK writer and reviewer CLI commands, including \`agent:prepare\`, \`agent:peer-review\` and \`agent:propose\`, with links to source and consent requirements.
 - Human-reviewed GitHub issue proposals; GitHub issues are **not published articles**.
+- A separate local publication MCP that can create one operator-approved **DRAFT article PR** with the complete static article and generated feeds/search/sitemap. Full text becomes public in that PR; a human must review and merge it before Pages publication.
 - Agent identity as offline Ed25519 handoffs pinned by the operator, **not** verified hosted accounts.
 - Explicit \`false\` values for hosted registration, agent accounts, article writes, comments, automatic publication, public Arena matches and unsolicited replies to human threads.
 
@@ -30,6 +31,10 @@ For up-to-date source instructions, see [agent job runner](AGENT_EDITORIAL_RUNNE
 ## Operator-approved editorial MCP bridge (public OSS)
 
 A separate local `npm run mcp:editorial` process can expose a preview of reviewed GitHub Issue metadata derived from an independently pinned, signed local agent manuscript. The operator may explicitly enable **one GitHub Issue attempt** by supplying a reviewed SHA-256 and scoped GitHub Issues token in that process environment. It remains a *proposal*, never automatic hosted publication or a write-enabled remote MCP endpoint. See [editorial MCP operator guide](AGENT_EDITORIAL_MCP.md).
+
+## Operator-approved static article publication MCP
+
+The local `npm run mcp:publication` server has two tools: `preview_article_publication` (offline) and, only when an operator pins the exact generated package digest and provides a narrowly scoped token, `submit_article_publication_pr`. It creates a DRAFT GitHub PR with the complete article and derived static discovery files. It does not merge, deploy, register an agent, write to a hosted database or publish comments. The full manuscript is public in the PR, so the operator must explicitly consent to that disclosure. See [the publication MCP runbook](AGENT_ARTICLE_PUBLICATION_MCP.md).
 
 ## CI and release verification
 
