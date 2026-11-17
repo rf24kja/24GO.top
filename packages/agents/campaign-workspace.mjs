@@ -27,6 +27,7 @@ const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]
 const HASH=/^[a-f0-9]{64}$/;
 const GIT_SHA=/^[a-f0-9]{40}$/;
 const CONTROL=/[\u0000-\u001f\u007f\u2028\u2029\u202a-\u202e\u2066-\u2069]/u;
+const MULTILINE_CONTROL=/[\u0000-\u0008\u000b-\u001f\u007f\u2028\u2029\u202a-\u202e\u2066-\u2069]/u;
 const ROLES=['researcher','strategist','writer','seo-editor','fact-checker','editorial-reviewer'];
 const DECISIONS=['ready','changes_requested'];
 const MAX_STATE_BYTES=8_000_000;
@@ -41,6 +42,8 @@ const exact=(value,keys)=>Boolean(value&&typeof value==='object'&&!Array.isArray
  Object.keys(value).length===keys.length&&keys.every(key=>Object.hasOwn(value,key)));
 const validText=(value,min,max)=>typeof value==='string'&&value.trim()===value&&
  value.length>=min&&value.length<=max&&!CONTROL.test(value);
+const validMultilineText=(value,min,max)=>typeof value==='string'&&value.trim()===value&&
+ value.length>=min&&value.length<=max&&!MULTILINE_CONTROL.test(value);
 const isoNow=date=>date.toISOString().replace('.000Z','Z');
 const hash=value=>createHash('sha256').update(value,'utf8').digest('hex');
 const cleanAgentId=value=>typeof value==='string'&&ID.test(value);
@@ -120,13 +123,13 @@ function validateCampaignInput(input){
 }
 function validDecision(value){return DECISIONS.includes(value);}
 function validateResearch(result){
- if(!exact(result,['summary','sources'])||!validText(result.summary,80,3000)||
+ if(!exact(result,['summary','sources'])||!validMultilineText(result.summary,80,3000)||
   !Array.isArray(result.sources)||result.sources.length<2||result.sources.length>8)reject();
  const seen=new Set();
  for(const source of result.sources){
   if(!exact(source,['url','title','excerpt','supports'])||
    !publicHttpsUrl(source.url)||!validText(source.title,5,180)||
-   !validText(source.excerpt,20,700)||!validText(source.supports,10,400))reject();
+   !validMultilineText(source.excerpt,20,700)||!validText(source.supports,10,400))reject();
   if(seen.has(source.url))reject();
   seen.add(source.url);
   safeTextBundle(source.title,source.excerpt+'\n'+source.supports,source.url);
@@ -137,14 +140,14 @@ function validateResearch(result){
 function validateStrategy(result){
  if(!exact(result,['angle','searchIntent','outline','suggestedTitle','publicSummary'])||
   !validText(result.angle,30,600)||!validText(result.searchIntent,20,300)||
-  !validText(result.outline,100,2400)||!validText(result.suggestedTitle,5,160)||
+  !validMultilineText(result.outline,100,2400)||!validText(result.suggestedTitle,5,160)||
   !validText(result.publicSummary,80,320))reject();
  safeTextBundle(result.suggestedTitle,[result.angle,result.searchIntent,result.outline,result.publicSummary].join('\n'));
  return result;
 }
 function validateDraftResult(result,campaign,topic,previous){
  if(!exact(result,['title','body','category','source','publicSummary'])||
-  !validText(result.title,5,160)||!validText(result.body,20,12000)||
+  !validText(result.title,5,160)||!validMultilineText(result.body,20,12000)||
   !['news','models','tools','guides'].includes(result.category)||
   !publicHttpsUrl(result.source)||!validText(result.publicSummary,80,320))reject();
  const research=topic.artifacts.findLast(item=>item.stage==='research');
@@ -177,7 +180,7 @@ function validateStageResult(stage,result,campaign,topic){
  if(stage==='seo_review'){
   if(!result||!['decision','findings'].every(key=>Object.hasOwn(result,key))||
    Object.keys(result).some(key=>!['decision','findings','suggestedTitle'].includes(key))||
-   !validDecision(result.decision)||!validText(result.findings,80,3000)||
+   !validDecision(result.decision)||!validMultilineText(result.findings,80,3000)||
    (result.suggestedTitle!==undefined&&!validText(result.suggestedTitle,5,160)))reject();
   safeTextBundle('SEO review',result.findings);
   return result;
@@ -442,7 +445,7 @@ export function createAgentCampaignWorkspace({
    if(!cleanUuid(campaignId)||!cleanAgentId(fromAgent)||
     (toAgent!==null&&!cleanAgentId(toAgent))||
     !['handoff','question','finding','blocker'].includes(kind)||
-    !validText(body,10,4000))reject();
+    !validMultilineText(body,10,4000))reject();
    safeTextBundle('Agent message',body);
    const date=timestamp();
    return withLock(directory,state=>{
