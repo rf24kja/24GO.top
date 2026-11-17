@@ -4,6 +4,7 @@ import {generateKeyPairSync} from 'node:crypto';
 import {mkdtempSync,writeFileSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
+import {fileURLToPath} from 'node:url';
 import {formatDraft} from '../site/draft-lab-logic.js';
 import {validatedReaderMetadata} from '../site/engineering/article-reader.mjs';
 import {createSignedAgentProposal} from '../packages/agents/editorial-proposal.mjs';
@@ -271,6 +272,19 @@ test('local MCP config reads protected files and refuses public write opt-in wit
    env:{...env,MCP_AGENT_ALLOW_PUBLIC_PR:'maybe'},now:NOW
   }),TypeError);
  }finally{rmSync(dir,{recursive:true,force:true});}
+});
+
+test('local MCP refuses manuscript, key and summary files inside the public checkout',()=>{
+ const inside=fileURLToPath(new URL('../package.json',import.meta.url));
+ assert.throws(()=>createAgentArticlePublicationSessionFromEnv({
+  env:{
+   MCP_AGENT_PACKAGE:inside,
+   MCP_AGENT_PUBLIC_KEY:inside,
+   MCP_AGENT_PUBLIC_SUMMARY:inside,
+   MCP_AGENT_OWNER_ID:OWNER,MCP_AGENT_ID:AGENT,
+   MCP_AGENT_PUBLICATION_TIME:PUBLICATION_TIME
+  },now:NOW
+ }),TypeError);
 });
 
 test('GitHub article PR refuses stale local main before any write',async()=>{
