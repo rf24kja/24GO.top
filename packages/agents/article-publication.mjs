@@ -66,7 +66,7 @@ function parsePublicationTime(value,now){
 export function validateAgentArticlePublicationTime(value,now=new Date()){
  const date=parsePublicationTime(value,now);
  const rss=readSite('engineering/feed.xml');
- const latest=rss.match(/<item>[\\s\\S]*?<pubDate>([^<]+)<\\/pubDate>[\\s\\S]*?<\\/item>/);
+ const latest=rss.match(/<item>[\s\S]*?<pubDate>([^<]+)<\/pubDate>[\s\S]*?<\/item>/);
  const latestTime=latest?Date.parse(latest[1]):NaN;
  if(!Number.isFinite(latestTime)||date.getTime()<=latestTime)INVALID();
  return date.toISOString().replace('.000Z','Z');
