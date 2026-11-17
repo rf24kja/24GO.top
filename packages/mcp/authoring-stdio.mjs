@@ -2,7 +2,8 @@
 // It performs one configured model request and saves a private signed review bundle.
 // It never uploads a manuscript, creates a GitHub Issue/PR or publishes content.
 import {
- lstatSync,mkdtempSync,readFileSync,realpathSync,writeFileSync,unlinkSync,rmdirSync
+ constants,closeSync,fstatSync,lstatSync,mkdtempSync,openSync,readFileSync,
+ realpathSync,writeFileSync,unlinkSync,rmdirSync
 } from 'node:fs';
 import {isAbsolute,join,relative,sep} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -38,18 +39,16 @@ function privateOutputRoot(path){
 }
 function boundedPrivateFile(path,max){
  assertOutsideRepo(path);
- const {constants,openSync,fstatSync,readFileSync:readFd,closeSync}=awaitlessFs;
  const fd=openSync(path,constants.O_RDONLY|(constants.O_NOFOLLOW||0));
  try{
   const info=fstatSync(fd);
   if(!info.isFile()||info.size<1||info.size>max||
    (process.platform!=='win32'&&(info.mode&0o077)!==0))reject();
-  const bytes=readFd(fd);
+  const bytes=readFileSync(fd);
   if(bytes.length<1||bytes.length>max)reject();
   return new TextDecoder('utf-8',{fatal:true}).decode(bytes);
  }finally{closeSync(fd);}
 }
-const awaitlessFs=await import('node:fs');
 
 function validateRequest(input,now){
  if(!exact(input,['article','publicSummary','publicationTime','confirmCosts','confirmProviderData'])||
