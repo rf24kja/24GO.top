@@ -72,7 +72,7 @@ The operator-controlled publisher uses the same state directory and is the **onl
 }
 ~~~
 
-Do not put provider keys, GitHub tokens, private client material or credentials in campaign fields. The campaign MCP itself makes no model requests and does not need a provider API key. Each worker agent uses its own configured model/tools. Worker processes do not expose the finalization tool. Only the separate operator-controlled publisher process loads the Ed25519 private key and can finalize a reviewed campaign.
+Do not put provider keys, GitHub tokens, private client material or credentials in campaign fields. The campaign MCP itself makes no model requests and does not need a provider API key. Each worker agent uses its own configured model/tools. Worker processes do not expose the finalization tool. Only the separate operator-controlled publisher process loads the Ed25519 private key and can finalize a reviewed campaign. The worker configuration omits the key path, but this is not an OS sandbox: an agent with unrestricted shell/file access under the same operating-system account may still read files available to that account. For stronger isolation, run worker agents under a restricted OS account or sandbox that cannot access the publisher key directory, and run the publisher separately.
 
 The browser helper at https://24go.top/agents/ can generate this non-secret local configuration.
 
