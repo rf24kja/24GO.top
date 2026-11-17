@@ -228,7 +228,7 @@ test('second BYOK agent reviews the signed manuscript and returns private adviso
   });
   assert.equal(session.reviewAvailable,true);
   const listed=handleAgentAuthoringMcpRequest({jsonrpc:'2.0',id:1,method:'tools/list'},session);
-  assert.deepEqual(listed.result.tools.map(tool=>tool.name),['prepare_article_draft','review_article_draft']);
+  assert.deepEqual(listed.result.tools.map(tool=>tool.name),['prepare_article_draft','review_article_draft','revise_article_draft']);
   await assert.rejects(session.review({confirmCosts:true,confirmProviderData:true}),TypeError);
   await session.prepare(INPUT);
   const denied=await handleAgentAuthoringMcpRequest({jsonrpc:'2.0',id:2,method:'tools/call',params:{name:'review_article_draft',arguments:{confirmCosts:false,confirmProviderData:true}}},session);
@@ -263,6 +263,92 @@ test('second BYOK agent reviews the signed manuscript and returns private adviso
  });
 });
 
+test('writer agent consumes second-agent findings and signs one private revision',async()=>{
+ await withFixture(async({env,identity,outputRoot})=>{
+  const configured={
+   ...env,AGENT_REVIEW_ENDPOINT:'https://review.example/v1/chat/completions',
+   AGENT_REVIEW_MODEL:'critic-model',AGENT_REVIEW_KEY:'test-review-secret-123456789'
+  };
+  const calls=[];
+  const session=createAgentAuthoringSession({
+   env:configured,now:()=>new Date(NOW),localMainShaProvider:()=> 'a'.repeat(40),
+   fetchImpl:async(url,options)=>{
+    calls.push({url,options});
+    return modelResponse(url===PROVIDER.AGENT_DRAFT_ENDPOINT?ANSWER:REVIEW_FINDINGS);
+   }
+  });
+  await assert.rejects(session.revise({
+   body:ANSWER,publicSummary:SUMMARY,confirmPrivateWrite:true
+  }),TypeError);
+  const original=await session.prepare(INPUT);
+  const critique=await session.review({confirmCosts:true,confirmProviderData:true});
+  assert.equal(critique.approved,false);
+  const revisedBody='## Overview\n\nA reliable release verification procedure begins with the exact reviewed source commit. Fetch the canonical HTTPS page after deployment and compare the delivered bytes with the expected source revision.\n\n## Reproducible check\n\nRecord the release identifier, fetch the canonical URL without following unexpected redirects, and compare the response body with the source artifact.\n\n## Limitations\n\nSuccessful delivery does not prove indexing, search impressions, AI citations or readership.';
+  const revisedSummary='This revised guide provides a reproducible canonical-page verification procedure and clearly separates successful HTTPS delivery from search indexing, AI citations and readership.';
+  const result=await session.revise({
+   body:revisedBody,publicSummary:revisedSummary,confirmPrivateWrite:true
+  });
+  assert.equal(result.state,'private-revision-awaiting-human-review');
+  assert.equal(result.revision,1);
+  assert.equal(result.revisedFromSha256,original.manuscriptSha256);
+  assert.notEqual(result.manuscriptSha256,original.manuscriptSha256);
+  assert.notEqual(result.publicationSha256,original.publicationSha256);
+  assert.equal(result.sourceMainSha,'a'.repeat(40));
+  assert.equal(result.previousReviewReportPath,critique.reportPath);
+  assert.equal(result.published,false);
+  assert.equal(result.submitted,false);
+  assert.equal(calls.length,2,'revision uses no third model request');
+  assert.equal(readdirSync(outputRoot).length,1);
+  const revisedDraft=readFileSync(result.draftPath,'utf8');
+  assert.equal(parseDraftFile(revisedDraft).body,revisedBody);
+  const signed=readFileSync(result.signedProposalPath,'utf8');
+  const verified=verifySignedAgentProposal(signed,{
+   publicKey:identity.publicKey,expectedOwnerId:OWNER,expectedAgentId:AGENT
+  });
+  assert.equal(verified.draft.body,revisedBody);
+  const publication=prepareAgentArticlePublication({
+   raw:signed,publicKey:identity.publicKey,expectedOwnerId:OWNER,
+   expectedAgentId:AGENT,summary:revisedSummary,
+   publicationTime:PUBLICATION_TIME,now:NOW
+  });
+  assert.equal(publication.publicationSha256,result.publicationSha256);
+  const receipt=JSON.parse(readFileSync(result.receiptPath,'utf8'));
+  assert.equal(receipt.kind,'local-agent-editorial-revision');
+  assert.equal(receipt.revision,1);
+  assert.equal(receipt.revisedFromSha256,original.manuscriptSha256);
+  assert.equal(receipt.reviewedManuscriptSha256,original.manuscriptSha256);
+  assert.equal(receipt.published,false);
+  for(const path of [result.draftPath,result.signedProposalPath,result.publicSummaryPath,result.issuePreviewPath,result.receiptPath]){
+   if(process.platform!=='win32')assert.equal(statSync(path).mode&0o077,0);
+  }
+  await assert.rejects(session.revise({
+   body:revisedBody,publicSummary:revisedSummary,confirmPrivateWrite:true
+  }),TypeError);
+  assert.equal(calls.length,2);
+ });
+});
+
+test('revision validates consent, privacy and summary before creating any new public-facing package',async()=>{
+ await withFixture(async({env,outputRoot})=>{
+  let calls=0;
+  const session=createAgentAuthoringSession({
+   env,now:()=>new Date(NOW),localMainShaProvider:()=> 'a'.repeat(40),
+   fetchImpl:async()=>{calls++;return modelResponse();}
+  });
+  await session.prepare(INPUT);
+  const invalid=[
+   {body:ANSWER,publicSummary:SUMMARY,confirmPrivateWrite:false},
+   {body:ANSWER,publicSummary:'too short',confirmPrivateWrite:true},
+   {body:'Contact private.person@example.com for credentials.',publicSummary:SUMMARY,confirmPrivateWrite:true}
+  ];
+  for(const request of invalid)await assert.rejects(session.revise(request));
+  assert.equal(calls,1,'revision validation makes no additional provider call');
+  assert.equal(readdirSync(outputRoot).length,1);
+  const workspace=join(outputRoot,readdirSync(outputRoot)[0]);
+  assert.deepEqual(readdirSync(workspace),['review']);
+ });
+});
+
 test('optional reviewer is not exposed without a complete second-model configuration',async()=>{
  await withFixture(async({env})=>{
   const session=createAgentAuthoringSession({
@@ -273,7 +359,7 @@ test('optional reviewer is not exposed without a complete second-model configura
   const listed=handleAgentAuthoringMcpRequest({
    jsonrpc:'2.0',id:1,method:'tools/list'
   },session);
-  assert.deepEqual(listed.result.tools.map(tool=>tool.name),['prepare_article_draft']);
+  assert.deepEqual(listed.result.tools.map(tool=>tool.name),['prepare_article_draft','revise_article_draft']);
   assert.throws(()=>createAgentAuthoringSession({
    env:{...env,AGENT_REVIEW_ENDPOINT:'http://remote.example/v1/chat/completions',AGENT_REVIEW_MODEL:'critic-model'}
   }),TypeError);
