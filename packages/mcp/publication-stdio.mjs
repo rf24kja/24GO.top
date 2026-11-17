@@ -1,8 +1,8 @@
 // Local stdio MCP for owner-approved static article publication PRs.
 // This uploads the full manuscript to a public DRAFT GitHub PR only after
 // explicit operator opt-in; it never merges, moderates or deploys.
-import {constants,closeSync,fstatSync,openSync,readFileSync} from 'node:fs';
-import {isAbsolute} from 'node:path';
+import {constants,closeSync,fstatSync,openSync,readFileSync,realpathSync} from 'node:fs';
+import {isAbsolute,relative,sep} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {MAX_AGENT_PROPOSAL_BYTES} from '../agents/editorial-proposal.mjs';
 import {
@@ -12,9 +12,17 @@ import {
 import {runStdio} from './stdio.mjs';
 
 const HASH=/^[a-f0-9]{64}$/;
+const REPO_ROOT=realpathSync(fileURLToPath(new URL('../../',import.meta.url)));
 const reject=()=>{throw new TypeError('Article publication MCP configuration rejected');};
 const response=value=>({content:[{type:'text',text:JSON.stringify(value)}]});
 const errorResponse=()=>({...response('Article publication request denied'),isError:true});
+
+function assertOutsideRepo(path){
+ if(typeof path!=='string'||!isAbsolute(path))reject();
+ const actual=realpathSync(path),rel=relative(REPO_ROOT,actual);
+ if(rel===''||(rel!=='..'&&!rel.startsWith('..'+sep)&&!isAbsolute(rel)))reject();
+ return path;
+}
 
 function boundedLocalFile(path,max,privateOnly=false){
  if(typeof path!=='string'||!isAbsolute(path)||path.length>4096)reject();
@@ -66,10 +74,13 @@ export function createAgentArticlePublicationSessionFromEnv({
  const flag=env.MCP_AGENT_ALLOW_PUBLIC_PR;
  if(flag!==undefined&&!['0','1'].includes(flag))reject();
  const allowPublicPr=flag==='1';
+ const packagePath=assertOutsideRepo(env.MCP_AGENT_PACKAGE);
+ const publicKeyPath=assertOutsideRepo(env.MCP_AGENT_PUBLIC_KEY);
+ const summaryPath=assertOutsideRepo(env.MCP_AGENT_PUBLIC_SUMMARY);
  return createAgentArticlePublicationSession({
-  raw:boundedLocalFile(env.MCP_AGENT_PACKAGE,MAX_AGENT_PROPOSAL_BYTES,true),
-  publicKey:boundedLocalFile(env.MCP_AGENT_PUBLIC_KEY,8192),
-  summary:boundedLocalFile(env.MCP_AGENT_PUBLIC_SUMMARY,400,true),
+  raw:boundedLocalFile(packagePath,MAX_AGENT_PROPOSAL_BYTES,true),
+  publicKey:boundedLocalFile(publicKeyPath,8192),
+  summary:boundedLocalFile(summaryPath,400,true),
   expectedOwnerId:env.MCP_AGENT_OWNER_ID,
   expectedAgentId:env.MCP_AGENT_ID,
   publicationTime:env.MCP_AGENT_PUBLICATION_TIME,
