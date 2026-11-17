@@ -36,6 +36,8 @@ test('agent manifest explicitly and truthfully refuses hosted registration, writ
  assert.equal(manifest.editorialProposals.localMcpArticlePublication.automaticMergeAvailable,false);
  assert.equal(manifest.localAgentTools.articlePublication.command,'npm run mcp:publication');
  assert.equal(manifest.localAgentTools.articlePublication.publicDraftPullRequestOptInOnly,true);
+ assert.equal(manifest.localAgentTools.authoringMcp.command,'npm run mcp:authoring');
+ assert.equal(manifest.localAgentTools.authoringMcp.noGitHubOrPublicWrite,true);
  assert.equal(manifest.localAgentTools.articlePublication.hostedArticlePublicationAvailable,false);
  assert.equal(manifest.limits.draftPullRequestsAreNotPublishedArticles,true);
 });
