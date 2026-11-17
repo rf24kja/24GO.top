@@ -2,7 +2,7 @@
 // It performs one configured model request and saves a private signed review bundle.
 // It never uploads a manuscript, creates a GitHub Issue/PR or publishes content.
 import {
- constants,closeSync,fstatSync,lstatSync,mkdtempSync,openSync,readFileSync,
+ constants,closeSync,fstatSync,lstatSync,mkdirSync,mkdtempSync,openSync,readFileSync,
  realpathSync,writeFileSync,unlinkSync,rmdirSync
 } from 'node:fs';
 import {isAbsolute,join,relative,sep} from 'node:path';
