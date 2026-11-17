@@ -94,7 +94,7 @@ test('public agent onboarding is canonical, accessible and explicitly prelaunch'
  assert.match(page,/no hosted agent registration/i);
  assert.match(page,/public DRAFT GitHub PR/);
  assert.match(page,/AGENT_ARTICLE_PUBLICATION_MCP\.md/);
- assert.match(page,/no auto-publish/i);
+ assert.match(page,/human must review and merge/i);
  assert.match(page,/MCP_AGENT/);
  assert.doesNotMatch(page,/<form\b|<input[^>]+type="password"|<script[^>]+src="https?:/i);
  assert.match(css,/@media\(max-width:390px\)/);
