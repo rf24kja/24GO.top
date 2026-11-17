@@ -114,7 +114,7 @@ test('one MCP process permits one paid generation and never retries ambiguous mo
  await withFixture(async({env})=>{
   let calls=0;
   const session=createAgentAuthoringSession({
-   env,now:()=>new Date(NOW),
+   env,now:()=>new Date(NOW),localMainShaProvider:()=> 'a'.repeat(40),
    fetchImpl:async()=>{calls++;return modelResponse();}
   });
   await session.prepare(INPUT);
@@ -127,7 +127,7 @@ test('cost, provider-data consent, publication date, source and public summary a
  await withFixture(async({env,outputRoot})=>{
   let calls=0;
   const session=createAgentAuthoringSession({
-   env,now:()=>new Date(NOW),
+   env,now:()=>new Date(NOW),localMainShaProvider:()=> 'a'.repeat(40),
    fetchImpl:async()=>{calls++;return modelResponse();}
   });
   const invalid=[
@@ -151,7 +151,7 @@ test('wrong pinned key pair is rejected before model request and leaves no bundl
   writeFileSync(publicKeyPath,other.publicKey.export({type:'spki',format:'pem'}),{mode:0o600});
   let calls=0;
   const session=createAgentAuthoringSession({
-   env,now:()=>new Date(NOW),
+   env,now:()=>new Date(NOW),localMainShaProvider:()=> 'a'.repeat(40),
    fetchImpl:async()=>{calls++;return modelResponse();}
   });
   await assert.rejects(session.prepare(INPUT));
@@ -200,7 +200,7 @@ test('provider failure is one attempt and removes an empty private workspace',as
  await withFixture(async({env,outputRoot})=>{
   let calls=0;
   const session=createAgentAuthoringSession({
-   env,now:()=>new Date(NOW),
+   env,now:()=>new Date(NOW),localMainShaProvider:()=> 'a'.repeat(40),
    fetchImpl:async()=>{calls++;return modelResponse('',503);}
   });
   await assert.rejects(session.prepare(INPUT));
