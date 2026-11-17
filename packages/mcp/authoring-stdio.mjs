@@ -335,13 +335,16 @@ export function handleAgentAuthoringMcpRequest(req,session){
    instructions:'One configured BYOK article-generation request per process. Private local files only; no GitHub or website publication. Review the complete local manuscript and rights before using the separate publication MCP.'
   }};
  case 'ping':return {result:{}};
- case 'tools/list':return {result:{tools:session.reviewAvailable?[prepareTool,reviewTool]:[prepareTool]}};
+ case 'tools/list':return {result:{tools:session.reviewAvailable?[prepareTool,reviewTool,revisionTool]:[prepareTool,revisionTool]}};
  case 'tools/call':{
   const name=req.params?.name,args=req.params?.arguments??{};
   if(name==='prepare_article_draft')return session.prepare(args).then(
    value=>({result:response(value)}),()=>({result:errorResponse()})
   );
   if(name==='review_article_draft'&&session.reviewAvailable)return session.review(args).then(
+   value=>({result:response(value)}),()=>({result:errorResponse()})
+  );
+  if(name==='revise_article_draft')return session.revise(args).then(
    value=>({result:response(value)}),()=>({result:errorResponse()})
   );
   return {result:errorResponse()};
