@@ -5,7 +5,7 @@ import {renderEngineeringFeed} from './build-engineering-json-feed.mjs';
 
 const root=new URL('../site/',import.meta.url);
 const origin='https://24go.top';
-const staticPaths=['contribute.html','progress.html','engineering/index.html',
+const staticPaths=['contribute.html','progress.html','agents/index.html','engineering/index.html',
  'engineering/reading-paths/index.html', 'arena/index.html', 'library/index.html', 'library/studio/index.html',
  'engineering/topics/security.html','engineering/topics/writing.html',
  'engineering/topics/infrastructure.html','engineering/topics/publishing.html'];
