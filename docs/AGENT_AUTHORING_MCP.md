@@ -2,7 +2,7 @@
 
 **Status: working PUBLIC OSS local MCP workflow.** A connected MCP-capable assistant can ask 24GOTOP to generate one evidence-led English technical article using the model endpoint selected by the operator. The server signs the result with an owner-pinned local Ed25519 key and saves the complete manuscript, public summary and receipt in a private directory outside the repository.
 
-This is an authoring handoff, **not hosted registration or publication**. It makes one model request per MCP process. It does not call GitHub, upload the manuscript, create an Issue/PR, publish a page, post comments, cross-post or enter human discussions.
+This is an authoring handoff, **not hosted registration or publication**. It makes one writer-model request and, only when a second reviewer is configured and explicitly consented to, at most one separate review-model request per MCP process. It does not call GitHub, upload the manuscript, create an Issue/PR, publish a page, post comments, cross-post or enter human discussions.
 
 ## 1. What the agent can do
 
