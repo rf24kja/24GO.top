@@ -115,6 +115,40 @@ test('article publication MCP config is local and preview-only with no write cre
  }),TypeError);
 });
 
+test('campaign MCP config connects separate local agents to one private shared workspace',()=>{
+ const config=JSON.parse(buildAgentMcpConfig({
+  mode:'campaign',repoPath:'/home/dev/24GO.top',
+  campaignStateDir:'/home/dev/.local/share/24gotop-campaigns',
+  campaignPrivateKeyPath:'/home/dev/.config/24gotop/campaign-publisher.private.pem',
+  campaignPublicKeyPath:'/home/dev/.config/24gotop/campaign-publisher.public.pem',
+  ownerId:'founder-team',agentId:'campaign-publisher'
+ }));
+ const settings=config.mcpServers['24gotop-local-campaigns'];
+ assert.equal(settings.args[0],'/home/dev/24GO.top/packages/mcp/campaign-stdio.mjs');
+ assert.equal(settings.env.MCP_CAMPAIGN_STATE_DIR,'/home/dev/.local/share/24gotop-campaigns');
+ assert.equal(settings.env.MCP_CAMPAIGN_PRIVATE_KEY,'/home/dev/.config/24gotop/campaign-publisher.private.pem');
+ assert.equal(settings.env.MCP_CAMPAIGN_PUBLIC_KEY,'/home/dev/.config/24gotop/campaign-publisher.public.pem');
+ assert.equal(settings.env.MCP_CAMPAIGN_OWNER_ID,'founder-team');
+ assert.equal(settings.env.MCP_CAMPAIGN_PUBLISHER_AGENT_ID,'campaign-publisher');
+ assert.equal(settings.env.GITHUB_TOKEN,undefined);
+ assert.equal(settings.env.AGENT_DRAFT_KEY,undefined);
+ assert.equal(settings.env.MCP_AGENT_ALLOW_PUBLIC_PR,undefined);
+ assert.throws(()=>buildAgentMcpConfig({
+  mode:'campaign',repoPath:'/home/dev/24GO.top',
+  campaignStateDir:'relative/state',
+  campaignPrivateKeyPath:'/home/dev/.config/24gotop/campaign-publisher.private.pem',
+  campaignPublicKeyPath:'/home/dev/.config/24gotop/campaign-publisher.public.pem',
+  ownerId:'founder-team',agentId:'campaign-publisher'
+ }),TypeError);
+ assert.throws(()=>buildAgentMcpConfig({
+  mode:'campaign',repoPath:'/home/dev/24GO.top',
+  campaignStateDir:'/home/dev/.local/share/24gotop-campaigns',
+  campaignPrivateKeyPath:'/home/dev/.config/24gotop/campaign-publisher.private.pem',
+  campaignPublicKeyPath:'/home/dev/.config/24gotop/campaign-publisher.public.pem',
+  ownerId:'founder-team',agentId:'not valid'
+ }),TypeError);
+});
+
 test('configuration refuses relative paths, control chars and arbitrary IDs',()=>{
  const reader={mode:'reader',repoPath:'/home/dev/24GO.top'};
  for(const bad of ['relative/path','https://evil.example','../repo','/','/good\nsecret',' C:\\Users\\dev', '']){
@@ -140,6 +174,10 @@ test('public agent onboarding is canonical, accessible and explicitly prelaunch'
  assert.match(page,/id="agent-config-output"[^>]*tabindex="0"/);
  assert.match(page,/<button type="button" id="agent-config-copy" disabled>/);
  assert.match(page,/no hosted agent registration/i);
+ assert.match(page,/Private multi-agent campaigns/);
+ assert.match(page,/AGENT_CAMPAIGN_MCP\.md/);
+ assert.match(page,/id="campaign-state-dir"/);
+ assert.match(page,/research, strategy, writing, SEO, fact-check and editorial tasks/i);
  assert.match(page,/public DRAFT GitHub PR/);
  assert.match(page,/AGENT_ARTICLE_PUBLICATION_MCP\.md/);
  assert.match(page,/AGENT_AUTHORING_MCP\.md/);
@@ -161,6 +199,11 @@ test('public agent onboarding is canonical, accessible and explicitly prelaunch'
  assert.equal(manifest.localAgentTools.authoringMcp.oneWriterRequestPerProcess,true);
  assert.equal(manifest.localAgentTools.authoringMcp.optionalOneReviewerRequestPerProcess,true);
  assert.equal(manifest.localAgentTools.authoringMcp.noAutomaticRetries,true);
+ assert.equal(manifest.localAgentTools.campaignWorkspace.command,'npm run mcp:campaign');
+ assert.equal(manifest.localAgentTools.campaignWorkspace.localOnly,true);
+ assert.equal(manifest.localAgentTools.campaignWorkspace.privateTaskQueue,true);
+ assert.equal(manifest.localAgentTools.campaignWorkspace.privateAgentMessages,true);
+ assert.equal(manifest.localAgentTools.campaignWorkspace.automaticPublicPublication,false);
  assert.equal(manifest.onboardingPage,'https://24go.top/agents/');
  for(const route of ['/agents/','/agents/agent-connect.mjs','/agents/agent-connect.css']){
   assert.ok(FIXED_ROUTES.includes(route));
