@@ -150,6 +150,15 @@ test('publication preflight rejects untrusted signatures, wrong identity, unsafe
   document:nonEnglish,ownerId:OWNER,agentId:AGENT,privateKey:base.pair.privateKey,now:NOW
  });
  assert.throws(()=>prepareAgentArticlePublication({...base,raw:JSON.stringify(signedFr)}),TypeError);
+ const emailDoc=formatDraft({
+  title:'A technical article that leaks a personal email address',
+  body:'## Overview\n\nContact the author at private.author@example.com for further information.',
+  locale:'en',category:'guides',source:'https://example.org/docs'
+ });
+ const signedEmail=createSignedAgentProposal({
+  document:emailDoc,ownerId:OWNER,agentId:AGENT,privateKey:base.pair.privateKey,now:NOW
+ });
+ assert.throws(()=>prepareAgentArticlePublication({...base,raw:JSON.stringify(signedEmail)}),TypeError);
  assert.throws(()=>prepareAgentArticlePublication({
   ...base,publicationTime:'2026-11-01T12:00:00Z'
  }),TypeError);
