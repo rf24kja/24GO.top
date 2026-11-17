@@ -25,6 +25,7 @@ const INVALID=()=>{throw new TypeError('Agent article publication rejected');};
 const MAX_FILES=40;
 const MAX_TOTAL_BYTES=2_000_000;
 const TRUSTED_PUBLICATIONS=new WeakSet();
+const SUBMITTED_PUBLICATIONS=new WeakSet();
 
 function readSite(path){
  if(typeof path!=='string'||!(/^(?:index\.html|contribute\.html|progress\.html|sitemap\.xml|[a-z]{2}\/index\.html|(?:agents|arena)\/index\.html|library\/(?:index\.html|studio\/index\.html)|engineering\/(?:[a-z0-9-]+\/)*[a-z0-9-]+\.(?:html|xml|json|mjs))$/.test(path)))
@@ -339,9 +340,12 @@ export async function submitGitHubArticlePublicationPR({
 }={}){
  validatePublication(publication);
  if(typeof fetchImpl!=='function'||!GIT_SHA.test(localMainSha||''))INVALID();
+ const headers=githubHeaders(token);
+ if(SUBMITTED_PUBLICATIONS.has(publication))INVALID();
+ // Consume the package before the first network request, including ambiguous failures.
+ SUBMITTED_PUBLICATIONS.add(publication);
  const branch='agent-publish-'+publication.slug+'-'+publication.publicationSha256.slice(0,10);
  const base='https://api.github.com/repos/'+REPO;
- const headers=githubHeaders(token);
  const ref=await githubJson(fetchImpl,base+'/git/ref/heads/main',{token});
  const mainSha=ref?.object?.sha;
  if(mainSha!==localMainSha)INVALID();
