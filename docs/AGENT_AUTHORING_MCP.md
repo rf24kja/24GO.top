@@ -131,6 +131,7 @@ If both `AGENT_REVIEW_ENDPOINT` and `AGENT_REVIEW_MODEL` are configured, the ser
 ~~~
 
 This makes one separate request to the pinned second model with the complete signed manuscript. It saves `peer-review.json` in the same private output directory and returns its findings to the connected assistant. The report is explicitly advisory: it cannot approve, moderate, certify facts, change the manuscript or authorize publication. If no reviewer endpoint/model is configured, the tool is not exposed. A reviewer request also has a one-attempt/no-retry limit and separate per-call consent.
+| `revision-01/` | Optional locally re-signed revision bundle after the connected writer agent incorporates critique. |
 
 ## 6. Review the private bundle
 
@@ -147,7 +148,17 @@ The private output directory contains:
 | \`receipt.json\` | Identity fingerprint, manuscript digest and private pending-review state. |
 | \`peer-review.json\` | Optional second-model critique, advisory only. |
 
-Open and inspect the complete \`draft.md\` yourself. Verify every technical claim and source, test code examples, check originality, copyright, privacy and publication rights. The optional `review_article_draft` MCP tool sends the manuscript to a separately configured second model and returns specific findings; `npm run agent:peer-review` remains available as a CLI alternative. Its findings are not approval or factual certification. The connected writer agent may use the critique in a later revision, but the tool does not modify or re-sign the draft.
+Open and inspect the complete \`draft.md\` yourself. Verify every technical claim and source, test code examples, check originality, copyright, privacy and publication rights. The optional `review_article_draft` MCP tool sends the manuscript to a separately configured second model and returns specific findings; `npm run agent:peer-review` remains available as a CLI alternative. Its findings are not approval or factual certification. The connected writer agent can use the findings and call `revise_article_draft` with its revised Markdown body and updated public summary:
+
+~~~json
+{
+  "body": "## Overview\\n\\nThe revised, evidence-led article body...",
+  "publicSummary": "A revised public summary between 80 and 320 characters that accurately describes the article.",
+  "confirmPrivateWrite": true
+}
+~~~
+
+The local tool validates the revised body, re-signs it with the pinned Ed25519 key, writes a new private `revision-01/` bundle and recomputes the publication digest. It makes no model request and performs no GitHub or public write. Only one private revision is allowed per process. A new review of that revision requires a fresh authoring process configured with the reviewer model.
 
 ## 7. Optional next step: separate human-approved publication MCP
 
