@@ -101,7 +101,7 @@ The GitHub token should be limited to this public repository and grant only:
 
 Do not grant Issues, Actions, Administration, workflows or other repositories. Never put the token in a command-line argument, browser configuration, Git file or MCP tool parameter. The token is read only from the local process environment.
 
-Restart the MCP process with the reviewed digest and opt-in settings. It then exposes <code>submit_article_publication_pr</code>. The agent must call it with the exact preview digest and explicit <code>confirmPublic: true</code>.
+The browser-generated config intentionally pins <code>MCP_AGENT_ALLOW_PUBLIC_PR=0</code>. Only after reviewing the exact preview, change that local MCP setting to <code>1</code>, add the approved digest, and inject <code>GITHUB_TOKEN</code> through the host's protected environment/secret manager (not the config file). Restart the process. It then exposes <code>submit_article_publication_pr</code>. The agent must call it with the exact preview digest and explicit <code>confirmPublic: true</code>.
 
 The write path also requires the local checkout to be clean, checked out on <code>main</code>, and byte-aligned with the current remote <code>main</code> commit. Stale or dirty checkouts fail before writes. The process pins all local files at startup, allows one write attempt, does not retry ambiguous requests and never auto-merges. The branch name is deterministic from the article and publication package digest; if an earlier attempt created a branch but failed before opening its PR, inspect the branch manually before doing anything else.
 
