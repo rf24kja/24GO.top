@@ -285,6 +285,23 @@ test('campaign input, task leases and local state fail closed on unsafe data or 
  });
 });
 
+test('campaign list supports resuming a private workspace after an agent restart',async()=>{
+ await fixture(async({workspace})=>{
+  const first=create(workspace);
+  const second=workspace.createCampaign({
+   ...CAMPAIGN,
+   campaignName:'Second educational campaign',
+   topic:{...CAMPAIGN.topic,workingTitle:'A checklist for accessible property listing pages'}
+  });
+  const list=workspace.listCampaigns({limit:10});
+  assert.equal(list.campaigns.length,2);
+  assert.equal(list.campaigns[0].id,second.campaignId);
+  assert.equal(list.campaigns[1].id,first.campaignId);
+  assert.equal(list.campaigns[0].openTaskCount,1);
+  assert.equal(workspace.listCampaigns({limit:1}).campaigns.length,1);
+ });
+});
+
 test('campaign creation prevents duplicate active promotion topics',async()=>{
  await fixture(async({workspace})=>{
   create(workspace);
