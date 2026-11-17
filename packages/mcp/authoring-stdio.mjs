@@ -188,6 +188,99 @@ export function createAgentAuthoringSession({
     closeSync(fd);
     if(!complete&&empty){try{unlinkSync(reportPath);}catch{/* preserve unexpected files */}}
    }
+  },
+  async revise(input){
+   if(!lastBundle||revisionAttempted||
+    !exact(input,['body','publicSummary','confirmPrivateWrite'])||
+    input.confirmPrivateWrite!==true||
+    typeof input.body!=='string'||input.body.trim()!==input.body||
+    input.body.length<20||input.body.length>12000||
+    typeof input.publicSummary!=='string'||
+    input.publicSummary.length<80||input.publicSummary.length>320)reject();
+   const timestamp=now();
+   if(!(timestamp instanceof Date)||!Number.isFinite(timestamp.getTime())||
+    localMainShaProvider()!==lastBundle.sourceMainSha)reject();
+   const draft={...lastBundle.article,body:input.body};
+   if(scanDraftSharingRisks(draft).flagged)reject();
+   const document=formatDraft(draft);
+   const privateKey=boundedLocalFile(privateKeyPath,8192,true);
+   const publicKey=boundedLocalFile(publicKeyPath,8192);
+   const signed=createSignedAgentProposal({
+    document,ownerId,agentId,privateKey,now:timestamp
+   });
+   const verified=verifySignedAgentProposal(signed,{
+    publicKey,expectedOwnerId:ownerId,expectedAgentId:agentId
+   });
+   const issue=prepareGitHubAgentProposal(signed,{
+    publicKey,expectedOwnerId:ownerId,expectedAgentId:agentId,
+    summary:input.publicSummary,now:timestamp
+   });
+   const publicationTime=validateAgentArticlePublicationTime(lastBundle.publicationTime,timestamp);
+   const publication=prepareAgentArticlePublication({
+    raw:JSON.stringify(signed),publicKey,expectedOwnerId:ownerId,
+    expectedAgentId:agentId,summary:input.publicSummary,
+    publicationTime,now:timestamp
+   });
+   if(localMainShaProvider()!==lastBundle.sourceMainSha)reject();
+   revisionAttempted=true;
+   const revisionDir=join(lastBundle.workspace,'revision-01');
+   mkdirSync(revisionDir,{recursive:false,mode:0o700});
+   let complete=false;
+   const draftPath=join(revisionDir,'draft.md');
+   const signedProposalPath=join(revisionDir,'signed-proposal.json');
+   const publicSummaryPath=join(revisionDir,'public-summary.txt');
+   const issuePreviewPath=join(revisionDir,'issue-preview.json');
+   const receiptPath=join(revisionDir,'receipt.json');
+   try{
+    const receipt={
+     version:1,state:'awaiting-human-review',kind:'local-agent-editorial-revision',
+     ownerId,agentId,draftSha256:verified.sha256,
+     publicKeyFingerprint:verified.keyFingerprint,createdAt:verified.createdAt,
+     published:false,submitted:false,revision:1,
+     revisedFromSha256:lastBundle.manuscriptSha256,
+     sourceMainSha:lastBundle.sourceMainSha,
+     publicationSha256:publication.publicationSha256,
+     reviewReportPath:lastBundle.reviewReportPath??null,
+     reviewedManuscriptSha256:lastBundle.reviewedManuscriptSha256??null
+    };
+    const artifacts=[
+     [draftPath,document],
+     [signedProposalPath,JSON.stringify(signed,null,2)+'\n'],
+     [publicSummaryPath,input.publicSummary],
+     [issuePreviewPath,JSON.stringify({title:issue.title,body:issue.body},null,2)+'\n'],
+     [receiptPath,JSON.stringify(receipt,null,2)+'\n']
+    ];
+    for(const [path,value] of artifacts)
+     writeFileSync(path,value,{flag:'wx',mode:0o600});
+    if(localMainShaProvider()!==lastBundle.sourceMainSha)reject();
+    const previous=lastBundle;
+    lastBundle=Object.freeze({
+     ...previous,outputDir:revisionDir,draftPath,signedProposalPath,
+     publicSummaryPath,issuePreviewPath,receiptPath,
+     article:draft,summary:input.publicSummary,
+     manuscriptSha256:publication.manuscriptSha256,
+     publicationSha256:publication.publicationSha256,
+     revision:1,revisedFromSha256:previous.manuscriptSha256
+    });
+    complete=true;
+    return Object.freeze({
+     state:'private-revision-awaiting-human-review',revision:1,
+     revisedFromSha256:previous.manuscriptSha256,
+     manuscriptSha256:publication.manuscriptSha256,
+     publicationSha256:publication.publicationSha256,
+     sourceMainSha:previous.sourceMainSha,
+     canonicalUrl:publication.canonicalUrl,
+     publicationTime:publication.publicationTime,
+     files:publication.filePaths,
+     workspacePath:previous.workspace,outputDir:revisionDir,
+     draftPath,signedProposalPath,publicSummaryPath,issuePreviewPath,receiptPath,
+     previousReviewReportPath:previous.reviewReportPath??null,
+     published:false,submitted:false,
+     note:'The connected agent supplied a revised manuscript; the local owner key re-signed it. No model request, GitHub write, upload or publication occurred. Review the new private files and digest before using the separate publication MCP.'
+    });
+   }finally{
+    if(!complete){try{rmdirSync(revisionDir);}catch{/* preserve partial revision files for inspection */}}
+   }
   }
  });
 }
