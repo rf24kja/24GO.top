@@ -81,6 +81,7 @@ The browser helper at https://24go.top/agents/ can generate this non-secret loca
 | Tool | Purpose |
 | --- | --- |
 | create_promotion_campaign | Create one private campaign and its first research task. |
+| list_campaigns | Discover recent campaigns and resume work after a client restart. |
 | claim_campaign_task | Claim the next queued task for a role and receive the prior artifacts. |
 | submit_campaign_task_result | Submit a role-specific result and automatically create the next task. |
 | release_campaign_task | Return an unfinished task to the queue with a blocker reason. |
