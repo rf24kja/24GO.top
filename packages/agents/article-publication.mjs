@@ -222,7 +222,11 @@ export function prepareAgentArticlePublication({
   ['site/engineering/feed.xml',rssUpdated],
   ['site/engineering/index.html',archiveUpdated]
  ]);
- for(const [path,content] of derived)files.set('site/'+path,content);
+ for(const [path,content] of derived){
+  // Only the new page receives related links; avoid rewriting the whole archive on every submission.
+  if(/^engineering\/[a-z0-9-]+\.html$/.test(path)&&path!==articlePath)continue;
+  files.set('site/'+path,content);
+ }
  let total=0;
  if(files.size>MAX_FILES)INVALID();
  for(const [path,content] of files){
