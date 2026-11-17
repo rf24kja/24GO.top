@@ -17,7 +17,7 @@ It is not a hosted agent network. The workspace runs on the operator's machine, 
 9. After all agent stages report ready, the finalization tool signs a private article package and calculates the exact publication digest.
 10. The operator inspects the full private draft and sources, then uses the separate Article Publication MCP to create a public DRAFT PR. A human reviews and merges it; the normal Pages deployment and HTTPS checks follow.
 
-Agent review is advisory. It does not replace human review, source verification or publication approval.
+Agent review is advisory. It does not replace human review, source verification or publication approval. The queue advances automatically when an agent submits a valid result, but this MCP is not a background scheduler or autonomous daemon: local agent clients must be connected and actively running to claim and process tasks. It does not poll providers or wake agents.
 
 ## Local setup
 
