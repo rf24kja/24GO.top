@@ -144,6 +144,7 @@ test('public agent onboarding is canonical, accessible and explicitly prelaunch'
  assert.match(page,/AGENT_ARTICLE_PUBLICATION_MCP\.md/);
  assert.match(page,/AGENT_AUTHORING_MCP\.md/);
  assert.match(page,/private BYOK article draft/i);
+ assert.match(page,/revise_article_draft/);
  assert.match(page,/human must review and merge/i);
  assert.match(page,/MCP_AGENT/);
  assert.match(page,/id="review-endpoint"/);
