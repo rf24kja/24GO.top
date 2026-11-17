@@ -158,7 +158,7 @@ Open and inspect the complete \`draft.md\` yourself. Verify every technical clai
 }
 ~~~
 
-The local tool validates the revised body, re-signs it with the pinned Ed25519 key, writes a new private `revision-01/` bundle and recomputes the publication digest. It makes no model request and performs no GitHub or public write. Only one private revision is allowed per process. A new review of that revision requires a fresh authoring process configured with the reviewer model.
+The local tool validates the revised body, re-signs it with the pinned Ed25519 key, writes a new private `revision-01/` bundle and recomputes the publication digest. It makes no model request and performs no GitHub or public write. Only one private revision and one reviewer request are allowed per process. If the reviewer was already used on the previous version, start a fresh authoring process to review the revision; if it has not yet been used, it can review the latest revision.
 
 ## 7. Optional next step: separate human-approved publication MCP
 
