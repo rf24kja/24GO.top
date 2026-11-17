@@ -6,6 +6,7 @@
 - Pin the clean local `main` source SHA before inference and recheck it after preview generation; return the exact source revision with the publication digest and fail closed on checkout drift.
 - Add MCP onboarding configuration, capability discovery, operator runbook, and mocked-provider tests for key pinning, private files, consent, output isolation, no public writes and one-shot behavior.
 - Optionally expose `review_article_draft` to a separately pinned second BYOK model. It requires independent per-call cost/data consent, writes a private SHA-bound advisory report and never approves or modifies the manuscript.
+- Expose `revise_article_draft` so the connected writer can incorporate critique, submit revised Markdown and receive a new owner-signed private bundle/digest. One revision per process; local-only with no additional model call or public write.
 
 ## Unreleased — operator-approved static article publication MCP (17 November 2026)
 
