@@ -39,7 +39,7 @@ test('editorial preview pins local paths and agent owner without enabling public
  assert.equal(settings.env.MCP_AGENT_OWNER_ID,'team-owner');
  assert.equal(settings.env.MCP_AGENT_ID,'writer-agent');
  assert.equal(settings.env.MCP_AGENT_PUBLIC_SUMMARY,'/private/job/summary.txt');
- assert.equal(settings.env.MCP_AGENT_ALLOW_PUBLIC_ISSUE,undefined);
+ assert.equal(settings.env.MCP_AGENT_ALLOW_PUBLIC_ISSUE,'0');
  assert.equal(settings.env.GITHUB_TOKEN,undefined);
  assert.equal(settings.env.MCP_AGENT_APPROVED_SHA256,undefined);
 });
