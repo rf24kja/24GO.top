@@ -28,6 +28,7 @@ const INPUT={
  article:ARTICLE,publicSummary:SUMMARY,publicationTime:PUBLICATION_TIME,
  confirmCosts:true,confirmProviderData:true
 };
+const REVIEW_FINDINGS='## Findings\n\nThe manuscript is clearly scoped, but the author should provide a reproducible command and an exact expected response for the canonical HTTPS check.\n\n## Verification needed\n\nConfirm the current deployment workflow name and verify the cited documentation against the actual repository state.\n\n## Suggested changes\n\nAdd a small command example and distinguish successful delivery from search indexing or readership.';
 const ANSWER='## Overview\n\nA reliable release verification procedure begins with a reviewed source commit. Fetch the canonical HTTPS page after deployment and compare the delivered content with the expected source. Record the exact release identifier and explain what the check does not prove.\n\n## Safe verification\n\nCheck redirects, canonical metadata, essential assets and the final public response. Do not treat a green CI badge as proof of indexing or readership.';
 const PROVIDER={
  AGENT_DRAFT_ENDPOINT:'https://llm.example/v1/chat/completions',
@@ -206,6 +207,86 @@ test('provider failure is one attempt and removes an empty private workspace',as
   await assert.rejects(session.prepare(INPUT));
   assert.equal(calls,1);
   assert.equal(readdirSync(outputRoot).length,0);
+ });
+});
+
+test('second BYOK agent reviews the signed manuscript and returns private advisory findings',async()=>{
+ await withFixture(async({env,outputRoot})=>{
+  const configured={
+   ...env,
+   AGENT_REVIEW_ENDPOINT:'https://review.example/v1/chat/completions',
+   AGENT_REVIEW_MODEL:'critic-model',
+   AGENT_REVIEW_KEY:'test-review-secret-123456789'
+  };
+  const calls=[];
+  const session=createAgentAuthoringSession({
+   env:configured,now:()=>new Date(NOW),localMainShaProvider:()=> 'a'.repeat(40),
+   fetchImpl:async(url,options)=>{
+    calls.push({url,options});
+    return modelResponse(url===PROVIDER.AGENT_DRAFT_ENDPOINT?ANSWER:REVIEW_FINDINGS);
+   }
+  });
+  assert.equal(session.reviewAvailable,true);
+  await assert.rejects(session.review({confirmCosts:true,confirmProviderData:true}),TypeError);
+  await session.prepare(INPUT);
+  await assert.rejects(session.review({confirmCosts:false,confirmProviderData:true}),TypeError);
+  const result=await session.review({confirmCosts:true,confirmProviderData:true});
+  assert.equal(calls.length,2);
+  assert.deepEqual(calls.map(x=>x.url),[
+   PROVIDER.AGENT_DRAFT_ENDPOINT,'https://review.example/v1/chat/completions'
+  ]);
+  assert.equal(JSON.parse(calls[1].options.body).model,'critic-model');
+  assert.equal(JSON.parse(calls[1].options.body).max_tokens,1200);
+  assert.equal(result.state,'advisory-only-human-editor-required');
+  assert.equal(result.approved,false);
+  assert.equal(result.publicationAllowed,false);
+  assert.match(result.findings,/Verification needed/);
+  assert.match(result.reportPath,/peer-review\.json$/);
+  const report=JSON.parse(readFileSync(result.reportPath,'utf8'));
+  assert.equal(report.manuscriptSha256,result.manuscriptSha256);
+  assert.equal(report.reviewerModel,'critic-model');
+  assert.equal(report.reviewerIdentity,'unverified-local-byok');
+  assert.equal(report.state,'advisory-only-human-editor-required');
+  if(process.platform!=='win32')assert.equal(statSync(result.reportPath).mode&0o077,0);
+  await assert.rejects(session.review({confirmCosts:true,confirmProviderData:true}),TypeError);
+  assert.equal(calls.length,2);
+  assert.equal(readdirSync(outputRoot).length,1);
+ });
+});
+
+test('optional reviewer is not exposed without a complete second-model configuration',async()=>{
+ await withFixture(async({env})=>{
+  const session=createAgentAuthoringSession({
+   env,now:()=>new Date(NOW),localMainShaProvider:()=> 'a'.repeat(40),
+   fetchImpl:async()=>modelResponse()
+  });
+  assert.equal(session.reviewAvailable,false);
+  const listed=handleAgentAuthoringMcpRequest({
+   jsonrpc:'2.0',id:1,method:'tools/list'
+  },session);
+  assert.deepEqual(listed.result.tools.map(tool=>tool.name),['prepare_article_draft']);
+  assert.throws(()=>createAgentAuthoringSession({
+   env:{...env,AGENT_REVIEW_ENDPOINT:'http://remote.example/v1/chat/completions',AGENT_REVIEW_MODEL:'critic-model'}
+  }),TypeError);
+ });
+});
+
+test('second-agent provider failure is one attempt and leaves no empty private report',async()=>{
+ await withFixture(async({env})=>{
+  const configured={...env,AGENT_REVIEW_ENDPOINT:'https://review.example/v1/chat/completions',
+   AGENT_REVIEW_MODEL:'critic-model',AGENT_REVIEW_KEY:'test-review-secret-123456789'};
+  let reviewerCalls=0;
+  const session=createAgentAuthoringSession({
+   env:configured,now:()=>new Date(NOW),localMainShaProvider:()=> 'a'.repeat(40),
+   fetchImpl:async(url)=>url===PROVIDER.AGENT_DRAFT_ENDPOINT?modelResponse(ANSWER):
+    (reviewerCalls++,modelResponse('',503))
+  });
+  const draft=await session.prepare(INPUT);
+  await assert.rejects(session.review({confirmCosts:true,confirmProviderData:true}));
+  assert.equal(reviewerCalls,1);
+  assert.equal(existsSync(join(draft.outputDir,'peer-review.json')),false);
+  await assert.rejects(session.review({confirmCosts:true,confirmProviderData:true}));
+  assert.equal(reviewerCalls,1);
  });
 });
 
