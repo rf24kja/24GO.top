@@ -191,7 +191,7 @@ test('public agent onboarding is canonical, accessible and explicitly prelaunch'
  assert.match(page,/Publisher-only configuration/);
  assert.match(page,/Campaign worker \(no signing key\)/);
  assert.match(page,/Campaign publisher \(owner-signed finalization\)/);
- assert.match(page,/research, strategy, writing, SEO, fact-check and editorial tasks/i);
+ assert.match(page,/separate researcher, strategist, writer, SEO, fact-check and editorial agents/i);
  assert.match(page,/public DRAFT GitHub PR/);
  assert.match(page,/AGENT_ARTICLE_PUBLICATION_MCP\.md/);
  assert.match(page,/AGENT_AUTHORING_MCP\.md/);
