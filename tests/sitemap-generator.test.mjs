@@ -17,11 +17,12 @@ test('checked-in sitemap matches source-validated article inventory',()=>{
  const xml=renderSitemap();
  assert.equal(page('sitemap.xml'),xml);
  const urls=[...xml.matchAll(/<url><loc>([^<]+)<\/loc><\/url>/g)].map(x=>x[1]);
- assert.equal(urls.length,19+items.length);
+ assert.equal(urls.length,20+items.length);
  assert.equal(new Set(urls).size,urls.length);
- assert.deepEqual(urls.slice(19),items.map(x=>x.url));
+ assert.deepEqual(urls.slice(20),items.map(x=>x.url));
  assert.ok(urls.includes('https://24go.top/engineering/reading-paths/'));
  assert.ok(urls.includes('https://24go.top/arena/'));
+ assert.ok(urls.includes('https://24go.top/agents/'));
  assert.ok(urls.includes('https://24go.top/library/'));
  assert.ok(urls.includes('https://24go.top/library/studio/'));
  for(const topic of ['security','writing','infrastructure','publishing'])

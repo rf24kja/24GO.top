@@ -1,0 +1,58 @@
+body{background:#0b1411;color:#eaf4ee}
+.agent-main{max-width:1050px;padding-top:clamp(38px,5vw,78px);padding-bottom:76px}
+.agent-main h1{font-size:clamp(2.15rem,5.5vw,4.2rem);line-height:1.09;letter-spacing:-.05em;margin:14px 0 22px;max-width:920px}
+.agent-lead{font-size:clamp(1.05rem,1.9vw,1.32rem);line-height:1.68;max-width:840px;color:#d0e2d6}
+.agent-note{border:1px solid #38735b;background:#10271f;border-radius:16px;padding:18px 22px;margin:28px 0 46px;line-height:1.65}
+.agent-note strong{color:#94f3c2}
+.agent-steps,.agent-builder,.agent-next{margin-top:44px}
+.agent-main h2{font-size:clamp(1.45rem,3vw,2.15rem);line-height:1.2;letter-spacing:-.035em}
+.agent-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:20px}
+.agent-options article{background:#13211b;border:1px solid #345146;border-radius:18px;padding:24px;min-width:0}
+.agent-options h3{font-size:1.3rem;margin:13px 0 8px}
+.agent-options p,.agent-next p{line-height:1.72;color:#c9dace}
+.agent-step{display:inline-block;font-size:.76rem;letter-spacing:.13em;font-weight:750;color:#77e8ae}
+.agent-main a{color:#91eabd;text-underline-offset:4px}
+.agent-main a:hover{color:#c3ffdf}
+.agent-builder{border:1px solid #3f6553;border-radius:20px;padding:clamp(18px,3.5vw,34px);background:#101d17}
+.agent-builder-header{display:flex;align-items:flex-start;justify-content:space-between;gap:24px}
+.agent-builder-header p{max-width:300px;color:#bad0c2;line-height:1.5}
+.agent-builder h2{margin:10px 0 24px}
+.agent-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.agent-grid>div{min-width:0}
+.agent-grid label{display:block;font-weight:650;margin:8px 0 10px;font-size:.95rem}
+.agent-grid input,.agent-grid select{display:block;width:100%;box-sizing:border-box;min-height:48px;padding:10px 12px;background:#06120c;color:#f4fff8;border:1px solid #5a806b;border-radius:10px;font:inherit}
+.agent-grid input::placeholder{color:#94ac9d}
+.agent-grid small{display:block;margin:9px 0;color:#b8cbbe;line-height:1.52}
+.agent-grid input:focus-visible,.agent-grid select:focus-visible,.agent-actions button:focus-visible,.agent-main a:focus-visible,.agent-output:focus-visible{outline:3px solid #8cffbd;outline-offset:3px}
+.agent-editorial{margin:20px 0;padding-top:12px;border-top:1px solid #385645}
+.agent-editorial[hidden]{display:none}
+.agent-warning{line-height:1.58;color:#d3e5d8;margin:8px 0 20px}
+.agent-actions{display:flex;gap:12px;flex-wrap:wrap;margin:23px 0 14px}
+.agent-actions button{font:inherit;font-weight:750;cursor:pointer;padding:12px 20px;min-height:48px;border-radius:12px;border:1px solid #69c797;background:#54de98;color:#06160e}
+.agent-actions button+button{background:transparent;color:#a4ffcb}
+.agent-actions button:disabled{opacity:.48;cursor:not-allowed}
+#agent-config-status{color:#bbd5c4;min-height:1.6em;line-height:1.5}
+.agent-output{display:block;min-height:75px;max-height:390px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;background:#06120c;color:#dbf6e6;border:1px solid #345445;border-radius:12px;padding:14px;font: .88rem/1.65 ui-monospace,SFMono-Regular,Consolas,monospace}
+.agent-footnote{font-size:.92rem;line-height:1.68;color:#c0d0c4}
+.agent-footer{display:flex;gap:18px;flex-wrap:wrap;align-items:center;padding:24px 0 45px;color:#b8caba;border-top:1px solid #274234}
+.agent-footer a{color:#9ceec4}
+@media(max-width:740px){.agent-options,.agent-grid{grid-template-columns:1fr}.agent-builder-header{display:block}.agent-main{padding-top:28px}.agent-options article{padding:20px}}
+@media(max-width:390px){.agent-builder{padding:16px}.agent-main h1{font-size:2.15rem}.agent-actions button{width:100%}.agent-footer{gap:12px}}
+@media(prefers-color-scheme:light){
+ body{background:#f4faf6;color:#142a1d}
+ .agent-lead,.agent-options p,.agent-next p,.agent-warning{color:#314d3c}
+ .agent-note{background:#e2f6e9;border-color:#78a890;color:#193728}
+ .agent-note strong,.agent-step{color:#136940}
+ .agent-options article,.agent-builder{background:#fff;border-color:#b6d1bf}
+ .agent-builder-header p,.agent-grid small,.agent-footnote,#agent-config-status,.agent-footer{color:#3d5949}
+ .agent-grid input,.agent-grid select,.agent-output{background:#eef8f1;color:#173b24;border-color:#658f70}
+ .agent-grid input::placeholder{color:#52715e}
+ .agent-grid input:focus-visible,.agent-grid select:focus-visible,
+ .agent-actions button:focus-visible,.agent-main a:focus-visible,
+ .agent-output:focus-visible{outline-color:#136c40}
+ .agent-main a,.agent-footer a{color:#096c41}
+ .agent-main a:hover{color:#064b2f}
+ .agent-actions button{background:#087847;color:#fff}
+ .agent-actions button+button{background:transparent;color:#075f39}
+ .agent-footer{border-color:#c6dacb}
+}

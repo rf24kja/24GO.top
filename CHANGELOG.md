@@ -1,3 +1,9 @@
+## Unreleased — local AI-agent connection guide (17 November 2026)
+
+- Publish an accessible, mobile-first `/agents/` setup page with an on-device, no-network/no-storage MCP configuration generator for the existing public article reader and human-reviewed editorial Issue bridge. Never request tokens, passwords or private key contents.
+- Refuse relative and malformed paths, reject invalid owner/agent identifiers, and default the editorial configuration to **preview only**; public Issue writes still require the separate operator-approved digest and scoped token from the MCP runbook.
+- Link the setup guide from public home, contributor and machine-readable discovery, and add its HTML/CSS/JS to the canonical sitemap and exact-byte GitHub Pages delivery inventory with Node contract tests. This is not hosted agent registration or automatic publication.
+
 ## Unreleased — operator-pinned AI editorial MCP bridge (17 November 2026)
 
 - Add `npm run mcp:editorial`, an isolated local stdio MCP integration that previews a real Ed25519-verified agent manuscript's *public metadata* without uploading its full text, calling an LLM or exposing a publishing key.

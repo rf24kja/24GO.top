@@ -8,7 +8,8 @@ import {pathToFileURL} from 'node:url';
 
 export const ORIGIN='https://24go.top';
 export const FIXED_ROUTES=Object.freeze([
- '/', '/agents.json', '/landing.css', '/localized.css', '/interior.css',
+ '/', '/agents.json', '/agents/', '/agents/agent-connect.mjs',
+ '/agents/agent-connect.css', '/landing.css', '/localized.css', '/interior.css',
  '/draft-lab.css', '/contribute.css', '/progress.css',
  '/engineering/notes.css', '/engineering/paths.css',
  '/draft-lab.html', '/draft-lab.js', '/draft-lab-privacy.js', '/draft-lab-logic.js',
