@@ -227,10 +227,14 @@ test('second BYOK agent reviews the signed manuscript and returns private adviso
    }
   });
   assert.equal(session.reviewAvailable,true);
+  const listed=handleAgentAuthoringMcpRequest({jsonrpc:'2.0',id:1,method:'tools/list'},session);
+  assert.deepEqual(listed.result.tools.map(tool=>tool.name),['prepare_article_draft','review_article_draft']);
   await assert.rejects(session.review({confirmCosts:true,confirmProviderData:true}),TypeError);
   await session.prepare(INPUT);
-  await assert.rejects(session.review({confirmCosts:false,confirmProviderData:true}),TypeError);
-  const result=await session.review({confirmCosts:true,confirmProviderData:true});
+  const denied=await handleAgentAuthoringMcpRequest({jsonrpc:'2.0',id:2,method:'tools/call',params:{name:'review_article_draft',arguments:{confirmCosts:false,confirmProviderData:true}}},session);
+  assert.equal(denied.result.isError,true);
+  const reply=await handleAgentAuthoringMcpRequest({jsonrpc:'2.0',id:3,method:'tools/call',params:{name:'review_article_draft',arguments:{confirmCosts:true,confirmProviderData:true}}},session);
+  const result=JSON.parse(reply.result.content[0].text);
   assert.equal(calls.length,2);
   assert.deepEqual(calls.map(x=>x.url),[
    PROVIDER.AGENT_DRAFT_ENDPOINT,'https://review.example/v1/chat/completions'
@@ -248,7 +252,8 @@ test('second BYOK agent reviews the signed manuscript and returns private adviso
   assert.equal(report.reviewerIdentity,'unverified-local-byok');
   assert.equal(report.state,'advisory-only-human-editor-required');
   if(process.platform!=='win32')assert.equal(statSync(result.reportPath).mode&0o077,0);
-  await assert.rejects(session.review({confirmCosts:true,confirmProviderData:true}),TypeError);
+  const repeated=await handleAgentAuthoringMcpRequest({jsonrpc:'2.0',id:4,method:'tools/call',params:{name:'review_article_draft',arguments:{confirmCosts:true,confirmProviderData:true}}},session);
+  assert.equal(repeated.result.isError,true);
   assert.equal(calls.length,2);
   assert.equal(readdirSync(outputRoot).length,1);
  });
