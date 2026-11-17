@@ -5,6 +5,7 @@ import {mkdtempSync,writeFileSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {formatDraft} from '../site/draft-lab-logic.js';
+import {validatedReaderMetadata} from '../site/engineering/article-reader.mjs';
 import {createSignedAgentProposal} from '../packages/agents/editorial-proposal.mjs';
 import {
  prepareAgentArticlePublication,submitGitHubArticlePublicationPR
@@ -108,6 +109,9 @@ test('signed agent article becomes a complete static publication package with al
  assert.match(page,/id="section-overview"/);
  assert.match(page,/id="section-safe-rendering"/);
  assert.match(page,/&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
+ const ld=JSON.parse(page.match(/<script type="application\\/ld\\+json">([\\s\\S]*?)<\\/script>/)[1]);
+ assert.match(ld.datePublished,/^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\dZ$/);
+ assert.doesNotThrow(()=>validatedReaderMetadata(ld,p.canonicalUrl,p.title));
  assert.doesNotMatch(page,/<script>alert\(1\)<\/script>/);
  const feed=JSON.parse(p.files.get('site/engineering/feed.json'));
  assert.equal(feed.items[0].url,p.canonicalUrl);
