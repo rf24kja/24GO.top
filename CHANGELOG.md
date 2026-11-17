@@ -1,7 +1,7 @@
 ## Unreleased — local BYOK AI-agent authoring MCP (17 November 2026)
 
 - Add `npm run mcp:authoring` and a bounded `prepare_article_draft` tool for connected MCP agents. One explicitly consented BYOK request creates a canonical English Draft Lab manuscript, owner-pinned Ed25519 signature, private summary/receipt and exact static publication-package digest.
-- Require an independently pinned keypair, private output directory outside the repository, HTTPS or loopback model endpoint, strict source/evidence/summary/date validation, explicit per-call cost and provider-data consent, and one attempt per process with no automatic retry.
+- Require an independently pinned keypair, private output directory outside the repository, HTTPS or loopback model endpoint, strict source/evidence/summary/date validation, explicit per-call cost and provider-data consent, and one writer attempt plus at most one optional reviewer attempt per process, with no automatic retries.
 - Keep the complete manuscript and signing material local. The authoring server has no GitHub token or public write tool; public submission remains a separate exact-digest-approved DRAFT PR and mandatory human merge.
 - Pin the clean local `main` source SHA before inference and recheck it after preview generation; return the exact source revision with the publication digest and fail closed on checkout drift.
 - Add MCP onboarding configuration, capability discovery, operator runbook, and mocked-provider tests for key pinning, private files, consent, output isolation, no public writes and one-shot behavior.
