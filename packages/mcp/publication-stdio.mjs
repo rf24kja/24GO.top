@@ -12,6 +12,7 @@ import {
 import {runStdio} from './stdio.mjs';
 
 const HASH=/^[a-f0-9]{64}$/;
+const GIT_SHA=/^[a-f0-9]{40}$/;
 const REPO_ROOT=realpathSync(fileURLToPath(new URL('../../',import.meta.url)));
 const reject=()=>{throw new TypeError('Article publication MCP configuration rejected');};
 const response=value=>({content:[{type:'text',text:JSON.stringify(value)}]});
@@ -42,25 +43,34 @@ export function createAgentArticlePublicationSession({
  now=new Date(),allowPublicPr=false,approvedPublicationSha256=null,
  token=null,fetchImpl=globalThis.fetch,localMainShaProvider=getLocalMainCheckout
 }={}){
+ if(allowPublicPr!==true&&allowPublicPr!==false)reject();
+ if(typeof localMainShaProvider!=='function')reject();
+ if(allowPublicPr&&(!HASH.test(approvedPublicationSha256||'')||
+  typeof token!=='string'||token.length<10||/\s/u.test(token)||
+  typeof fetchImpl!=='function'))reject();
+
+ // Pin the clean main revision before reading any repository source. Recheck
+ // after generation so a moving or dirty checkout cannot seed stale assets.
+ const sourceMainSha=localMainShaProvider();
+ if(!GIT_SHA.test(sourceMainSha||''))reject();
  const publication=prepareAgentArticlePublication({
   raw,publicKey,expectedOwnerId,expectedAgentId,summary,publicationTime,now
  });
- if(allowPublicPr!==true&&allowPublicPr!==false)reject();
- if(allowPublicPr&&(!HASH.test(approvedPublicationSha256||'')||
-  approvedPublicationSha256!==publication.publicationSha256||
-  typeof token!=='string'||token.length<10||/\s/u.test(token)||
-  typeof fetchImpl!=='function'||typeof localMainShaProvider!=='function'))reject();
+ if(localMainShaProvider()!==sourceMainSha)reject();
+ if(allowPublicPr&&approvedPublicationSha256!==publication.publicationSha256)reject();
+
  let attempted=false;
  return Object.freeze({
-  publication,canSubmit:allowPublicPr,
+  publication,canSubmit:allowPublicPr,sourceMainSha,
   async submit(digest,confirmation){
    if(!allowPublicPr||attempted||digest!==publication.publicationSha256||
     confirmation!==true)reject();
    // Consume authorization before the first network or git operation.
    attempted=true;
-   const localMainSha=localMainShaProvider();
+   const currentLocalMainSha=localMainShaProvider();
+   if(currentLocalMainSha!==sourceMainSha)reject();
    return submitGitHubArticlePublicationPR({
-    publication,token,fetchImpl,localMainSha
+    publication,token,fetchImpl,localMainSha:sourceMainSha
    });
   }
  });
@@ -126,7 +136,8 @@ export function handleAgentArticlePublicationMcpRequest(req,session){
    const p=session.publication;
    return {result:response({
     title:p.title,summary:p.summary,canonicalUrl:p.canonicalUrl,
-    publicationTime:p.publicationTime,ownerId:p.ownerId,agentId:p.agentId,
+    publicationTime:p.publicationTime,sourceMainSha:session.sourceMainSha,
+    ownerId:p.ownerId,agentId:p.agentId,
     keyFingerprint:p.keyFingerprint,manuscriptSha256:p.manuscriptSha256,
     publicationSha256:p.publicationSha256,files:p.filePaths,
     state:'draft-publication-preview-only',published:false,submitted:false,
